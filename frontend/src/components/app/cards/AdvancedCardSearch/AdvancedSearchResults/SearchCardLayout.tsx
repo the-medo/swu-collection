@@ -36,6 +36,7 @@ export interface SearchCardLayoutProps extends CardLayoutProps {
   layoutType: CardLayoutType;
   cardSubcomponent?: (card: CardDataWithVariants<CardListVariants> | undefined) => React.ReactNode;
   showKarabastUnimplementedNameIcon?: boolean;
+  preserveOrder?: boolean;
 }
 
 const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
@@ -45,13 +46,14 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
   layoutType,
   cardSubcomponent,
   showKarabastUnimplementedNameIcon = false,
+  preserveOrder = false,
 }) => {
   const { data: cardListData } = useCardList();
   const { name, sortField, sortOrder, setSortField, setSortOrder } = useAdvancedCardSearchStore();
 
   // Sort cards based on sortField and sortOrder
   const sortedResults = useMemo(() => {
-    if (!cardListData) return searchResults;
+    if (!cardListData || preserveOrder) return searchResults;
 
     return [...searchResults].sort((a, b) => {
       const cardA = cardListData.cards[a];
@@ -103,7 +105,7 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
 
       return sortOrder === 'asc' ? comparison : -comparison;
     });
-  }, [cardListData, name, searchResults, resultVariants, sortField, sortOrder]);
+  }, [cardListData, name, searchResults, resultVariants, sortField, sortOrder, preserveOrder]);
 
   // Configure infinite scrolling
   // Grid layouts need more initial items but smaller batches for smooth scrolling
@@ -144,9 +146,9 @@ const SearchCardLayout: React.FC<SearchCardLayoutProps> = ({
   // Get columns for the table
   const columns = useSearchCardTableColumns({
     layoutType,
-    sortField,
+    sortField: preserveOrder ? undefined : sortField,
     sortOrder,
-    onSort: onSortChange,
+    onSort: preserveOrder ? undefined : onSortChange,
     cardSubcomponent,
     showKarabastUnimplementedNameIcon,
   });

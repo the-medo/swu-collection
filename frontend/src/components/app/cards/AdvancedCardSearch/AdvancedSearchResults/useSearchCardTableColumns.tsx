@@ -32,7 +32,7 @@ export type SearchCardTableColumnsProps = {
 
 export function useSearchCardTableColumns({
   layoutType,
-  sortField = 'name',
+  sortField,
   sortOrder = 'asc',
   onSort,
   cardSubcomponent,
@@ -76,7 +76,7 @@ export function useSearchCardTableColumns({
       accessorFn: row => cardListData?.cards[row.cardId]?.name,
       header: () => (
         <div
-          className={`cursor-pointer ${sortField === 'name' ? 'font-bold' : ''}`}
+          className={`${onSort ? 'cursor-pointer' : ''} ${sortField === 'name' ? 'font-bold' : ''}`}
           onClick={() => onSort?.('name')}
         >
           Name
@@ -112,7 +112,7 @@ export function useSearchCardTableColumns({
       accessorFn: row => cardListData?.cards[row.cardId]?.type,
       header: () => (
         <div
-          className={`cursor-pointer ${sortField === 'type' ? 'font-bold' : ''}`}
+          className={`${onSort ? 'cursor-pointer' : ''} ${sortField === 'type' ? 'font-bold' : ''}`}
           onClick={() => onSort?.('type')}
         >
           Type
@@ -167,7 +167,7 @@ export function useSearchCardTableColumns({
       },
       header: () => (
         <div
-          className={`cursor-pointer ${sortField === 'cost' ? 'font-bold' : ''}`}
+          className={`${onSort ? 'cursor-pointer' : ''} ${sortField === 'cost' ? 'font-bold' : ''}`}
           onClick={() => onSort?.('cost')}
         >
           Cost
@@ -205,7 +205,7 @@ export function useSearchCardTableColumns({
       accessorFn: row => cardListData?.cards[row.cardId]?.rarity,
       header: () => (
         <div
-          className={`cursor-pointer ${sortField === 'rarity' ? 'font-bold' : ''}`}
+          className={`${onSort ? 'cursor-pointer' : ''} ${sortField === 'rarity' ? 'font-bold' : ''}`}
           onClick={() => onSort?.('rarity')}
         >
           Rarity
@@ -239,7 +239,7 @@ export function useSearchCardTableColumns({
       },
       header: () => (
         <div
-          className={`cursor-pointer ${sortField === 'cardNumber' ? 'font-bold' : ''}`}
+          className={`${onSort ? 'cursor-pointer' : ''} ${sortField === 'cardNumber' ? 'font-bold' : ''}`}
           onClick={() => onSort?.('cardNumber')}
         >
           Set/No
