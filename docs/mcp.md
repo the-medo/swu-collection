@@ -104,9 +104,10 @@ describe the underlying authorization and transport.
 
 ## First production rollout
 
-1. Pause the maintainer's scheduled sanitized export for this rollout. Its new
-   cleanup SQL requires the new tables. Keep further production pushes paused
-   until the migration handoff completes.
+1. Pause the maintainer's scheduled sanitized export until its updated cleanup
+   is deployed. It must remove OAuth credentials, signing keys and usage from
+   new backups; guards also support backups taken before MCP existed. Keep
+   further production pushes paused until the migration handoff completes.
 2. In the **existing main app**, add the runtime environment variable:
 
    ```dotenv
@@ -117,7 +118,7 @@ describe the underlying authorization and transport.
    credentials. Do not enable cross-subdomain cookies. Google/GitHub callbacks
    stay on the main app; no new provider callback for the MCP hostname is needed.
 
-3. Deploy the main app after merging this branch. Migration `0086_mcp` adds the OAuth
+3. Deploy the main app after merging this branch. Migration `0089_mcp` adds the OAuth
    tables and usage ledger without modifying existing account tables. Startup
    completes migrations before auth initialization and HTTP admission. Verify
    `Migration complete` and `Server running` in Coolify, then check
