@@ -14,6 +14,8 @@ export const getFoilBasedOnVariantAndSet = (
   defaultFoil: boolean,
   variants?: CardListVariants,
 ): boolean => {
+  // Some foil-only printings keep the plain treatment name (for example HMW Hyperspace).
+  if (variant.hasFoil && !variant.hasNonfoil) return true;
   const jtlSortValue = setInfo[SwuSet.JTL].sortValue;
   const variantSetSortValue = setInfo[variant.set]?.sortValue;
   const foilPrinting =

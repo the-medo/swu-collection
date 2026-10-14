@@ -45,7 +45,10 @@ type CollectionCardUpdateRequest = {
   data: CollectionCardUpdateData;
 };
 
-export const usePutCollectionCard = (collectionId: string | undefined) => {
+export const usePutCollectionCard = (
+  collectionId: string | undefined,
+  options?: { setAmount?: boolean },
+) => {
   const queryClient = useQueryClient();
   const user = useUser();
   const { data: cardList } = useCardList();
@@ -66,10 +69,18 @@ export const usePutCollectionCard = (collectionId: string | undefined) => {
         cardData.data.price = null;
       }
 
-      const response = await api.collection[':id'].card.$put({
-        param: { id: collectionId },
-        json: cardData,
-      });
+      if (options?.setAmount && cardData.data.amount === undefined) {
+        throw new Error('An exact quantity is required');
+      }
+      const response = options?.setAmount
+        ? await api.collection[':id'].card.amount.$put({
+            param: { id: collectionId },
+            json: { id: cardData.id, amount: cardData.data.amount! },
+          })
+        : await api.collection[':id'].card.$put({
+            param: { id: collectionId },
+            json: cardData,
+          });
 
       if (!response.ok) {
         throw await createApiError(response, 'Something went wrong while updating the card');
@@ -83,7 +94,12 @@ export const usePutCollectionCard = (collectionId: string | undefined) => {
       }
       return { data: result.data };
     },
-    onSuccess: (result, vars) => {
+    onSuccess: async (result, vars) => {
+      const contentKey = ['collection-content', collectionId];
+      const wasFetchingContents = queryClient.isFetching({ queryKey: contentKey, exact: true }) > 0;
+      // A gallery opened during this save may still be reading the old database contents.
+      // Discard that response before applying the authoritative saved row.
+      await queryClient.cancelQueries({ queryKey: contentKey, exact: true });
       if (user) {
         const savedRow = result.data as unknown as CollectionCardLookupRow;
         queryClient.setQueryData<CollectionCardLookupResponse>(
@@ -152,12 +168,19 @@ export const usePutCollectionCard = (collectionId: string | undefined) => {
             };
           }
 
+          if (result.data.amount === 0 && !result.data.amount2) return oldData;
+
           return {
             ...oldData,
             data: [...existingCards, result.data],
           };
         },
       );
+
+      // Finish any interrupted full-list refresh using data read after this save.
+      if (wasFetchingContents || !queryClient.getQueryData(contentKey)) {
+        void queryClient.invalidateQueries({ queryKey: contentKey, exact: true });
+      }
 
       if (cardList) {
         if (result.data.amount === 0 && !result.data.amount2) {

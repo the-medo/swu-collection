@@ -1,3 +1,4 @@
+import { cardGroupsAdminRoute } from './admin/card-groups/index.ts';
 import { reportModerationRoute } from './admin/user-reports/index.ts';
 import { crossfireAccessRoute } from './admin/crossfire-access/index.ts';
 import { crossfireCardReleasesRoute } from './admin/crossfire-cards/index.ts';
@@ -31,6 +32,7 @@ import { creatorImportAdminRoute } from './admin/creator-imports/index.ts';
 export const adminRoute = new Hono<AuthExtension>()
   .route('/creator-imports', creatorImportAdminRoute)
   .route('/artists', artistTransferAdminRoute)
+  .route('/card-groups', cardGroupsAdminRoute)
   .route('/credits', creditsAdminRoute)
   .route('/patreon', patreonAdminRoute)
   .route('/user-reports', reportModerationRoute)

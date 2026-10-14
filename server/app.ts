@@ -17,6 +17,7 @@ import { serveStatic, upgradeWebSocket, websocket } from 'hono/bun';
 import { authRoute } from './routes/auth.ts';
 import { auth, type AuthExtension } from './auth/auth.ts';
 import { cardsRoute } from './routes/cards.ts';
+import { cardGroupsRoute } from './routes/card-groups/index.ts';
 import { artistsRoute } from './routes/artists.ts';
 import { worldRoute } from './routes/world.ts';
 import { postsRoute } from './routes/posts.ts';
@@ -204,6 +205,7 @@ const apiRoutes = app
   .route('/cards', cardsRoute)
   .route('/artists', artistsRoute)
   .route('/creator-hub', creatorHubRoute)
+  .route('/card-groups', cardGroupsRoute)
   .route('/user', userRoute)
   .route('/battlefields', battlefieldsRoute)
   .route('/battlefield-presets', battlefieldPresetsRoute)

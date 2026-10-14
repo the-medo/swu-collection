@@ -43,6 +43,7 @@ export const adminSections = [
     title: 'Cards',
     items: [
       { id: 'sets', label: 'Sets', icon: Database },
+      { id: 'card-groups', label: 'Card groups', icon: Layers },
       { id: 'preview-cards', label: 'Preview cards', icon: Sparkles },
       { id: 'artists', label: 'Artist showcase', icon: Palette },
       { id: 'card-prices', label: 'Prices', icon: CircleDollarSign },

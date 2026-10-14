@@ -79,6 +79,9 @@ export const cardSearchParams = z.object({
   upgradePower: z.string().optional(),
   upgradeHp: z.string().optional(),
 
+  // Explicitly submitted searches may intentionally have no filters.
+  csAll: z.boolean().optional(),
+
   // UI state
   resultsLayout: z
     .enum(['imageBig', 'imageMedium', 'imageSmall', 'tableImage', 'tableSmall'])
@@ -86,3 +89,25 @@ export const cardSearchParams = z.object({
   sort: z.enum(['name', 'cardNumber', 'cost', 'type', 'rarity', 'aspect', 'relevance']).optional(),
   order: z.enum(['asc', 'desc']).optional(),
 });
+
+const cardSearchUiKeys = new Set(['csAll', 'resultsLayout', 'sort', 'order', 'includeNoAspect']);
+
+export function hasCardSearchRequest(search: z.infer<typeof cardSearchParams>) {
+  if (search.csAll) return true;
+  return Object.entries(search).some(([key, value]) => {
+    if (cardSearchUiKeys.has(key) || (key === 'uniqueness' && value === 'both')) return false;
+    return Array.isArray(value)
+      ? value.length > 0
+      : typeof value === 'string'
+        ? value.length > 0
+        : value === true;
+  });
+}
+
+// Clear this page's filters while preserving inherited dialog and other root search state.
+export function clearCardSearchParams<T extends object>(previous: T) {
+  return {
+    ...previous,
+    ...Object.fromEntries(Object.keys(cardSearchParams.shape).map(key => [key, undefined])),
+  };
+}

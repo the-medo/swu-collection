@@ -37,6 +37,12 @@ Core contracts live in `types/Collection.ts`, `types/CollectionCard.ts`,
   `server/lib/updateCollectionUpdatedAt.ts`, including defined empty/no-op
   behavior. The authenticated bulk sync compares IDs/timestamps and returns
   changed rows plus removed collection IDs; Dexie freshness depends on it.
+  The absolute quantity endpoint `PUT /collection/:id/card/amount` deliberately
+  leaves the timestamp unchanged when the exact row already has the requested
+  amount, or when setting an absent row to zero. These paths do not change
+  content; every actual insert, update, or deletion advances the timestamp in
+  the same transaction. A zero row without `amount2` is deleted and does count
+  as a change.
 - Relationship naming is counterintuitive. In
   `collection_source_collection`, `collectionId` is the target (normally an
   OTHER/card list) and `sourceCollectionId` is the source (normally a

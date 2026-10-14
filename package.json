@@ -38,7 +38,8 @@
     "play:cards:export": "bun play/scripts/card-release.ts export",
     "play:cards:publish": "bun --env-file=.env --env-file=.env.worktree play/scripts/card-release.ts publish",
     "play:cards:install": "bun --env-file=.env --env-file=.env.worktree play/scripts/card-release.ts install",
-    "play:cards:schema": "bun play/scripts/generate-card-schema.ts"
+    "play:cards:schema": "bun play/scripts/generate-card-schema.ts",
+    "test:browser:card-groups": "CARD_GROUPS_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/card-groups.browser.ts"
   },
   "devDependencies": {
     "@types/bun": "^1.3.1",

@@ -1,0 +1,41 @@
+import { Hono } from 'hono';
+import { zValidator } from '@hono/zod-validator';
+import { z } from 'zod';
+import type { AuthExtension } from '../../../auth/auth.ts';
+import type { requireAdmin } from '../../../auth/requireAdmin.ts';
+import type { CardGroupService } from '../../../lib/card-groups/service.ts';
+import { CardGroupValidationError } from '../../../lib/card-groups/errors.ts';
+import { cardGroupInput } from '../../../../types/CardGroup.ts';
+
+const params = z.object({ id: z.uuid() });
+
+export function createCardGroupsAdminRouter(
+  service: CardGroupService,
+  authorize: typeof requireAdmin,
+) {
+  return new Hono<AuthExtension>()
+    .use('*', async (c, next) => {
+      c.header('Cache-Control', 'no-store');
+      const admin = await authorize(c);
+      if (admin.response) return admin.response;
+      await next();
+    })
+    .onError((error, c) => {
+      if (error instanceof CardGroupValidationError) return c.json({ message: error.message }, 400);
+      throw error;
+    })
+    .get('/', async c => c.json({ data: await service.list(false) }))
+    .post('/', zValidator('json', cardGroupInput), async c =>
+      c.json({ data: await service.create(c.req.valid('json')) }, 201),
+    )
+    .put('/:id', zValidator('param', params), zValidator('json', cardGroupInput), async c => {
+      const row = await service.update(c.req.valid('param').id, c.req.valid('json'));
+      return row ? c.json({ data: row }) : c.json({ message: 'Card group not found.' }, 404);
+    })
+    .delete('/:id', zValidator('param', params), async c => {
+      const removed = await service.remove(c.req.valid('param').id);
+      return removed
+        ? c.json({ data: { success: true } })
+        : c.json({ message: 'Card group not found.' }, 404);
+    });
+}

@@ -27,6 +27,8 @@ export interface UserSettings {
   priceSourceType: CardPriceSourceType; // default CardPriceSourceType.CARDMARKET
   priceSourceTypeCollection: CardPriceSourceType | null;
   collectionInfoInDecks: boolean;
+  cardGalleryShowLabels: boolean;
+  cardGalleryShowPrices: boolean;
   // Card Pool Layout options
   cpLayout_boxLayout: 'grid' | 'row';
   cpLayout_cardPreview: 'static' | 'hover';
@@ -88,6 +90,8 @@ export const userSettingsSchema = z.object({
   priceSourceType: z.enum(CardPriceSourceType).default(CardPriceSourceType.CARDMARKET),
   priceSourceTypeCollection: z.enum(CardPriceSourceType).nullable().default(null),
   collectionInfoInDecks: booleanPreprocessor.default(false),
+  cardGalleryShowLabels: booleanPreprocessor.default(false),
+  cardGalleryShowPrices: booleanPreprocessor.default(false),
   // Card Pool Layout options
   cpLayout_boxLayout: z.union([z.literal('grid'), z.literal('row')]).default('grid'),
   cpLayout_cardPreview: z.union([z.literal('static'), z.literal('hover')]).default('static'),

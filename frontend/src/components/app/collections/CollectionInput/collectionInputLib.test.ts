@@ -12,6 +12,20 @@ const variantRows = Object.values(cards).flatMap(card =>
 );
 const variants = variantRows.map(row => row.variant);
 
+test('HMW foil-only Hyperspace printings default to foil without Foil in their name', () => {
+  const matching = variants.filter(
+    variant =>
+      variant.set === 'hmw' &&
+      variant.variantName === 'Hyperspace' &&
+      variant.hasFoil &&
+      !variant.hasNonfoil,
+  );
+  expect(matching.length).toBeGreaterThan(0);
+  for (const variant of matching) {
+    expect(getFoilBasedOnVariantAndSet(variant as CardVariant, false)).toBe(true);
+  }
+});
+
 test('Storm Raider Weekly Play variants are selectable and get the appropriate foil default', () => {
   const weekly = Object.values(cards['storm-raider'].variants).find(
     variant => variant.variantName === 'Weekly Play',
