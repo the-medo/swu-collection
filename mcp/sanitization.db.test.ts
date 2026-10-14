@@ -69,3 +69,39 @@ test.skipIf(!enabled)(
   },
   30_000,
 );
+
+test.skipIf(!enabled)(
+  'the actual contributor sanitizer accepts backups from before the MCP migration',
+  async () => {
+    const sql = postgres(process.env.DATABASE_URL!, { max: 1 });
+    const rollback = new Error('Successful rollback-only pre-MCP sanitizer test');
+    try {
+      await sql.begin(async transaction => {
+        // Simulate an older backup without touching the persistent schema/data.
+        await transaction.unsafe(
+          'DROP TABLE oauth_access_token, oauth_refresh_token, oauth_consent, oauth_client_resource, oauth_client, oauth_resource, oauth_client_assertion, mcp_tool_usage, jwks',
+        );
+        for (const file of [
+          '000-crossfire.sql',
+          '001-core-data.sql',
+          '002-teams-and-matches.sql',
+        ]) {
+          const source = await readFile(
+            new URL('../scripts/remote-dev/sql/' + file, import.meta.url),
+            'utf8',
+          );
+          await transaction.unsafe(source.replace(/^(?:BEGIN|COMMIT);\s*$/gm, '')).simple();
+        }
+        const [state] =
+          await transaction`select to_regclass('public.jwks') as jwks, to_regclass('public.mcp_tool_usage') as usage`;
+        expect(state).toMatchObject({ jwks: null, usage: null });
+        throw rollback;
+      });
+    } catch (error) {
+      if (error !== rollback) throw error;
+    } finally {
+      await sql.end();
+    }
+  },
+  30_000,
+);

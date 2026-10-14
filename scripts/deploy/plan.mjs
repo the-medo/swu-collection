@@ -110,7 +110,9 @@ export function deploymentSummary(
   }
   if (plan.migrationChanges && plan.selected.includes('mcp')) {
     handoff +=
-      '\n\nMCP deployment is held until migrations are verified. ' +
+      (eventName !== 'push' || !autoDeployEnabled
+        ? '\n\nMCP deployment would be held on an enabled push until migrations are verified. '
+        : '\n\nMCP deployment is held until migrations are verified. ') +
       'Verify Migration complete and Server running in the new main app logs, ' +
       'then manually run this workflow for service mcp. Rerunning the push keeps this hold.';
   }

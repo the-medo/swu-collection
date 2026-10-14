@@ -104,9 +104,10 @@ describe the underlying authorization and transport.
 
 ## First production rollout
 
-1. Pause the maintainer's scheduled sanitized export for this rollout. Its new
-   cleanup SQL requires the new tables. Keep further production pushes paused
-   until the migration handoff completes.
+1. Pause the maintainer's scheduled sanitized export until its updated cleanup
+   is deployed. It must remove OAuth credentials, signing keys and usage from
+   new backups; guards also support backups taken before MCP existed. Keep
+   further production pushes paused until the migration handoff completes.
 2. In the **existing main app**, add the runtime environment variable:
 
    ```dotenv

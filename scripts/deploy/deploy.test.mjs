@@ -165,7 +165,7 @@ test('PR previews and explicit manual selections do not create migration approva
   }
 });
 
-test('unavailable previous revision keeps all other services automatic and Crossfire held', t => {
+test('unavailable previous revision keeps main and maintainer automatic and holds workers', t => {
   const f = fixture(t);
   const plan = planDeployments('push', { before: '0'.repeat(40), after: f.before }, f.cwd);
   assert.deepEqual(deploymentJobs(plan, 'push'), {
@@ -427,4 +427,41 @@ test('ambiguous timeouts are never automatically retried', async () => {
     /Check its deployment queue before retrying/,
   );
   assert.equal(calls, 1);
+});
+
+test('MCP migration pushes are held without requiring Crossfire approval and manual requests proceed', () => {
+  const plan = { selected: ['mcp'], migrationChanges: true, reason: 'MCP migration fixture' };
+  assert.deepEqual(deploymentJobs(plan, 'push'), {
+    matrix: deploymentMatrix([]),
+    hasChanges: false,
+    crossfireApprovalRequired: false,
+  });
+  for (const eventName of ['pull_request', 'workflow_dispatch']) {
+    assert.deepEqual(deploymentJobs(plan, eventName), {
+      matrix: deploymentMatrix(['mcp']),
+      hasChanges: true,
+      crossfireApprovalRequired: false,
+    });
+  }
+  assert.deepEqual(
+    deploymentJobs({ ...plan, migrationChanges: false }, 'push').matrix,
+    deploymentMatrix(['mcp']),
+  );
+  const summary = deploymentSummary(plan, { eventName: 'push', autoDeployEnabled: true });
+  assert.match(summary, /MCP deployment is held/);
+  assert.match(summary, /manually run this workflow for service mcp/);
+  assert.doesNotMatch(summary, /Crossfire is waiting|jobs fail|failed/);
+});
+
+test('MCP summaries distinguish previews and disabled deployment from an active migration hold', () => {
+  const plan = { selected: ['mcp'], migrationChanges: true, reason: 'MCP summary fixture' };
+  for (const options of [
+    { eventName: 'pull_request', autoDeployEnabled: true },
+    { eventName: 'push', autoDeployEnabled: false },
+    { eventName: 'workflow_dispatch', autoDeployEnabled: true },
+  ]) {
+    const summary = deploymentSummary(plan, options);
+    assert.match(summary, /MCP deployment would be held/);
+    assert.doesNotMatch(summary, /MCP deployment is held/);
+  }
 });

@@ -28,7 +28,9 @@ tests and show a plan without deployment secrets or deployment calls.
 Migration inputs (`drizzle/`, `migrate.ts`, `server/db/migrate.ts`) hold the automatic
 Crossfire request for a separate manual approval job in the same run; see the
 [migration handoff](#migration-handoff). Ordinary Crossfire changes still deploy
-automatically. The approval job is skipped when it is not needed.
+automatically. The approval job is skipped when it is not needed. MCP is also
+omitted from the automatic matrix on migration pushes and requires a manual
+`mcp` run after verifying the main migration.
 
 The maintained rules live in [services.mjs](../scripts/deploy/services.mjs).
 Unknown paths select all services so new build inputs cannot silently go stale.
@@ -48,13 +50,14 @@ affect contributor data; deploying does not update those rules automatically.
 
 ## One-time setup
 
-1. **Verify that all three resources are Git-backed applications.**
+1. **Verify that all four resources are Git-backed applications.**
    Since the current resources deploy on pushes, keep their working source/build
    configuration. Each must track this repository's `main` branch. Keep the main app's root
-   `Dockerfile`, Crossfire's root `Dockerfile.crossfire`, and the maintainer's
+   `Dockerfile`, Crossfire's root `Dockerfile.crossfire`, MCP's root `Dockerfile.mcp`, and the maintainer's
    existing Git-backed Docker Compose/build context under `scripts/remote-dev/`.
    Keep environment variables, private networking, volumes, domains, database
-   configuration and the maintainer's daily scheduled task in Coolify.
+   configuration and the maintainer's daily scheduled task in Coolify. Follow
+   [the MCP setup guide](mcp.md) for its OAuth provider, database role and domain.
    For the maintainer, use Build Pack **Docker Compose**, Base Directory
    `/scripts/remote-dev`, Docker Compose Location `/docker-compose.coolify.yml`.
    A raw Compose Service pasted into Coolify does not fetch changed repository
