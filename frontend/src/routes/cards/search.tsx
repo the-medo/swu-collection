@@ -13,5 +13,5 @@ export const Route = createFileRoute('/cards/search')({
 });
 
 function RouteComponent() {
-  return <AdvancedCardSearch />;
+  return <AdvancedCardSearch showCardHome />;
 }

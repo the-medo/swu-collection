@@ -1,3 +1,4 @@
+import CardGroupsPage from './card-groups/CardGroupsPage.tsx';
 import { UserReportsPage } from './user-reports/UserReportsPage';
 import { CreationReportsPage } from './CreationReportsPage';
 import { CreatorImportsPage } from './CreatorImportsPage';
@@ -65,6 +66,7 @@ export function AdminPage() {
               {page === 'crossfire-operations' && <CrossfireOperationsPage />}
               {page === 'metas' && <MetaTable />}
               {page === 'sets' && <SetsPage />}
+              {page === 'card-groups' && <CardGroupsPage />}
               {page === 'tournament-groups' && <TournamentGroupsPage />}
               {page === 'tournament-weekends' && <TournamentWeekendsPage />}
               {page === 'resource-submissions' && <ResourceSubmissionsPage />}

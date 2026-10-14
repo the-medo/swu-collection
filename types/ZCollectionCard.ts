@@ -74,6 +74,18 @@ export const zCollectionCardDeleteRequest = zCollectionCardSchema
   })
   .required();
 
+export const zCollectionCardSetAmountRequest = z
+  .object({
+    id: zCollectionCardDeleteRequest
+      .extend({
+        cardId: z.string().min(1).max(255),
+        variantId: z.string().min(1).max(255),
+      })
+      .strict(),
+    amount: zCollectionCardSchema.shape.amount,
+  })
+  .strict();
+
 export const zCollectionBulkInsertRequest = z.object({
   condition: z.number().int().min(0).max(6),
   language: z.enum(CardLanguage).default(CardLanguage.EN),

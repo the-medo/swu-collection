@@ -59,7 +59,7 @@ export const PriceBadgeRenderer: React.FC<PriceBadgeRendererProps> = ({
           {sourceType === CardPriceSourceType.TCGPLAYER && (
             <img
               src="https://images.swubase.com/price-source-thumbnails/icon-tcgplayer.png"
-              alt="CardMarket"
+              alt="TCGplayer"
               className={cn('size-3 bg-white border-1 border-white', inFetchlist && 'opacity-40')}
             />
           )}

@@ -231,9 +231,10 @@ function CardDetailAddToListForm({
             value={selectedCollectionId}
             disabled={mutation.isPending}
             onChange={id => {
-              setRequestedCollectionId(id);
+              setRequestedCollectionId(id ?? '');
               try {
-                localStorage.setItem(storageKey, id);
+                if (id) localStorage.setItem(storageKey, id);
+                else localStorage.removeItem(storageKey);
               } catch {
                 // Adding cards still works when browser storage is unavailable.
               }

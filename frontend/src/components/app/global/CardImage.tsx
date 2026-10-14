@@ -14,6 +14,7 @@ export const cardImageVariants = cva('', {
   variants: {
     // This axis controls the base size variant
     size: {
+      responsive: 'aspect-[300/418] h-auto w-full min-h-0 min-w-0',
       original: 'h-[418px] w-[300px] min-h-[418px] min-w-[300px]',
       w300: 'h-[418px] w-[300px] min-h-[418px] min-w-[300px]',
       w200: 'h-[279px] w-[200px] min-h-[279px] min-w-[200px]',
@@ -31,6 +32,11 @@ export const cardImageVariants = cva('', {
   },
   // When horizontal is true, swap the width and height for each variant.
   compoundVariants: [
+    {
+      size: 'responsive',
+      horizontal: true,
+      className: 'aspect-[418/300]',
+    },
     {
       size: 'original',
       horizontal: true,
@@ -86,6 +92,7 @@ type CardImageProps = {
   backSide?: boolean;
   foil?: boolean;
   forceHorizontal?: boolean;
+  loading?: 'eager' | 'lazy';
 } & CardImageVariantProps &
   PropsWithChildren;
 
@@ -97,6 +104,7 @@ const CardImage: React.FC<CardImageProps> = ({
   backSide = false,
   foil = false,
   forceHorizontal = false,
+  loading,
   children,
 }) => {
   const [open, setOpen] = useState(false);
@@ -131,22 +139,25 @@ const CardImage: React.FC<CardImageProps> = ({
       <img
         className={cn(classes, ' absolute top-[50%] left-0 transform -translate-y-1/2')}
         src={getCardImageUrl(backSide ? img.back : img.front)}
+        loading={loading}
         alt={`card-${card?.cardId}`}
       />
       {foil && (
         <img
           className="h-full w-full absolute top-0 left-0"
           src={'https://images.swubase.com/foil-overlay.png'}
+          loading={loading}
           alt={`card-${card?.cardId}`}
         />
       )}
       {children ?? null}
       {backSideButton !== false && hasBack && !backSide && (
         <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger>
+          <PopoverTrigger asChild>
             <Button
               variant="outline"
               size="iconSmall"
+              aria-label={`Show back side of ${card?.name}`}
               className={cn('absolute bottom-2 ', {
                 'left-[50%] transform -translate-x-1/2': backSideButton === 'mid',
                 'left-2': backSideButton === 'left' || backSideButton === 'top-left',
@@ -155,6 +166,7 @@ const CardImage: React.FC<CardImageProps> = ({
               })}
               onClick={event => {
                 event.preventDefault();
+                event.stopPropagation();
                 setOpen(true);
               }}
             >
@@ -164,7 +176,7 @@ const CardImage: React.FC<CardImageProps> = ({
           <PopoverContent
             className={cn(
               cardImageVariants({
-                size: size || 'original',
+                size: size === 'responsive' ? 'original' : size || 'original',
                 horizontal: horizontalBack,
               }),
               'm-0 p-0',

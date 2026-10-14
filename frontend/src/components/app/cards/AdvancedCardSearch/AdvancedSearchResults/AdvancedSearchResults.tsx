@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { clearCardSearchParams } from '../advancedSearchLib.ts';
 import { Loader2, Search } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
@@ -55,6 +56,15 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
           )}
         </h3>
         <div className="flex flex-wrap items-center gap-3">
+          {showArtistShowcaseLink && (
+            <Link
+              to="/cards/search"
+              search={previous => clearCardSearchParams(previous)}
+              className="text-sm text-primary hover:underline"
+            >
+              Card home
+            </Link>
+          )}
           {showArtistShowcaseLink && (
             <Link to="/artists" className="text-sm text-primary hover:underline">
               Artist showcase

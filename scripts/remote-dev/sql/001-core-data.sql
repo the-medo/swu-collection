@@ -181,6 +181,16 @@ $user_achievements$;
 -- Posts contain arbitrary personal prose and references, even for opted-in users.
 TRUNCATE TABLE post;
 
+-- Unpublished editorial groups are private drafts, not public catalog data.
+-- Older source backups may predate card groups.
+DO $card_groups$
+BEGIN
+  IF to_regclass('public.card_group') IS NOT NULL THEN
+    DELETE FROM card_group WHERE published IS NOT TRUE;
+  END IF;
+END
+$card_groups$;
+
 -- Discussion prose is personal content even when its resource is retained. Older backups
 -- may predate these tables.
 DO $deck_discussion$

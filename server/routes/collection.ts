@@ -8,6 +8,7 @@ import { collectionIdCardDeleteRoute } from './collection/_id/card/delete.ts';
 import { collectionIdCardGetRoute } from './collection/_id/card/get.ts';
 import { collectionIdCardPostRoute } from './collection/_id/card/post.ts';
 import { collectionIdCardPutRoute } from './collection/_id/card/put.ts';
+import { collectionCardAmountPutRoute } from './collection/_id/card/amount.ts';
 import { collectionIdDuplicatePostRoute } from './collection/_id/duplicate/post.ts';
 import { collectionIdImportPostRoute } from './collection/_id/import/post.ts';
 import { collectionIdDeleteRoute } from './collection/_id/delete.ts';
@@ -38,6 +39,7 @@ export const collectionRoute = new Hono<AuthExtension>()
   .route('/:id/card', collectionIdCardGetRoute)
   .route('/:id/card', collectionIdCardPostRoute)
   .route('/:id/card', collectionIdCardPutRoute)
+  .route('/:id/card/amount', collectionCardAmountPutRoute)
   .route('/:id/duplicate', collectionIdDuplicatePostRoute)
   .route('/:id/import', collectionIdImportPostRoute)
   .route('/:id/multiple', collectionIdMultiplePostRoute)

@@ -15,7 +15,7 @@ import { Route as RouteDeckbuilder } from '@/routes/decks/$deckId/edit.tsx';
 import { CardLayoutType } from './AdvancedSearchResults/SearchCardLayout';
 import { SortField, SortOrder } from './AdvancedSearchResults/useSearchCardTableColumns';
 import { AdvancedCardSearchContextConfig } from './advancedSearchContext.ts';
-import type { CardUniquenessFilter } from './advancedSearchLib.ts';
+import { cardSearchParams, type CardUniquenessFilter } from './advancedSearchLib.ts';
 
 export enum SearchFrom {
   CARD_SEARCH = 'card-search',
@@ -31,6 +31,8 @@ export const getSearchFromRoutes = (searchFrom: SearchFrom) => {
 // Define the store state shape
 export interface AdvancedCardSearchStore {
   activeSearchFrom: SearchFrom | null;
+  urlSearchKey: string;
+  lastSearchedUrlKey: string | null;
   searchInitialized: boolean;
 
   // Text search
@@ -77,6 +79,8 @@ export interface AdvancedCardSearchStore {
 // Default state values
 const defaultState: AdvancedCardSearchStore = {
   activeSearchFrom: null,
+  urlSearchKey: '',
+  lastSearchedUrlKey: null,
   searchInitialized: false,
 
   name: '',
@@ -140,6 +144,12 @@ export const stringifyRange = (range: RangeFilterType): string | undefined => {
 export const useInitializeStoreFromUrlParams = (
   searchFrom: SearchFrom = SearchFrom.CARD_SEARCH,
 ) => {
+  const urlSearch = useSearch({ from: getSearchFromRoutes(searchFrom) });
+  const urlSearchKey = JSON.stringify(cardSearchParams.parse(urlSearch));
+  const synchronized = useStore(
+    store,
+    state => state.urlSearchKey === urlSearchKey && state.activeSearchFrom === searchFrom,
+  );
   const {
     name,
     text,
@@ -163,13 +173,15 @@ export const useInitializeStoreFromUrlParams = (
     resultsLayout,
     sort,
     order,
-  } = useSearch({ from: getSearchFromRoutes(searchFrom) });
+  } = urlSearch;
 
   useEffect(() => {
     store.setState(state => ({
       ...state,
       activeSearchFrom: searchFrom,
-      searchInitialized: false,
+      urlSearchKey,
+      searchInitialized:
+        state.activeSearchFrom === searchFrom && state.lastSearchedUrlKey === urlSearchKey,
       name: name ?? defaultState.name,
       text: text ?? defaultState.text,
       artist: artist ?? defaultState.artist,
@@ -220,7 +232,9 @@ export const useInitializeStoreFromUrlParams = (
     sort,
     order,
     searchFrom,
+    urlSearchKey,
   ]);
+  return synchronized;
 };
 
 export const useApplyAdvancedCardSearchDefaults = (
@@ -385,8 +399,15 @@ const setIsSearching = (isSearching: boolean) =>
 const setSearchResults = (
   searchResults: string[],
   searchResultVariants: Record<string, string | undefined> = {},
+  lastSearchedUrlKey: string | null = null,
 ) =>
-  store.setState(state => ({ ...state, searchResults, searchResultVariants, isSearching: false }));
+  store.setState(state => ({
+    ...state,
+    searchResults,
+    searchResultVariants,
+    lastSearchedUrlKey,
+    isSearching: false,
+  }));
 
 // UI state
 const setFiltersExpanded = (filtersExpanded: boolean) =>
@@ -404,6 +425,7 @@ const resetFilters = () =>
   store.setState(state => ({
     ...defaultState,
     activeSearchFrom: state.activeSearchFrom,
+    urlSearchKey: state.urlSearchKey,
     isSearching: state.isSearching,
     searchResults: state.searchResults,
     searchResultVariants: state.searchResultVariants,
@@ -423,10 +445,11 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
       case SearchFrom.DECKBUILDER:
         return {
           deckbuilder: true,
+          csAll: undefined,
         };
       case SearchFrom.CARD_SEARCH:
       default:
-        return {};
+        return { csAll: true };
     }
   }, [searchFrom]);
 
@@ -488,7 +511,11 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
   ].filter(Boolean).length;
 
   const handleSearch = useCallback(
-    async (cardListData: CardListResponse, searchContext?: AdvancedCardSearchContextConfig) => {
+    async (
+      cardListData: CardListResponse,
+      searchContext?: AdvancedCardSearchContextConfig,
+      navigation: { replace?: boolean } = {},
+    ) => {
       setIsSearching(true);
 
       try {
@@ -541,6 +568,10 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
           order: sortOrder || 'asc',
         };
 
+        // Remember the submitted URL so synchronizing our own navigation doesn't run the search again.
+        const lastSearchedUrlKey = JSON.stringify(
+          cardSearchParams.parse({ ...searchParams, ...searchParamsBasedOnRoute }),
+        );
         // Snapshot the selected printings with the results, not the editable filter inputs.
         setSearchResults(
           results,
@@ -553,8 +584,10 @@ export function useAdvancedCardSearchStore(searchFrom: SearchFrom = SearchFrom.C
               ];
             }),
           ),
+          lastSearchedUrlKey,
         );
         navigate({
+          replace: navigation.replace ?? false,
           search: previous => ({ ...previous, ...searchParams, ...searchParamsBasedOnRoute }),
         });
 

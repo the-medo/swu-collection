@@ -6,7 +6,15 @@ export interface CollectionCardResponse {
   data: CollectionCard[];
 }
 
-export const useGetCollectionCards = (collectionId: string | undefined, skip: boolean = false) => {
+export const useGetCollectionCards = (
+  collectionId: string | undefined,
+  skip: boolean = false,
+  options?: {
+    staleTime?: number;
+    refetchOnWindowFocus?: boolean;
+    refetchOnReconnect?: boolean;
+  },
+) => {
   return useQuery<CollectionCardResponse>({
     queryKey: ['collection-content', collectionId],
     queryFn:
@@ -24,6 +32,8 @@ export const useGetCollectionCards = (collectionId: string | undefined, skip: bo
             return await response.json();
           }
         : skipToken,
-    staleTime: Infinity,
+    staleTime: options?.staleTime ?? Infinity,
+    refetchOnWindowFocus: options?.refetchOnWindowFocus,
+    refetchOnReconnect: options?.refetchOnReconnect,
   });
 };

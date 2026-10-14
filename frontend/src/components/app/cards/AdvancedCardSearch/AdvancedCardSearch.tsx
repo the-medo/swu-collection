@@ -1,3 +1,6 @@
+import { useSearch } from '@tanstack/react-router';
+import CardHome from '../CardHome/CardHome.tsx';
+import { cardSearchParams, hasCardSearchRequest } from './advancedSearchLib.ts';
 import { useCallback, useEffect, useState } from 'react';
 import { useCardList } from '@/api/lists/useCardList';
 import { useToast } from '@/hooks/use-toast';
@@ -20,6 +23,7 @@ import { AdvancedCardSearchContextConfig } from '@/components/app/cards/Advanced
 
 interface AdvancedCardSearchProps {
   children?: React.ReactNode;
+  showCardHome?: boolean;
   filtersFooterElement?: React.ReactNode;
   childrenTitleButtonText?: string;
   searchFrom?: SearchFrom;
@@ -29,13 +33,17 @@ interface AdvancedCardSearchProps {
 
 const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
   children,
+  showCardHome = false,
   filtersFooterElement,
   childrenTitleButtonText,
   searchFrom = SearchFrom.CARD_SEARCH,
   cardSubcomponent,
   searchContext,
 }) => {
-  useInitializeStoreFromUrlParams(searchFrom);
+  const urlSearch = useSearch({ strict: false });
+  const hasRequestedSearch = hasCardSearchRequest(cardSearchParams.parse(urlSearch));
+  const displayHome = showCardHome && !hasRequestedSearch;
+  const urlSynchronized = useInitializeStoreFromUrlParams(searchFrom);
   useApplyAdvancedCardSearchDefaults(searchFrom, searchContext);
   const { toast } = useToast();
   const { data: cardListData } = useCardList();
@@ -44,6 +52,7 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
   const { setSearchInitialized } = useAdvancedCardSearchStoreActions();
 
   const [resultsOrChildren, setResultsOrChildren] = useState<'results' | 'children'>('results');
+  const [homeFiltersOpen, setHomeFiltersOpen] = useState(false);
   const showKarabastUnimplementedNameIcon = searchFrom === SearchFrom.DECKBUILDER;
 
   const onSearch = useCallback(() => {
@@ -56,15 +65,26 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
       return;
     }
     setResultsOrChildren('results');
+    setHomeFiltersOpen(false);
     void handleSearch(cardListData, searchContext);
   }, [cardListData, handleSearch, searchContext, toast]);
 
   useEffect(() => {
-    if (!cardListData || searchInitialized || !hasActiveFilters) return;
+    if (
+      !cardListData ||
+      !urlSynchronized ||
+      searchInitialized ||
+      displayHome ||
+      (!hasActiveFilters && !hasRequestedSearch)
+    )
+      return;
     setSearchInitialized(true);
-    void handleSearch(cardListData, searchContext);
+    void handleSearch(cardListData, searchContext, { replace: true });
   }, [
     cardListData,
+    urlSynchronized,
+    displayHome,
+    hasRequestedSearch,
     handleSearch,
     hasActiveFilters,
     searchContext,
@@ -82,15 +102,35 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
             // sidebarOpen ? 'lg:flex-row' : 'md:flex-row',
           )}
         >
-          <AdvancedSearchFilters
-            onSearch={onSearch}
-            availableCardTypes={searchContext?.availableCardTypes}
-          />
-          <AdvancedSearchResults
-            hasActiveFilters={hasActiveFilters}
-            showArtistShowcaseLink={searchFrom === SearchFrom.CARD_SEARCH}
-            showKarabastUnimplementedNameIcon={showKarabastUnimplementedNameIcon}
-          />
+          {(!displayHome || homeFiltersOpen) && (
+            <AdvancedSearchFilters
+              key={displayHome ? 'home-filters' : 'results-filters'}
+              onSearch={onSearch}
+              mobileCollapsible={showCardHome}
+              onClose={
+                displayHome
+                  ? () => {
+                      setHomeFiltersOpen(false);
+                      document.getElementById('card-home-filters-trigger')?.focus();
+                    }
+                  : undefined
+              }
+              availableCardTypes={searchContext?.availableCardTypes}
+            />
+          )}
+          {displayHome ? (
+            <CardHome
+              onSearch={onSearch}
+              filtersOpen={homeFiltersOpen}
+              onToggleFilters={() => setHomeFiltersOpen(open => !open)}
+            />
+          ) : (
+            <AdvancedSearchResults
+              hasActiveFilters={hasActiveFilters}
+              showArtistShowcaseLink={searchFrom === SearchFrom.CARD_SEARCH}
+              showKarabastUnimplementedNameIcon={showKarabastUnimplementedNameIcon}
+            />
+          )}
         </div>
       </>
     );

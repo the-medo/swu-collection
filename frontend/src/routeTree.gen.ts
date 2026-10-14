@@ -47,6 +47,7 @@ import { Route as ContentCreationIdRouteImport } from './routes/content/$creatio
 import { Route as CollectionsYourRouteImport } from './routes/collections/your'
 import { Route as CollectionsPublicRouteImport } from './routes/collections/public'
 import { Route as CardsSearchRouteImport } from './routes/cards/search'
+import { Route as CardsPromosRouteImport } from './routes/cards/promos'
 import { Route as AuthErrorRouteImport } from './routes/auth.error'
 import { Route as ArtistsArtistKeyRouteImport } from './routes/artists/$artistKey'
 import { Route as AuthenticatedShopRouteImport } from './routes/_authenticated/shop'
@@ -80,6 +81,8 @@ import { Route as TournamentsTournamentIdCardStatsRouteImport } from './routes/t
 import { Route as TeamsTeamIdEventsRouteImport } from './routes/teams/$teamId/events'
 import { Route as DecksFolderFolderIdRouteImport } from './routes/decks/folder/$folderId'
 import { Route as DecksDeckIdEditRouteImport } from './routes/decks/$deckId/edit'
+import { Route as CardsSetsSetCodeRouteImport } from './routes/cards/sets/$setCode'
+import { Route as CardsGroupsGroupIdRouteImport } from './routes/cards/groups/$groupId'
 import { Route as CardsDetailCardIdRouteImport } from './routes/cards/detail/$cardId'
 import { Route as AuthenticatedCrossfireLobbyIdRouteImport } from './routes/_authenticated/crossfire/$lobbyId'
 import { Route as TeamsTeamIdStatisticsIndexRouteImport } from './routes/teams/$teamId/statistics/index'
@@ -287,6 +290,11 @@ const CardsSearchRoute = CardsSearchRouteImport.update({
   path: '/cards/search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CardsPromosRoute = CardsPromosRouteImport.update({
+  id: '/cards/promos',
+  path: '/cards/promos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthErrorRoute = AuthErrorRouteImport.update({
   id: '/auth/error',
   path: '/auth/error',
@@ -473,6 +481,16 @@ const DecksDeckIdEditRoute = DecksDeckIdEditRouteImport.update({
   path: '/decks/$deckId/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CardsSetsSetCodeRoute = CardsSetsSetCodeRouteImport.update({
+  id: '/cards/sets/$setCode',
+  path: '/cards/sets/$setCode',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CardsGroupsGroupIdRoute = CardsGroupsGroupIdRouteImport.update({
+  id: '/cards/groups/$groupId',
+  path: '/cards/groups/$groupId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CardsDetailCardIdRoute = CardsDetailCardIdRouteImport.update({
   id: '/cards/detail/$cardId',
   path: '/cards/detail/$cardId',
@@ -626,6 +644,7 @@ export interface FileRoutesByFullPath {
   '/shop': typeof AuthenticatedShopRoute
   '/artists/$artistKey': typeof ArtistsArtistKeyRoute
   '/auth/error': typeof AuthErrorRoute
+  '/cards/promos': typeof CardsPromosRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
@@ -654,6 +673,8 @@ export interface FileRoutesByFullPath {
   '/tournaments': typeof TournamentsIndexRoute
   '/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
+  '/cards/groups/$groupId': typeof CardsGroupsGroupIdRoute
+  '/cards/sets/$setCode': typeof CardsSetsSetCodeRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
   '/teams/$teamId/events': typeof TeamsTeamIdEventsRoute
@@ -717,6 +738,7 @@ export interface FileRoutesByTo {
   '/shop': typeof AuthenticatedShopRoute
   '/artists/$artistKey': typeof ArtistsArtistKeyRoute
   '/auth/error': typeof AuthErrorRoute
+  '/cards/promos': typeof CardsPromosRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
@@ -744,6 +766,8 @@ export interface FileRoutesByTo {
   '/tournaments': typeof TournamentsIndexRoute
   '/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
+  '/cards/groups/$groupId': typeof CardsGroupsGroupIdRoute
+  '/cards/sets/$setCode': typeof CardsSetsSetCodeRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
   '/teams/$teamId/events': typeof TeamsTeamIdEventsRoute
@@ -809,6 +833,7 @@ export interface FileRoutesById {
   '/_authenticated/shop': typeof AuthenticatedShopRoute
   '/artists/$artistKey': typeof ArtistsArtistKeyRoute
   '/auth/error': typeof AuthErrorRoute
+  '/cards/promos': typeof CardsPromosRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
@@ -838,6 +863,8 @@ export interface FileRoutesById {
   '/tournaments/': typeof TournamentsIndexRoute
   '/_authenticated/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
+  '/cards/groups/$groupId': typeof CardsGroupsGroupIdRoute
+  '/cards/sets/$setCode': typeof CardsSetsSetCodeRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
   '/teams/$teamId/events': typeof TeamsTeamIdEventsRoute
@@ -905,6 +932,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/artists/$artistKey'
     | '/auth/error'
+    | '/cards/promos'
     | '/cards/search'
     | '/collections/public'
     | '/collections/your'
@@ -933,6 +961,8 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/crossfire/$lobbyId'
     | '/cards/detail/$cardId'
+    | '/cards/groups/$groupId'
+    | '/cards/sets/$setCode'
     | '/decks/$deckId/edit'
     | '/decks/folder/$folderId'
     | '/teams/$teamId/events'
@@ -996,6 +1026,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/artists/$artistKey'
     | '/auth/error'
+    | '/cards/promos'
     | '/cards/search'
     | '/collections/public'
     | '/collections/your'
@@ -1023,6 +1054,8 @@ export interface FileRouteTypes {
     | '/tournaments'
     | '/crossfire/$lobbyId'
     | '/cards/detail/$cardId'
+    | '/cards/groups/$groupId'
+    | '/cards/sets/$setCode'
     | '/decks/$deckId/edit'
     | '/decks/folder/$folderId'
     | '/teams/$teamId/events'
@@ -1087,6 +1120,7 @@ export interface FileRouteTypes {
     | '/_authenticated/shop'
     | '/artists/$artistKey'
     | '/auth/error'
+    | '/cards/promos'
     | '/cards/search'
     | '/collections/public'
     | '/collections/your'
@@ -1116,6 +1150,8 @@ export interface FileRouteTypes {
     | '/tournaments/'
     | '/_authenticated/crossfire/$lobbyId'
     | '/cards/detail/$cardId'
+    | '/cards/groups/$groupId'
+    | '/cards/sets/$setCode'
     | '/decks/$deckId/edit'
     | '/decks/folder/$folderId'
     | '/teams/$teamId/events'
@@ -1177,6 +1213,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   ArtistsArtistKeyRoute: typeof ArtistsArtistKeyRoute
   AuthErrorRoute: typeof AuthErrorRoute
+  CardsPromosRoute: typeof CardsPromosRoute
   CardsSearchRoute: typeof CardsSearchRoute
   CollectionsPublicRoute: typeof CollectionsPublicRoute
   CollectionsYourRoute: typeof CollectionsYourRoute
@@ -1203,6 +1240,8 @@ export interface RootRouteChildren {
   ToolsIndexRoute: typeof ToolsIndexRoute
   TournamentsIndexRoute: typeof TournamentsIndexRoute
   CardsDetailCardIdRoute: typeof CardsDetailCardIdRoute
+  CardsGroupsGroupIdRoute: typeof CardsGroupsGroupIdRoute
+  CardsSetsSetCodeRoute: typeof CardsSetsSetCodeRoute
   DecksDeckIdEditRoute: typeof DecksDeckIdEditRoute
   DecksFolderFolderIdRoute: typeof DecksFolderFolderIdRoute
   TournamentsTournamentIdCardStatsRoute: typeof TournamentsTournamentIdCardStatsRoute
@@ -1482,6 +1521,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CardsSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cards/promos': {
+      id: '/cards/promos'
+      path: '/cards/promos'
+      fullPath: '/cards/promos'
+      preLoaderRoute: typeof CardsPromosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/error': {
       id: '/auth/error'
       path: '/auth/error'
@@ -1718,6 +1764,20 @@ declare module '@tanstack/react-router' {
       path: '/decks/$deckId/edit'
       fullPath: '/decks/$deckId/edit'
       preLoaderRoute: typeof DecksDeckIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cards/sets/$setCode': {
+      id: '/cards/sets/$setCode'
+      path: '/cards/sets/$setCode'
+      fullPath: '/cards/sets/$setCode'
+      preLoaderRoute: typeof CardsSetsSetCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cards/groups/$groupId': {
+      id: '/cards/groups/$groupId'
+      path: '/cards/groups/$groupId'
+      fullPath: '/cards/groups/$groupId'
+      preLoaderRoute: typeof CardsGroupsGroupIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cards/detail/$cardId': {
@@ -2045,6 +2105,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   ArtistsArtistKeyRoute: ArtistsArtistKeyRoute,
   AuthErrorRoute: AuthErrorRoute,
+  CardsPromosRoute: CardsPromosRoute,
   CardsSearchRoute: CardsSearchRoute,
   CollectionsPublicRoute: CollectionsPublicRoute,
   CollectionsYourRoute: CollectionsYourRoute,
@@ -2071,6 +2132,8 @@ const rootRouteChildren: RootRouteChildren = {
   ToolsIndexRoute: ToolsIndexRoute,
   TournamentsIndexRoute: TournamentsIndexRoute,
   CardsDetailCardIdRoute: CardsDetailCardIdRoute,
+  CardsGroupsGroupIdRoute: CardsGroupsGroupIdRoute,
+  CardsSetsSetCodeRoute: CardsSetsSetCodeRoute,
   DecksDeckIdEditRoute: DecksDeckIdEditRoute,
   DecksFolderFolderIdRoute: DecksFolderFolderIdRoute,
   TournamentsTournamentIdCardStatsRoute: TournamentsTournamentIdCardStatsRoute,

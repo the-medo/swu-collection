@@ -125,3 +125,40 @@ test('calendar week start accepts all seven days and serialized values, while pr
     );
   expect(userSettingsUpdateSchema.parse({ deckPrices: true })).toEqual({ deckPrices: true });
 });
+
+test('card gallery labels default off and round-trip without resetting other settings', () => {
+  expect(userSettingsSchema.parse({}).cardGalleryShowLabels).toBe(false);
+  for (const value of [true, false]) {
+    expect(
+      userSettingsSchema.parse({ cardGalleryShowLabels: String(value) }).cardGalleryShowLabels,
+    ).toBe(value);
+    expect(userSettingsUpdateSchema.parse({ cardGalleryShowLabels: String(value) })).toEqual({
+      cardGalleryShowLabels: value,
+    });
+  }
+  const stored = { ...userSettingsSchema.parse({}), deckPrices: true, calendarWeekStartsOn: 6 };
+  Object.assign(stored, userSettingsUpdateSchema.parse({ cardGalleryShowLabels: true }));
+  expect(stored.deckPrices).toBe(true);
+  expect(stored.calendarWeekStartsOn).toBe(6);
+  expect(stored.cardGalleryShowLabels).toBe(true);
+  expect(userSettingsUpdateSchema.safeParse({ cardGalleryShowLabels: 'yes' }).success).toBe(false);
+});
+
+test('gallery prices default off, round-trip, and stay independent of labels and deck prices', () => {
+  expect(userSettingsSchema.parse({}).cardGalleryShowPrices).toBe(false);
+  for (const value of [true, false]) {
+    expect(
+      userSettingsSchema.parse({ cardGalleryShowPrices: String(value) }).cardGalleryShowPrices,
+    ).toBe(value);
+    expect(userSettingsUpdateSchema.parse({ cardGalleryShowPrices: String(value) })).toEqual({
+      cardGalleryShowPrices: value,
+    });
+  }
+  const stored = { ...userSettingsSchema.parse({}), deckPrices: true, cardGalleryShowLabels: true };
+  Object.assign(stored, userSettingsUpdateSchema.parse({ cardGalleryShowPrices: true }));
+  expect(stored.cardGalleryShowLabels).toBe(true);
+  expect(stored.deckPrices).toBe(true);
+  Object.assign(stored, userSettingsUpdateSchema.parse({ cardGalleryShowLabels: false }));
+  expect(stored.cardGalleryShowPrices).toBe(true);
+  expect(userSettingsUpdateSchema.safeParse({ cardGalleryShowPrices: 'yes' }).success).toBe(false);
+});
