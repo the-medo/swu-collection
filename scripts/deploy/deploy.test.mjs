@@ -18,6 +18,15 @@ test('service boundaries follow independently deployed build/runtime inputs', ()
       ['maintainer'],
     ],
     [['frontend/src/main.tsx', 'frontend/bun.lock'], ['main']],
+    [['mcp/app.ts', 'Dockerfile.mcp', 'Dockerfile.mcp.dockerignore'], ['mcp']],
+    [['mcp/cards.test.ts', 'docs/mcp.md'], []],
+    [['server/lib/decks/transformCardPoolDeckCards.ts'], ['main', 'mcp']],
+    [['server/lib/decks/deckFolderAccess.ts'], ['main', 'mcp']],
+    [['lib/swu-resources/set-info.ts'], ['main', 'crossfire', 'mcp']],
+    [
+      ['server/db/json/card-list.json', 'server/auth/auth.ts'],
+      ['main', 'crossfire', 'mcp'],
+    ],
     [['server/routes/collection.ts', 'Dockerfile'], ['main']],
     [['play/worker/server.ts', 'Dockerfile.crossfire.dockerignore'], ['crossfire']],
     [['play/engine/advance.ts'], ['main', 'crossfire']],
@@ -31,22 +40,22 @@ test('service boundaries follow independently deployed build/runtime inputs', ()
     ],
     [
       ['shared/lib/auth/roles.ts', 'server/db/schema/deck.ts'],
-      ['main', 'crossfire'],
+      ['main', 'crossfire', 'mcp'],
     ],
     [
       ['drizzle/0057_crossfire.sql', 'server/db/migrate.ts'],
-      ['main', 'crossfire'],
+      ['main', 'crossfire', 'mcp'],
     ],
     [
       ['package.json', 'bun.lock', 'tsconfig.json'],
-      ['main', 'crossfire'],
+      ['main', 'crossfire', 'mcp'],
     ],
     [['README.md', 'docs/crossfire/worker.md', 'scripts/worktree-dev/common.sh'], []],
     [['play/testing/fixtures/game.json', 'server/lib/crossfire/lobbies.test.ts'], []],
-    [['new-build-input.json'], ['main', 'maintainer', 'crossfire']],
+    [['new-build-input.json'], ['main', 'maintainer', 'crossfire', 'mcp']],
     [
       ['.github/workflows/deploy.yml', 'scripts/deploy/services.mjs'],
-      ['main', 'maintainer', 'crossfire'],
+      ['main', 'maintainer', 'crossfire', 'mcp'],
     ],
     [['scripts/deploy/deploy.test.mjs'], []],
     [['.junie/config.yaml'], []],
@@ -104,7 +113,7 @@ test('migration pushes keep main automatic and route Crossfire to a separate app
   f.write('drizzle/0058_new-schema.sql');
   const after = f.commit();
   const plan = planDeployments('push', { before: f.before, after }, f.cwd);
-  assert.deepEqual(plan.selected, ['main', 'crossfire']);
+  assert.deepEqual(plan.selected, ['main', 'crossfire', 'mcp']);
   assert.equal(plan.migrationChanges, true);
   assert.deepEqual(deploymentJobs(plan, 'push'), {
     matrix: deploymentMatrix(['main']),
@@ -156,7 +165,7 @@ test('PR previews and explicit manual selections do not create migration approva
   }
 });
 
-test('unavailable previous revision keeps all other services automatic and Crossfire held', t => {
+test('unavailable previous revision keeps main and maintainer automatic and holds workers', t => {
   const f = fixture(t);
   const plan = planDeployments('push', { before: '0'.repeat(40), after: f.before }, f.cwd);
   assert.deepEqual(deploymentJobs(plan, 'push'), {
@@ -296,6 +305,7 @@ test('new branch or unavailable previous commit selects all; invalid target fail
       'main',
       'maintainer',
       'crossfire',
+      'mcp',
     ]);
     assert.equal(
       planDeployments('push', { before, after: f.before }, f.cwd).migrationChanges,
@@ -332,11 +342,17 @@ test('manual selection permits a single service or all, with fixed secret names'
   });
   assert.equal(
     planDeployments('workflow_dispatch', { inputs: { service: 'all' } }).selected.length,
-    3,
+    4,
   );
   assert.throws(
     () => planDeployments('workflow_dispatch', { inputs: { service: 'postgres' } }),
     /Invalid service/,
+  );
+  assert.deepEqual(
+    deploymentMatrix(planDeployments('workflow_dispatch', { inputs: { service: 'mcp' } }).selected),
+    {
+      include: [{ service: 'mcp', webhook_secret: 'COOLIFY_WEBHOOK_MCP' }],
+    },
   );
   assert.throws(() => planDeployments('schedule', {}), /Unsupported/);
 });
@@ -411,4 +427,41 @@ test('ambiguous timeouts are never automatically retried', async () => {
     /Check its deployment queue before retrying/,
   );
   assert.equal(calls, 1);
+});
+
+test('MCP migration pushes are held without requiring Crossfire approval and manual requests proceed', () => {
+  const plan = { selected: ['mcp'], migrationChanges: true, reason: 'MCP migration fixture' };
+  assert.deepEqual(deploymentJobs(plan, 'push'), {
+    matrix: deploymentMatrix([]),
+    hasChanges: false,
+    crossfireApprovalRequired: false,
+  });
+  for (const eventName of ['pull_request', 'workflow_dispatch']) {
+    assert.deepEqual(deploymentJobs(plan, eventName), {
+      matrix: deploymentMatrix(['mcp']),
+      hasChanges: true,
+      crossfireApprovalRequired: false,
+    });
+  }
+  assert.deepEqual(
+    deploymentJobs({ ...plan, migrationChanges: false }, 'push').matrix,
+    deploymentMatrix(['mcp']),
+  );
+  const summary = deploymentSummary(plan, { eventName: 'push', autoDeployEnabled: true });
+  assert.match(summary, /MCP deployment is held/);
+  assert.match(summary, /manually run this workflow for service mcp/);
+  assert.doesNotMatch(summary, /Crossfire is waiting|jobs fail|failed/);
+});
+
+test('MCP summaries distinguish previews and disabled deployment from an active migration hold', () => {
+  const plan = { selected: ['mcp'], migrationChanges: true, reason: 'MCP summary fixture' };
+  for (const options of [
+    { eventName: 'pull_request', autoDeployEnabled: true },
+    { eventName: 'push', autoDeployEnabled: false },
+    { eventName: 'workflow_dispatch', autoDeployEnabled: true },
+  ]) {
+    const summary = deploymentSummary(plan, options);
+    assert.match(summary, /MCP deployment would be held/);
+    assert.doesNotMatch(summary, /MCP deployment is held/);
+  }
 });

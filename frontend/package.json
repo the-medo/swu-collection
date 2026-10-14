@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@better-auth/oauth-provider": "1.7.7",
     "@blocknote/core": "^0.55.0",
     "@blocknote/react": "^0.55.0",
     "@blocknote/shadcn": "^0.55.0",

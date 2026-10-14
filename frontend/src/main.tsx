@@ -11,6 +11,7 @@ import { DatabaseProvider } from '@/providers/DatabaseProvider.tsx';
 import { HelmetProvider } from 'react-helmet-async';
 import { TooltipProvider } from '@/components/ui/tooltip.tsx';
 import * as Sentry from '@sentry/react';
+import { isSensitiveMcpUrl } from '@/lib/mcpPrivacy.ts';
 
 const router = createRouter({ routeTree });
 
@@ -26,6 +27,19 @@ Sentry.init({
   environment: import.meta.env.VITE_ENVIRONMENT,
   enableLogs: true,
   integrations: [Sentry.consoleLoggingIntegration({ levels: ['warn', 'error'] })],
+  beforeSend: event =>
+    isSensitiveMcpUrl(window.location.href) || isSensitiveMcpUrl(event.request?.url) ? null : event,
+  beforeSendTransaction: event =>
+    isSensitiveMcpUrl(window.location.href) || isSensitiveMcpUrl(event.request?.url) ? null : event,
+  beforeSendLog: log => (isSensitiveMcpUrl(window.location.href) ? null : log),
+  beforeBreadcrumb: breadcrumb => {
+    if (
+      isSensitiveMcpUrl(window.location.href) ||
+      [breadcrumb.data?.url, breadcrumb.data?.from, breadcrumb.data?.to].some(isSensitiveMcpUrl)
+    )
+      return null;
+    return breadcrumb;
+  },
 });
 
 createRoot(document.getElementById('root')!).render(

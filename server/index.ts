@@ -1,6 +1,10 @@
-import { getCrossfireServices } from './routes/crossfire.ts';
-import app, { bunWebsocket } from './app.ts';
 import { migrateSwuBase } from './db/migrate.ts';
+
+// OAuth resource registration runs during auth initialization. All schema must
+// exist before importing the app or admitting HTTP traffic.
+await migrateSwuBase();
+const { default: app, bunWebsocket } = await import('./app.ts');
+const { getCrossfireServices } = await import('./routes/crossfire.ts');
 
 const server = Bun.serve({
   port: process.env.PORT || 3010,
@@ -9,7 +13,6 @@ const server = Bun.serve({
   websocket: bunWebsocket,
 });
 
-await migrateSwuBase();
 if (process.env.CROSSFIRE_ENABLED === '1') await getCrossfireServices().invitations.start();
 
 console.log('Server running', server.port);

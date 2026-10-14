@@ -12,21 +12,25 @@ tests and show a plan without deployment secrets or deployment calls.
 
 ## What gets deployed
 
-| Changed files | Selected services |
-| --- | --- |
-| `scripts/remote-dev/` cleanup script, SQL, Dockerfile or Compose file | Maintainer |
-| `frontend/`, root `Dockerfile`, ordinary API routes/services | Main app |
-| `play/worker/`, `play/deploy/`, `Dockerfile.crossfire*` | Crossfire |
-| Other production `play/` code, including engine, cards, storage and view contracts | Main app + Crossfire |
-| `server/lib/crossfire/`, `server/lib/discord/`, `server/db/`, `server/auth/` | Main app + Crossfire |
-| `shared/`, `types/`, `lib/`, root dependencies/configuration, database migrations | Main app + Crossfire |
-| Documentation, test files, Crossfire test/browser fixtures, local worktree tooling | None |
-| Deployment workflow/tooling changes or otherwise unclassified paths | All three |
+| Changed files                                                                      | Selected services          |
+| ---------------------------------------------------------------------------------- | -------------------------- |
+| `scripts/remote-dev/` cleanup script, SQL, Dockerfile or Compose file              | Maintainer                 |
+| `frontend/`, root `Dockerfile`, ordinary API routes/services                       | Main app                   |
+| `play/worker/`, `play/deploy/`, `Dockerfile.crossfire*`                            | Crossfire                  |
+| `mcp/`, `Dockerfile.mcp*`                                                          | MCP                        |
+| Other production `play/` code, including engine, cards, storage and view contracts | Main app + Crossfire       |
+| `server/lib/crossfire/`, `server/lib/discord/`                                     | Main app + Crossfire       |
+| `server/db/`, `server/auth/`                                                       | Main app + Crossfire + MCP |
+| `shared/`, `types/`, `lib/`, root dependencies/configuration, database migrations  | Main app + Crossfire + MCP |
+| Documentation, test files, Crossfire test/browser fixtures, local worktree tooling | None                       |
+| Deployment workflow/tooling changes or otherwise unclassified paths                | All four                   |
 
 Migration inputs (`drizzle/`, `migrate.ts`, `server/db/migrate.ts`) hold the automatic
 Crossfire request for a separate manual approval job in the same run; see the
 [migration handoff](#migration-handoff). Ordinary Crossfire changes still deploy
-automatically. The approval job is skipped when it is not needed.
+automatically. The approval job is skipped when it is not needed. MCP is also
+omitted from the automatic matrix on migration pushes and requires a manual
+`mcp` run after verifying the main migration.
 
 The maintained rules live in [services.mjs](../scripts/deploy/services.mjs).
 Unknown paths select all services so new build inputs cannot silently go stale.
@@ -46,13 +50,14 @@ affect contributor data; deploying does not update those rules automatically.
 
 ## One-time setup
 
-1. **Verify that all three resources are Git-backed applications.**
+1. **Verify that all four resources are Git-backed applications.**
    Since the current resources deploy on pushes, keep their working source/build
    configuration. Each must track this repository's `main` branch. Keep the main app's root
-   `Dockerfile`, Crossfire's root `Dockerfile.crossfire`, and the maintainer's
+   `Dockerfile`, Crossfire's root `Dockerfile.crossfire`, MCP's root `Dockerfile.mcp`, and the maintainer's
    existing Git-backed Docker Compose/build context under `scripts/remote-dev/`.
    Keep environment variables, private networking, volumes, domains, database
-   configuration and the maintainer's daily scheduled task in Coolify.
+   configuration and the maintainer's daily scheduled task in Coolify. Follow
+   [the MCP setup guide](mcp.md) for its OAuth provider, database role and domain.
    For the maintainer, use Build Pack **Docker Compose**, Base Directory
    `/scripts/remote-dev`, Docker Compose Location `/docker-compose.coolify.yml`.
    A raw Compose Service pasted into Coolify does not fetch changed repository
@@ -73,15 +78,16 @@ affect contributor data; deploying does not update those rules automatically.
    individual URL, shaped like
    `https://coolify.example.com/api/v1/deploy?uuid=RESOURCE_UUID&force=false`.
    Do not copy a Manual Git Webhook, a tag/group webhook or the PostgreSQL URL.
-5. **Add four GitHub repository secrets** under **Settings → Secrets and variables
+5. **Add five GitHub repository secrets** under **Settings → Secrets and variables
    → Actions → Secrets → New repository secret**:
 
-   | Secret | Value |
-   | --- | --- |
-   | `COOLIFY_TOKEN` | The deploy token |
-   | `COOLIFY_WEBHOOK_MAIN` | Main app's authenticated deploy URL |
+   | Secret                       | Value                                 |
+   | ---------------------------- | ------------------------------------- |
+   | `COOLIFY_TOKEN`              | The deploy token                      |
+   | `COOLIFY_WEBHOOK_MAIN`       | Main app's authenticated deploy URL   |
    | `COOLIFY_WEBHOOK_MAINTAINER` | Maintainer's authenticated deploy URL |
-   | `COOLIFY_WEBHOOK_CROSSFIRE` | Crossfire's authenticated deploy URL |
+   | `COOLIFY_WEBHOOK_CROSSFIRE`  | Crossfire's authenticated deploy URL  |
+   | `COOLIFY_WEBHOOK_MCP`        | MCP's authenticated deploy URL        |
 
 6. **Configure migration approval before enabling automatic deployments.** Under
    **Settings → Environments**, create `crossfire-migrations`. Enable **Required
@@ -102,13 +108,13 @@ affect contributor data; deploying does not update those rules automatically.
    Once the workflow is on the default branch, **Actions → Deploy changed services
    → Run workflow** also offers a service selector and a dry-run checkbox (on by
    default). Select branch `main`; deployment jobs refuse other branches.
-8. **Switch deployment ownership during a quiet push window.** For all three
+8. **Switch deployment ownership during a quiet push window.** For all four
    applications, turn off **Configuration → Advanced → Deployment & Git → Auto
    Deploy** and save. On some versions it appears directly under Advanced.
    Keep the GitHub App/source connection so Coolify can fetch/build the repo.
    Disable/remove any separately configured GitHub repository push webhooks that
    also trigger these resources. Leave unrelated integrations intact.
-9. **Verify a manual deployment for each of the three services**, selecting one
+9. **Verify a manual deployment for each of the four services**, selecting one
    service at a time and unchecking **dry run**. This works while automatic GitHub
    deployments are disabled. Confirm the deployment appears under the **expected
    application**, and verify its new commit and healthy runtime. This catches
@@ -193,7 +199,7 @@ deployments.
 
 ## Migration handoff
 
-The main app applies migrations; Crossfire has no migrator. For a push that
+The main app applies migrations; Crossfire and MCP have no migrator. For a push that
 changes migration inputs, the main app (and maintainer when selected) can deploy,
 but **Approve Crossfire deployment after migrations** waits for the protected
 `crossfire-migrations` environment. GitHub shows **Review deployments** in the
@@ -226,6 +232,12 @@ the approval job; do not select `all` before migrations finish.
 Rejecting an approval fails the run; cancel an obsolete run
 instead of rejecting it if no deployment is wanted. GitHub also
 [fails approval jobs left waiting for 30 days](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/control-deployments#using-required-reviews-in-workflows).
+
+**MCP is also held on migration pushes.** Its automatic request is omitted from
+the deployment matrix. After verifying the main app migration, run the workflow
+manually for service `mcp`. Crossfire continues to use its existing protected
+approval job described above. Do not manually select `all` before migrations
+finish. Rerunning the original push keeps the MCP hold.
 
 Wire-breaking releases and incompatible database changes still need a planned
 maintenance window; this is not an atomic multi-service rollout system. For those
@@ -284,7 +296,7 @@ deck/collection saves, protected navigation, logout, and a restricted account's
 error page. Local callback tests replace only the external provider exchange
 and do not prove the real provider credentials or redirect registrations.
 
-The shared dependency changes select both the main app and Crossfire in the
-existing deployment workflow.
+Shared dependency changes select the main app, Crossfire and MCP in the
+deployment workflow.
 Retain the previous working image for each application during the rollout;
 re-running an old Actions run rebuilds current `main` and is not an image rollback.

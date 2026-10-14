@@ -35,6 +35,7 @@ import { Route as WantlistsYourRouteImport } from './routes/wantlists/your'
 import { Route as WantlistsPublicRouteImport } from './routes/wantlists/public'
 import { Route as TeamsTeamIdRouteImport } from './routes/teams/$teamId'
 import { Route as StatisticsStatisticsLayoutRouteImport } from './routes/statistics/_statisticsLayout'
+import { Route as McpLoginRouteImport } from './routes/mcp/login'
 import { Route as ListsYourRouteImport } from './routes/lists/your'
 import { Route as ForumNewRouteImport } from './routes/forum/new'
 import { Route as ForumDiscussionIdRouteImport } from './routes/forum/$discussionId'
@@ -81,6 +82,7 @@ import { Route as TeamsTeamIdEventsRouteImport } from './routes/teams/$teamId/ev
 import { Route as DecksFolderFolderIdRouteImport } from './routes/decks/folder/$folderId'
 import { Route as DecksDeckIdEditRouteImport } from './routes/decks/$deckId/edit'
 import { Route as CardsDetailCardIdRouteImport } from './routes/cards/detail/$cardId'
+import { Route as AuthenticatedMcpConsentRouteImport } from './routes/_authenticated/mcp/consent'
 import { Route as AuthenticatedCrossfireLobbyIdRouteImport } from './routes/_authenticated/crossfire/$lobbyId'
 import { Route as TeamsTeamIdStatisticsIndexRouteImport } from './routes/teams/$teamId/statistics/index'
 import { Route as StatisticsStatisticsLayoutMetaIndexRouteImport } from './routes/statistics/_statisticsLayout/meta/index'
@@ -227,6 +229,11 @@ const StatisticsStatisticsLayoutRoute =
     id: '/_statisticsLayout',
     getParentRoute: () => StatisticsRoute,
   } as any)
+const McpLoginRoute = McpLoginRouteImport.update({
+  id: '/mcp/login',
+  path: '/mcp/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ListsYourRoute = ListsYourRouteImport.update({
   id: '/lists/your',
   path: '/lists/your',
@@ -478,6 +485,11 @@ const CardsDetailCardIdRoute = CardsDetailCardIdRouteImport.update({
   path: '/cards/detail/$cardId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedMcpConsentRoute = AuthenticatedMcpConsentRouteImport.update({
+  id: '/mcp/consent',
+  path: '/mcp/consent',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedCrossfireLobbyIdRoute =
   AuthenticatedCrossfireLobbyIdRouteImport.update({
     id: '/crossfire/$lobbyId',
@@ -638,6 +650,7 @@ export interface FileRoutesByFullPath {
   '/forum/$discussionId': typeof ForumDiscussionIdRoute
   '/forum/new': typeof ForumNewRoute
   '/lists/your': typeof ListsYourRoute
+  '/mcp/login': typeof McpLoginRoute
   '/teams/$teamId': typeof TeamsTeamIdRouteWithChildren
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
@@ -653,6 +666,7 @@ export interface FileRoutesByFullPath {
   '/tools': typeof ToolsIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
   '/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
+  '/mcp/consent': typeof AuthenticatedMcpConsentRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
@@ -729,6 +743,7 @@ export interface FileRoutesByTo {
   '/forum/$discussionId': typeof ForumDiscussionIdRoute
   '/forum/new': typeof ForumNewRoute
   '/lists/your': typeof ListsYourRoute
+  '/mcp/login': typeof McpLoginRoute
   '/statistics': typeof StatisticsIndexRoute
   '/wantlists/public': typeof WantlistsPublicRoute
   '/wantlists/your': typeof WantlistsYourRoute
@@ -743,6 +758,7 @@ export interface FileRoutesByTo {
   '/tools': typeof ToolsIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
   '/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
+  '/mcp/consent': typeof AuthenticatedMcpConsentRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
@@ -821,6 +837,7 @@ export interface FileRoutesById {
   '/forum/$discussionId': typeof ForumDiscussionIdRoute
   '/forum/new': typeof ForumNewRoute
   '/lists/your': typeof ListsYourRoute
+  '/mcp/login': typeof McpLoginRoute
   '/statistics/_statisticsLayout': typeof StatisticsStatisticsLayoutRouteWithChildren
   '/teams/$teamId': typeof TeamsTeamIdRouteWithChildren
   '/wantlists/public': typeof WantlistsPublicRoute
@@ -837,6 +854,7 @@ export interface FileRoutesById {
   '/tools/': typeof ToolsIndexRoute
   '/tournaments/': typeof TournamentsIndexRoute
   '/_authenticated/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
+  '/_authenticated/mcp/consent': typeof AuthenticatedMcpConsentRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
@@ -917,6 +935,7 @@ export interface FileRouteTypes {
     | '/forum/$discussionId'
     | '/forum/new'
     | '/lists/your'
+    | '/mcp/login'
     | '/teams/$teamId'
     | '/wantlists/public'
     | '/wantlists/your'
@@ -932,6 +951,7 @@ export interface FileRouteTypes {
     | '/tools'
     | '/tournaments'
     | '/crossfire/$lobbyId'
+    | '/mcp/consent'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
     | '/decks/folder/$folderId'
@@ -1008,6 +1028,7 @@ export interface FileRouteTypes {
     | '/forum/$discussionId'
     | '/forum/new'
     | '/lists/your'
+    | '/mcp/login'
     | '/statistics'
     | '/wantlists/public'
     | '/wantlists/your'
@@ -1022,6 +1043,7 @@ export interface FileRouteTypes {
     | '/tools'
     | '/tournaments'
     | '/crossfire/$lobbyId'
+    | '/mcp/consent'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
     | '/decks/folder/$folderId'
@@ -1099,6 +1121,7 @@ export interface FileRouteTypes {
     | '/forum/$discussionId'
     | '/forum/new'
     | '/lists/your'
+    | '/mcp/login'
     | '/statistics/_statisticsLayout'
     | '/teams/$teamId'
     | '/wantlists/public'
@@ -1115,6 +1138,7 @@ export interface FileRouteTypes {
     | '/tools/'
     | '/tournaments/'
     | '/_authenticated/crossfire/$lobbyId'
+    | '/_authenticated/mcp/consent'
     | '/cards/detail/$cardId'
     | '/decks/$deckId/edit'
     | '/decks/folder/$folderId'
@@ -1189,6 +1213,7 @@ export interface RootRouteChildren {
   ForumDiscussionIdRoute: typeof ForumDiscussionIdRoute
   ForumNewRoute: typeof ForumNewRoute
   ListsYourRoute: typeof ListsYourRoute
+  McpLoginRoute: typeof McpLoginRoute
   TeamsTeamIdRoute: typeof TeamsTeamIdRouteWithChildren
   WantlistsPublicRoute: typeof WantlistsPublicRoute
   WantlistsYourRoute: typeof WantlistsYourRoute
@@ -1397,6 +1422,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/statistics'
       preLoaderRoute: typeof StatisticsStatisticsLayoutRouteImport
       parentRoute: typeof StatisticsRoute
+    }
+    '/mcp/login': {
+      id: '/mcp/login'
+      path: '/mcp/login'
+      fullPath: '/mcp/login'
+      preLoaderRoute: typeof McpLoginRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/lists/your': {
       id: '/lists/your'
@@ -1727,6 +1759,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CardsDetailCardIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/mcp/consent': {
+      id: '/_authenticated/mcp/consent'
+      path: '/mcp/consent'
+      fullPath: '/mcp/consent'
+      preLoaderRoute: typeof AuthenticatedMcpConsentRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/crossfire/$lobbyId': {
       id: '/_authenticated/crossfire/$lobbyId'
       path: '/crossfire/$lobbyId'
@@ -1892,6 +1931,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedShopRoute: typeof AuthenticatedShopRoute
   AuthenticatedCrossfireLobbyIdRoute: typeof AuthenticatedCrossfireLobbyIdRoute
+  AuthenticatedMcpConsentRoute: typeof AuthenticatedMcpConsentRoute
   AuthenticatedCrossfireIndexRoute: typeof AuthenticatedCrossfireIndexRoute
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
   AuthenticatedCrossfireReplayLobbyIdRoute: typeof AuthenticatedCrossfireReplayLobbyIdRoute
@@ -1908,6 +1948,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedShopRoute: AuthenticatedShopRoute,
   AuthenticatedCrossfireLobbyIdRoute: AuthenticatedCrossfireLobbyIdRoute,
+  AuthenticatedMcpConsentRoute: AuthenticatedMcpConsentRoute,
   AuthenticatedCrossfireIndexRoute: AuthenticatedCrossfireIndexRoute,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,
   AuthenticatedCrossfireReplayLobbyIdRoute:
@@ -2057,6 +2098,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForumDiscussionIdRoute: ForumDiscussionIdRoute,
   ForumNewRoute: ForumNewRoute,
   ListsYourRoute: ListsYourRoute,
+  McpLoginRoute: McpLoginRoute,
   TeamsTeamIdRoute: TeamsTeamIdRouteWithChildren,
   WantlistsPublicRoute: WantlistsPublicRoute,
   WantlistsYourRoute: WantlistsYourRoute,
