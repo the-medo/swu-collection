@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { DailySnapshotRow, useDailySnapshot } from '@/api/daily-snapshot/useDailySnapshot.ts';
 import {
   MetaShareTwoWeeks,
-  ForceVsNonforce,
+  BaseDistribution,
   UpcomingTournaments,
   WeeklyChange,
   RecentTournaments,
@@ -40,7 +40,7 @@ const formatToday = (): string => {
 
 export const sectionKeys = [
   'meta-share-2-weeks',
-  'force-vs-nonforce',
+  'base-distribution',
   'upcoming-tournaments',
   'weekly-change',
   'recent-tournaments',
@@ -51,7 +51,7 @@ export type SectionKey = (typeof sectionKeys)[number];
 
 const componentByKey: Record<SectionKey, React.FC<{ payload: any }>> = {
   'meta-share-2-weeks': MetaShareTwoWeeks,
-  'force-vs-nonforce': ForceVsNonforce,
+  'base-distribution': BaseDistribution,
   'upcoming-tournaments': UpcomingTournaments,
   'weekly-change': WeeklyChange,
   'recent-tournaments': RecentTournaments,
@@ -65,7 +65,7 @@ const sizingByKey: Record<SectionKey, SectionCardSizing> = {
     2: { row: { from: 1, to: 1 }, col: { from: 1, to: 2 } },
     1: { row: { from: 1, to: 1 }, col: { from: 1, to: 1 } },
   },
-  'force-vs-nonforce': {
+  'base-distribution': {
     4: { row: { from: 2, to: 2 }, col: { from: 3, to: 3 } },
     3: { row: { from: 2, to: 2 }, col: { from: 3, to: 3 } },
     2: { row: { from: 2, to: 2 }, col: { from: 2, to: 2 } },
@@ -112,13 +112,15 @@ const DailySnapshots: React.FC = () => {
   const { maTournamentId } = useSearch({ strict: false });
 
   const sections = data?.sections ?? {};
+  const hasBaseComparison = Boolean(sections['weekly-change'] && sections['base-distribution']);
 
   // ensure we render in the desired order first, then any other sections returned by API
   const knownEntries = sectionKeys
     .filter(key => sections[key])
     .map(key => [key, sections[key]] as const);
   const otherEntries = Object.entries(sections).filter(
-    ([key]) => !sectionKeys.includes(key as SectionKey),
+    // The legacy section is still computed and cached, but no longer displayed.
+    ([key]) => key !== 'force-vs-nonforce' && !sectionKeys.includes(key as SectionKey),
   );
   const sectionEntries = [...knownEntries, ...otherEntries];
 
@@ -239,7 +241,12 @@ const DailySnapshots: React.FC = () => {
                 key={sectionName}
                 sizing={sizing}
                 id={`s-${sectionName}`}
-                className="meta-section"
+                className={cn(
+                  'meta-section',
+                  // Transfer 50px within this row without changing the other grid tracks.
+                  hasBaseComparison && key === 'weekly-change' && 'md:mr-[50px]',
+                  hasBaseComparison && key === 'base-distribution' && 'md:-ml-[50px]',
+                )}
               >
                 <div className={metaPanelClassName}>
                   {Comp ? (

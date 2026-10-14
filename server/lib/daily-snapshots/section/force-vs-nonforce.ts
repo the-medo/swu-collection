@@ -6,23 +6,10 @@ import type {
   TournamentGroupExtendedInfo,
 } from '../../../../types/DailySnapshots.ts';
 import { tournamentGroupLeaderBase } from '../../../db/schema/tournament_group_leader_base.ts';
-import { baseSpecialNames } from '../../../../shared/lib/basicBases.ts';
+import { isForceBase } from '../../../../shared/lib/basicBases.ts';
 
 const SECTION_ID = 'force-vs-nonforce';
 const SECTION_TITLE = 'Force vs. Non-Force';
-
-const FORCE_BASE_EXCEPTIONS = new Set<string>([
-  'mystic-monastery',
-  'temple-of-destruction',
-  'tomb-of-eilram',
-  'vergence-temple',
-]);
-
-const isForceBase = (baseId: string | null | undefined): boolean => {
-  if (!baseId) return false;
-  if (baseSpecialNames[baseId]?.endsWith('-Force')) return true;
-  return FORCE_BASE_EXCEPTIONS.has(baseId);
-};
 
 async function countForGroup(
   tournamentGroupId: string | null | undefined,

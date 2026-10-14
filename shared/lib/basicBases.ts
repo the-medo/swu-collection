@@ -199,6 +199,16 @@ export const baseSpecialNames: Record<string, string> = {
 
 export const baseSpecialNameValues = new Set(Object.values(baseSpecialNames));
 
+const rareForceBaseIds = new Set([
+  'mystic-monastery',
+  'temple-of-destruction',
+  'tomb-of-eilram',
+  'vergence-temple',
+]);
+
+export const isForceBase = (baseId: string | null | undefined): boolean =>
+  Boolean(baseId && (baseSpecialNames[baseId]?.endsWith('-Force') || rareForceBaseIds.has(baseId)));
+
 export const allBasesBySpecialName = Object.entries(baseSpecialNames).reduce(
   (p, [cardId, specialName]) => {
     if (!p[specialName]) p[specialName] = [];
