@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils.ts';
 import SortMenu from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchResults/SortMenu.tsx';
 import ResultsLayoutMenu from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchResults/ResultsLayoutMenu.tsx';
 
-const AdvancedSearchLayoutSelectors: React.FC = () => {
+const AdvancedSearchLayoutSelectors: React.FC<{ showSort?: boolean }> = ({ showSort = true }) => {
   const { resultsLayout, sortField, sortOrder, setSortField, setSortOrder, setResultsLayout } =
     useAdvancedCardSearchStore();
 
@@ -26,11 +26,13 @@ const AdvancedSearchLayoutSelectors: React.FC = () => {
   return (
     <NavigationMenu className={cn('justify-end z-25')}>
       <NavigationMenuList className="gap-2 justify-center flex-wrap">
-        <SortMenu
-          sortField={sortField}
-          sortOrder={sortOrder}
-          onChange={(value: SortField) => handleSortFieldChange(value)}
-        />
+        {showSort && (
+          <SortMenu
+            sortField={sortField}
+            sortOrder={sortOrder}
+            onChange={(value: SortField) => handleSortFieldChange(value)}
+          />
+        )}
         <ResultsLayoutMenu layout={resultsLayout} onChange={setResultsLayout} />
       </NavigationMenuList>
     </NavigationMenu>

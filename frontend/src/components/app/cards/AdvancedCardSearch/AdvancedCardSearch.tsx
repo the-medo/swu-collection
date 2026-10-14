@@ -29,6 +29,8 @@ interface AdvancedCardSearchProps {
   searchFrom?: SearchFrom;
   cardSubcomponent?: SearchCardLayoutProps['cardSubcomponent'];
   searchContext?: AdvancedCardSearchContextConfig;
+  resultsHeader?: React.ReactNode;
+  alternativeResults?: { title: string; content: React.ReactNode };
 }
 
 const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
@@ -39,6 +41,8 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
   searchFrom = SearchFrom.CARD_SEARCH,
   cardSubcomponent,
   searchContext,
+  resultsHeader,
+  alternativeResults,
 }) => {
   const urlSearch = useSearch({ strict: false });
   const hasRequestedSearch = hasCardSearchRequest(cardSearchParams.parse(urlSearch));
@@ -150,6 +154,7 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
           onSearch={onSearch}
           footerElement={filtersFooterElement}
           availableCardTypes={searchContext?.availableCardTypes}
+          disabled={!!alternativeResults}
         />
         <div className="flex flex-col @[1080px]/main-body:flex-row flex-1">
           <div className="flex flex-row gap-4 items-start flex-wrap p-2 @[1080px]/main-body:hidden">
@@ -157,7 +162,9 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
               onClick={() => setResultsOrChildren('results')}
               variant={resultsOrChildren === 'results' ? 'default' : 'outline'}
             >
-              <h3 className="text-2xl font-semibold tracking-tight mb-0">Search Results</h3>
+              <h3 className="text-2xl font-semibold tracking-tight mb-0">
+                {alternativeResults?.title ?? 'Search Results'}
+              </h3>
             </Button>
             <Button
               onClick={() => setResultsOrChildren('children')}
@@ -167,25 +174,32 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
                 {childrenTitleButtonText}
               </h3>
             </Button>
-            {resultsOrChildren === 'results' && <AdvancedSearchLayoutSelectors />}
+            {resultsOrChildren === 'results' && (
+              <AdvancedSearchLayoutSelectors showSort={!alternativeResults} />
+            )}
           </div>
           <div
             className={cn(
               {
                 hidden: resultsOrChildren === 'children',
               },
-              '@[1080px]/main-body:flex flex-1 border-r',
+              '@[1080px]/main-body:flex flex-col flex-1 min-w-0 border-r',
+              resultsHeader && '@[1080px]/main-body:h-[calc(100dvh-1rem)]',
             )}
           >
-            <AdvancedSearchResults
-              hasActiveFilters={hasActiveFilters}
-              showArtistShowcaseLink={searchFrom === SearchFrom.CARD_SEARCH}
-              classNames={{
-                title: 'hidden @[1080px]/main-body:flex',
-              }}
-              cardSubcomponent={cardSubcomponent}
-              showKarabastUnimplementedNameIcon={showKarabastUnimplementedNameIcon}
-            />
+            {resultsHeader}
+            {alternativeResults?.content ?? (
+              <AdvancedSearchResults
+                hasActiveFilters={hasActiveFilters}
+                showArtistShowcaseLink={searchFrom === SearchFrom.CARD_SEARCH}
+                classNames={{
+                  title: 'hidden @[1080px]/main-body:flex',
+                }}
+                fillAvailableHeight={!!resultsHeader}
+                cardSubcomponent={cardSubcomponent}
+                showKarabastUnimplementedNameIcon={showKarabastUnimplementedNameIcon}
+              />
+            )}
           </div>
           <div
             className={cn(

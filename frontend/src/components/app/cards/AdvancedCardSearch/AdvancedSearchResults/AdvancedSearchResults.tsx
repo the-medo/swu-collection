@@ -12,6 +12,7 @@ import AdvancedSearchLayoutSelectors from '@/components/app/cards/AdvancedCardSe
 
 interface AdvancedSearchResultsProps {
   hasActiveFilters: boolean;
+  fillAvailableHeight?: boolean;
   classNames?: {
     title?: string;
   };
@@ -22,6 +23,7 @@ interface AdvancedSearchResultsProps {
 
 const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
   hasActiveFilters,
+  fillAvailableHeight = false,
   classNames,
   cardSubcomponent,
   showKarabastUnimplementedNameIcon = false,
@@ -40,10 +42,17 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
   };
 
   return (
-    <div className="flex-1 min-h-full p-2">
+    <div
+      className={cn(
+        'flex-1 min-h-full p-2',
+        fillAvailableHeight &&
+          '@[1080px]/main-body:flex @[1080px]/main-body:min-h-0 @[1080px]/main-body:flex-col',
+      )}
+    >
       <div
         className={cn(
           'flex flex-1 flex-wrap w-full justify-between items-start p-2',
+          fillAvailableHeight && '@[1080px]/main-body:flex-none',
           classNames?.title,
         )}
       >
@@ -73,7 +82,12 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
           <AdvancedSearchLayoutSelectors />
         </div>
       </div>
-      <div>
+      <div
+        className={cn(
+          fillAvailableHeight &&
+            '@[1080px]/main-body:flex @[1080px]/main-body:min-h-0 @[1080px]/main-body:flex-1 @[1080px]/main-body:flex-col',
+        )}
+      >
         {isLoadingCardList ? (
           <div className="flex items-center justify-center h-96">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -96,7 +110,13 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
           </div>
         ) : (
           <>
-            <ScrollArea className="h-[calc(100vh-90px)]">
+            <ScrollArea
+              className={cn(
+                'h-[calc(100vh-90px)]',
+                fillAvailableHeight &&
+                  '@[1080px]/main-body:h-auto @[1080px]/main-body:min-h-0 @[1080px]/main-body:flex-1',
+              )}
+            >
               <SearchCardLayout
                 searchResults={searchResults}
                 resultVariants={searchResultVariants}

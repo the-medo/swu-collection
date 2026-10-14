@@ -47,6 +47,7 @@ interface AdvancedSearchFiltersProps {
   onClose?: () => void;
   footerElement?: React.ReactNode;
   availableCardTypes?: AdvancedSearchStringLookup;
+  disabled?: boolean;
 }
 
 const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
@@ -55,6 +56,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
   onClose,
   footerElement,
   availableCardTypes,
+  disabled = false,
 }) => {
   const [mobileExpanded, setMobileExpanded] = useState(false);
   const { open: sidebarOpen } = useSidebar();
@@ -86,7 +88,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
     filtersExpanded: storedFiltersExpanded,
     activeFiltersCount,
   } = useAdvancedCardSearchStore();
-  const filtersExpanded = onClose ? true : storedFiltersExpanded;
+  const filtersExpanded = (onClose ? true : storedFiltersExpanded) && !disabled;
 
   const {
     setName,
@@ -162,13 +164,16 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
             !filtersExpanded && mobileCollapsible,
         })}
       >
-        <div className="text-2xl font-semibold tracking-tight">Search Filters</div>
+        <div className="whitespace-nowrap text-2xl font-semibold tracking-tight">
+          Search Filters
+        </div>
         <div className="flex items-center gap-2">
           {mobileCollapsible && !onClose && (
             <Button
               variant="ghost"
               size="sm"
               className="lg:hidden"
+              disabled={disabled}
               aria-expanded={mobileExpanded}
               aria-label={mobileExpanded ? 'Hide search filters' : 'Show search filters'}
               onClick={() => {
@@ -186,7 +191,15 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
             size="sm"
             onClick={onClose ?? (() => setFiltersExpanded(!filtersExpanded))}
             aria-label={filtersExpanded ? 'Collapse filters' : 'Expand filters'}
-            title={filtersExpanded ? 'Collapse filters' : 'Expand filters'}
+            disabled={disabled}
+            title={
+              disabled
+                ? 'Return to search results to use filters'
+                : filtersExpanded
+                  ? 'Collapse filters'
+                  : 'Expand filters'
+            }
+            aria-expanded={filtersExpanded}
           >
             {filtersExpanded ? (
               <X className="h-4 w-4" />
@@ -197,7 +210,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
         </div>
       </div>
       {!filtersExpanded && (
-        <div className="-rotate-90 origin-bottom-left w-[200px] translate-x-[37px] translate-y-[340px]">
+        <div className="md:-rotate-90 md:origin-bottom-left md:w-[200px] md:translate-x-[37px] md:translate-y-[340px]">
           {footerElement}
         </div>
       )}

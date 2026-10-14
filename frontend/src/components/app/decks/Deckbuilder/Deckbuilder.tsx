@@ -1,6 +1,6 @@
 import AdvancedCardSearch from '@/components/app/cards/AdvancedCardSearch/AdvancedCardSearch.tsx';
 import DeckDetail from '@/components/app/decks/DeckDetail/DeckDetail.tsx';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 import { SearchFrom } from '@/components/app/cards/AdvancedCardSearch/useAdvancedCardSearchStore.ts';
 import { Link } from '@tanstack/react-router';
@@ -15,6 +15,8 @@ import DeckbuilderCardMenu from '@/components/app/decks/Deckbuilder/DeckbuilderC
 import { useDeckData } from '@/components/app/decks/DeckContents/useDeckData.ts';
 import { useDeckInfo } from '@/components/app/decks/DeckContents/useDeckInfoStore.ts';
 import { AdvancedCardSearchContextConfig } from '@/components/app/cards/AdvancedCardSearch/advancedSearchContext.ts';
+import MostPlayedCards from './MostPlayedCards.tsx';
+import MostPlayedCardsToggle from './MostPlayedCardsToggle.tsx';
 
 interface DeckbuilderProps {
   deckId: string;
@@ -23,6 +25,7 @@ interface DeckbuilderProps {
 const Deckbuilder: React.FC<DeckbuilderProps> = ({ deckId }) => {
   const { open: sidebarOpen, setOpen: setSidebarOpen } = useSidebar();
   const initialSidebarOpen = useRef(sidebarOpen);
+  const [mostPlayedOpen, setMostPlayedOpen] = useState(false);
 
   const {
     deckCardsForLayout: { usedCardsInBoards },
@@ -96,6 +99,20 @@ const Deckbuilder: React.FC<DeckbuilderProps> = ({ deckId }) => {
       filtersFooterElement={filtersFooterElement}
       cardSubcomponent={cardSubcomponent}
       searchContext={searchContext}
+      resultsHeader={
+        <MostPlayedCardsToggle
+          active={mostPlayedOpen}
+          onClick={() => setMostPlayedOpen(open => !open)}
+        />
+      }
+      alternativeResults={
+        mostPlayedOpen
+          ? {
+              title: 'Most played cards',
+              content: <MostPlayedCards deckId={deckId} cardSubcomponent={cardSubcomponent} />,
+            }
+          : undefined
+      }
     >
       <div className="flex flex-1 flex-col">
         <DeckDetail adminEdit={true} deckId={deckId} deckbuilder={true} />
