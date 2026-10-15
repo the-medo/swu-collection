@@ -7,9 +7,11 @@ import {
   MoreHorizontal,
   Pencil,
   Share2,
+  Star,
   Trash2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
+import { badgeVariants } from '@/components/ui/badge.tsx';
 import { TableCell, TableRow } from '@/components/ui/table.tsx';
 import {
   DropdownMenu,
@@ -43,6 +45,8 @@ type Props = {
   onToggle: (id: string) => void;
   onSaved?: (id: string, parentId: string | null) => void;
   onDeleted?: (id: string) => void;
+  onSetDefaultLimited?: (id: string | null) => void;
+  defaultLimitedPending?: boolean;
   selection?: FolderSelection;
   onSelectionChange?: FolderSelectionChange;
   drag?: DeckFolderDrag;
@@ -59,6 +63,8 @@ export default function DeckFolderSection(props: Props) {
     onToggle,
     onSaved,
     onDeleted,
+    onSetDefaultLimited,
+    defaultLimitedPending,
     selection,
     onSelectionChange,
     drag,
@@ -97,7 +103,7 @@ export default function DeckFolderSection(props: Props) {
         data-folder-drop-row={readOnly ? undefined : folder.id}
         data-drop-placement={drop ?? undefined}
         className={cn(
-          'h-16 border-border bg-muted/25 hover:bg-muted/40',
+          'group/folder-row h-16 border-border bg-muted/25 hover:bg-muted/40',
           depth === 0 && 'bg-muted/40 hover:bg-muted/60',
           drag?.drag?.id === folder.id && 'opacity-40',
           drop === 'inside' &&
@@ -162,8 +168,21 @@ export default function DeckFolderSection(props: Props) {
                     )}
                   </span>
                 )}
-                <span className="block break-words text-sm font-semibold leading-snug sm:text-base">
-                  {folder.name}
+                <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <span className="min-w-0 break-words text-sm font-semibold leading-snug sm:text-base">
+                    {folder.name}
+                  </span>
+                  {!readOnly && folder.isDefaultLimited && (
+                    <span
+                      className={cn(
+                        badgeVariants({ variant: 'default' }),
+                        'max-w-full gap-0.5 px-0.5 text-[9px] hover:bg-primary sm:shrink-0 sm:gap-1 sm:px-2.5 sm:text-[10px]',
+                      )}
+                    >
+                      <Star className="size-2 shrink-0 fill-current sm:size-2.5" aria-hidden="true" />
+                      <span className="min-w-0">Limited Default</span>
+                    </span>
+                  )}
                 </span>
                 {sharingSources.length > 0 && (
                   <span
@@ -184,7 +203,36 @@ export default function DeckFolderSection(props: Props) {
         </TableCell>
         {!readOnly && (
           <TableCell className="px-1 text-right sm:px-2">
-            <NewDeckInFolderButton folderId={folder.id} name={folder.name} />
+            <div className="pointer-events-none flex items-center justify-end gap-1 opacity-0 group-hover/folder-row:pointer-events-auto group-hover/folder-row:opacity-100 group-focus-within/folder-row:pointer-events-auto group-focus-within/folder-row:opacity-100 [@media(hover:none)]:pointer-events-auto [@media(hover:none)]:opacity-100">
+              {onSetDefaultLimited && (
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  disabled={defaultLimitedPending}
+                  aria-label={
+                    folder.isDefaultLimited
+                      ? 'Clear default limited folder'
+                      : 'Set as default limited folder'
+                  }
+                  title={
+                    folder.isDefaultLimited
+                      ? 'Clear default limited folder'
+                      : 'Set as default limited folder'
+                  }
+                  aria-pressed={!!folder.isDefaultLimited}
+                  className="h-7 gap-1 px-1 text-xs font-normal text-muted-foreground sm:px-2 [&_svg]:size-3.5"
+                  onClick={() => onSetDefaultLimited(folder.isDefaultLimited ? null : folder.id)}
+                >
+                  <Star className={cn(folder.isDefaultLimited && 'fill-current')} />
+                  <span className="hidden lg:inline">
+                    {folder.isDefaultLimited
+                      ? 'Clear default limited folder'
+                      : 'Set as default limited folder'}
+                  </span>
+                </Button>
+              )}
+              <NewDeckInFolderButton folderId={folder.id} name={folder.name} />
+            </div>
           </TableCell>
         )}
         <TableCell className="px-1 text-right sm:px-2">

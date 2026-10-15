@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { cn } from '@/lib/utils.ts';
 import { FolderPlus, Loader2 } from 'lucide-react';
 import { useDeckFolders } from '@/api/deck-folders/useDeckFolders.ts';
+import { useSetDefaultLimitedFolder } from '@/api/deck-folders/useSetDefaultLimitedFolder.ts';
 import { Button } from '@/components/ui/button.tsx';
 import DeckFiltersAccordion from '@/components/app/decks/DeckFilters/DeckFiltersAccordion.tsx';
 import {
@@ -32,6 +33,7 @@ export default function DeckFolders({ userId }: { userId: string }) {
   const initialized = useInitializeDeckFilterFromUrlParams();
   const { toRequestParams } = useDeckFilterStore();
   const query = useDeckFolders(userId);
+  const defaultLimitedFolder = useSetDefaultLimitedFolder(userId);
   const folders = query.data ?? [];
   const [storedOpened, setOpened] = useState(() => readOpenDeckFolders(userId));
   const [unfiledOpen, setUnfiledOpen] = useState(() => readUnfiledOpen(userId));
@@ -168,8 +170,8 @@ export default function DeckFolders({ userId }: { userId: string }) {
             <TableHeader>
               <TableRow>
                 <TableHead>Folder</TableHead>
-                <TableHead className="w-8 px-1 sm:w-24 sm:px-2">
-                  <span className="sr-only">Create deck</span>
+                <TableHead className="w-16 px-1 sm:w-32 sm:px-2 lg:w-[20rem]">
+                  <span className="sr-only">Limited default and new deck</span>
                 </TableHead>
                 <TableHead className="w-12 px-1 text-right sm:w-14 sm:px-2">Decks</TableHead>
                 <TableHead className="w-14 px-1 text-right sm:w-20 sm:px-2">Actions</TableHead>
@@ -194,6 +196,8 @@ export default function DeckFolders({ userId }: { userId: string }) {
                         })
                       }
                       onSaved={onSaved}
+                      onSetDefaultLimited={folderId => defaultLimitedFolder.mutate(folderId)}
+                      defaultLimitedPending={defaultLimitedFolder.isPending}
                       drag={drag}
                       onDeleted={id => {
                         const removed = getDeckFolderDescendants(folders, id);

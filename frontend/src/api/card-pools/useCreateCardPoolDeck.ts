@@ -5,6 +5,7 @@ import type { Deck } from '../../../../types/Deck.ts';
 import { createApiError } from '@/api/errors.ts';
 import type { CardPoolDataResponse } from './useGetCardPool.ts';
 import { dailySealedKeys } from './dailySealedKeys.ts';
+import { deckFolderKeys } from '@/api/deck-folders/queryKeys.ts';
 
 export interface CreateCardPoolDeckBody {
   name?: string;
@@ -42,6 +43,7 @@ export const useCreateCardPoolDeck = (id: string | undefined) => {
       );
       // New deck may also affect global decks views
       void queryClient.invalidateQueries({ queryKey: ['decks'], exact: false });
+      void queryClient.invalidateQueries({ queryKey: deckFolderKeys.all });
     },
   });
 };

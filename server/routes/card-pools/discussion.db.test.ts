@@ -8,6 +8,7 @@ import { user } from '../../db/schema/auth-schema.ts';
 import { cardPools } from '../../db/schema/card_pool.ts';
 import { cardPoolDecks } from '../../db/schema/card_pool_deck.ts';
 import { deck } from '../../db/schema/deck.ts';
+import { deckInformation } from '../../db/schema/deck_information.ts';
 import { dailyPoolDiscussion } from '../../db/schema/daily_pool_discussion.ts';
 import { discussion, discussionComment } from '../../db/schema/discussion.ts';
 import { userNotification } from '../../db/schema/user_notification.ts';
@@ -278,6 +279,7 @@ test.skipIf(!enabled)(
     } finally {
       if (deckIds.length) {
         await db.delete(cardPoolDecks).where(inArray(cardPoolDecks.deckId, deckIds));
+        await db.delete(deckInformation).where(inArray(deckInformation.deckId, deckIds));
         await db.delete(deck).where(inArray(deck.id, deckIds));
       }
       await db.delete(cardPools).where(eq(cardPools.id, poolId));

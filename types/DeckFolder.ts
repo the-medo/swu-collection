@@ -48,6 +48,7 @@ export type DeckFolder = {
   position: number;
   deckCount: number;
   sharing?: DeckFolderSharing;
+  isDefaultLimited?: boolean;
 };
 export type SharedDeckFolder = {
   id: string;

@@ -8,6 +8,7 @@ import { user } from '../../db/schema/auth-schema.ts';
 import { cardPools, cardPoolCards } from '../../db/schema/card_pool.ts';
 import { cardPoolDeckCards, cardPoolDecks } from '../../db/schema/card_pool_deck.ts';
 import { deck } from '../../db/schema/deck.ts';
+import { deckInformation } from '../../db/schema/deck_information.ts';
 import { dailyCardPoolGetRoute } from '../../routes/card-pools/daily/get.ts';
 import { cardPoolsIdDecksPostRoute } from '../../routes/card-pools/_id/decks/post.ts';
 import { cardPoolsIdDecksGetRoute } from '../../routes/card-pools/_id/decks/get.ts';
@@ -199,6 +200,7 @@ test.skipIf(!enabled)(
       expect((await read()).pool.publicDeckCount).toBe(15);
       await db.delete(cardPoolDeckCards).where(inArray(cardPoolDeckCards.deckId, drafts));
       await db.delete(cardPoolDecks).where(inArray(cardPoolDecks.deckId, drafts));
+      await db.delete(deckInformation).where(inArray(deckInformation.deckId, drafts));
       await db.delete(deck).where(inArray(deck.id, drafts));
 
       const payload = await read();
@@ -340,6 +342,7 @@ test.skipIf(!enabled)(
       if (decks.length) {
         await db.delete(cardPoolDeckCards).where(inArray(cardPoolDeckCards.deckId, decks));
         await db.delete(cardPoolDecks).where(inArray(cardPoolDecks.deckId, decks));
+        await db.delete(deckInformation).where(inArray(deckInformation.deckId, decks));
         await db.delete(deck).where(inArray(deck.id, decks));
       }
       if (pools.length) {

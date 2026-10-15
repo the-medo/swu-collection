@@ -130,6 +130,27 @@ try {
   await expect(unfiled().getByRole('checkbox', { name: /^Select Fixture deck/ })).toHaveCount(20);
   await unfiled().getByRole('button', { name: 'Load more decks', exact: true }).click();
   await expect(unfiled().getByRole('checkbox', { name: /^Select Fixture deck/ })).toHaveCount(25);
+  // Hovering an outer folder-content <tr> must not fan out every nested deck's artwork.
+  await page.getByRole('heading', { name: 'Your decks', exact: true }).hover();
+  const artwork = unfiled().locator('.compact-deck-card-leader');
+  await expect(artwork).toHaveCount(25);
+  await expect
+    .poll(() => artwork.nth(1).evaluate(element => element.getAnimations().length))
+    .toBe(0);
+  const resting = await artwork.nth(1).evaluate(element => getComputedStyle(element).transform);
+  await unfiled().getByRole('row').filter({ hasText: 'Fixture deck 00' }).hover();
+  await expect
+    .poll(() => artwork.first().evaluate(element => getComputedStyle(element).transform))
+    .not.toBe(resting);
+  // Wait for the hovered card's transition before comparing every other row.
+  await expect
+    .poll(() => artwork.first().evaluate(element => element.getAnimations().length))
+    .toBe(0);
+  expect(
+    await artwork.evaluateAll(elements =>
+      elements.slice(1).map(element => getComputedStyle(element).transform),
+    ),
+  ).toEqual(Array(24).fill(resting));
   await expect(unfiledRow()).toBeVisible();
   // Folder controls stay out of the creation/import dialogs and bulk bar until folders exist.
   await page.getByRole('button', { name: 'New deck', exact: true }).click();
@@ -230,6 +251,37 @@ try {
   const rootId = folders.find((item: { name: string }) => item.name === 'Tournament prep').id;
   const childId = folders.find((item: { name: string }) => item.name === 'Aggro').id;
   const leafId = folders.find((item: { name: string }) => item.name === 'Sabine').id;
+
+  // Both actions follow their own row's hover/focus; the badge stays visible.
+  await page.getByRole('heading', { name: 'Your decks', exact: true }).click();
+  const defaultButton = (name: string) =>
+    folder(name).getByRole('button', { name: 'Set as default limited folder', exact: true });
+  const folderActions = defaultButton('Tournament prep').locator('..');
+  await expect(folderActions).toHaveCSS('opacity', '0');
+  await folder('Tournament prep').hover();
+  await expect(folderActions).toHaveCSS('opacity', '1');
+  await expect(defaultButton('Aggro').locator('..')).toHaveCSS('opacity', '0');
+  await defaultButton('Tournament prep').click();
+  await expect(
+    folder('Tournament prep').getByText('Limited Default', { exact: true }),
+  ).toBeVisible();
+  await page.getByRole('heading', { name: 'Your decks', exact: true }).click();
+  await defaultButton('Aggro').focus();
+  await expect(defaultButton('Aggro').locator('..')).toHaveCSS('opacity', '1');
+  await page.keyboard.press('Enter');
+  await expect(folder('Aggro').getByText('Limited Default', { exact: true })).toBeVisible();
+  await expect(folder('Tournament prep').getByText('Limited Default', { exact: true })).toHaveCount(
+    0,
+  );
+  await page.reload();
+  await expect(folder('Aggro').getByText('Limited Default', { exact: true })).toBeVisible();
+  await folder('Aggro').hover();
+  await folder('Aggro')
+    .getByRole('button', { name: 'Clear default limited folder', exact: true })
+    .click();
+  await expect(page.getByText('Limited Default', { exact: true })).toHaveCount(0);
+  await unfiled().getByRole('button', { name: 'Load more decks', exact: true }).click();
+  await expect(unfiled().getByRole('checkbox', { name: /^Select Fixture deck/ })).toHaveCount(25);
 
   // Folder rows support sibling ordering and parent changes through actual pointer gestures.
   for (const name of ['Practice', 'Casual']) {
