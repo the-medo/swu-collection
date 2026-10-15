@@ -298,11 +298,13 @@ test.skipIf(process.env.USER_FILES_DB_TEST !== '1')(
       const sanitizer = await Bun.file(
         new URL('../../../scripts/remote-dev/sql/001-core-data.sql', import.meta.url),
       ).text();
-      const cleanup = sanitizer.match(/TRUNCATE TABLE user_file, user_file_storage;/)![0];
+      const cleanup = sanitizer.match(/DO \$user_albums\$[\s\S]*?\$user_albums\$;/)![0];
       const assertion = sanitizer.match(/IF EXISTS \(SELECT 1 FROM user_file\)[\s\S]*?END IF;/)![0];
       await db.transaction(async tx => {
         await tx.execute(sql`CREATE TEMP TABLE user_file (secret text) ON COMMIT DROP`);
         await tx.execute(sql`CREATE TEMP TABLE user_file_storage (secret text) ON COMMIT DROP`);
+        await tx.execute(sql`CREATE TEMP TABLE user_album (secret text) ON COMMIT DROP`);
+        await tx.execute(sql`CREATE TEMP TABLE user_album_item (secret text) ON COMMIT DROP`);
         await tx.execute(sql`INSERT INTO user_file VALUES ('private filename')`);
         await tx.execute(sql`INSERT INTO user_file_storage VALUES ('supporter entitlement')`);
         await tx.execute(sql.raw(cleanup));

@@ -11,6 +11,8 @@ export const Route = createFileRoute('/users/$userId/')({
           'decks',
           'collections',
           'wantlists',
+          'albums',
+          'galleries',
           'calendar',
           'tournaments',
           'reports',
@@ -22,7 +24,12 @@ export const Route = createFileRoute('/users/$userId/')({
     })
     .transform(search => ({
       ...search,
-      userTab: search.userTab === 'transactions' ? ('currencies' as const) : search.userTab,
+      userTab:
+        search.userTab === 'transactions'
+          ? ('currencies' as const)
+          : search.userTab === 'galleries'
+            ? ('albums' as const)
+            : search.userTab,
       // Preserve existing bookmarks to the former Transactions profile section.
       currencyPage:
         search.currencyPage ??

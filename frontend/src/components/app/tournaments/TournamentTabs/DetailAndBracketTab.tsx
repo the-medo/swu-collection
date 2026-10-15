@@ -9,6 +9,7 @@ import { BracketInfo } from '../../../../../../types/enums.ts';
 import { TournamentEventInfo } from '../TournamentEventInfo.tsx';
 import { TournamentAttachments } from '../attachments/TournamentAttachments.tsx';
 import NoTournamentData from '../components/NoTournamentData.tsx';
+import { TournamentAlbums } from '../TournamentAlbums.tsx';
 
 interface DetailAndBracketTabProps {
   tournamentId: string;
@@ -38,10 +39,10 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({
             {/* Tournament Info Table */}
             {displayDetail && (
               <div className="@container">
-                <div className="grid items-stretch gap-4 @4xl:grid-cols-[minmax(0,2fr)_minmax(20rem,1fr)]">
+                <div className="grid items-stretch gap-4 @3xl:grid-cols-2 @6xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)_minmax(14rem,0.85fr)]">
                   <section
                     aria-label="Tournament attributes"
-                    className="flex min-w-0 flex-col rounded-md border bg-card p-3 shadow-xs"
+                    className="flex min-w-0 flex-col rounded-md border bg-card p-3 shadow-xs @3xl:col-span-2 @6xl:col-span-1"
                   >
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
@@ -159,6 +160,7 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({
                   >
                     <TournamentEventInfo tournament={tournament} linkTitle={false} />
                   </section>
+                  <TournamentAlbums tournamentId={tournamentId} tournamentName={tournament.name} />
                 </div>
               </div>
             )}

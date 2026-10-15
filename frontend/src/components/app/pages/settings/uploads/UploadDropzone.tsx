@@ -11,11 +11,13 @@ export function UploadDropzone({
   progress,
   onFiles,
   buttonRef,
+  variant = 'library',
 }: {
   disabled: boolean;
   progress: { current: number; total: number } | null;
   onFiles: (files: File[]) => void;
   buttonRef: RefObject<HTMLButtonElement | null>;
+  variant?: 'library' | 'album';
 }) {
   const picker = useRef<HTMLInputElement>(null);
   const dragDepth = useRef(0);
@@ -73,6 +75,9 @@ export function UploadDropzone({
       className={cn(
         'flex flex-col items-center gap-4 rounded-xl border-2 border-dashed px-5 py-8 text-center transition-colors sm:py-10',
         highlighted ? 'border-primary bg-primary/10' : 'border-border bg-muted/20',
+        variant === 'album' &&
+          'grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 rounded-none border-0 bg-transparent px-5 py-6 text-left sm:grid-cols-[auto_1fr_auto] sm:py-7',
+        variant === 'album' && highlighted && 'bg-[var(--album-tint)]',
       )}
       onDragEnter={event => {
         if (!hasFiles(event.dataTransfer)) return;
@@ -102,16 +107,24 @@ export function UploadDropzone({
         className={cn(
           'rounded-full p-3',
           highlighted ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground',
+          variant === 'album' &&
+            'row-span-2 rounded-2xl bg-[var(--album-tint)] text-[var(--album-accent)]',
         )}
       >
         {progress ? <Loader2 className="size-7 animate-spin" /> : <ImagePlus className="size-7" />}
       </div>
-      <div className="space-y-1">
+      <div className="min-w-0 space-y-1">
         <p className="font-medium">
-          {highlighted ? 'Drop to upload' : 'Add images to your library'}
+          {highlighted
+            ? 'Drop to upload'
+            : variant === 'album'
+              ? 'Upload to this album'
+              : 'Add images to your library'}
         </p>
-        <p className="text-sm text-muted-foreground">
-          Drag images into this box, or paste an image anywhere on this page.
+        <p className={cn('text-sm text-muted-foreground', variant === 'album' && 'text-xs')}>
+          {variant === 'album'
+            ? 'Choose multiple images, drag them here, or paste from your clipboard.'
+            : 'Drag images into this box, or paste an image anywhere on this page.'}
         </p>
       </div>
       <input
@@ -129,16 +142,36 @@ export function UploadDropzone({
           onFiles(files);
         }}
       />
-      <Button ref={buttonRef} disabled={disabled} onClick={() => picker.current?.click()}>
+      <Button
+        ref={buttonRef}
+        disabled={disabled}
+        className={
+          variant === 'album'
+            ? 'col-span-2 row-start-3 mt-2 rounded-xl bg-[#326149] text-white hover:bg-[#264c39] dark:bg-[#b9d4a8] dark:text-[#17352e] dark:hover:bg-[#c9dfbc] sm:col-span-1 sm:col-start-3 sm:row-span-2 sm:row-start-1 sm:mt-0'
+            : undefined
+        }
+        onClick={() => picker.current?.click()}
+      >
         <ImagePlus className="size-4" />
         {progress ? `Uploading ${progress.current} of ${progress.total}…` : 'Upload images'}
       </Button>
       {progress ? (
-        <p role="status" className="text-sm text-muted-foreground">
+        <p
+          role="status"
+          className={cn(
+            'text-sm text-muted-foreground',
+            variant === 'album' && 'col-start-2 row-start-2 text-xs',
+          )}
+        >
           Optimizing and uploading image {progress.current} of {progress.total}…
         </p>
       ) : (
-        <p className="text-xs text-muted-foreground">
+        <p
+          className={cn(
+            'text-xs text-muted-foreground',
+            variant === 'album' && 'col-start-2 row-start-2',
+          )}
+        >
           JPEG, PNG, WebP or still GIF, up to 10 MB each.
         </p>
       )}

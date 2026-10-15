@@ -1,11 +1,12 @@
 # User image library
 
-Authenticated users manage images at `/settings?page=uploads`. The gallery is
+Authenticated users manage images at `/settings?page=uploads`. The image library is
 private to its owner; image and thumbnail links are public so they can be reused.
-Upload and Gallery are separate sections. The gallery starts with the latest 12
+The All images tab contains Upload and All images sections; My albums manages
+named albums built from these uploads. The image grid starts with the latest 12
 images and loads another 12 as the user scrolls, keeping earlier images visible.
 A Load more control supports keyboard access, and failed loads have an explicit
-retry without clearing the gallery. Uploads and deletions refresh loaded batches.
+retry without clearing the image grid. Uploads and deletions refresh loaded batches.
 The upload box accepts file selection and dropped images. Pasting an image while
 the Uploads page is open also uploads it; text fields and open dialogs keep their
 normal paste behavior. All three methods share validation and sequential uploads.
@@ -14,6 +15,136 @@ be selected from this library or uploaded directly from the avatar picker, with
 the same optimization and quota enforcement. Header and article editors can
 use copied links. Profile headers also have dedicated upload and gallery selectors;
 article editors currently use copied links.
+
+## User albums
+
+At `/settings?page=uploads&uploadView=albums`, users create albums with a
+title, optional description, cover, and ordered images. A selected album is
+stored in the `album` search parameter, so reload and back/forward navigation
+preserve the editor. Add existing images uses a paginated multi-select picker;
+uploads use the same formats, optimization, quota, drop, and paste behavior as
+All images. One upload can appear in several albums and counts toward
+storage only once. The upload area is open by default in the editor; the file
+picker accepts multiple images. Album screens use the homepage's green palette and rounded panels. My albums
+uses a compact header and image-led cards with a Copy link button on every card.
+Owners can change privacy directly on these cards and in either album header;
+failed changes keep the saved value visible and allow retry. A compact album-link control beside the title opens a
+copyable share URL, and image tiles expose labelled icon controls with tooltips.
+
+New albums are **unlisted** by default in the form, API, and database:
+
+- **Unlisted:** anyone with `/albums/<album-id>` can view the album; it is
+  absent from profile listings and has `noindex, nofollow` metadata.
+- **Private:** only the owner can read the album. Other users and anonymous
+  requests receive 404. Copying a private album link does not grant access.
+- **Public:** anyone can view it, and it appears in the owner's profile
+  Albums tab (`/users/<user-id>?userTab=albums`).
+
+Visibility protects album metadata and discovery. Uploaded image URLs remain
+public, including images used in private albums. Changing visibility does
+not revoke a previously copied image URL.
+
+The album editor's Event section links an album to one tournament. Search by
+name or exact country code (such as `CZ`), or paste a tournament page URL. Linking a private or unlisted
+album first asks the owner to **Make public and link**; cancelling changes
+nothing. The confirmed update publishes and links the album atomically, subject
+to the usual owner and revision checks. All current and future photos in the
+album become public. Public albums can be linked directly.
+
+Tournament details show a compact Event photos panel beside the tournament
+attributes and event information. It previews the four newest nonempty, public
+albums as small cards, two per row, with a cover thumbnail, photographer profile
+link, photo count, and a link to the complete album and its image viewer.
+View all in the detail panel opens `/tournaments/<tournament-id>/photos`, where
+larger album cards include descriptions and load in batches of 12, newest first.
+The Photos page is available even before tournament results are imported.
+Create album is available in both views, even when no photos have
+been shared. It prompts signed-out visitors to sign in, then offers a form
+prefilled with the event name. **Create public album** explicitly confirms
+public visibility and creates the tournament link in the same transaction,
+then opens the album editor to add photos. Ordinary albums still default to
+unlisted.
+Unlinking preserves the album's photos and public visibility. Choosing Private
+or Unlisted automatically removes the tournament link; making it public again
+does not relink it. Deleting a tournament clears its album links without
+deleting albums or photos. Migration `0087_user_albums` includes the nullable
+foreign key, public-only constraint, and tournament listing index.
+
+Owners can edit captions and alt text separately for each album, drag images
+into order or use Move earlier/later buttons, and choose a cover. The first image
+is the fallback cover; empty albums have a placeholder. The full-image viewer
+supports previous/next, arrow keys, Escape, and return focus. Images and album
+lists load in batches of 12. Album lists use a creation-time/ID cursor, newest
+first, so editing or deleting albums between pages does not shift the remaining
+results. New albums ahead of the cursor appear on refresh.
+
+Remove from album asks for confirmation and, by default, deletes only membership
+and its caption/alt text. An unchecked “Also delete the uploaded file” option
+lets the owner delete the file everywhere instead, with the affected album
+count and a warning about broken links and permanent deletion. This option uses
+the existing file-deletion operation, so a failed storage deletion preserves the
+album membership for retry. Delete album preserves all uploaded images and
+their other memberships. Deleting an
+upload through All images shows its album count, removes it from every album,
+clears explicit cover references, and frees storage once. Storage errors retain
+the existing retry behavior. Saved avatar/header copies remain independent.
+
+Uploads into an album use two steps: upload the file, then add its ID to the
+album. If the second step fails, the image stays in All images and Retry adding
+saved image retries membership without uploading or charging storage again.
+The batch stops at that failure and reports how many images were added. Keep in
+All images dismisses the pending attachment and allows more uploads. New uploads
+wait while another album change or refresh is in progress.
+Uploads tabs are disabled during a batch; leaving through another route asks
+before stopping it. Once an upload response provides a file ID, the active
+album operation finishes its attachment attempt even after confirmed navigation.
+
+`user_album` and `user_album_item` store metadata and memberships. All album
+writes take the account's `user_file_storage` row lock before other rows, matching
+upload/deletion serialization. Album writes carry an expected revision; stale
+edits return 409. File deletion also advances affected album revisions. Next
+image pages carry the revision to detect ordering/content changes between pages.
+Edit dialogs retain entered text on conflict and offer an explicit action to use
+the latest revision before saving again. This refresh updates untouched fields
+(including visibility) to values changed in another tab while retaining local
+edits. Saving sends only fields changed from that refreshed version. An image
+removed or moved beyond the loaded pages keeps its open dialog and unsaved text,
+with recovery instructions. Temporary refresh
+errors stay inline without discarding open forms or uploads; access-loss responses
+still remove the album view.
+All JSON responses use `private, no-store` and vary by cookie. Public DTOs omit
+private filenames, storage usage, quota, and raw object-key fields. Frontend
+queries are scoped by viewer, and album/file mutations invalidate affected
+lists, counts, covers, and detail views.
+
+The API is `/api/user-albums`: owner list/create at `/`, public profile listing
+at `/by-user/:userId`, visibility-aware read and owner update/delete at `/:id`,
+batch attachment at `/:id/images`, and item edit/move/removal at
+`/:id/images/:fileId`. Owner-only `/membership` accepts up to 100 comma-separated
+file IDs and an optional album ID for picker/deletion information. Mutations
+require `X-Requested-With: swubase`. Each attached file must belong to the album
+owner; a mixed-owner batch is rejected atomically. Album organization continues
+to work when uploads are disabled or the storage quota is exhausted.
+
+Apply `0087_user_albums` with `bun run db-migrate` before deploying the album
+API. This single migration creates the final album tables, constraints, cursor
+indexes, and tournament link directly. Existing uploads and quota overrides are
+unchanged.
+
+The unreleased branch's intermediate migrations `0087_cheerful_nocturne`
+through `0090_powerful_luke_cage` were consolidated before release. Development
+databases that already applied them need their migration ledger reconciled only
+after verifying the final schema matches, or must be recreated from development
+data. Do not replay the new table-creation migration over those existing tables.
+
+The canonical page is `/albums/<album-id>`. Existing `/galleries/<gallery-id>`
+links redirect to it; older `uploadView=galleries&gallery=<id>` settings links and
+`userTab=galleries` profile links still resolve to the Albums views. New navigation
+and copied links use the album names. The API contract is `/api/user-albums`, with
+`album`, `albums`, and `albumId` fields replacing the former gallery names.
+The contributor sanitizer removes all album metadata and memberships, including
+public albums and opted-in accounts, together with the upload tables. Its
+conditional truncate also supports older dumps with gallery tables or without either feature table.
 
 Both avatar sources use the square crop editor and save a separate 256 × 256
 WebP to the existing per-user avatar object in R2. The API accepts either the
@@ -102,7 +233,7 @@ bytes and 40 million pixels. Animated images and SVG are rejected. It applies
 orientation, strips embedded metadata (including EXIF/GPS), resizes within
 2560 × 2560 without enlargement, and encodes WebP at quality 82. Header-purpose
 uploads may keep a taller result to preserve their recommended width, and their
-processed source must also fit within 10 MB. Gallery previews
+processed source must also fit within 10 MB. Image previews
 fit within 400 × 400 at quality 75. Originals are not retained. Each server process allows two uploads and two deletions at once, with at most
 one mutation per account; additional requests receive HTTP 429. Upload bodies
 have a 60-second deadline, after which the input stream is cancelled (HTTP 408).
@@ -120,13 +251,13 @@ New objects use `user-files/<user-id>/<random-uuid>.webp` and
 `user-files/<user-id>/<random-uuid>-thumb.webp`. The user ID is encoded as one
 path segment; generated file IDs prevent filename collisions. The original
 filename stays in the database for display. Image bytes contain only re-encoded
-pixels, with no embedded user ID or original filename. Upload and gallery
+pixels, with no embedded user ID or original filename. Upload and image-library
 responses include direct bucket URLs for both sizes. Viewing images and copying their links involves
 no per-image API request or database lookup. Uploading, listing metadata/usage,
 and deleting still use the authenticated API.
 
 `user_file.image_key` and `thumbnail_key` store the actual R2 object keys.
-Gallery links, compatibility redirects, avatar source lookup, and deletion all
+Image-library links, compatibility redirects, avatar source lookup, and deletion all
 use these saved keys, including any legacy flat `user-files/<uuid>` paths already
 stored in development databases. Migration `0069_user_files` creates the upload
 tables with required keys and extends avatar metadata to accept uploaded images.
@@ -177,6 +308,9 @@ Run against the isolated worktree database:
 
 ```bash
 USER_FILES_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test server/lib/user-files
+USER_ALBUMS_DB_TEST=1 USER_FILES_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test server/lib/user-albums server/lib/user-files server/routes/user-files-client.test.ts
+USER_ALBUMS_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/user-albums.browser.ts
+USER_ALBUMS_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/album-tournaments.browser.ts
 USER_UPLOADS_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/user-uploads.browser.ts
 USER_HEADER_DB_TEST=1 IMAGE_GALLERY_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test server/lib/user-header server/lib/image-gallery server/routes/user/header.test.ts server/routes/image-gallery.test.ts
 USER_HEADER_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/profile-header.browser.ts

@@ -146,7 +146,17 @@ TRUNCATE TABLE user_tournament_save;
 TRUNCATE TABLE user_tournament_attachment, user_tournament_preparation;
 TRUNCATE TABLE user_calendar_subscription;
 -- Never export uploads, filenames, or account-specific storage entitlements.
-TRUNCATE TABLE user_file, user_file_storage;
+DO $user_albums$
+BEGIN
+  IF to_regclass('public.user_album') IS NOT NULL THEN
+    TRUNCATE TABLE user_album_item, user_album, user_file, user_file_storage;
+  ELSIF to_regclass('public.user_gallery') IS NOT NULL THEN
+    TRUNCATE TABLE user_gallery_item, user_gallery, user_file, user_file_storage;
+  ELSE
+    TRUNCATE TABLE user_file, user_file_storage;
+  END IF;
+END
+$user_albums$;
 -- Local admins must not be able to delete production gallery objects from the shared bucket.
 DO $image_gallery$
 BEGIN
@@ -597,6 +607,18 @@ BEGIN
 
   IF EXISTS (SELECT 1 FROM user_file) OR EXISTS (SELECT 1 FROM user_file_storage) THEN
     RAISE EXCEPTION 'User uploads or storage entitlements remain in the contributor dump.';
+  END IF;
+
+  IF to_regclass('public.user_album') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM user_album) OR EXISTS (SELECT 1 FROM user_album_item) THEN
+      RAISE EXCEPTION 'User album metadata remains in the contributor dump.';
+    END IF;
+  END IF;
+
+  IF to_regclass('public.user_gallery') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM user_gallery) OR EXISTS (SELECT 1 FROM user_gallery_item) THEN
+      RAISE EXCEPTION 'Legacy user gallery metadata remains in the contributor dump.';
+    END IF;
   END IF;
 
   IF to_regclass('public.image_gallery') IS NOT NULL THEN

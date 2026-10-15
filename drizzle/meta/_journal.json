@@ -610,6 +610,13 @@
       "when": 1791962642639,
       "tag": "0086_card_groups",
       "breakpoints": true
+    },
+    {
+      "idx": 87,
+      "version": "7",
+      "when": 1792107529903,
+      "tag": "0087_user_albums",
+      "breakpoints": true
     }
   ]
 }

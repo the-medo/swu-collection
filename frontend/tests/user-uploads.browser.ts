@@ -224,7 +224,7 @@ try {
   ]);
   await page.goto(`${origin}/settings?page=uploads`);
   await expect(page.getByRole('region', { name: 'Upload', exact: true })).toBeVisible();
-  const gallery = page.getByRole('region', { name: 'Gallery', exact: true });
+  const gallery = page.getByRole('region', { name: 'All images', exact: true });
   await expect(gallery).toBeVisible();
   await expect(box.getByRole('button', { name: 'Upload images', exact: true })).toBeEnabled();
   expect(await box.evaluate(element => getComputedStyle(element).borderStyle)).toBe('dashed');
@@ -249,6 +249,7 @@ try {
   await box.dispatchEvent('drop', { dataTransfer: dropped });
   await expect(box.getByRole('status')).toHaveText('Optimizing and uploading image 1 of 2…');
   await expect(uploadButton).toBeDisabled();
+  await expect(page.getByRole('tab', { name: 'My albums', exact: true })).toBeDisabled();
   // A second event during the batch must not start another request.
   const busyPaste = await transfer(['overlap.png']);
   await dropFromDesktop();
@@ -488,7 +489,9 @@ try {
   await expect(uploadButton).toBeDisabled();
   await expect(
     page.getByRole('region', { name: 'Upload', exact: true }).getByRole('status'),
-  ).toHaveText('Uploads are unavailable until your library loads. Use Try again in Gallery below.');
+  ).toHaveText(
+    'Uploads are unavailable until your library loads. Use Try again in All images below.',
+  );
   await expect(gallery.getByRole('alert')).toContainText('Could not load your image library.');
   failListPage = undefined;
   holdFirstPage = true;
@@ -538,7 +541,7 @@ try {
   await page.keyboard.press('Enter');
   await expect(gallery.getByText('Your image library starts here', { exact: true })).toBeVisible();
   await expect(uploadButton).toBeDisabled();
-  await expect(gallery.getByRole('heading', { name: 'Gallery', exact: true })).toBeFocused();
+  await expect(gallery.getByRole('heading', { name: 'All images', exact: true })).toBeFocused();
   expect(errors).toEqual([]);
   console.log('Empty-library recovery preserves focus even when uploads are disabled');
 } catch (error) {

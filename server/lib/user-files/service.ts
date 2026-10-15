@@ -1,6 +1,7 @@
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 import { db } from '../../db';
 import { userFile as files, userFileStorage as quotas } from '../../db/schema/user_file.ts';
+import { userAlbum, userAlbumItem } from '../../db/schema/user_album.ts';
 import { userFilesPageSize, type UserFile, type UserFiles } from '../../../types/UserFile.ts';
 import { recommendedHeaderImageWidth } from '../../../types/ImageGallery.ts';
 import { UserFileError } from './errors.ts';
@@ -126,6 +127,26 @@ export function createUserFileService(storage: UserFileObjectStorage = createUse
         const [row] = await tx.select().from(files).where(owned(userId, id)).for('update');
         if (!row) throw new UserFileError('Image not found.', 404);
         for (const key of [row.imageKey, row.thumbnailKey]) await storage.remove(key);
+        // Membership cascades and cover SET NULL happen with the file deletion.
+        // Increment revisions first, while holding the same lock as album writes.
+        await tx
+          .update(userAlbum)
+          .set({
+            revision: sql`${userAlbum.revision} + 1`,
+            updatedAt: new Date().toISOString(),
+          })
+          .where(
+            and(
+              eq(userAlbum.userId, userId),
+              inArray(
+                userAlbum.id,
+                tx
+                  .select({ albumId: userAlbumItem.albumId })
+                  .from(userAlbumItem)
+                  .where(eq(userAlbumItem.fileId, id)),
+              ),
+            ),
+          );
         await tx.delete(files).where(owned(userId, id));
       });
       return { id };
