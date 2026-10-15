@@ -1,10 +1,11 @@
-import { and, count, eq, inArray, or } from 'drizzle-orm';
+import { and, count, eq, inArray, or, sql } from 'drizzle-orm';
 import { db } from '../../db';
 import { user } from '../../db/schema/auth-schema.ts';
 import { deck } from '../../db/schema/deck.ts';
 import { deckFolder, deckFolderDeck, deckFolderShare } from '../../db/schema/deck_folder.ts';
 import { team } from '../../db/schema/team.ts';
 import { teamMember } from '../../db/schema/team_member.ts';
+import { userSettings } from '../../db/schema/user_settings.ts';
 import { sharedDeckFolderAccess } from './deckFolderAccess.ts';
 import { getDeckFolderDescendants } from '../../../shared/lib/deckFolders.ts';
 import { assertDeckTextAllowed, assertTextAllowed } from '../moderation/content.ts';
@@ -81,8 +82,30 @@ const listFolderRows = (userId: string) =>
     .groupBy(deckFolder.id)
     .orderBy(deckFolder.position, deckFolder.name, deckFolder.id);
 
+export async function getDefaultLimitedDeckFolder(tx: Transaction, userId: string) {
+  // Coordinate creation with preference changes and folder/subtree deletion.
+  await tx.select({ id: user.id }).from(user).where(eq(user.id, userId)).for('update');
+  const [folder] = await tx
+    .select({ id: deckFolder.id })
+    .from(userSettings)
+    .innerJoin(deckFolder, eq(sql`${deckFolder.id}::text`, userSettings.value))
+    .where(
+      and(
+        eq(userSettings.userId, userId),
+        eq(userSettings.key, 'defaultLimitedFolderId'),
+        eq(deckFolder.userId, userId),
+      ),
+    );
+  // Stale or foreign preferences must never prevent creating a deck.
+  return folder?.id ?? null;
+}
+
 export async function listDeckFolders(userId: string) {
   const folders = await listFolderRows(userId);
+  const [defaultLimitedFolder] = await db
+    .select({ id: userSettings.value })
+    .from(userSettings)
+    .where(and(eq(userSettings.userId, userId), eq(userSettings.key, 'defaultLimitedFolderId')));
   const shares = await db
     .select({
       folderId: deckFolderShare.folderId,
@@ -103,7 +126,7 @@ export async function listDeckFolders(userId: string) {
           : [],
       ),
     };
-    return { ...folder, sharing };
+    return { ...folder, sharing, isDefaultLimited: folder.id === defaultLimitedFolder?.id };
   });
 }
 
@@ -290,6 +313,13 @@ export async function removeDeckFolder(userId: string, id: string) {
       .where(and(eq(deckFolder.id, id), eq(deckFolder.userId, userId)))
       .returning({ id: deckFolder.id });
     // Subfolders and memberships cascade; the decks themselves are preserved.
+    if (removed.length && !(await getDefaultLimitedDeckFolder(tx, userId))) {
+      await tx
+        .delete(userSettings)
+        .where(
+          and(eq(userSettings.userId, userId), eq(userSettings.key, 'defaultLimitedFolderId')),
+        );
+    }
     return removed.length > 0;
   });
 }

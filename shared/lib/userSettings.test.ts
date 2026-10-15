@@ -6,6 +6,21 @@ import {
   userSettingsUpdateSchema,
 } from './userSettings.ts';
 
+test('limited folder preference defaults to null, round-trips as text and patches only itself', () => {
+  const id = crypto.randomUUID();
+  expect(userSettingsSchema.parse({}).defaultLimitedFolderId).toBeNull();
+  expect(userSettingsSchema.parse({ defaultLimitedFolderId: id }).defaultLimitedFolderId).toBe(id);
+  expect(userSettingsUpdateSchema.parse({ defaultLimitedFolderId: id })).toEqual({
+    defaultLimitedFolderId: id,
+  });
+  expect(userSettingsUpdateSchema.parse({ defaultLimitedFolderId: null })).toEqual({
+    defaultLimitedFolderId: null,
+  });
+  expect(userSettingsUpdateSchema.safeParse({ defaultLimitedFolderId: 'invalid' }).success).toBe(
+    false,
+  );
+});
+
 test('attachment feature defaults on and a serialized toggle preserves unrelated preferences', () => {
   expect(featureSettingsSchema.parse({})).toEqual({ use_tournament_attachments: true });
   expect(featureSettingsSchema.parse({ use_tournament_attachments: 'false' })).toEqual({

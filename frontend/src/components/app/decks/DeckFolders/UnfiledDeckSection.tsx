@@ -25,7 +25,10 @@ export default function UnfiledDeckSection({
 
   return (
     <>
-      <TableRow aria-label="No folder" className="h-16 border-border bg-muted/40 hover:bg-muted/60">
+      <TableRow
+        aria-label="No folder"
+        className="group/folder-row h-16 border-border bg-muted/40 hover:bg-muted/60"
+      >
         <TableCell className="min-w-0 py-1">
           <div className="flex min-w-0 items-center gap-1">
             <span className="w-6 shrink-0" aria-hidden="true" />
@@ -52,7 +55,9 @@ export default function UnfiledDeckSection({
           </div>
         </TableCell>
         <TableCell className="px-1 text-right sm:px-2">
-          <NewDeckInFolderButton folderId={null} name="No folder" />
+          <div className="pointer-events-none opacity-0 group-hover/folder-row:pointer-events-auto group-hover/folder-row:opacity-100 group-focus-within/folder-row:pointer-events-auto group-focus-within/folder-row:opacity-100 [@media(hover:none)]:pointer-events-auto [@media(hover:none)]:opacity-100">
+            <NewDeckInFolderButton folderId={null} name="No folder" />
+          </div>
         </TableCell>
         <TableCell />
         <TableCell />

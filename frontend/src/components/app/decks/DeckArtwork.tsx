@@ -36,7 +36,7 @@ const deckCardVariants = cva(
       role: {
         leader: cn(
           'compact-deck-card-leader left-0 z-1 [transform:translateY(-50%)_rotate(-5deg)]',
-          '[tr:hover_&]:[transform:translate(-3px,-50%)_rotate(-8deg)]',
+          '[tr:hover:not(:has(tr))_&]:[transform:translate(-3px,-50%)_rotate(-8deg)]',
           'group-hover/deck-art:[transform:translate(-3px,-50%)_rotate(-8deg)]',
           'group-hover/deck-row:[transform:translate(-3px,-50%)_rotate(-8deg)]',
           'group-focus-within/deck-row:[transform:translate(-3px,-50%)_rotate(-8deg)]',
@@ -44,7 +44,7 @@ const deckCardVariants = cva(
         leader2: 'compact-deck-card-leader2 z-1 [transform:translateY(-50%)_rotate(1deg)]',
         base: cn(
           'compact-deck-card-base right-0 [transform:translateY(-50%)_rotate(7deg)]',
-          '[tr:hover_&]:[transform:translate(3px,-50%)_rotate(10deg)]',
+          '[tr:hover:not(:has(tr))_&]:[transform:translate(3px,-50%)_rotate(10deg)]',
           'group-hover/deck-art:[transform:translate(3px,-50%)_rotate(10deg)]',
           'group-hover/deck-row:[transform:translate(3px,-50%)_rotate(10deg)]',
           'group-focus-within/deck-row:[transform:translate(3px,-50%)_rotate(10deg)]',

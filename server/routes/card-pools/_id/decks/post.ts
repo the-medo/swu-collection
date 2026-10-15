@@ -10,6 +10,9 @@ import { cardPoolCards, cardPools as cardPoolsTable } from '../../../../db/schem
 import { eq } from 'drizzle-orm';
 import { buildCardPoolVisibilityWhere } from '../../../../lib/card-pools/card-pool-access.ts';
 import { assertDeckTextAllowed } from '../../../../lib/moderation/content.ts';
+import { getDefaultLimitedDeckFolder } from '../../../../lib/decks/deckFolders.ts';
+import { deckFolderDeck } from '../../../../db/schema/deck_folder.ts';
+import { deckInformation } from '../../../../db/schema/deck_information.ts';
 
 const zParams = z.object({ id: z.uuid() });
 const zBody = z.object({
@@ -43,6 +46,7 @@ export const cardPoolsIdDecksPostRoute = new Hono<AuthExtension>().post(
       if (!pool) return { status: 'not_found' as const };
       if (pool.status === 'in_progress') return { status: 'not_ready' as const };
 
+      const folderId = await getDefaultLimitedDeckFolder(tx, user.id);
       const visibility = body.visibility ?? pool.visibility ?? Visibility.Unlisted;
 
       // format 3 => sealed/prerelease, format 4 => draft
@@ -63,6 +67,9 @@ export const cardPoolsIdDecksPostRoute = new Hono<AuthExtension>().post(
 
       const newDeck = inserted[0];
       const newDeckId = newDeck.id;
+      // New builds have no selected cards yet, but must be visible in deck/folder lists.
+      await tx.insert(deckInformation).values({ deckId: newDeckId });
+      if (folderId) await tx.insert(deckFolderDeck).values({ deckId: newDeckId, folderId });
 
       // Insert into card_pool_decks
       await tx.insert(cardPoolDecks).values({
