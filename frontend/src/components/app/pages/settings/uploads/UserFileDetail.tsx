@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAlbumMembership } from '@/api/user-albums/useAlbumMembership.ts';
 import { Copy, ExternalLink, Trash2 } from 'lucide-react';
 import {
   Dialog,
@@ -40,6 +41,7 @@ export function UserFileDetail({
   returnFocus: () => void;
 }) {
   const remove = useDeleteUserFile();
+  const membership = useAlbumMembership(userId, [file.id]);
   const { toast } = useToast();
   const [confirmDelete, setConfirmDelete] = useState(false);
   const url = new URL(file.url, window.location.origin).href;
@@ -127,7 +129,10 @@ export function UserFileDetail({
           </Button>
           <Button
             variant="destructive"
-            onClick={() => setConfirmDelete(true)}
+            onClick={() => {
+              setConfirmDelete(true);
+              void membership.refetch();
+            }}
             disabled={remove.isPending || uploading}
           >
             <Trash2 className="size-4" />
@@ -149,10 +154,26 @@ export function UserFileDetail({
             <AlertDialogHeader>
               <AlertDialogTitle>Delete this image?</AlertDialogTitle>
               <AlertDialogDescription>
-                This frees {formatBytes(file.byteSize + file.thumbnailByteSize)} of storage. Links
-                to this image will stop working wherever you have used them. This cannot be undone.
+                This frees {formatBytes(file.byteSize + file.thumbnailByteSize)} of storage.
+                {membership.isSuccess &&
+                  ` It also removes the image from ${membership.data.length} ${membership.data.length === 1 ? 'album' : 'albums'}. `}{' '}
+                Links to this image will stop working wherever you have used them. This cannot be
+                undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
+            {membership.isFetching && (
+              <p role="status" className="text-sm">
+                Checking affected albums…
+              </p>
+            )}
+            {membership.isError && (
+              <div role="alert">
+                <p className="text-sm text-destructive">Could not check affected albums.</p>
+                <Button variant="outline" onClick={() => void membership.refetch()}>
+                  Try again
+                </Button>
+              </div>
+            )}
             {remove.isError && (
               <p role="alert" className="text-sm text-destructive">
                 {remove.error.message}
@@ -163,7 +184,9 @@ export function UserFileDetail({
                 Keep image
               </AlertDialogCancel>
               <AlertDialogAction
-                disabled={remove.isPending || uploading}
+                disabled={
+                  remove.isPending || uploading || !membership.isSuccess || membership.isFetching
+                }
                 onClick={event => {
                   event.preventDefault();
                   remove.mutate({ userId, id: file.id }, { onSuccess: onDeleted });

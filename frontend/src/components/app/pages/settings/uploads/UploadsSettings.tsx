@@ -3,33 +3,41 @@ import { Images, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { Card } from '@/components/ui/card.tsx';
 import { useUser } from '@/hooks/useUser.ts';
+import { getRouteApi, useBlocker } from '@tanstack/react-router';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs.tsx';
+import { AlbumList } from '@/components/app/user-albums/AlbumList.tsx';
+import { AlbumEditor } from '@/components/app/user-albums/AlbumEditor.tsx';
+import { UserStorageMeter } from '@/components/app/user-albums/UserStorageMeter.tsx';
+import { validateUserImageFiles } from '@/api/user-files/uploadValidation.ts';
 import { useToast } from '@/hooks/use-toast.ts';
 import { useInfiniteUserFiles } from '@/api/user-files/useInfiniteUserFiles.ts';
 import { useUploadUserFile } from '@/api/user-files/useUploadUserFile.ts';
 import { useInfiniteQueryScroll } from '@/hooks/useInfiniteQueryScroll.ts';
-import {
-  maxUserFileBytes,
-  userFileMimeTypes,
-  type UserFile,
-} from '../../../../../../../types/UserFile.ts';
+import type { UserFile } from '../../../../../../../types/UserFile.ts';
 import { formatBytes } from './formatBytes.ts';
 import { UserFileDetail } from './UserFileDetail.tsx';
 import { UploadDropzone } from './UploadDropzone.tsx';
 
-function UploadsLibrary({ userId }: { userId: string }) {
+function UploadsLibrary({ userId, onBusy }: { userId: string; onBusy(busy: boolean): void }) {
   const [selected, setSelected] = useState<UserFile | null>(null);
   const [progress, setProgress] = useState<{ current: number; total: number } | null>(null);
   const uploadButton = useRef<HTMLButtonElement>(null);
-  const galleryButton = useRef<HTMLButtonElement | null>(null);
-  const galleryGrid = useRef<HTMLDivElement>(null);
-  const galleryHeading = useRef<HTMLHeadingElement>(null);
+  const libraryButton = useRef<HTMLButtonElement | null>(null);
+  const libraryGrid = useRef<HTMLDivElement>(null);
+  const libraryHeading = useRef<HTMLHeadingElement>(null);
   const loadMoreButton = useRef<HTMLButtonElement>(null);
   const retryButton = useRef<HTMLButtonElement>(null);
   const focusAfterLoad = useRef<{ index: number; source: Element; automatic: boolean } | null>(
     null,
   );
   const activeUpload = useRef<AbortController | null>(null);
-  useEffect(() => () => activeUpload.current?.abort(), []);
+  useEffect(
+    () => () => {
+      activeUpload.current?.abort();
+      onBusy(false);
+    },
+    [onBusy],
+  );
   const { toast } = useToast();
   const query = useInfiniteUserFiles(userId);
   const upload = useUploadUserFile();
@@ -73,9 +81,9 @@ function UploadsLibrary({ userId }: { userId: string }) {
     if (automatic && source.isConnected) return;
     if (query.isError) retryButton.current?.focus();
     else {
-      const nextImage = galleryGrid.current?.children[Math.min(index, files.length - 1)];
+      const nextImage = libraryGrid.current?.children[Math.min(index, files.length - 1)];
       if (nextImage instanceof HTMLElement) nextImage.focus();
-      else galleryHeading.current?.focus();
+      else libraryHeading.current?.focus();
     }
   }, [files, query.isFetching, query.isError]);
   const full = !!data && data.usedBytes >= data.quotaBytes;
@@ -100,17 +108,10 @@ function UploadsLibrary({ userId }: { userId: string }) {
     }
     const controller = new AbortController();
     activeUpload.current = controller;
+    onBusy(true);
     let uploaded = 0;
     try {
-      for (const file of files) {
-        if (
-          !userFileMimeTypes.some(type => type === file.type) &&
-          !(file.type === '' && /\.(jpe?g|png|webp|gif)$/i.test(file.name))
-        )
-          throw new Error(`${file.name}: choose a JPEG, PNG, WebP or still GIF image.`);
-        if (file.size > maxUserFileBytes)
-          throw new Error(`${file.name}: images must be 10 MB or smaller.`);
-      }
+      validateUserImageFiles(files);
       for (const [index, file] of files.entries()) {
         if (controller.signal.aborted) return;
         setProgress({ current: index + 1, total: files.length });
@@ -130,6 +131,7 @@ function UploadsLibrary({ userId }: { userId: string }) {
       activeUpload.current = null;
       if (!controller.signal.aborted) {
         setProgress(null);
+        onBusy(false);
       }
     }
   };
@@ -152,7 +154,7 @@ function UploadsLibrary({ userId }: { userId: string }) {
           <p role="status" className="text-sm text-muted-foreground">
             {query.isPending || query.isFetching
               ? 'Checking available storage…'
-              : 'Uploads are unavailable until your library loads. Use Try again in Gallery below.'}
+              : 'Uploads are unavailable until your library loads. Use Try again in All images below.'}
           </p>
         )}
         <p className="text-sm text-muted-foreground">
@@ -177,7 +179,7 @@ function UploadsLibrary({ userId }: { userId: string }) {
                 className="block h-2 w-full overflow-hidden rounded-full accent-primary"
               />
               <p className="text-xs text-muted-foreground">
-                Optimized images and gallery previews count toward your storage.
+                Optimized images and thumbnails count toward your storage.
               </p>
               {full && (
                 <p role="status" className="text-sm text-destructive">
@@ -193,10 +195,10 @@ function UploadsLibrary({ userId }: { userId: string }) {
           </>
         )}
       </Card>
-      <Card role="region" aria-labelledby="gallery-heading" className="space-y-4 p-4">
+      <Card role="region" aria-labelledby="library-heading" className="space-y-4 p-4">
         <div className="space-y-1">
-          <h3 ref={galleryHeading} id="gallery-heading" tabIndex={-1}>
-            Gallery
+          <h3 ref={libraryHeading} id="library-heading" tabIndex={-1}>
+            All images
           </h3>
           <p className="text-sm text-muted-foreground">Your latest images, newest first.</p>
         </div>
@@ -207,14 +209,14 @@ function UploadsLibrary({ userId }: { userId: string }) {
         )}
         {data &&
           (files.length ? (
-            <div ref={galleryGrid} className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+            <div ref={libraryGrid} className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
               {files.map(file => (
                 <button
                   type="button"
                   key={file.id}
                   className="min-w-0 overflow-hidden rounded-lg border bg-card text-left transition-colors hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   onClick={event => {
-                    galleryButton.current = event.currentTarget;
+                    libraryButton.current = event.currentTarget;
                     setSelected(file);
                   }}
                   aria-label={`View ${file.fileName}`}
@@ -306,7 +308,7 @@ function UploadsLibrary({ userId }: { userId: string }) {
             toast({ title: 'Image deleted' });
           }}
           returnFocus={() => {
-            if (galleryButton.current?.isConnected) galleryButton.current.focus();
+            if (libraryButton.current?.isConnected) libraryButton.current.focus();
             else uploadButton.current?.focus();
           }}
         />
@@ -314,7 +316,81 @@ function UploadsLibrary({ userId }: { userId: string }) {
     </div>
   );
 }
+const settingsRoute = getRouteApi('/_authenticated/settings/');
+function UploadsNavigation({ userId }: { userId: string }) {
+  const [uploading, setUploading] = useState(false);
+  useBlocker({
+    shouldBlockFn: () =>
+      uploading &&
+      !window.confirm(
+        'Uploads are still running. Leave and stop the remaining uploads? Images already uploaded stay in All images.',
+      ),
+    enableBeforeUnload: uploading,
+  });
+  const search = settingsRoute.useSearch();
+  const navigate = settingsRoute.useNavigate();
+  const view = search.album ? 'albums' : (search.uploadView ?? 'images');
+  const editAlbum = (id?: string) =>
+    void navigate({
+      search: previous => ({ ...previous, uploadView: 'albums', album: id }),
+      resetScroll: false,
+    });
+  return (
+    <Tabs
+      value={view}
+      onValueChange={value => {
+        if (!uploading && (value === 'images' || value === 'albums'))
+          void navigate({
+            search: previous => ({
+              ...previous,
+              uploadView: value === 'images' ? undefined : value,
+              album: undefined,
+            }),
+            resetScroll: false,
+          });
+      }}
+    >
+      <TabsList
+        aria-label="Uploads views"
+        className="mb-2 h-auto gap-1 rounded-2xl border bg-card p-1.5"
+      >
+        <TabsTrigger
+          value="images"
+          disabled={uploading}
+          className="rounded-xl px-5 py-2.5 data-[state=active]:bg-[#f7f0dc] data-[state=active]:text-[#805e19] dark:data-[state=active]:bg-[#302a1b] dark:data-[state=active]:text-[#f1d48b]"
+        >
+          All images
+        </TabsTrigger>
+        <TabsTrigger
+          value="albums"
+          disabled={uploading}
+          className="rounded-xl px-5 py-2.5 data-[state=active]:bg-[#f7f0dc] data-[state=active]:text-[#805e19] dark:data-[state=active]:bg-[#302a1b] dark:data-[state=active]:text-[#f1d48b]"
+        >
+          My albums
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="images">
+        <UploadsLibrary userId={userId} onBusy={setUploading} />
+      </TabsContent>
+      <TabsContent value="albums" className="space-y-5">
+        {search.album ? (
+          <AlbumEditor
+            key={search.album}
+            id={search.album}
+            userId={userId}
+            onBack={() => editAlbum()}
+            uploading={uploading}
+            onUploadBusy={setUploading}
+          />
+        ) : (
+          <AlbumList userId={userId} onEdit={editAlbum} />
+        )}
+        <UserStorageMeter userId={userId} />
+      </TabsContent>
+    </Tabs>
+  );
+}
 export default function UploadsSettings() {
   const user = useUser();
-  return user ? <UploadsLibrary key={user.id} userId={user.id} /> : null;
+  return user ? <UploadsNavigation key={user.id} userId={user.id} /> : null;
 }

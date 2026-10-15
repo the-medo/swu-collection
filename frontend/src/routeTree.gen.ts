@@ -67,12 +67,15 @@ import { Route as ToolsDeckFormatConverterIndexRouteImport } from './routes/tool
 import { Route as TeamsTeamIdIndexRouteImport } from './routes/teams/$teamId/index'
 import { Route as ListsCardListIdIndexRouteImport } from './routes/lists/$cardListId/index'
 import { Route as LimitedPublicIndexRouteImport } from './routes/limited/public/index'
+import { Route as GalleriesGalleryIdIndexRouteImport } from './routes/galleries/$galleryId/index'
 import { Route as DecksDeckIdIndexRouteImport } from './routes/decks/$deckId/index'
 import { Route as CollectionsCollectionIdIndexRouteImport } from './routes/collections/$collectionId/index'
+import { Route as AlbumsAlbumIdIndexRouteImport } from './routes/albums/$albumId/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedCrossfireIndexRouteImport } from './routes/_authenticated/crossfire/index'
 import { Route as UsersUserIdTournamentsRouteImport } from './routes/users/$userId/tournaments'
 import { Route as UsersUserIdCalendarRouteImport } from './routes/users/$userId/calendar'
+import { Route as TournamentsTournamentIdPhotosRouteImport } from './routes/tournaments/$tournamentId/photos'
 import { Route as TournamentsTournamentIdMetaRouteImport } from './routes/tournaments/$tournamentId/meta'
 import { Route as TournamentsTournamentIdMatchupsRouteImport } from './routes/tournaments/$tournamentId/matchups'
 import { Route as TournamentsTournamentIdDetailsRouteImport } from './routes/tournaments/$tournamentId/details'
@@ -403,6 +406,11 @@ const LimitedPublicIndexRoute = LimitedPublicIndexRouteImport.update({
   path: '/limited/public/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GalleriesGalleryIdIndexRoute = GalleriesGalleryIdIndexRouteImport.update({
+  id: '/galleries/$galleryId/',
+  path: '/galleries/$galleryId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DecksDeckIdIndexRoute = DecksDeckIdIndexRouteImport.update({
   id: '/decks/$deckId/',
   path: '/decks/$deckId/',
@@ -414,6 +422,11 @@ const CollectionsCollectionIdIndexRoute =
     path: '/collections/$collectionId/',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AlbumsAlbumIdIndexRoute = AlbumsAlbumIdIndexRouteImport.update({
+  id: '/albums/$albumId/',
+  path: '/albums/$albumId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedSettingsIndexRoute =
   AuthenticatedSettingsIndexRouteImport.update({
     id: '/settings/',
@@ -436,6 +449,12 @@ const UsersUserIdCalendarRoute = UsersUserIdCalendarRouteImport.update({
   path: '/users/$userId/calendar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TournamentsTournamentIdPhotosRoute =
+  TournamentsTournamentIdPhotosRouteImport.update({
+    id: '/tournaments/$tournamentId/photos',
+    path: '/tournaments/$tournamentId/photos',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const TournamentsTournamentIdMetaRoute =
   TournamentsTournamentIdMetaRouteImport.update({
     id: '/tournaments/$tournamentId/meta',
@@ -683,12 +702,15 @@ export interface FileRoutesByFullPath {
   '/tournaments/$tournamentId/details': typeof TournamentsTournamentIdDetailsRoute
   '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
   '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
+  '/tournaments/$tournamentId/photos': typeof TournamentsTournamentIdPhotosRoute
   '/users/$userId/calendar': typeof UsersUserIdCalendarRoute
   '/users/$userId/tournaments': typeof UsersUserIdTournamentsRoute
   '/crossfire': typeof AuthenticatedCrossfireIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/albums/$albumId': typeof AlbumsAlbumIdIndexRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
+  '/galleries/$galleryId': typeof GalleriesGalleryIdIndexRoute
   '/limited/public': typeof LimitedPublicIndexRoute
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
   '/teams/$teamId/': typeof TeamsTeamIdIndexRoute
@@ -776,12 +798,15 @@ export interface FileRoutesByTo {
   '/tournaments/$tournamentId/details': typeof TournamentsTournamentIdDetailsRoute
   '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
   '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
+  '/tournaments/$tournamentId/photos': typeof TournamentsTournamentIdPhotosRoute
   '/users/$userId/calendar': typeof UsersUserIdCalendarRoute
   '/users/$userId/tournaments': typeof UsersUserIdTournamentsRoute
   '/crossfire': typeof AuthenticatedCrossfireIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
+  '/albums/$albumId': typeof AlbumsAlbumIdIndexRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
+  '/galleries/$galleryId': typeof GalleriesGalleryIdIndexRoute
   '/limited/public': typeof LimitedPublicIndexRoute
   '/lists/$cardListId': typeof ListsCardListIdIndexRoute
   '/teams/$teamId': typeof TeamsTeamIdIndexRoute
@@ -873,12 +898,15 @@ export interface FileRoutesById {
   '/tournaments/$tournamentId/details': typeof TournamentsTournamentIdDetailsRoute
   '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
   '/tournaments/$tournamentId/meta': typeof TournamentsTournamentIdMetaRoute
+  '/tournaments/$tournamentId/photos': typeof TournamentsTournamentIdPhotosRoute
   '/users/$userId/calendar': typeof UsersUserIdCalendarRoute
   '/users/$userId/tournaments': typeof UsersUserIdTournamentsRoute
   '/_authenticated/crossfire/': typeof AuthenticatedCrossfireIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
+  '/albums/$albumId/': typeof AlbumsAlbumIdIndexRoute
   '/collections/$collectionId/': typeof CollectionsCollectionIdIndexRoute
   '/decks/$deckId/': typeof DecksDeckIdIndexRoute
+  '/galleries/$galleryId/': typeof GalleriesGalleryIdIndexRoute
   '/limited/public/': typeof LimitedPublicIndexRoute
   '/lists/$cardListId/': typeof ListsCardListIdIndexRoute
   '/teams/$teamId/': typeof TeamsTeamIdIndexRoute
@@ -971,12 +999,15 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/details'
     | '/tournaments/$tournamentId/matchups'
     | '/tournaments/$tournamentId/meta'
+    | '/tournaments/$tournamentId/photos'
     | '/users/$userId/calendar'
     | '/users/$userId/tournaments'
     | '/crossfire'
     | '/settings'
+    | '/albums/$albumId'
     | '/collections/$collectionId'
     | '/decks/$deckId'
+    | '/galleries/$galleryId'
     | '/limited/public'
     | '/lists/$cardListId'
     | '/teams/$teamId/'
@@ -1064,12 +1095,15 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/details'
     | '/tournaments/$tournamentId/matchups'
     | '/tournaments/$tournamentId/meta'
+    | '/tournaments/$tournamentId/photos'
     | '/users/$userId/calendar'
     | '/users/$userId/tournaments'
     | '/crossfire'
     | '/settings'
+    | '/albums/$albumId'
     | '/collections/$collectionId'
     | '/decks/$deckId'
+    | '/galleries/$galleryId'
     | '/limited/public'
     | '/lists/$cardListId'
     | '/teams/$teamId'
@@ -1160,12 +1194,15 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/details'
     | '/tournaments/$tournamentId/matchups'
     | '/tournaments/$tournamentId/meta'
+    | '/tournaments/$tournamentId/photos'
     | '/users/$userId/calendar'
     | '/users/$userId/tournaments'
     | '/_authenticated/crossfire/'
     | '/_authenticated/settings/'
+    | '/albums/$albumId/'
     | '/collections/$collectionId/'
     | '/decks/$deckId/'
+    | '/galleries/$galleryId/'
     | '/limited/public/'
     | '/lists/$cardListId/'
     | '/teams/$teamId/'
@@ -1249,10 +1286,13 @@ export interface RootRouteChildren {
   TournamentsTournamentIdDetailsRoute: typeof TournamentsTournamentIdDetailsRoute
   TournamentsTournamentIdMatchupsRoute: typeof TournamentsTournamentIdMatchupsRoute
   TournamentsTournamentIdMetaRoute: typeof TournamentsTournamentIdMetaRoute
+  TournamentsTournamentIdPhotosRoute: typeof TournamentsTournamentIdPhotosRoute
   UsersUserIdCalendarRoute: typeof UsersUserIdCalendarRoute
   UsersUserIdTournamentsRoute: typeof UsersUserIdTournamentsRoute
+  AlbumsAlbumIdIndexRoute: typeof AlbumsAlbumIdIndexRoute
   CollectionsCollectionIdIndexRoute: typeof CollectionsCollectionIdIndexRoute
   DecksDeckIdIndexRoute: typeof DecksDeckIdIndexRoute
+  GalleriesGalleryIdIndexRoute: typeof GalleriesGalleryIdIndexRoute
   LimitedPublicIndexRoute: typeof LimitedPublicIndexRoute
   ListsCardListIdIndexRoute: typeof ListsCardListIdIndexRoute
   ToolsDeckFormatConverterIndexRoute: typeof ToolsDeckFormatConverterIndexRoute
@@ -1668,6 +1708,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LimitedPublicIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/galleries/$galleryId/': {
+      id: '/galleries/$galleryId/'
+      path: '/galleries/$galleryId'
+      fullPath: '/galleries/$galleryId'
+      preLoaderRoute: typeof GalleriesGalleryIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/decks/$deckId/': {
       id: '/decks/$deckId/'
       path: '/decks/$deckId'
@@ -1680,6 +1727,13 @@ declare module '@tanstack/react-router' {
       path: '/collections/$collectionId'
       fullPath: '/collections/$collectionId'
       preLoaderRoute: typeof CollectionsCollectionIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/albums/$albumId/': {
+      id: '/albums/$albumId/'
+      path: '/albums/$albumId'
+      fullPath: '/albums/$albumId'
+      preLoaderRoute: typeof AlbumsAlbumIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/settings/': {
@@ -1708,6 +1762,13 @@ declare module '@tanstack/react-router' {
       path: '/users/$userId/calendar'
       fullPath: '/users/$userId/calendar'
       preLoaderRoute: typeof UsersUserIdCalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments/$tournamentId/photos': {
+      id: '/tournaments/$tournamentId/photos'
+      path: '/tournaments/$tournamentId/photos'
+      fullPath: '/tournaments/$tournamentId/photos'
+      preLoaderRoute: typeof TournamentsTournamentIdPhotosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tournaments/$tournamentId/meta': {
@@ -2141,10 +2202,13 @@ const rootRouteChildren: RootRouteChildren = {
   TournamentsTournamentIdDetailsRoute: TournamentsTournamentIdDetailsRoute,
   TournamentsTournamentIdMatchupsRoute: TournamentsTournamentIdMatchupsRoute,
   TournamentsTournamentIdMetaRoute: TournamentsTournamentIdMetaRoute,
+  TournamentsTournamentIdPhotosRoute: TournamentsTournamentIdPhotosRoute,
   UsersUserIdCalendarRoute: UsersUserIdCalendarRoute,
   UsersUserIdTournamentsRoute: UsersUserIdTournamentsRoute,
+  AlbumsAlbumIdIndexRoute: AlbumsAlbumIdIndexRoute,
   CollectionsCollectionIdIndexRoute: CollectionsCollectionIdIndexRoute,
   DecksDeckIdIndexRoute: DecksDeckIdIndexRoute,
+  GalleriesGalleryIdIndexRoute: GalleriesGalleryIdIndexRoute,
   LimitedPublicIndexRoute: LimitedPublicIndexRoute,
   ListsCardListIdIndexRoute: ListsCardListIdIndexRoute,
   ToolsDeckFormatConverterIndexRoute: ToolsDeckFormatConverterIndexRoute,

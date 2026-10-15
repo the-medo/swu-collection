@@ -39,6 +39,7 @@ const TabLink: React.FC<TabLinkProps> = ({ tournamentId, tab, isActive, mode }) 
         to={`/tournaments/$tournamentId/${tab.path}`}
         params={{ tournamentId }}
         className={commonClass}
+        aria-current={isActive ? 'page' : undefined}
       >
         {tab.label}
       </Link>
@@ -70,7 +71,7 @@ const TournamentTabs: React.FC<TournamentTabsProps> = ({
 }) => {
   return (
     <div className={cn('w-full', className)}>
-      <div className="grid grid-cols-3 md:grid-cols-5 mb-2 rounded-lg bg-muted p-1">
+      <div className="mb-2 grid grid-cols-3 rounded-lg bg-muted p-1 md:grid-cols-5">
         {tabs.map(tab => (
           <TabLink
             key={tab.key}

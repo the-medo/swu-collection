@@ -10,6 +10,7 @@ import { CountryCode } from '../../../../../../server/db/lists.ts';
 import UserDecks from '@/components/app/decks/UserDecks/UserDecks.tsx';
 import { Tabs } from '@radix-ui/react-tabs';
 import { TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
+import { AlbumList } from '@/components/app/user-albums/AlbumList.tsx';
 import * as React from 'react';
 import UserCollections from '@/components/app/collections/UserCollections/UserCollections.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
@@ -178,6 +179,7 @@ const UserDetail: React.FC = () => {
                     value === 'decks' ||
                     value === 'collections' ||
                     value === 'wantlists' ||
+                    value === 'albums' ||
                     value === 'calendar' ||
                     value === 'tournaments' ||
                     (value === 'currencies' && isOwner) ||
@@ -206,6 +208,9 @@ const UserDetail: React.FC = () => {
                   </TabsTrigger>
                   <TabsTrigger value="wantlists" className={tabTriggerClassName}>
                     Wantlists
+                  </TabsTrigger>
+                  <TabsTrigger value="albums" className={tabTriggerClassName}>
+                    Albums
                   </TabsTrigger>
                   <TabsTrigger value="calendar" className={tabTriggerClassName}>
                     Calendar
@@ -242,6 +247,9 @@ const UserDetail: React.FC = () => {
                 </TabsContent>
                 <TabsContent value="wantlists">
                   <UserCollections userId={userId} collectionType={CollectionType.WANTLIST} />
+                </TabsContent>
+                <TabsContent value="albums">
+                  <AlbumList key={userId} userId={userId} />
                 </TabsContent>
                 <TabsContent value="calendar">
                   <UserCalendarTab userId={userId} />

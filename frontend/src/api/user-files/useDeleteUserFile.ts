@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { createApiError } from '@/api/errors.ts';
 import { userFileKeys } from './queryKeys.ts';
+import { userAlbumKeys } from '../user-albums/queryKeys.ts';
 
 export function useDeleteUserFile() {
   const queryClient = useQueryClient();
@@ -15,7 +16,10 @@ export function useDeleteUserFile() {
       return (await response.json()).data;
     },
     onSuccess: (_data, { userId }) =>
-      queryClient.invalidateQueries({ queryKey: userFileKeys.all(userId) }),
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: userFileKeys.all(userId) }),
+        queryClient.invalidateQueries({ queryKey: userAlbumKeys.all }),
+      ]),
     gcTime: 0,
   });
 }

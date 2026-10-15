@@ -150,6 +150,9 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
       case 'details':
         tabTitle = 'Details';
         break;
+      case 'photos':
+        tabTitle = 'Photos';
+        break;
       case 'decks':
         tabTitle = 'Decks';
         break;
@@ -425,7 +428,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
         )}
         <TournamentDataLoader tournamentId={tournamentId} />
         <TournamentTabs tournamentId={tournamentId} activeTab={activeTab} mode={mode} />
-        {activeTab === 'details' || tournament?.imported ? children : null}
+        {activeTab === 'details' || activeTab === 'photos' || tournament?.imported ? children : null}
         {showDataNotice && <NoTournamentData tournamentId={tournamentId} />}
         {displayHeader && tournament && <RelatedCreations type="tournament" id={tournamentId} />}
       </div>
