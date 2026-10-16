@@ -1,3 +1,4 @@
+import { user } from '../../db/schema/auth-schema.ts';
 import { METADATA_RETENTION_MS } from './youtube-lifecycle-policy.ts';
 import { and, eq, inArray, sql } from 'drizzle-orm';
 import {
@@ -13,8 +14,9 @@ import type { Database } from './types.ts';
 export function createCreatorDtos(database: Database) {
   const publicDto = async (
     row: typeof creation.$inferSelect,
-    profile: typeof creatorProfile.$inferSelect,
+    profile: typeof creatorProfile.$inferSelect | null,
     edit = false,
+    author: Pick<typeof user.$inferSelect, 'id' | 'displayName' | 'image'> | null = null,
   ): Promise<Creation> => {
     const document = edit ? row.draft : row.published!;
     const references = await resolveReferences(document.references, database);
@@ -22,6 +24,13 @@ export function createCreatorDtos(database: Database) {
       id: row.id,
       creatorId: row.creatorId,
       authorId: row.authorId,
+      ownershipRevision: row.ownershipRevision,
+      // A transfer retains the personal article's existing public attribution.
+      // Creator-native content keeps its previous creator-only presentation.
+      author:
+        author && (!row.creatorId || row.ownershipRevision > 1)
+          ? { id: author.id, name: author.displayName, avatarUrl: author.image }
+          : null,
       revision: edit ? row.revision : row.publishedRevision!,
       document: edit
         ? document
@@ -43,11 +52,13 @@ export function createCreatorDtos(database: Database) {
             sourceStatus: row.sourceStatus,
           }
         : {}),
-      creator: {
-        slug: profile.slug,
-        name: profile.profile.name,
-        avatarUrl: profile.profile.avatarUrl,
-      },
+      creator: profile
+        ? {
+            slug: profile.slug,
+            name: profile.profile.name,
+            avatarUrl: profile.profile.avatarUrl,
+          }
+        : null,
       references,
     };
   };

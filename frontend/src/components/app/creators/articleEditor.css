@@ -1,0 +1,16 @@
+/* Match the published article while retaining BlockNote's editing controls. */
+.article-editor .rte-page .rte-surface {
+  border: 0;
+  background: transparent;
+}
+
+.article-editor .rte-page .bn-editor {
+  /* Reserve a gutter for the two block controls, including on narrow screens. */
+  padding: 0 0 0 2rem;
+  background: transparent;
+}
+
+.article-editor .bn-side-menu .bn-button {
+  width: 24px;
+  min-width: 24px;
+}

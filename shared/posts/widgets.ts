@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { postDocumentSchemas, postPlainText, type PostDocument } from './content.ts';
 
 // Card/variant IDs index catalog dictionaries. Inherited property names are not references.
 const inheritedKeys = new Set(Object.getOwnPropertyNames(Object.prototype));
@@ -38,7 +39,7 @@ export const metaSettingsSchema = z.object({
     ])
     .default('leaders'),
 });
-export const widgetSchema = z.discriminatedUnion('kind', [
+const structuredWidgetSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('meta-analysis'),
     scope: z.enum(['tournament', 'group']),
@@ -49,11 +50,17 @@ export const widgetSchema = z.discriminatedUnion('kind', [
     kind: z.literal('matchup'),
     title: z.string().max(120).default('Matchup plan'),
     subtitle: z.string().max(240).default(''),
-    leftLeader: cardId,
+    leftLeader: cardId.optional(),
     leftBase: cardId.optional(),
-    rightLeader: cardId,
+    rightLeader: cardId.optional(),
     rightBase: cardId.optional(),
-    text: z.string().min(1).max(5000),
+    // Lazy because post documents also contain widgets. Notes use the comments
+    // contract, which permits inline references but rejects nested block widgets.
+    notes: z
+      .lazy((): z.ZodType<PostDocument> => postDocumentSchemas.comments)
+      .refine(document => postPlainText(document).length > 0, 'Add matchup notes.')
+      .refine(document => postPlainText(document).length <= 5000, 'Use at most 5,000 characters.'),
+    footer: z.string().max(1000).default(''),
   }),
   z.object({
     kind: z.literal('card-group'),
@@ -68,11 +75,41 @@ export const widgetSchema = z.discriminatedUnion('kind', [
     text: z.string().min(1).max(5000),
   }),
 ]);
+// Existing matchup notes are plain text. Normalize once at the schema boundary;
+// all renderers, editors and subsequent saves use the structured document.
+export const widgetSchema = z.preprocess(value => {
+  if (
+    !value ||
+    typeof value !== 'object' ||
+    !('kind' in value) ||
+    value.kind !== 'matchup' ||
+    'notes' in value ||
+    !('text' in value) ||
+    typeof value.text !== 'string'
+  )
+    return value;
+  return {
+    ...value,
+    notes: {
+      version: 1,
+      blocks: [
+        {
+          id: 'matchup-notes',
+          type: 'paragraph',
+          props: {},
+          children: [],
+          content: [{ type: 'text', text: value.text, styles: {} }],
+        },
+      ],
+    },
+  };
+}, structuredWidgetSchema);
 export type Widget = z.infer<typeof widgetSchema>;
 export const insertionSchema = z.union([
   z.object({ kind: z.literal('card-image'), card: cardReferenceSchema, size: cardSizeSchema }),
   z.object({ kind: z.literal('card-link'), card: cardReferenceSchema }),
   z.object({ kind: z.literal('decklist'), deck: deckReferenceSchema }),
+  z.object({ kind: z.literal('album'), albumId: z.uuid() }),
   z.object({ kind: z.literal('mention'), user: mentionSchema }),
   widgetSchema,
 ]);
@@ -84,18 +121,23 @@ export const profileHref = (id: string) => `/users/${encodeURIComponent(id)}`;
 export function insertionLabel(value: Insertion) {
   if (value.kind === 'card-image' || value.kind === 'card-link') return value.card.name;
   if (value.kind === 'decklist') return `SWUBASE deck: ${deckHref(value.deck.deckId)}`;
+  if (value.kind === 'album') return `SWUBASE album: ${albumHref(value.albumId)}`;
   if (value.kind === 'mention') return `@${value.user.displayName}`;
   if (value.kind === 'callout') return `${value.title}: ${value.text}`;
   if (value.kind === 'meta-analysis') return `Meta analysis: ${value.scope} ${value.id}`;
   if (value.kind === 'card-group')
     return [value.cards.map(card => card.name).join(', '), value.text].filter(Boolean).join('\n');
-  return [value.title, value.subtitle, `${value.leftLeader} vs ${value.rightLeader}`, value.text]
+  const left = [value.leftLeader, value.leftBase].filter(Boolean).join(' / ');
+  const right = [value.rightLeader, value.rightBase].filter(Boolean).join(' / ');
+  const decks = left && right ? `${left} vs ${right}` : left || right;
+  return [value.title, value.subtitle, decks, postPlainText(value.notes), value.footer]
     .filter(Boolean)
     .join('\n');
 }
 export function insertionHref(value: Insertion) {
   if (value.kind === 'card-image' || value.kind === 'card-link') return cardHref(value.card.cardId);
   if (value.kind === 'decklist') return deckHref(value.deck.deckId);
+  if (value.kind === 'album') return albumHref(value.albumId);
   if (value.kind === 'mention') return profileHref(value.user.id);
   if (value.kind === 'meta-analysis')
     return value.scope === 'tournament'
@@ -106,3 +148,4 @@ export function insertionHref(value: Insertion) {
 
 export const cardHref = (id: string) => `/cards/detail/${encodeURIComponent(id)}`;
 export const deckHref = (id: string) => `/decks/${encodeURIComponent(id)}`;
+export const albumHref = (id: string) => `/albums/${encodeURIComponent(id)}`;

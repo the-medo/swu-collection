@@ -6,34 +6,43 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog.tsx';
-import { CardImagePicker } from './CardImagePicker.tsx';
 import { CardPicker } from './CardPicker.tsx';
 import { DeckPicker } from './DeckPicker.tsx';
+import { AlbumPicker } from './AlbumPicker.tsx';
 import { InsertionContext } from './insertionContext.ts';
 import { UserPicker } from './UserPicker.tsx';
 import { WidgetPicker } from './WidgetPicker.tsx';
-import { editorCommands, widgetSchema } from './model.ts';
-import type { InsertKind, Insertion } from './model.ts';
+import { widgetSchema } from './model.ts';
+import { editorCommands, commandDialogTitle } from './commands.ts';
+import type { InsertKind, Insertion, EditorInsertion } from './model.ts';
+import { useCardList } from '@/api/lists/useCardList.ts';
+import { getCardImageUrl } from '@/components/app/global/cardImageLib.ts';
+import { EditorCommandIcon } from './EditorCommandIcon.tsx';
+import { PickerBody, PickerFooter } from './PickerLayout.tsx';
+import './insertion-dialog.css';
 
 export function InsertionProvider({ children }: { children: ReactNode }) {
+  const catalog = useCardList();
+  const [error, setError] = useState<string>();
   const [kind, setKind] = useState<InsertKind | null>(null);
   const [initial, setInitial] = useState<Insertion | undefined>();
   const [generation, setGeneration] = useState(0);
   const [open, setOpen] = useState(false);
-  const pending = useRef<((value: Insertion | null) => void) | null>(null);
+  const pending = useRef<((value: EditorInsertion | null) => void) | null>(null);
   const request = useCallback(
     (next: InsertKind, value?: Insertion) =>
-      new Promise<Insertion | null>(resolve => {
+      new Promise<EditorInsertion | null>(resolve => {
         pending.current?.(null);
         pending.current = resolve;
         setKind(next);
+        setError(undefined);
         setInitial(value);
         setGeneration(n => n + 1);
         setOpen(true);
       }),
     [],
   );
-  const finish = (value: Insertion | null) => {
+  const finish = (value: EditorInsertion | null) => {
     const resolve = pending.current;
     pending.current = null;
     setOpen(false);
@@ -51,37 +60,84 @@ export function InsertionProvider({ children }: { children: ReactNode }) {
         }}
       >
         <DialogContent
-          className="max-h-[90dvh] max-w-3xl overflow-y-auto"
+          className="rte-insertion-dialog flex max-h-[calc(100dvh-24px)] w-[calc(100%-24px)] max-w-3xl flex-col gap-0 overflow-hidden rounded-2xl p-0 shadow-2xl sm:max-h-[90dvh] sm:rounded-2xl"
           onCloseAutoFocus={event => event.preventDefault()}
         >
-          <DialogHeader>
-            <DialogTitle>
-              {kind === 'mention'
-                ? 'Mention a user'
-                : `${initial ? 'Edit' : 'Insert'} ${editorCommands.find(c => c.id === kind)?.label.toLowerCase() ?? 'content'}`}
-            </DialogTitle>
-            <DialogDescription>
-              {kind === 'mention'
-                ? 'Search a public profile. Mentions create links and do not send notifications.'
-                : kind === 'decklist'
-                  ? 'Choose a deck or paste a SWUBASE deck link.'
-                  : kind === 'card-image' || kind === 'card-link'
-                    ? 'Search the SWUBASE catalog. Use arrow keys and Enter to choose a card.'
-                    : 'Configure your widget and insert it into the document.'}
-            </DialogDescription>
+          <DialogHeader className="shrink-0 space-y-0 border-b bg-muted/30 p-5 text-left sm:p-6">
+            <div className="flex items-start gap-4 pr-5">
+              <div className="grid size-12 shrink-0 place-items-center rounded-2xl border border-primary/20 bg-primary/10">
+                {kind && <EditorCommandIcon kind={kind} className="size-5" />}
+              </div>
+              <div className="min-w-0 space-y-2">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  SWUBASE editor
+                </p>
+                <DialogTitle className="rte-insertion-title">
+                  {kind && commandDialogTitle(kind, !!initial)}
+                </DialogTitle>
+                <DialogDescription className="text-xs leading-relaxed sm:text-sm">
+                  {kind && editorCommands[kind].dialogDescription}
+                </DialogDescription>
+              </div>
+            </div>
           </DialogHeader>
-          <div key={generation}>
+          <div key={generation} className="flex min-h-0 flex-1 flex-col">
+            {error && (
+              <p
+                role="alert"
+                className="mx-5 mt-4 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive"
+              >
+                {error}
+              </p>
+            )}
             {kind === 'decklist' ? (
               <DeckPicker onSelect={deck => finish({ kind: 'decklist', deck })} />
-            ) : kind === 'card-image' ? (
-              <CardImagePicker
-                initial={initial?.kind === 'card-image' ? initial : undefined}
-                onSelect={finish}
+            ) : kind === 'album' ? (
+              <AlbumPicker
+                initialId={initial?.kind === 'album' ? initial.albumId : undefined}
+                onSelect={albumId => finish({ kind: 'album', albumId })}
               />
+            ) : kind === 'card-image' ? (
+              <>
+                <PickerBody>
+                  <CardPicker
+                    onSelect={card => {
+                      const variant = catalog.data?.cards[card.cardId]?.variants[card.variantId];
+                      const url = getCardImageUrl(variant?.image.front);
+                      if (!url) {
+                        setError('This card has no available image. Choose another card.');
+                        return;
+                      }
+                      finish({
+                        kind: 'image',
+                        props: {
+                          url,
+                          name: card.name,
+                          caption: '',
+                          showPreview: true,
+                          textAlignment: 'left',
+                          previewWidth: variant?.front?.horizontal ? 392 : 200,
+                        },
+                      });
+                    }}
+                  />
+                </PickerBody>
+                <PickerFooter hint="Choose a card to insert its artwork." />
+              </>
             ) : kind === 'card-link' ? (
-              <CardPicker onSelect={card => finish({ kind, card })} />
+              <>
+                <PickerBody>
+                  <CardPicker onSelect={card => finish({ kind, card })} />
+                </PickerBody>
+                <PickerFooter hint="Choose a card to insert a link at your cursor." />
+              </>
             ) : kind === 'mention' ? (
-              <UserPicker onSelect={user => finish({ kind: 'mention', user })} />
+              <>
+                <PickerBody>
+                  <UserPicker onSelect={user => finish({ kind: 'mention', user })} />
+                </PickerBody>
+                <PickerFooter hint="Choose a player to insert their mention." />
+              </>
             ) : (
               kind && (
                 <WidgetPicker

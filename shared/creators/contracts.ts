@@ -99,6 +99,7 @@ export const youtubeImportSettingsSchema = youtubeChannelSchema.extend({
 });
 export type CreatorChannelFetchResult = { enqueued: number; incomplete: boolean };
 export const CHANNEL_FETCH_COOLDOWN_MS = 5 * 60_000;
+export const CONNECTION_TOURNAMENT_PAGE_SIZE = 12;
 export const entityTypes = ['card', 'leader', 'base', 'deck', 'tournament', 'set'] as const;
 export const entityReferenceSchema = z.object({
   type: z.enum(entityTypes),
@@ -106,6 +107,16 @@ export const entityReferenceSchema = z.object({
   startSeconds: z.number().int().min(0).max(604800).nullable().default(null),
 });
 export type EntityReference = z.infer<typeof entityReferenceSchema>;
+/** Live, publicly visible metadata; never persisted in the article document. */
+export type ConnectionSubject = Pick<EntityReference, 'type' | 'id'> & {
+  label: string;
+  date?: string;
+  location?: string;
+  leaderId?: string | null;
+  leader2Id?: string | null;
+  baseId?: string | null;
+};
+export type ResolvedReference = EntityReference & ConnectionSubject & { href: string };
 export const creationDocumentSchema = z
   .object({
     title: z.string().trim().min(1).max(200),
@@ -164,7 +175,9 @@ export type CreationDocument = z.infer<typeof creationDocumentSchema>;
 export type CreationField = keyof CreationDocument;
 export type Creation = {
   id: string;
-  creatorId: string;
+  creatorId: string | null;
+  ownershipRevision: number;
+  author: { id: string; name: string; avatarUrl: string | null } | null;
   authorId: string | null;
   revision: number;
   document: CreationDocument;
@@ -174,8 +187,8 @@ export type Creation = {
   hasUnpublishedChanges?: boolean;
   manuallyEditedFields?: CreationField[];
   sourceStatus?: 'active' | 'unavailable' | 'expired' | 'authorization_removed' | null;
-  creator: { slug: string; name: string; avatarUrl: string };
-  references?: (EntityReference & { label: string; href: string })[];
+  creator: { slug: string; name: string; avatarUrl: string } | null;
+  references?: ResolvedReference[];
 };
 export const discoverySchema = z.object({
   q: z.string().trim().max(120).optional(),
@@ -220,3 +233,12 @@ export type CreatorDirectoryResult = {
 export type CreatorTaxonomy = CreationTag[];
 export type CreatorRevision = { revision: number; createdAt: string; document: CreationDocument };
 export type { PostDocument };
+
+export const creatorOnboardingSchema = z.object({
+  requestId: z.uuid(),
+  profile: creatorProfileSchema,
+  transferPersonalArticles: z.boolean().default(false),
+});
+export type CreatorOnboarding = z.infer<typeof creatorOnboardingSchema>;
+export type CreatorOnboardingResult = { id: string; slug: string; moved: number };
+export type PersonalArticleCounts = { total: number; drafts: number };

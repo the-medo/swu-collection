@@ -1,3 +1,4 @@
+import { CreationPublisher } from './CreationPublisher.tsx';
 import { LanguageFlag } from './CreatorLanguages.tsx';
 import { Link } from '@tanstack/react-router';
 import { ArrowRight, ArrowUpRight, BookOpen, Headphones, Play } from 'lucide-react';
@@ -56,13 +57,7 @@ export function CreationCards({ items }: { items: CreationSummary[] }) {
             </Link>
             <div className="flex flex-1 flex-col gap-3 p-5">
               <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground">
-                <Link
-                  to="/creators/$slug"
-                  params={{ slug: item.creator.slug }}
-                  className={`${creatorLink} truncate`}
-                >
-                  {item.creator.name}
-                </Link>
+                <CreationPublisher creation={item} />
                 <span>
                   <LanguageFlag code={doc.language} />
                 </span>

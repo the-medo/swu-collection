@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient, type QueryKey } from '@tanstack/react-query';
+import { useUser } from '@/hooks/useUser.ts';
 import { hubApi } from './client.ts';
 import { creatorKeys as keys } from './keys.ts';
 import type { CreatorProfileInput } from '../../../../shared/creators/contracts.ts';
@@ -14,10 +15,11 @@ function useCreatorMutation<Input, Output>(
       Promise.all(affected(input, output).map(queryKey => query.invalidateQueries({ queryKey }))),
   });
 }
-export const draftSaveKeys = (creatorId: string, id: string) => [
+export const draftSaveKeys = (creatorId: string | null, id: string) => [
   keys.draft(id),
   keys.revisions(id),
   keys.studio(creatorId),
+  keys.personalCounts,
 ];
 export function useSaveCreation() {
   return useCreatorMutation(hubApi.saveCreation, (input, result) =>
@@ -30,6 +32,7 @@ export function usePublishCreation() {
     keys.discoveries,
     keys.collectionsRoot,
     keys.studios,
+    keys.personalCounts,
     keys.draft(input.id),
     keys.revisions(input.id),
   ]);
@@ -83,4 +86,33 @@ export function useImportVideo() {
 }
 export function useSetCreatorMember() {
   return useCreatorMutation(hubApi.setMember, input => [keys.members(input.id), keys.mine]);
+}
+
+export function useOnboardCreator() {
+  const query = useQueryClient();
+  return useMutation({
+    mutationFn: hubApi.onboard,
+    onSuccess: () => query.invalidateQueries({ queryKey: keys.all }),
+    // A failed response may follow a successful transaction. Make the resulting
+    // profile visible if the writer returns to the studio instead of retrying.
+    onError: () =>
+      Promise.all(
+        [keys.mine, keys.personalCounts].map(queryKey => query.invalidateQueries({ queryKey })),
+      ),
+  });
+}
+export function useTransferArticles() {
+  return useCreatorMutation(hubApi.transferArticles, () => [keys.all]);
+}
+
+export function useReloadCreationDraft() {
+  const query = useQueryClient();
+  const user = useUser();
+  return useMutation({
+    mutationFn: hubApi.draft,
+    onSuccess: (draft, id) => {
+      query.setQueryData([...keys.draft(id), user?.id], draft);
+      return query.invalidateQueries({ queryKey: keys.studios });
+    },
+  });
 }

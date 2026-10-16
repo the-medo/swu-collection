@@ -70,9 +70,12 @@ export function assertPostAllowed(document: PostDocument, label: string) {
       } else if (block.type === 'swuBlock') {
         const widget = JSON.parse(block.props.data) as Insertion;
         if (widget.kind === 'callout' || widget.kind === 'matchup') check(widget.title);
-        if (widget.kind === 'matchup') check(widget.subtitle);
-        if (widget.kind === 'callout' || widget.kind === 'matchup' || widget.kind === 'card-group')
-          check(widget.text);
+        if (widget.kind === 'matchup') {
+          check(widget.subtitle);
+          check(widget.footer);
+          visit(widget.notes.blocks);
+        }
+        if (widget.kind === 'callout' || widget.kind === 'card-group') check(widget.text);
         if (widget.kind === 'card-image') check(widget.card.name);
         if (widget.kind === 'card-group') for (const card of widget.cards) check(card.name);
       } else if ('content' in block) {

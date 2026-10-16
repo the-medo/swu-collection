@@ -1,5 +1,5 @@
 import { and, eq } from 'drizzle-orm';
-import { creatorProfile, creatorMember } from '../../db/schema/creator_hub.ts';
+import { creation, creatorProfile, creatorMember } from '../../db/schema/creator_hub.ts';
 import type { Connection } from './types.ts';
 import { CreatorError } from './errors.ts';
 
@@ -23,4 +23,14 @@ export async function requireCreator(
     if (member) return profile;
   }
   throw new CreatorError('You cannot manage this creator.', 403);
+}
+
+/** Authorship alone never grants access to a creator-owned publication. */
+export async function requireCreationAccess(
+  database: Connection,
+  item: typeof creation.$inferSelect,
+  viewerId: string,
+) {
+  if (item.creatorId) return requireCreator(database, item.creatorId, viewerId);
+  if (item.ownerUserId !== viewerId) throw new CreatorError('You cannot manage this article.', 403);
 }

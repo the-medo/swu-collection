@@ -92,6 +92,20 @@ change a referenced deck's visibility. Existing embedded deck widgets remain
 live views and apply their own access checks. Immutable deck versions are being
 developed separately and are not claimed by this feature.
 
+The Connect to SWUBASE picker reuses card search, leader/base selectors and the
+Crossfire deck row with its decklist preview. Its deck choices are restricted on
+the server to the signed-in user's public decks; existing public associations
+and imported video references are preserved regardless of ownership. Tournament
+choices start with My tournaments (the same Saved, Maybe and Going list as the
+map/calendar). All tournaments includes future local events and loads 12 at a
+time, newest first. Connection boxes fit three across on wide layouts, open
+card/leader/base details in a local dialog, and open deck/tournament details in a
+new tab without leaving the draft. Selected and
+published connections show live public metadata (artwork, names, dates and
+locations) rather than storing display snapshots in the document. Private or
+unlisted decks are omitted when resolving connections. Video previews retain each
+connection's timestamp.
+
 Articles autosave valid drafts, offer private previews and four starter templates,
 and support cards, live decklists, matchup widgets and tournament analysis through
 the existing rich editor. Optimistic revision checks prevent stale writes. The
@@ -140,6 +154,73 @@ collections. Profile, membership and channel mutations have their own scopes.
 `useCreationDraft` owns autosave snapshots, optimistic revisions, conflict recovery,
 publication and navigation protection. Chapter/classification fields, publication
 controls and revision history render independently of that lifecycle.
+
+## Personal articles and creator transfers
+
+The authenticated `/creator-studio` is the writing studio. With no `creatorId`
+search parameter it lists the user's personal articles. **Publish as** always
+includes Personal alongside owned creator profiles and profiles where the user
+is an editor. Personal publishing supports articles; linked media and YouTube
+imports continue to belong to creator profiles.
+
+`creation.owner_user_id` and `creation.creator_id` are mutually exclusive owners.
+`author_id` retains original authorship and grants no creator editing permission.
+Personal articles require their owner's session for drafts, revisions, edits and
+publication. Creator content continues to use the existing owner/editor policy.
+Public author projections include only ID, display name and avatar, never the
+account's private name or email. Lists, discovery and detail queries support both
+ownership types. Personal content links to the user's public profile; creator
+articles transferred from personal ownership show the creator publisher and the
+original author when available. Creator-native content retains its existing
+creator-only attribution; `ownership_revision > 1` identifies a personal transfer.
+
+**Create creator profile** prefills the user's public name and avatar, asks for
+a profile address, and leaves additional branding optional. When personal
+articles exist, the form offers a selected **Move all personal articles** option
+and shows total/draft counts. `POST /api/creator-hub/creators/onboard` accepts a
+request UUID, profile and `transferPersonalArticles` flag. Profile creation and
+the optional transfer are one transaction. The selected creator becomes the
+studio's publishing identity; Personal remains available.
+
+For existing owned profiles, including profiles assigned by staff after a claim,
+**Move all personal articles** calls
+`POST /api/creator-hub/creators/:id/transfer-articles` with a request UUID.
+Claiming alone never transfers content. Ownership verification/staff assignment
+remains the existing process; there is no new automated claim flow. Editor
+membership alone cannot receive a personal-article transfer.
+
+Transfers move all of the caller's saved personal articles at the transaction's
+cutoff, including unpublished drafts. They never move another user's articles or
+content already owned by a creator. They update ownership in place: IDs, public
+URLs, draft and published documents, revision history, tags, references and
+publication timestamps remain unchanged. Drafts remain private but become
+accessible to the destination creator's editors. Future personal articles remain
+personal until another explicit transfer.
+
+A user-row lock serializes personal saves and transfers. Creator authorization
+and ownership changes are checked inside the transaction. Transfer increments
+`ownership_revision` independently of content revisions; stale edits/publication
+requests return 409 without publishing or discarding unsaved text. The editor's
+conflict recovery reloads ownership before saving the user's local version.
+`creator_publishing_request` stores request hashes and results, so repeating a
+successful onboarding/transfer request cannot create duplicate profiles or move
+articles written later. A reused request with different input is rejected. After a network/5xx error,
+the onboarding form locks its submitted fields and retries the original payload
+before accepting changes. Receipts contain only a request hash and result, are
+indexed by user/creator, and remain for the lifetime of the user/profile to keep
+old requests idempotent; their foreign keys delete them with either owner.
+
+Deleting a personal owner deletes their personal articles. Transferred articles
+follow the creator's existing deletion behavior; losing the original author sets
+attribution to null. Contributor sanitization removes personal articles and
+publishing request receipts together with other creator data.
+
+Focused acceptance checks:
+
+```bash
+CREATOR_HUB_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test server/lib/creators/personal-articles.db.test.ts
+PERSONAL_ARTICLES_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/personal-articles.browser.ts
+```
 
 ## YouTube setup and behavior
 
@@ -530,9 +611,11 @@ and scrubs consent-derived metadata. It preserves independently fetched public d
 `creator_video_spend` tracks requests and reservations independently of profile
 lifetime; `creator_imported_deck` preserves import identities and deletion tombstones.
 
-All creator-hub schema changes, taxonomy seeds and generic backfills are in the single
+The original creator-hub schema, taxonomy seeds and generic backfills are in the single
 `drizzle/0085_creator_hub.sql` migration, with one generated final snapshot and
-one journal entry. Named SQL sections preserve the original development order.
+one journal entry. Personal ownership and publishing request receipts are added by
+`0086_personal_articles.sql`, with receipt indexes in
+`0087_creator_publishing_request_indexes.sql`. Named SQL sections preserve the original development order.
 The migration includes the resolution cache, staged deck publication marker,
 report moderation and channel import controls. Public directory profiles and
 video inventories are supplied through the admin importer. Canonical channel backfills preserve credentials and

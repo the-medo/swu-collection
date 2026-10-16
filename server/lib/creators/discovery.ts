@@ -1,3 +1,5 @@
+import { CONNECTION_TOURNAMENT_PAGE_SIZE } from '../../../shared/creators/contracts.ts';
+import { user } from '../../db/schema/auth-schema.ts';
 import { db } from '../../db/index.ts';
 import type { Database } from './types.ts';
 import { and, asc, desc, eq, inArray, sql, type SQL } from 'drizzle-orm';
@@ -12,9 +14,14 @@ import { tournament } from '../../db/schema/tournament.ts';
 import { tournamentType } from '../../db/schema/tournament_type.ts';
 import { getMergedCardList } from '../cards/cardListProvider.ts';
 import { setInfo } from '../../../lib/swu-resources/set-info.ts';
-import type { DiscoveryQuery, EntityReference } from '../../../shared/creators/contracts.ts';
+import type {
+  DiscoveryQuery,
+  EntityReference,
+  ConnectionSubject,
+} from '../../../shared/creators/contracts.ts';
 import { creationListSelection, publicCreation } from './list.ts';
 import { resolveReference, resolveReferences, type ResolvedReference } from './references.ts';
+import { CreatorError } from './errors.ts';
 import { escapedSearch, groupDiscoveryTags, availableLanguages } from './filters.ts';
 
 export function createDiscoveryService(database: Database = db) {
@@ -61,7 +68,8 @@ export function createDiscoveryService(database: Database = db) {
       const rows = await database
         .select(creationListSelection())
         .from(creation)
-        .innerJoin(creatorProfile, eq(creation.creatorId, creatorProfile.id))
+        .leftJoin(creatorProfile, eq(creation.creatorId, creatorProfile.id))
+        .leftJoin(user, eq(creation.authorId, user.id))
         .where(and(...filters))
         .orderBy(
           ...(query.series
@@ -131,18 +139,39 @@ export function createDiscoveryService(database: Database = db) {
         hasMore: seriesRows.length > 200 || deckRows.length > 200,
       };
     },
+    resolveSubjects: (refs: EntityReference[]) => resolveReferences(refs, database),
     async subjects(
       type: EntityReference['type'],
       q: string,
       scope: 'discovery' | 'authoring' = 'discovery',
-    ) {
+      options: { userId?: string; page?: number } = {},
+    ): Promise<ConnectionSubject[]> {
+      const pageSize =
+        type === 'tournament' && scope === 'authoring' ? CONNECTION_TOURNAMENT_PAGE_SIZE : 50;
+      const offset = ((options.page ?? 1) - 1) * pageSize;
+      if (type === 'deck' && scope === 'authoring' && !options.userId)
+        throw new CreatorError('Sign in to choose your decks.', 401);
       if (type === 'deck')
         return (
           await database
-            .select({ id: deck.id, label: deck.name })
+            .select({
+              id: deck.id,
+              label: deck.name,
+              leaderId: deck.leaderCardId1,
+              leader2Id: deck.leaderCardId2,
+              baseId: deck.baseCardId,
+            })
             .from(deck)
-            .where(and(eq(deck.public, 1), sql`${deck.name} ILIKE ${escapedSearch(q)}`))
-            .limit(20)
+            .where(
+              and(
+                eq(deck.public, 1),
+                scope === 'authoring' ? eq(deck.userId, options.userId!) : undefined,
+                sql`${deck.name} ILIKE ${escapedSearch(q)}`,
+              ),
+            )
+            .orderBy(desc(deck.updatedAt), asc(deck.id))
+            .limit(pageSize)
+            .offset(offset)
         ).map(row => ({ ...row, type }));
       if (type === 'tournament')
         return (
@@ -151,6 +180,7 @@ export function createDiscoveryService(database: Database = db) {
               id: tournament.id,
               label: tournament.name,
               date: sql<string>`${tournament.date}::text`,
+              location: tournament.location,
             })
             .from(tournament)
             .innerJoin(tournamentType, eq(tournament.type, tournamentType.id))
@@ -162,14 +192,20 @@ export function createDiscoveryService(database: Database = db) {
                   : undefined,
               ),
             )
-            .orderBy(sql`abs(${tournament.date} - CURRENT_DATE)`, asc(tournament.id))
-            .limit(50)
+            .orderBy(
+              scope === 'authoring'
+                ? desc(tournament.date)
+                : sql`abs(${tournament.date} - CURRENT_DATE)`,
+              asc(tournament.id),
+            )
+            .limit(pageSize)
+            .offset(offset)
         ).map(row => ({ ...row, type }));
       if (type === 'set')
         return Object.values(setInfo)
           .filter(s => `${s.code} ${s.name}`.toLowerCase().includes(q.toLowerCase()))
           .sort((a, b) => b.releaseDate.localeCompare(a.releaseDate) || b.sortValue - a.sortValue)
-          .map(s => ({ type, id: s.code, label: s.name }));
+          .map(s => ({ type, id: s.code, label: s.name, date: s.releaseDate }));
       return Object.values(await getMergedCardList())
         .filter(
           card =>

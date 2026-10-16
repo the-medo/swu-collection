@@ -75,11 +75,16 @@ test('checks visible widget text and client-supplied card/mention labels', () =>
     { kind: 'callout', tone: 'tip', title: 'fuck', text: 'Play units.' },
     {
       kind: 'matchup',
+      notes: document({ type: 'paragraph', content: [text('Play units.')] }),
+      footer: 'fuck',
+    },
+    {
+      kind: 'matchup',
       title: 'Matchup',
       subtitle: 'fuck',
       leftLeader: 'a',
       rightLeader: 'b',
-      text: 'Play units.',
+      notes: document({ type: 'paragraph', content: [text('Play units.')] }),
     },
     { kind: 'card-group', cards: [{ ...card, name: 'Assassin' }], size: 'small', text: 'fuck' },
     { kind: 'card-image', card, size: 'small' },
@@ -103,6 +108,39 @@ test('checks visible widget text and client-supplied card/mention labels', () =>
         'Comment',
       ),
     ).toThrow(ProfanityError);
+});
+
+test('checks formatted matchup notes and their card links and mentions', () => {
+  for (const content of [
+    [text('fu'), { ...text('ck'), styles: { bold: true } }],
+    [
+      {
+        type: 'swuInline',
+        props: {
+          data: JSON.stringify({
+            kind: 'card-link',
+            card: { cardId: 'fixture', variantId: '', name: 'fuck' },
+          }),
+        },
+      },
+    ],
+    [
+      {
+        type: 'swuInline',
+        props: {
+          data: JSON.stringify({ kind: 'mention', user: { id: 'player', displayName: 'fuck' } }),
+        },
+      },
+    ],
+  ]) {
+    const matchup = { kind: 'matchup', notes: document({ type: 'paragraph', content }) };
+    expect(() =>
+      assertPostAllowed(
+        document({ type: 'swuBlock', props: { data: JSON.stringify(matchup) } }),
+        'Article',
+      ),
+    ).toThrow(ProfanityError);
+  }
 });
 
 test('does not scan IDs, styles or hidden URLs, or merge separate paragraphs', () => {

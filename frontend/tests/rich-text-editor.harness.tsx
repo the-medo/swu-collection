@@ -1,5 +1,7 @@
 // Browser-only fixture, served by Vite when Playwright supplies the test HTML.
 // Reuses the application providers/routes without adding a production test page.
+import '../src/styles/index.css';
+import '../src/styles/typography.css';
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -12,25 +14,26 @@ import { DatabaseProvider } from '../src/providers/DatabaseProvider';
 import { TooltipProvider } from '../src/components/ui/tooltip';
 import { Button } from '../src/components/ui/button';
 import { queryClient } from '../src/queryClient';
-import PostEditor, {
-  PostContent,
-} from '../src/components/app/rich-text-editor/blocknote/BlocknoteEditor';
-import { emptyPostDocument, type PostDocument } from '../../shared/posts/content';
-import '../src/styles/index.css';
-import '../src/styles/typography.css';
+import PostEditor from '../src/components/app/rich-text-editor/blocknote/BlocknoteEditor';
+import { PostContent } from '../src/components/app/rich-text-editor/blocknote/PostContent';
+import { emptyPostDocument, type EditorType, type PostDocument } from '../../shared/posts/content';
 
 declare global {
   interface Window {
     editorFixtureInitialContent?: PostDocument;
+    editorFixtureOptions?: { type?: EditorType; disabled?: boolean; published?: boolean };
     editorFixtureDocument: PostDocument;
   }
 }
 
 export function RichEditorFixture() {
+  const { type = 'rich', disabled = false } = window.editorFixtureOptions ?? {};
   const [content, setContent] = useState(
     () => window.editorFixtureInitialContent ?? emptyPostDocument(),
   );
-  const [published, setPublished] = useState(!!window.editorFixtureInitialContent);
+  const [published, setPublished] = useState(
+    window.editorFixtureOptions?.published ?? !!window.editorFixtureInitialContent,
+  );
   useEffect(() => {
     window.editorFixtureDocument = content;
   }, [content]);
@@ -38,10 +41,15 @@ export function RichEditorFixture() {
     <section aria-label="Post preview">
       <h2>Rich editor fixture</h2>
       {published ? (
-        <PostContent type="rich" content={content} />
+        <PostContent type={type} content={content} />
       ) : (
         <>
-          <PostEditor type="rich" initialContent={content} onChange={setContent} />
+          <PostEditor
+            type={type}
+            disabled={disabled}
+            initialContent={content}
+            onChange={setContent}
+          />
           <Button onClick={() => setPublished(true)}>Preview post</Button>
         </>
       )}

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Textarea } from '@/components/ui/textarea.tsx';
@@ -6,9 +7,10 @@ import { creatorPanel, creatorSubheading } from './creatorStyles.ts';
 import type { CreationDocument } from '../../../../../shared/creators/contracts.ts';
 type Props = { document: CreationDocument; update: (patch: Partial<CreationDocument>) => void };
 export function CreationChapters({ document, update }: Props) {
+  if (document.medium !== 'video') return null;
   return (
-    <div className="grid gap-3 rounded-xl border p-4">
-      <h3 className={creatorSubheading}>Chapters</h3>
+    <section aria-label="Chapters" className={`${creatorPanel} grid gap-3`}>
+      <h2 className={creatorSubheading}>Chapters</h2>
       {document.chapters.map((chapter, i) => (
         <div
           key={i}
@@ -70,19 +72,33 @@ export function CreationChapters({ document, update }: Props) {
       <p className="text-xs text-muted-foreground">
         Start times are in seconds, in increasing order.
       </p>
-    </div>
+    </section>
   );
 }
-export function CreationClassification({ document, update }: Props) {
+export function CreationClassification({
+  document,
+  update,
+  creatorOwned,
+  children,
+}: Props & {
+  creatorOwned: boolean;
+  children?: ReactNode;
+}) {
   return (
-    <aside className={`${creatorPanel} grid gap-4`}>
-      <h3 className={creatorSubheading}>Help players find your work</h3>
-      <TagPicker
-        selected={document.tags}
-        onChange={tags => update({ tags })}
-        dimensions={['purpose', 'format', 'audience', 'topic', 'environment']}
-        compact
-      />
+    <section
+      aria-label="Publishing details"
+      className={`${creatorPanel} grid gap-4 sm:grid-cols-2`}
+    >
+      <h2 className={`${creatorSubheading} sm:col-span-2`}>Publishing details</h2>
+      {children}
+      <div className="sm:col-span-2">
+        <TagPicker
+          selected={document.tags}
+          onChange={tags => update({ tags })}
+          dimensions={['purpose', 'format', 'audience', 'topic', 'environment']}
+          compact
+        />
+      </div>
       <Field label="SWU coverage">
         <select
           className={selectClass}
@@ -125,20 +141,22 @@ export function CreationClassification({ document, update }: Props) {
           onChange={e => update({ seriesOrder: Number(e.target.value) })}
         />
       </Field>
-      <label className="flex gap-2 text-[12px]">
-        <input
-          type="checkbox"
-          checked={document.pinned}
-          onChange={e => update({ pinned: e.target.checked })}
-        />
-        Pin on creator profile
-      </label>
+      {creatorOwned && (
+        <label className="flex items-center gap-2 text-[12px]">
+          <input
+            type="checkbox"
+            checked={document.pinned}
+            onChange={e => update({ pinned: e.target.checked })}
+          />
+          Pin on creator profile
+        </label>
+      )}
       <Field label="Sponsorship / affiliate disclosure">
         <Textarea
           value={document.sponsorship}
           onChange={e => update({ sponsorship: e.target.value })}
         />
       </Field>
-    </aside>
+    </section>
   );
 }

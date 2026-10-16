@@ -54,6 +54,8 @@ export function useEditorDeck(deckId: string | undefined) {
           return {
             deckId: deck.id,
             name: deck.name || 'Untitled deck',
+            format: deck.format,
+            visibility: deck.public,
             leaderIds: [deck.leaderCardId1, deck.leaderCardId2].filter((id): id is string => !!id),
             baseId: deck.baseCardId,
             cards: data

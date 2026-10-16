@@ -44,7 +44,7 @@ const styles = z
   })
   .strict();
 const text = z.object({ type: z.literal('text'), text: z.string(), styles });
-const embedData = (inline: boolean) =>
+const embedData = (inline: boolean): z.ZodType<string, string> =>
   z
     .string()
     .max(MAX_POST_BYTES)
@@ -119,6 +119,7 @@ const node = z.discriminatedUnion('type', [
         z.literal(6),
       ]),
       isToggleable: z.boolean().optional(),
+      defaultOpen: z.boolean().optional(),
     }),
     content: inlineContent,
   }),
@@ -209,6 +210,43 @@ export const postDocumentSchema = boundedJson
   });
 export type PostDocument = z.infer<typeof postDocumentSchema>;
 export type EditorType = 'simple' | 'rich' | 'comments';
+
+/** Visible prose for text exports and length checks, including inline references. */
+export function postPlainText(document: PostDocument): string {
+  const inlineText = (items: z.infer<typeof inline>[]) =>
+    items
+      .map(item =>
+        item.type === 'text'
+          ? item.text
+          : item.type === 'link'
+            ? item.content.map(part => part.text).join('')
+            : insertionLabel(insertionSchema.parse(JSON.parse(item.props.data))),
+      )
+      .join('');
+  const visit = (blocks: PostBlock[]): string =>
+    blocks
+      .map(block => {
+        const text =
+          block.type === 'swuBlock'
+            ? insertionLabel(insertionSchema.parse(JSON.parse(block.props.data)))
+            : block.type === 'table'
+              ? block.content.rows
+                  .map(row =>
+                    row.cells
+                      .map(cell => inlineText(Array.isArray(cell) ? cell : cell.content))
+                      .join('\t'),
+                  )
+                  .join('\n')
+              : 'content' in block
+                ? inlineText(block.content)
+                : 'caption' in block.props
+                  ? block.props.caption
+                  : '';
+        return [text, visit(block.children)].filter(Boolean).join('\n');
+      })
+      .join('\n');
+  return visit(document.blocks);
+}
 
 export function hasSwubaseContent(document: PostDocument): boolean {
   const visit = (value: unknown): boolean => {

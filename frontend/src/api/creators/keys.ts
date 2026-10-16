@@ -19,14 +19,19 @@ export const creatorKeys = {
   creation: (id: string) => [...publicRoot, 'creation', id] as const,
   collectionsRoot: [...publicRoot, 'collections'] as const,
   collections: (id?: string) => [...publicRoot, 'collections', id] as const,
+  personalCounts: [...privateRoot, 'personal-counts'] as const,
   mine: [...privateRoot, 'mine'] as const,
   studios: [...privateRoot, 'studio'] as const,
-  studio: (id?: string, page?: number) =>
+  studio: (id?: string | null, page?: number) =>
     [...privateRoot, 'studio', id, ...(page === undefined ? [] : [page])] as const,
   draft: (id?: string) => [...privateRoot, 'draft', id] as const,
   revisions: (id?: string) => [...privateRoot, 'revisions', id] as const,
   youtube: (id: string) => [...privateRoot, 'youtube', id] as const,
   members: (id: string) => [...privateRoot, 'members', id] as const,
+  resolvedSubjects: (refs: EntityReference[]) =>
+    [...privateRoot, 'resolved-subjects', refs] as const,
+  subjectChoices: (type: EntityReference['type'], q: string, userId?: string) =>
+    [...privateRoot, 'subject-choices', { type, q, userId }] as const,
   subjects: (type: EntityReference['type'], q: string, scope: 'discovery' | 'authoring') =>
     [...root, 'subjects', { type, q, scope }] as const,
 };

@@ -1,3 +1,5 @@
+import { user } from '../../db/schema/auth-schema.ts';
+import { lockPersonalOwner, personalArticles } from './ownership.ts';
 import { db } from '../../db/index.ts';
 import type { Database } from './types.ts';
 import { CreatorError } from './errors.ts';
@@ -12,7 +14,7 @@ import type { CreationDocument } from '../../../shared/creators/contracts.ts';
 import { youtubeVideoId } from '../../../shared/creators/youtube.ts';
 import { createCreatorDtos } from './dto.ts';
 import { creationListSelection, publicCreation } from './list.ts';
-import { requireCreator } from './permissions.ts';
+import { requireCreator, requireCreationAccess } from './permissions.ts';
 import { writeCreatorPublication, removeCreatorPublication } from './publication.ts';
 import { now } from './types.ts';
 import { trackManualEdits } from './manual-edits.ts';
@@ -20,13 +22,14 @@ import { trackManualEdits } from './manual-edits.ts';
 export function createCreationsService(database: Database = db) {
   const { publicDto } = createCreatorDtos(database);
   return {
-    async studio(creatorId: string, viewerId: string, page = 1) {
-      await requireCreator(database, creatorId, viewerId);
+    async studio(creatorId: string | null, viewerId: string, page = 1) {
+      if (creatorId) await requireCreator(database, creatorId, viewerId);
       const rows = await database
         .select(creationListSelection(true))
         .from(creation)
-        .innerJoin(creatorProfile, eq(creation.creatorId, creatorProfile.id))
-        .where(eq(creation.creatorId, creatorId))
+        .leftJoin(creatorProfile, eq(creation.creatorId, creatorProfile.id))
+        .leftJoin(user, eq(creation.authorId, user.id))
+        .where(creatorId ? eq(creation.creatorId, creatorId) : personalArticles(viewerId))
         .orderBy(desc(creation.updatedAt), desc(creation.id))
         .limit(25)
         .offset((page - 1) * 24);
@@ -37,20 +40,25 @@ export function createCreationsService(database: Database = db) {
     },
     async get(id: string, viewerId?: string, edit = false) {
       const [row] = await database
-        .select({ item: creation, profile: creatorProfile })
+        .select({
+          item: creation,
+          profile: creatorProfile,
+          author: { id: user.id, displayName: user.displayName, image: user.image },
+        })
         .from(creation)
-        .innerJoin(creatorProfile, eq(creation.creatorId, creatorProfile.id))
+        .leftJoin(creatorProfile, eq(creation.creatorId, creatorProfile.id))
+        .leftJoin(user, eq(creation.authorId, user.id))
         .where(and(eq(creation.id, id), edit ? undefined : publicCreation()));
       if (!row || (!edit && !row.item.published))
         throw new CreatorError('Publication not found.', 404);
       if (edit) {
         if (!viewerId) throw new CreatorError('Sign in to edit.', 401);
-        await requireCreator(database, row.item.creatorId, viewerId);
+        await requireCreationAccess(database, row.item, viewerId);
       }
-      return publicDto(row.item, row.profile, edit);
+      return publicDto(row.item, row.profile, edit, row.author);
     },
     async save(
-      creatorId: string,
+      creatorId: string | null,
       viewerId: string,
       document: CreationDocument,
       id?: string,
@@ -58,10 +66,17 @@ export function createCreationsService(database: Database = db) {
       sourceVideoId?: string,
       sourceChannelId?: string,
       sourceDataOrigin: 'public' | 'oauth' = 'oauth',
+      ownershipRevision = 1,
     ) {
       return database.transaction(async tx => {
-        await requireCreator(tx, creatorId, viewerId, !!sourceChannelId, true);
-        if (sourceChannelId) {
+        if (creatorId) await requireCreator(tx, creatorId, viewerId, !!sourceChannelId, true);
+        else {
+          await lockPersonalOwner(tx, viewerId);
+          if (document.medium !== 'article' || sourceVideoId || sourceChannelId)
+            throw new CreatorError('Personal publications must be articles.');
+        }
+        const owner = creatorId ? eq(creation.creatorId, creatorId) : personalArticles(viewerId);
+        if (sourceChannelId && creatorId) {
           const [channel] = await tx
             .select({ id: creatorYoutube.channelId })
             .from(creatorYoutube)
@@ -82,7 +97,15 @@ export function createCreationsService(database: Database = db) {
           const [existing] = await tx
             .select()
             .from(creation)
-            .where(and(eq(creation.id, id), eq(creation.creatorId, creatorId)));
+            .where(eq(creation.id, id))
+            .for('update');
+          if (!existing) throw new CreatorError('Publication not found.', 404);
+          await requireCreationAccess(tx, existing, viewerId);
+          if (existing.creatorId !== creatorId || existing.ownershipRevision !== ownershipRevision)
+            throw new CreatorError(
+              'This article moved to a creator profile. Reload its publishing identity before saving; your edits are still here.',
+              409,
+            );
           if (
             existing?.sourceVideoId &&
             (document.medium !== 'video' ||
@@ -110,7 +133,8 @@ export function createCreationsService(database: Database = db) {
               .where(
                 and(
                   eq(creation.id, id),
-                  eq(creation.creatorId, creatorId),
+                  owner,
+                  eq(creation.ownershipRevision, ownershipRevision),
                   eq(creation.revision, revision!),
                 ),
               )
@@ -119,6 +143,7 @@ export function createCreationsService(database: Database = db) {
               .insert(creation)
               .values({
                 creatorId,
+                ownerUserId: creatorId ? null : viewerId,
                 authorId: viewerId,
                 draft: document,
                 sourceVideoId,
@@ -151,17 +176,28 @@ export function createCreationsService(database: Database = db) {
               sql`${creationRevision.revision} IS DISTINCT FROM ${row.publishedRevision}`,
             ),
           );
-        return { id: row.id, revision: row.revision };
+        return { id: row.id, revision: row.revision, ownershipRevision: row.ownershipRevision };
       });
     },
-    async publish(id: string, viewerId: string, revision: number, unpublish = false) {
+    async publish(
+      id: string,
+      viewerId: string,
+      revision: number,
+      unpublish = false,
+      ownershipRevision = 1,
+    ) {
       return database.transaction(async tx => {
         const [item] = await tx.select().from(creation).where(eq(creation.id, id));
         if (!item) throw new CreatorError('Publication not found.', 404);
-        await requireCreator(tx, item.creatorId, viewerId, false, true);
+        if (item.creatorId) await requireCreator(tx, item.creatorId, viewerId, false, true);
+        else {
+          await requireCreationAccess(tx, item, viewerId);
+          await lockPersonalOwner(tx, viewerId);
+        }
         const [row] = await tx.select().from(creation).where(eq(creation.id, id)).for('update');
-        if (!row || row.revision !== revision)
+        if (!row || row.revision !== revision || row.ownershipRevision !== ownershipRevision)
           throw new CreatorError('This draft changed. Reload before publishing.', 409);
+        await requireCreationAccess(tx, row, viewerId);
         if (unpublish) await removeCreatorPublication(tx, id);
         else await writeCreatorPublication(tx, row);
       });
@@ -169,7 +205,7 @@ export function createCreationsService(database: Database = db) {
     async revisions(id: string, viewerId: string) {
       const [item] = await database.select().from(creation).where(eq(creation.id, id));
       if (!item) throw new CreatorError('Publication not found.', 404);
-      await requireCreator(database, item.creatorId, viewerId);
+      await requireCreationAccess(database, item, viewerId);
       return database
         .select({
           revision: creationRevision.revision,

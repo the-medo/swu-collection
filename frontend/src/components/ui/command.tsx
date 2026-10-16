@@ -12,7 +12,8 @@ const Command = React.forwardRef<
   <CommandPrimitive
     ref={ref}
     className={cn(
-      'flex w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground',
+      // Contain cmdk's absolute screen-reader label so it cannot extend the outer page.
+      'relative flex w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground',
       className,
     )}
     {...props}

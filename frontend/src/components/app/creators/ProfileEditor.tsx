@@ -1,3 +1,5 @@
+import { useUser } from '@/hooks/useUser.ts';
+import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { ImageField } from './ImageField.tsx';
 import { LanguagePicker } from './CreatorLanguages.tsx';
 import { lazy, Suspense, useRef, useState } from 'react';
@@ -6,11 +8,12 @@ import { useForm, useStore } from '@tanstack/react-form';
 import { Input } from '@/components/ui/input.tsx';
 import { Textarea } from '@/components/ui/textarea.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { hubApi, useSaveCreatorProfile } from '@/api/creators';
+import { hubApi, useSaveCreatorProfile, useOnboardCreator } from '@/api/creators';
 import { emptyPostDocument } from '../../../../../shared/posts/content.ts';
 import {
   creatorProfileSchema,
   type CreatorProfile,
+  type CreatorOnboarding,
   type CreatorProfileInput,
 } from '../../../../../shared/creators/contracts.ts';
 import { Field, selectClass, Status, TagPicker } from './CreatorControls.tsx';
@@ -20,8 +23,10 @@ export default function ProfileEditor({
   profile,
   onSaved,
   onCancel,
+  personalCounts,
 }: {
   profile?: CreatorProfile;
+  personalCounts?: { total: number; drafts: number };
   onSaved: (id: string) => void;
   onCancel: () => void;
 }) {
@@ -29,15 +34,23 @@ export default function ProfileEditor({
   const allowLeave = useRef(false);
   const revision = useRef(profile?.revision);
   const [generation, setGeneration] = useState(0);
+  const user = useUser();
+  const displayName =
+    user && 'displayName' in user && typeof user.displayName === 'string' ? user.displayName : '';
   const mutation = useSaveCreatorProfile();
+  const onboarding = useOnboardCreator();
+  const [moveArticles, setMoveArticles] = useState(!!personalCounts?.total);
+  const [unconfirmed, setUnconfirmed] = useState<CreatorOnboarding | null>(null);
+  const request = useRef({ id: crypto.randomUUID(), payload: '' });
+  const pending = mutation.isPending || onboarding.isPending;
   const [initial, setInitial] = useState<CreatorProfileInput>(
     () =>
       profile ?? {
         slug: '',
-        name: '',
+        name: displayName,
         tagline: '',
         bio: emptyPostDocument(),
-        avatarUrl: '',
+        avatarUrl: user?.image ?? '',
         bannerUrl: '',
         languages: ['en'],
         specialties: [],
@@ -62,16 +75,33 @@ export default function ProfileEditor({
         return;
       }
       setError(undefined);
+      let submitted: CreatorOnboarding | undefined;
       try {
-        const result = await mutation.mutateAsync({
+        const payload = {
           profile: validation.data,
-          id: profile?.id,
-          revision: revision.current,
-        });
+          transferPersonalArticles: moveArticles,
+        };
+        const serialized = JSON.stringify(payload);
+        if (!unconfirmed && request.current.payload && request.current.payload !== serialized)
+          request.current.id = crypto.randomUUID();
+        request.current.payload = serialized;
+        submitted = unconfirmed ?? { ...payload, requestId: request.current.id };
+        const result = profile
+          ? await mutation.mutateAsync({
+              profile: validation.data,
+              id: profile.id,
+              revision: revision.current,
+            })
+          : await onboarding.mutateAsync(submitted);
         allowLeave.current = true;
         onSaved(result.id);
-      } catch {
-        /* Mutation error shown below. */
+      } catch (failure) {
+        if (!profile && submitted) {
+          const status = (failure as Error & { status?: number }).status;
+          // A network/5xx response cannot prove rollback. Retry this exact request
+          // before allowing a different profile or transfer choice.
+          setUnconfirmed(status && status >= 400 && status < 500 ? null : submitted);
+        }
       }
     },
   });
@@ -120,166 +150,200 @@ export default function ProfileEditor({
       <h2 className={creatorHeading}>
         {profile ? 'Edit creator profile' : 'Make a home for your creations'}
       </h2>
-      <form.Field name="profile">
-        {field => {
-          const value = field.state.value,
-            update = (patch: Partial<Omit<CreatorProfileInput, 'bio'>>) =>
-              field.handleChange({ ...value, ...patch });
-          return (
-            <>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Creator or brand name">
-                  <Input
-                    value={value.name}
-                    maxLength={100}
-                    onChange={e => update({ name: e.target.value })}
-                    required
-                  />
-                </Field>
-                <Field
-                  label="Profile address"
-                  hint="Letters, numbers and hyphens. Your profile address stays fixed after creation."
-                >
-                  <Input
-                    disabled={!!profile}
-                    value={value.slug}
-                    onChange={e => update({ slug: e.target.value })}
-                    placeholder="your-creator-name"
-                    required
-                  />
-                </Field>
-              </div>
-              <Field label="Tagline">
-                <Input
-                  value={value.tagline}
-                  maxLength={240}
-                  onChange={e => update({ tagline: e.target.value })}
-                  placeholder="What do you help SWU players discover?"
-                />
-              </Field>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <ImageField
-                  label="Avatar"
-                  value={value.avatarUrl}
-                  onChange={avatarUrl => update({ avatarUrl })}
-                />
-                <ImageField
-                  label="Banner"
-                  value={value.bannerUrl}
-                  onChange={bannerUrl => update({ bannerUrl })}
-                />
-              </div>
-              <LanguagePicker
-                multiple
-                selected={value.languages}
-                onChange={languages => update({ languages })}
-              />
-              <Field
-                label="Start here"
-                hint="Introduce yourself and suggest where a new visitor should begin."
-              >
-                <Textarea
-                  value={value.introduction}
-                  maxLength={2000}
-                  onChange={e => update({ introduction: e.target.value })}
-                />
-              </Field>
-              <div className="grid gap-3 border-t border-border pt-5">
-                <h3 className={creatorSubheading}>About you</h3>
-                <Suspense fallback={<p>Loading editor…</p>}>
-                  <PostEditor
-                    key={generation}
-                    type="simple"
-                    initialContent={initial.bio}
-                    onChange={setBio}
-                    disabled={mutation.isPending}
-                  />
-                </Suspense>
-              </div>
-              <div className="grid gap-3 border-t border-border pt-5 [&>button]:justify-self-start">
-                <h3 className={creatorSubheading}>Social, website and support links</h3>
-                {value.links.map((link, index) => (
-                  <div
-                    key={index}
-                    className="grid items-end gap-3 rounded-xl bg-muted/40 p-3 sm:grid-cols-2 xl:grid-cols-[1fr_2fr_140px_auto]"
+      <fieldset disabled={pending || !!unconfirmed} className="contents">
+        <form.Field name="profile">
+          {field => {
+            const value = field.state.value,
+              update = (patch: Partial<Omit<CreatorProfileInput, 'bio'>>) =>
+                field.handleChange({ ...value, ...patch });
+            return (
+              <>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field label="Creator or brand name">
+                    <Input
+                      value={value.name}
+                      maxLength={100}
+                      onChange={e => update({ name: e.target.value })}
+                      required
+                    />
+                  </Field>
+                  <Field
+                    label="Profile address"
+                    hint="Letters, numbers and hyphens. Your profile address stays fixed after creation."
                   >
-                    <Field label="Label">
-                      <Input
-                        value={link.label}
-                        onChange={e =>
-                          update({
-                            links: value.links.map((l, i) =>
-                              i === index ? { ...l, label: e.target.value } : l,
-                            ),
-                          })
-                        }
-                        placeholder="YouTube, Patreon, Discord…"
+                    <Input
+                      disabled={!!profile}
+                      value={value.slug}
+                      onChange={e => update({ slug: e.target.value })}
+                      placeholder="your-creator-name"
+                      required
+                    />
+                  </Field>
+                </div>
+                <details open={!!profile} className="space-y-5">
+                  <summary className="cursor-pointer text-sm font-medium">
+                    Branding and profile details (optional)
+                  </summary>
+                  <Field label="Tagline">
+                    <Input
+                      value={value.tagline}
+                      maxLength={240}
+                      onChange={e => update({ tagline: e.target.value })}
+                      placeholder="What do you help SWU players discover?"
+                    />
+                  </Field>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <ImageField
+                      label="Avatar"
+                      value={value.avatarUrl}
+                      onChange={avatarUrl => update({ avatarUrl })}
+                    />
+                    <ImageField
+                      label="Banner"
+                      value={value.bannerUrl}
+                      onChange={bannerUrl => update({ bannerUrl })}
+                    />
+                  </div>
+                  <LanguagePicker
+                    multiple
+                    selected={value.languages}
+                    onChange={languages => update({ languages })}
+                  />
+                  <Field
+                    label="Start here"
+                    hint="Introduce yourself and suggest where a new visitor should begin."
+                  >
+                    <Textarea
+                      value={value.introduction}
+                      maxLength={2000}
+                      onChange={e => update({ introduction: e.target.value })}
+                    />
+                  </Field>
+                  <div className="grid gap-3 border-t border-border pt-5">
+                    <h3 className={creatorSubheading}>About you</h3>
+                    <Suspense fallback={<p>Loading editor…</p>}>
+                      <PostEditor
+                        key={generation}
+                        type="simple"
+                        initialContent={initial.bio}
+                        onChange={setBio}
+                        disabled={pending || !!unconfirmed}
                       />
-                    </Field>
-                    <Field label="HTTPS URL">
-                      <Input
-                        type="url"
-                        value={link.url}
-                        onChange={e =>
-                          update({
-                            links: value.links.map((l, i) =>
-                              i === index ? { ...l, url: e.target.value } : l,
-                            ),
-                          })
-                        }
-                      />
-                    </Field>
-                    <Field label="Link type">
-                      <select
-                        className={selectClass}
-                        value={link.kind}
-                        onChange={e =>
-                          update({
-                            links: value.links.map((l, i) =>
-                              i === index ? { ...l, kind: e.target.value as typeof link.kind } : l,
-                            ),
-                          })
-                        }
+                    </Suspense>
+                  </div>
+                  <div className="grid gap-3 border-t border-border pt-5 [&>button]:justify-self-start">
+                    <h3 className={creatorSubheading}>Social, website and support links</h3>
+                    {value.links.map((link, index) => (
+                      <div
+                        key={index}
+                        className="grid items-end gap-3 rounded-xl bg-muted/40 p-3 sm:grid-cols-2 xl:grid-cols-[1fr_2fr_140px_auto]"
                       >
-                        {['social', 'website', 'support', 'contact'].map(kind => (
-                          <option key={kind}>{kind}</option>
-                        ))}
-                      </select>
-                    </Field>
+                        <Field label="Label">
+                          <Input
+                            value={link.label}
+                            onChange={e =>
+                              update({
+                                links: value.links.map((l, i) =>
+                                  i === index ? { ...l, label: e.target.value } : l,
+                                ),
+                              })
+                            }
+                            placeholder="YouTube, Patreon, Discord…"
+                          />
+                        </Field>
+                        <Field label="HTTPS URL">
+                          <Input
+                            type="url"
+                            value={link.url}
+                            onChange={e =>
+                              update({
+                                links: value.links.map((l, i) =>
+                                  i === index ? { ...l, url: e.target.value } : l,
+                                ),
+                              })
+                            }
+                          />
+                        </Field>
+                        <Field label="Link type">
+                          <select
+                            className={selectClass}
+                            value={link.kind}
+                            onChange={e =>
+                              update({
+                                links: value.links.map((l, i) =>
+                                  i === index
+                                    ? { ...l, kind: e.target.value as typeof link.kind }
+                                    : l,
+                                ),
+                              })
+                            }
+                          >
+                            {['social', 'website', 'support', 'contact'].map(kind => (
+                              <option key={kind}>{kind}</option>
+                            ))}
+                          </select>
+                        </Field>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() =>
+                            update({ links: value.links.filter((_, i) => i !== index) })
+                          }
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    ))}
                     <Button
                       type="button"
-                      variant="ghost"
-                      onClick={() => update({ links: value.links.filter((_, i) => i !== index) })}
+                      variant="outline"
+                      disabled={value.links.length >= 20}
+                      onClick={() =>
+                        update({ links: [...value.links, { label: '', url: '', kind: 'social' }] })
+                      }
                     >
-                      Remove
+                      Add a link
                     </Button>
                   </div>
-                ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={value.links.length >= 20}
-                  onClick={() =>
-                    update({ links: [...value.links, { label: '', url: '', kind: 'social' }] })
-                  }
-                >
-                  Add a link
-                </Button>
-              </div>
-              <div className="grid gap-3 border-t border-border pt-5">
-                <h3 className={creatorSubheading}>Your specialties</h3>
-                <TagPicker
-                  selected={value.specialties}
-                  onChange={specialties => update({ specialties })}
-                  dimensions={['purpose', 'format', 'audience', 'topic', 'environment']}
-                  compact
-                />
-              </div>
-            </>
-          );
-        }}
-      </form.Field>
-      <Status error={error ?? mutation.error} />
+                  <div className="grid gap-3 border-t border-border pt-5">
+                    <h3 className={creatorSubheading}>Your specialties</h3>
+                    <TagPicker
+                      selected={value.specialties}
+                      onChange={specialties => update({ specialties })}
+                      dimensions={['purpose', 'format', 'audience', 'topic', 'environment']}
+                      compact
+                    />
+                  </div>
+                </details>
+              </>
+            );
+          }}
+        </form.Field>
+        {!profile && !!personalCounts?.total && (
+          <label className="flex items-start gap-3 rounded-xl border p-4 text-sm">
+            <Checkbox
+              checked={moveArticles}
+              disabled={pending || !!unconfirmed}
+              onCheckedChange={value => setMoveArticles(value === true)}
+            />
+            <span>
+              Move all {personalCounts.total} personal articles to this creator, including{' '}
+              {personalCounts.drafts} drafts.
+              <span className="mt-1 block text-xs text-muted-foreground">
+                Drafts stay private. This creator’s editors will be able to edit and publish these
+                articles. Future personal articles stay personal.
+              </span>
+            </span>
+          </label>
+        )}
+      </fieldset>
+      {unconfirmed && (
+        <p role="status" className="text-sm text-muted-foreground">
+          The result could not be confirmed. Retry to check the original request before changing the
+          profile or transfer choice.
+        </p>
+      )}
+      <Status error={error ?? mutation.error ?? onboarding.error} />
       {(mutation.error as (Error & { status?: number }) | null)?.status === 409 && profile && (
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="outline" onClick={() => void recover(false)}>
@@ -291,20 +355,29 @@ export default function ProfileEditor({
         </div>
       )}
       <div className="flex gap-3 border-t border-border pt-5">
-        <Button type="submit" disabled={mutation.isPending}>
-          {mutation.isPending ? 'Saving…' : 'Save profile'}
+        <Button type="submit" disabled={pending}>
+          {pending
+            ? 'Saving…'
+            : unconfirmed
+              ? 'Retry profile creation'
+              : profile
+                ? 'Save profile'
+                : moveArticles && personalCounts?.total
+                  ? 'Create profile and move articles'
+                  : 'Create profile'}
         </Button>
         <Button
           type="button"
           variant="outline"
+          disabled={pending}
           onClick={() => {
-            if (!dirty || window.confirm('Discard profile changes?')) {
+            if (unconfirmed || !dirty || window.confirm('Discard profile changes?')) {
               allowLeave.current = true;
               onCancel();
             }
           }}
         >
-          Cancel
+          {unconfirmed ? 'Back to studio' : 'Cancel'}
         </Button>
       </div>
     </form>

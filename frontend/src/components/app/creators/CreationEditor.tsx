@@ -1,5 +1,6 @@
+import { useResolvedSubjects } from '@/api/creators/useConnectionSubjects.ts';
 import { LanguagePicker } from './CreatorLanguages.tsx';
-import { lazy, Suspense, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Textarea } from '@/components/ui/textarea.tsx';
@@ -11,57 +12,31 @@ import {
 } from './CreationPublicationControls.tsx';
 import { CreationHistory } from './CreationHistory.tsx';
 import { type Creation, type CreationDocument } from '../../../../../shared/creators/contracts.ts';
-import { isPostEmpty, postDocumentSchemas } from '../../../../../shared/posts/content.ts';
-import { Field, selectClass, Status, SubjectPicker } from './CreatorControls.tsx';
+import { SubjectPicker } from './SubjectPicker.tsx';
+import { Field, Status } from './CreatorControls.tsx';
 import { ImageField } from './ImageField.tsx';
 import { CreationBody } from './CreationPage.tsx';
 import { creatorDescription, creatorPanel, creatorTitle } from './creatorStyles.ts';
-const PostEditor = lazy(() => import('../rich-text-editor/blocknote/BlocknoteEditor.tsx'));
-const templates: Record<string, string[]> = {
-  'Deck guide': [
-    'Game plan',
-    'The decklist',
-    'Mulligans and resourcing',
-    'Key card choices',
-    'Matchups and sideboarding',
-  ],
-  'Tournament report': [
-    'Event and preparation',
-    'Deck choice',
-    'Rounds and results',
-    'What I learned',
-  ],
-  'Limited guide': [
-    'Format and set',
-    'Key cards',
-    'Archetypes',
-    'Draft picks or pool construction',
-    'Gameplay advice',
-  ],
-  'Meta report': ['Events and data sources', 'The field', 'Winning strategies', 'Changes to watch'],
-};
+import { ArticleHeader, articleSurface, articleInset, articleBodyInset } from './ArticleHeader.tsx';
+import { ArticleEditorHeader } from './ArticleEditorHeader.tsx';
+import { CreationBodyEditor } from './CreationBodyEditor.tsx';
+import { cn } from '@/lib/utils.ts';
 export default function CreationEditor({
   creatorId,
   initial,
+  medium = 'article',
   onClose,
 }: {
-  creatorId: string;
+  creatorId: string | null;
   initial?: Creation;
+  medium?: CreationDocument['medium'];
   onClose: () => void;
 }) {
-  const draft = useCreationDraft({ creatorId, initial, onClose });
-  const {
-    document,
-    id,
-    error,
-    busy,
-    generation,
-    setGeneration,
-    update,
-    resolveConflict,
-    restore,
-    retry,
-  } = draft;
+  const draft = useCreationDraft({ creatorId, initial, medium, onClose });
+  const { document, id, error, busy, update, resolveConflict, restore, retry } = draft;
+  const resolvedSubjects = useResolvedSubjects(document.references);
+  const isArticle = document.medium === 'article';
+  const isVideo = document.medium === 'video';
   const [preview, setPreview] = useState(false);
   const [history, setHistory] = useState(false);
   return (
@@ -114,146 +89,109 @@ export default function CreationEditor({
         )
       )}
       {preview ? (
-        <div className={`${creatorPanel} mx-auto grid max-w-4xl gap-4`}>
-          <BadgePreview />
-          <h1 className={creatorTitle}>{document.title}</h1>
-          {document.medium !== 'video' && <p className={creatorDescription}>{document.summary}</p>}
-          <CreationBody document={document} />
-        </div>
+        isArticle ? (
+          <article className={articleSurface} aria-label="Article preview">
+            <ArticleHeader
+              coverUrl={document.coverUrl}
+              title={document.title}
+              summary={document.summary}
+              tags={document.tags}
+            >
+              <BadgePreview />
+            </ArticleHeader>
+            <div className={articleBodyInset}>
+              <CreationBody document={document} references={resolvedSubjects.data} />
+            </div>
+          </article>
+        ) : (
+          <div className={`${creatorPanel} mx-auto grid max-w-4xl gap-4`}>
+            <BadgePreview />
+            <h1 className={creatorTitle}>{document.title}</h1>
+            {!isVideo && <p className={creatorDescription}>{document.summary}</p>}
+            <CreationBody document={document} references={resolvedSubjects.data} />
+          </div>
+        )
       ) : (
-        <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-          <div className={`${creatorPanel} space-y-5`}>
-            <Field label="Title">
-              <Input
-                value={document.title}
-                maxLength={200}
-                onChange={e => update({ title: e.target.value })}
-                placeholder="What will your audience learn?"
-              />
-            </Field>
-            <Field label="Summary">
-              <Textarea
-                value={document.summary}
-                maxLength={1000}
-                onChange={e => update({ summary: e.target.value })}
-              />
-            </Field>
-            {document.medium === 'video' && (
-              <Field label="Video description">
+        <div className={cn('space-y-4', isArticle && 'mx-auto max-w-5xl')}>
+          {isArticle ? (
+            <article className={articleSurface} aria-label="Article editor">
+              <ArticleEditorHeader document={document} update={update} />
+              <div className={articleInset}>
+                <CreationBodyEditor draft={draft} />
+              </div>
+            </article>
+          ) : (
+            <section className={`${creatorPanel} space-y-5`} aria-label="Content editor">
+              <Field label="Title">
+                <Input
+                  value={document.title}
+                  maxLength={200}
+                  onChange={e => update({ title: e.target.value })}
+                  placeholder="What will your audience learn?"
+                />
+              </Field>
+              <Field label="Summary">
                 <Textarea
-                  value={document.videoDescription ?? ''}
-                  placeholder="Uses the summary when empty."
-                  maxLength={20000}
-                  rows={10}
-                  onChange={event => update({ videoDescription: event.target.value })}
+                  value={document.summary}
+                  maxLength={1000}
+                  onChange={e => update({ summary: e.target.value })}
+                />
+              </Field>
+              {isVideo && (
+                <Field label="Video description">
+                  <Textarea
+                    value={document.videoDescription ?? ''}
+                    placeholder="Uses the summary when empty."
+                    maxLength={20000}
+                    rows={10}
+                    onChange={event => update({ videoDescription: event.target.value })}
+                  />
+                </Field>
+              )}
+              <Field label="Original content URL">
+                <Input
+                  type="url"
+                  value={document.sourceUrl}
+                  disabled={initial?.sourceVerified}
+                  onChange={e => update({ sourceUrl: e.target.value })}
+                  placeholder="https://…"
+                />
+              </Field>
+              <ImageField
+                label="Cover image"
+                value={document.coverUrl}
+                onChange={coverUrl => update({ coverUrl })}
+              />
+              <CreationBodyEditor draft={draft} />
+            </section>
+          )}
+          <SubjectPicker
+            resolved={resolvedSubjects}
+            references={document.references}
+            timestamps={isVideo}
+            onChange={references => update({ references })}
+          />
+          {isVideo && <CreationChapters document={document} update={update} />}
+          <CreationClassification
+            document={document}
+            update={update}
+            creatorOwned={!!draft.activeCreatorId}
+          >
+            <LanguagePicker
+              selected={[document.language]}
+              onChange={languages => update({ language: languages[0] })}
+            />
+            {isArticle && (
+              <Field label="Original article URL (optional)">
+                <Input
+                  type="url"
+                  value={document.sourceUrl}
+                  onChange={e => update({ sourceUrl: e.target.value })}
+                  placeholder="https://…"
                 />
               </Field>
             )}
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Medium">
-                <select
-                  className={selectClass}
-                  value={document.medium}
-                  disabled={initial?.sourceVerified}
-                  onChange={e => update({ medium: e.target.value as CreationDocument['medium'] })}
-                >
-                  {[
-                    ['article', 'Article'],
-                    ['video', 'Video'],
-                    ['audio', 'Podcast / audio'],
-                    ['external', 'External resource'],
-                  ].map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <LanguagePicker
-                selected={[document.language]}
-                onChange={languages => update({ language: languages[0] })}
-              />
-            </div>
-            <Field
-              label={
-                document.medium === 'article'
-                  ? 'Original article URL (optional)'
-                  : 'Original content URL'
-              }
-            >
-              <Input
-                type="url"
-                value={document.sourceUrl}
-                disabled={initial?.sourceVerified}
-                onChange={e => update({ sourceUrl: e.target.value })}
-                placeholder="https://…"
-              />
-            </Field>
-            <ImageField
-              label="Cover image"
-              value={document.coverUrl}
-              onChange={coverUrl => update({ coverUrl })}
-            />
-            <div className="flex flex-wrap gap-2">
-              {Object.keys(templates).map(name => (
-                <Button
-                  key={name}
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    if (
-                      !isPostEmpty(document.body) &&
-                      !window.confirm('Replace the article body with this template?')
-                    )
-                      return;
-                    const body = {
-                      version: 1 as const,
-                      blocks: templates[name].flatMap(text => [
-                        {
-                          id: crypto.randomUUID(),
-                          type: 'heading',
-                          props: { level: 2 },
-                          content: [{ type: 'text', text, styles: {} }],
-                          children: [],
-                        },
-                        {
-                          id: crypto.randomUUID(),
-                          type: 'paragraph',
-                          props: {},
-                          content: [],
-                          children: [],
-                        },
-                      ]),
-                    };
-                    update({ body: postDocumentSchemas.rich.parse(body) });
-                    setGeneration(g => g + 1);
-                  }}
-                >
-                  {name} template
-                </Button>
-              ))}
-            </div>
-            <div className="min-h-72 rounded-xl border bg-card p-4">
-              <Suspense fallback={<p>Loading the SWU editor…</p>}>
-                <PostEditor
-                  key={generation}
-                  type="rich"
-                  initialContent={document.body}
-                  onChange={body => update({ body })}
-                />
-              </Suspense>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Use / to insert cards, decklists, matchups and tournament charts. Deck embeds show the
-              current deck and respect its access settings.
-            </p>
-            <SubjectPicker
-              references={document.references}
-              onChange={references => update({ references })}
-            />
-            <CreationChapters document={document} update={update} />
-          </div>
-          <CreationClassification document={document} update={update} />
+          </CreationClassification>
         </div>
       )}
       <CreationPublicationFooter draft={draft} setHistory={setHistory} />

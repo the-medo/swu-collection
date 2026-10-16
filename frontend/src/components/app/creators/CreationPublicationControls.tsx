@@ -19,7 +19,9 @@ export function CreationPublicationControls({
   return (
     <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-border bg-card/95 p-4 backdrop-blur">
       <div>
-        <h2 className={creatorHeading}>{editing ? 'Edit creation' : 'New creation'}</h2>
+        <h2 className={creatorHeading}>
+          {editing ? 'Edit' : 'New'} {draft.document.medium === 'article' ? 'article' : 'creation'}
+        </h2>
         <p
           role="status"
           className="mt-1! mb-0! text-[11px]! leading-relaxed! text-muted-foreground"
@@ -36,17 +38,17 @@ export function CreationPublicationControls({
           {published ? ' · Published version is separate' : ''}
         </p>
       </div>
-      <div className="flex flex-wrap gap-2">
-        <Button variant="outline" onClick={() => setPreview(p => !p)}>
+      <div className="flex flex-wrap gap-1.5 sm:gap-2">
+        <Button size="sm" variant="outline" onClick={() => setPreview(p => !p)}>
           {preview ? 'Edit' : 'Preview'}
         </Button>
-        <Button variant="outline" disabled={busy} onClick={() => void save()}>
+        <Button size="sm" variant="outline" disabled={busy} onClick={() => void save()}>
           Save draft
         </Button>
-        <Button disabled={busy || publishing} onClick={() => void publish()}>
+        <Button size="sm" disabled={busy || publishing} onClick={() => void publish()}>
           {published ? 'Publish update' : 'Publish'}
         </Button>
-        <Button variant="ghost" onClick={close}>
+        <Button size="sm" variant="ghost" onClick={close}>
           Close
         </Button>
       </div>

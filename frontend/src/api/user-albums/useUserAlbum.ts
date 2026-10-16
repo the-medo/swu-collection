@@ -9,6 +9,7 @@ export function useUserAlbum(id: string) {
   const viewer = useUser()?.id;
   return useInfiniteQuery({
     queryKey: userAlbumKeys.detail(viewer, id),
+    enabled: !!id,
     queryFn: async ({ pageParam, signal }) =>
       albumData<UserAlbumPage>(
         await api['user-albums'][':id'].$get(

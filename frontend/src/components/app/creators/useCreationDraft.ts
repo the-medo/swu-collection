@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useBlocker } from '@tanstack/react-router';
-import { hubApi, useSaveCreation, usePublishCreation } from '@/api/creators';
+import { useReloadCreationDraft, useSaveCreation, usePublishCreation } from '@/api/creators';
 import {
   creationDocumentSchema,
   type Creation,
@@ -28,20 +28,37 @@ const initialDocument = (): CreationDocument => ({
   seriesOrder: 0,
   pinned: false,
 });
+// Older non-video drafts could contain video fields. Keep those in revision history,
+// but exclude them from the editable draft so hidden fields cannot prevent publication.
+function editableDocument(document: CreationDocument): CreationDocument {
+  if (document.medium === 'video') return document;
+  return {
+    ...document,
+    videoDescription: '',
+    chapters: [],
+    references: document.references.map(reference => ({ ...reference, startSeconds: null })),
+  };
+}
 /** Owns persistence and optimistic revisions; rendering changes never reset a dirty draft. */
 export function useCreationDraft({
   creatorId,
   initial,
+  medium = 'article',
   onClose,
 }: {
-  creatorId: string;
+  creatorId: string | null;
   initial?: Creation;
+  medium?: CreationDocument['medium'];
   onClose: () => void;
 }) {
-  const [document, setDocument] = useState(initial?.document ?? initialDocument);
+  const identity = useRef({ creatorId, ownershipRevision: initial?.ownershipRevision ?? 1 });
+  const [activeCreatorId, setActiveCreatorId] = useState(creatorId);
+  const [document, setDocument] = useState(() =>
+    editableDocument(initial?.document ?? { ...initialDocument(), medium }),
+  );
   const [id, setId] = useState(initial?.id),
     [revision, setRevision] = useState(initial?.revision);
-  const [saved, setSaved] = useState(() => JSON.stringify(document));
+  const [saved, setSaved] = useState(() => JSON.stringify(initial?.document ?? document));
   const [error, setError] = useState<Error>(),
     [busy, setBusy] = useState(false),
     [generation, setGeneration] = useState(0);
@@ -57,49 +74,45 @@ export function useCreationDraft({
   const dirty = JSON.stringify(document) !== saved;
   const saveMutation = useSaveCreation(),
     publishMutation = usePublishCreation();
+  const reloadDraft = useReloadCreationDraft();
   const saveFn = useRef(saveMutation.mutateAsync);
   saveFn.current = saveMutation.mutateAsync;
-  const save = useCallback(
-    async (explicit = true) => {
-      if (saving.current) return null;
-      const parsed = creationDocumentSchema.safeParse(latest.current);
-      if (!parsed.success) {
-        if (explicit)
-          setError(
-            new Error(
-              parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join(' · '),
-            ),
-          );
-        return null;
-      }
-      saving.current = true;
-      setBusy(true);
-      // Compare the editor snapshot, not the schema-normalized key order.
-      const snapshot = JSON.stringify(latest.current);
-      try {
-        const result = await saveFn.current({
-          creatorId,
-          document: parsed.data,
-          id: draftId.current,
-          revision: currentRevision.current,
-        });
-        draftId.current = result.id;
-        currentRevision.current = result.revision;
-        setId(result.id);
-        setRevision(result.revision);
-        setSaved(snapshot);
-        setError(undefined);
-        return result;
-      } catch (failure) {
-        setError(failure instanceof Error ? failure : new Error('Could not save this draft.'));
-        return null;
-      } finally {
-        saving.current = false;
-        setBusy(false);
-      }
-    },
-    [creatorId],
-  );
+  const save = useCallback(async (explicit = true) => {
+    if (saving.current) return null;
+    const parsed = creationDocumentSchema.safeParse(latest.current);
+    if (!parsed.success) {
+      if (explicit)
+        setError(
+          new Error(parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join(' · ')),
+        );
+      return null;
+    }
+    saving.current = true;
+    setBusy(true);
+    // Compare the editor snapshot, not the schema-normalized key order.
+    const snapshot = JSON.stringify(latest.current);
+    try {
+      const result = await saveFn.current({
+        ...identity.current,
+        document: parsed.data,
+        id: draftId.current,
+        revision: currentRevision.current,
+      });
+      draftId.current = result.id;
+      currentRevision.current = result.revision;
+      setId(result.id);
+      setRevision(result.revision);
+      setSaved(snapshot);
+      setError(undefined);
+      return result;
+    } catch (failure) {
+      setError(failure instanceof Error ? failure : new Error('Could not save this draft.'));
+      return null;
+    } finally {
+      saving.current = false;
+      setBusy(false);
+    }
+  }, []);
   useEffect(() => {
     if (!dirty || error || busy) return;
     const timer = window.setTimeout(() => {
@@ -128,7 +141,11 @@ export function useCreationDraft({
           : { id, revision: revision! };
     if (!result) return;
     try {
-      await publishMutation.mutateAsync({ ...result, unpublish });
+      await publishMutation.mutateAsync({
+        ...result,
+        unpublish,
+        ownershipRevision: identity.current.ownershipRevision,
+      });
       setPublished(!unpublish);
       setError(undefined);
     } catch (failure) {
@@ -157,13 +174,18 @@ export function useCreationDraft({
       return;
     setBusy(true);
     try {
-      const current = await hubApi.draft(id);
+      const current = await reloadDraft.mutateAsync(id);
+      identity.current = {
+        creatorId: current.creatorId,
+        ownershipRevision: current.ownershipRevision,
+      };
+      setActiveCreatorId(current.creatorId);
       currentRevision.current = current.revision;
       setRevision(current.revision);
       setPublished(!!current.publishedAt);
       if (keepLocal) await save();
       else {
-        setDocument(current.document);
+        setDocument(editableDocument(current.document));
         setSaved(JSON.stringify(current.document));
         setGeneration(g => g + 1);
         setError(undefined);
@@ -187,11 +209,12 @@ export function useCreationDraft({
       )
     )
       return;
-    setDocument(document);
+    setDocument(editableDocument(document));
     setGeneration(g => g + 1);
     setError(undefined);
   };
   return {
+    activeCreatorId,
     document,
     id,
     error,
