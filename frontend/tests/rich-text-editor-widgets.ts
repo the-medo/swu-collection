@@ -26,7 +26,12 @@ export async function exerciseWidgets(
   await expect(dialog.getByRole('option', { name: '@Editor fixture', exact: true })).toBeVisible();
   await page.keyboard.press('Enter');
   await expect(dialog).toBeHidden();
-  await expect(surface.locator('.rte-mention')).toHaveAttribute('href', `/users/${userId}`);
+  await surface.getByRole('button', { name: '@Editor fixture', exact: true }).click();
+  await expect(page.getByRole('link', { name: 'Open profile', exact: true })).toHaveAttribute(
+    'href',
+    `/users/${userId}`,
+  );
+  await page.keyboard.press('Escape');
   await endOfDocument();
   await page.keyboard.press('@');
   await expect(dialog).toBeVisible();
@@ -42,13 +47,13 @@ export async function exerciseWidgets(
   await dialog
     .getByLabel('Notes', { exact: true })
     .fill('Keep early units and a clear turn-two play.');
-  await dialog.getByRole('button', { name: 'Insert widget', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Insert callout', exact: true }).click();
   await expect(dialog).toBeHidden();
   const callout = surface.locator('[data-widget-kind=callout]');
   await expect(callout).toContainText('Mulligan plan');
   await callout.getByRole('button', { name: 'Edit callout' }).click();
   await dialog.getByLabel('Notes', { exact: true }).fill('Updated strategy: keep early units.');
-  await dialog.getByRole('button', { name: 'Save widget', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Save changes', exact: true }).click();
   await expect(dialog).toBeHidden();
   await expect(callout).toContainText('Updated strategy: keep early units.');
 
@@ -58,17 +63,17 @@ export async function exerciseWidgets(
     await dialog.getByRole('combobox', { name: 'Search cards' }).fill(name);
     await dialog.getByRole('listbox').getByRole('option').first().click();
   }
-  await dialog.getByLabel('Card size', { exact: true }).selectOption('small');
+  await dialog.getByRole('radio', { name: 'Small', exact: true }).locator('..').click();
   await dialog.getByLabel('Notes', { exact: true }).fill('Tempo, ramp, and removal.');
-  await dialog.getByRole('button', { name: 'Insert widget', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Insert card group', exact: true }).click();
   await expect(dialog).toBeHidden();
   const groupCards = surface.locator('[data-widget-kind=card-group]');
   await expect(groupCards.locator('.rte-card-artwork')).toHaveCount(3);
   await expect(groupCards.locator('.rte-card-artwork img').first()).toHaveCSS('height', '180px');
   await groupCards.getByRole('button', { name: 'Edit card-group' }).click();
   await dialog.getByRole('button', { name: 'Remove Resupply', exact: true }).click();
-  await dialog.getByLabel('Card size', { exact: true }).selectOption('medium');
-  await dialog.getByRole('button', { name: 'Save widget', exact: true }).click();
+  await dialog.getByRole('radio', { name: 'Medium', exact: true }).locator('..').click();
+  await dialog.getByRole('button', { name: 'Save changes', exact: true }).click();
   await expect(dialog).toBeHidden();
   await expect(groupCards.locator('.rte-card-artwork')).toHaveCount(2);
   await expect(groupCards.locator('.rte-card-artwork img').first()).toHaveCSS('height', '280px');
@@ -97,31 +102,31 @@ export async function exerciseWidgets(
   await dialog.getByLabel('Title', { exact: true }).fill('Aggro into control');
   await dialog.getByLabel('Subtitle', { exact: true }).fill('On the play · post-sideboard');
   await dialog.getByLabel('Matchup notes').fill('Trade efficiently, then attack the base.');
-  await dialog.getByRole('button', { name: 'Insert widget', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Insert matchup', exact: true }).click();
   await expect(dialog).toBeHidden();
   const matchup = surface.locator('[data-widget-kind=matchup]');
   await expect(matchup.locator('[data-matchup-side=left]')).toHaveCount(1);
   await expect(matchup.locator('[data-matchup-side=right]')).toHaveCount(1);
-  await expect(matchup.locator('[data-base-card]')).toHaveCount(0);
+  await expect(matchup.locator('.compact-deck-card-base')).toHaveCount(0);
   await expect(matchup).toContainText('Aggro into control');
   await expect(matchup).toContainText('On the play · post-sideboard');
   await expect(matchup).toContainText('Trade efficiently');
-  await expect(matchup.locator('.sr-only')).toContainText('Sabine');
+  await expect(matchup.getByRole('img', { name: /Sabine/ })).toBeVisible();
   await expect(matchup.locator('p')).not.toContainText('Sabine');
   await expect(matchup.locator('p')).not.toContainText('Tarkin');
   await matchup.getByRole('button', { name: 'Edit matchup' }).click();
   await chooseMatchupCard('left', 'base', 'Command Center', 'command-center');
   await chooseMatchupCard('right', 'base', 'Energy Conversion Lab', 'energy-conversion-lab');
-  await dialog.getByRole('button', { name: 'Save widget', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Save changes', exact: true }).click();
   await expect(dialog).toBeHidden();
-  await expect(matchup.locator('[data-base-card]')).toHaveCount(2);
+  await expect(matchup.locator('.compact-deck-card-base')).toHaveCount(2);
   await expect(matchup.locator('p')).not.toContainText('Command Center');
   await matchup.getByRole('button', { name: 'Edit matchup' }).click();
   await dialog.getByRole('button', { name: 'Remove left base' }).click();
   await dialog.getByRole('button', { name: 'Remove right base' }).click();
-  await dialog.getByRole('button', { name: 'Save widget', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Save changes', exact: true }).click();
   await expect(dialog).toBeHidden();
-  await expect(matchup.locator('[data-base-card]')).toHaveCount(0);
+  await expect(matchup.locator('.compact-deck-card-base')).toHaveCount(0);
 
   for (const [scope, id, count] of [
     ['tournament', tournamentId, 2],
@@ -139,7 +144,7 @@ export async function exerciseWidgets(
     await dialog.getByRole('button', { name: 'Load preview' }).click();
     await expect(dialog.locator('[data-meta-part]')).toHaveAttribute('data-meta-part', 'top8');
     await dialog.getByRole('radio', { name: 'All Decks', exact: true }).click();
-    await dialog.getByRole('button', { name: 'Insert widget', exact: true }).click();
+    await dialog.getByRole('button', { name: 'Insert chart', exact: true }).click();
     await expect(dialog).toBeHidden();
     const widget = surface.locator(`[data-meta-id="${id}"]`);
     await expect(widget.locator('svg')).not.toHaveCount(0);

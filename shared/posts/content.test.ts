@@ -384,7 +384,7 @@ describe('persisted post content', () => {
         kind: 'matchup',
         leftLeader: 'sabine-wren',
         rightLeader: key,
-        text: 'Notes',
+        notes: document([paragraph([text('Notes')])]),
       };
       expect(
         postDocumentSchema.safeParse(

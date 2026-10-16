@@ -1,5 +1,6 @@
 import { db } from '../../db/index.ts';
 import type { Database } from './types.ts';
+import { createOwnershipService } from './ownership.ts';
 import { createProfilesService } from './profiles.ts';
 import { createDiscoveryService } from './discovery.ts';
 import { createCreationsService } from './creations.ts';
@@ -12,6 +13,7 @@ export { writeCreatorPublication } from './publication.ts';
 export function createCreatorService(database: Database = db) {
   return {
     ...createProfilesService(database),
+    ...createOwnershipService(database),
     ...createDiscoveryService(database),
     ...createCreationsService(database),
   };

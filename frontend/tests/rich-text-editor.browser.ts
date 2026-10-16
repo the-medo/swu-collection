@@ -211,12 +211,12 @@ try {
     await expect(page.getByRole('group', { name: 'Insert SWUBASE content' })).toHaveCount(0);
     await exerciseFormatting(page);
     await slash('card-image');
-    await page.getByLabel('Card size', { exact: true }).selectOption('small');
     await chooseCard();
-    await surface.getByRole('button', { name: 'Edit card-image' }).click();
-    await page.getByLabel('Card size', { exact: true }).selectOption('large');
-    await page.getByRole('button', { name: 'Save widget', exact: true }).click();
-    await expect(surface.locator('.rte-card-artwork img')).toHaveCSS('height', '400px');
+    const imageBlock = surface.locator('[data-content-type=image]');
+    await expect(imageBlock.getByAltText('Battlefield Marine')).toBeVisible();
+    await expect(imageBlock.locator('.bn-file-caption')).toHaveCount(0);
+    await imageBlock.getByAltText('Battlefield Marine').hover();
+    await expect(imageBlock.locator('.bn-resize-handle').last()).toBeVisible();
     await slash('card-link');
     await chooseCard();
     await page.keyboard.type(' continues here');

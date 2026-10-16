@@ -10,6 +10,8 @@ const id = '10000000-0000-4000-8000-000000000001';
 const sourceDeckId = 'caaaaaaaaaaaaaaaaaaaaaaaa';
 const originalDeckUrl = `https://swuforge.com/decks/${sourceDeckId}`;
 const creation: Creation = {
+  author: null,
+  ownershipRevision: 1,
   id,
   creatorId: 'video-test',
   authorId: null,

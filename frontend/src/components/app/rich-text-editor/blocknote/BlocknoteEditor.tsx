@@ -13,29 +13,42 @@ import {
   blockTypeSelectItems,
   FormattingToolbar,
   FormattingToolbarController,
+  SideMenuController,
 } from '@blocknote/react';
 import { filterSuggestionItems } from '@blocknote/core/extensions';
 import { BlockNoteView } from '@blocknote/shadcn';
 import { closeHistory } from '@tiptap/pm/history';
 import './blocknote.css';
 import { useInsertionPicker } from '../shared/insertionContext.ts';
-import { editorCommands, isInlineInsertion, type InsertKind } from '../shared/model.ts';
+import { isInlineInsertion, type InsertKind } from '../shared/model.ts';
 import { useTheme } from '@/components/theme-provider.tsx';
 import { EditorSurface } from '../shared/EditorSurface.tsx';
-import { commentsSchema, schema, simpleSchema } from './schema.tsx';
+import { schema } from './schema.tsx';
+import { commentsSchema, simpleSchema } from './commentsSchema.ts';
+import { EditorCommandMenu } from './EditorCommandMenu.tsx';
+import { commandsForEditor } from '../shared/commands.ts';
+import { EditorCommandIcon } from '../shared/EditorCommandIcon.tsx';
+import { EditorSideMenu } from './EditorSideMenu.tsx';
+import { handleToggleKeyDown } from './handleToggleKeyDown.ts';
 
 type EditorProps = {
   type: EditorType;
   initialContent: PostDocument;
   onChange: (document: PostDocument) => void;
   disabled?: boolean;
+  ariaLabel?: string;
 };
 
-function RichEditorBody({ initialContent, onChange, disabled = false }: EditorProps) {
+function RichEditorBody({ initialContent, onChange, disabled = false, ariaLabel }: EditorProps) {
   const request = useInsertionPicker();
   const { theme } = useTheme();
-  const editor = useCreateBlockNote({
+  const editor = useCreateBlockNote<{
+    schema: typeof schema;
+    domAttributes: { editor: Record<string, string> };
+    initialContent: (typeof schema.PartialBlock)[];
+  }>({
     schema,
+    domAttributes: { editor: ariaLabel ? { 'aria-label': ariaLabel } : {} },
     initialContent: initialContent.blocks as (typeof schema.PartialBlock)[],
   });
   const insert = async (kind: InsertKind, literalOnCancel = false) => {
@@ -50,7 +63,7 @@ function RichEditorBody({ initialContent, onChange, disabled = false }: EditorPr
         return;
       }
       closeHistory(tr);
-      if (isInlineInsertion(value)) {
+      if (value.kind !== 'image' && isInlineInsertion(value)) {
         const current = editor.getTextCursorPosition().block;
         if (current.content === undefined) {
           const paragraph = editor.insertBlocks([{ type: 'paragraph' }], current, 'after')[0];
@@ -67,7 +80,9 @@ function RichEditorBody({ initialContent, onChange, disabled = false }: EditorPr
         const empty = Array.isArray(current.content) && current.content.length === 0;
         const blocks = editor.insertBlocks(
           [
-            { type: 'swuBlock', props: { data: JSON.stringify(value) } },
+            value.kind === 'image'
+              ? { type: 'image', props: value.props }
+              : { type: 'swuBlock', props: { data: JSON.stringify(value) } },
             ...(!empty ? [{ type: 'paragraph' as const }] : []),
           ],
           current,
@@ -92,29 +107,27 @@ function RichEditorBody({ initialContent, onChange, disabled = false }: EditorPr
         editable={!disabled}
         editor={editor}
         slashMenu={false}
+        sideMenu={false}
+        formattingToolbar={!disabled}
         theme={theme === 'system' ? undefined : theme}
       >
+        <SideMenuController sideMenu={EditorSideMenu} />
         <SuggestionMenuController
           triggerCharacter="/"
+          suggestionMenuComponent={EditorCommandMenu}
           getItems={async query =>
             filterSuggestionItems(
               [
-                ...editorCommands.map(command => ({
+                ...commandsForEditor('rich').map(command => ({
                   title: command.label,
                   subtext: command.description,
-                  aliases: [command.id],
+                  icon: <EditorCommandIcon kind={command.id} />,
+                  aliases: command.aliases,
                   group: 'SWUBASE',
                   onItemClick: () => {
                     void insert(command.id);
                   },
                 })),
-                {
-                  title: 'Mention a user',
-                  subtext: 'Link to a player inside your text.',
-                  aliases: ['mention', 'user'],
-                  group: 'SWUBASE',
-                  onItemClick: () => void insert('mention'),
-                },
                 ...getDefaultReactSlashMenuItems(editor),
               ],
               query,
@@ -126,15 +139,25 @@ function RichEditorBody({ initialContent, onChange, disabled = false }: EditorPr
   );
 }
 
-function CommentsEditorBody({ initialContent, onChange, disabled = false }: EditorProps) {
+function CommentsEditorBody({
+  initialContent,
+  onChange,
+  disabled = false,
+  ariaLabel,
+}: EditorProps) {
   const request = useInsertionPicker();
   const { theme } = useTheme();
-  const editor = useCreateBlockNote({
+  const editor = useCreateBlockNote<{
+    schema: typeof commentsSchema;
+    domAttributes: { editor: Record<string, string> };
+    initialContent: (typeof commentsSchema.PartialBlock)[];
+  }>({
     schema: commentsSchema,
+    domAttributes: { editor: ariaLabel ? { 'aria-label': ariaLabel } : {} },
     initialContent: initialContent.blocks as (typeof commentsSchema.PartialBlock)[],
   });
-  const insert = async (kind: 'mention' | 'card-link', literalOnCancel = false) => {
-    if (disabled) return;
+  const insert = async (kind: InsertKind, literalOnCancel = false) => {
+    if (disabled || (kind !== 'mention' && kind !== 'card-link')) return;
     const selection = editor.prosemirrorState.selection.getBookmark();
     const value = await request(kind);
     if (editor.prosemirrorView.isDestroyed) return;
@@ -171,52 +194,52 @@ function CommentsEditorBody({ initialContent, onChange, disabled = false }: Edit
         editable={!disabled}
         editor={editor}
         slashMenu={false}
+        sideMenu={false}
         formattingToolbar={false}
         theme={theme === 'system' ? undefined : theme}
       >
+        <SideMenuController sideMenu={EditorSideMenu} />
         <SuggestionMenuController
           triggerCharacter="/"
+          suggestionMenuComponent={EditorCommandMenu}
           getItems={async query =>
             filterSuggestionItems(
               [
-                {
-                  title: 'Card link',
-                  subtext: 'Search for a card to reference in your comment.',
-                  aliases: ['card-link', 'card'],
+                ...commandsForEditor('comments').map(command => ({
+                  title: command.label,
+                  subtext: command.description,
+                  icon: <EditorCommandIcon kind={command.id} />,
+                  aliases: command.aliases,
                   group: 'SWUBASE',
-                  onItemClick: () => void insert('card-link'),
-                },
-                {
-                  title: 'Mention a user',
-                  subtext: 'Link to a player inside your comment.',
-                  aliases: ['mention', 'user'],
-                  group: 'SWUBASE',
-                  onItemClick: () => void insert('mention'),
-                },
+                  onItemClick: () => void insert(command.id),
+                })),
                 ...getDefaultReactSlashMenuItems(editor),
               ],
               query,
             )
           }
         />
-        <FormattingToolbarController
-          formattingToolbar={() => (
-            <FormattingToolbar
-              blockTypeSelectItems={blockTypeSelectItems(editor.dictionary).filter(
-                item => item.type !== 'heading' || Number(item.props?.level) >= 4,
-              )}
-            />
-          )}
-        />
+        {!disabled && (
+          <FormattingToolbarController
+            formattingToolbar={() => (
+              <FormattingToolbar
+                blockTypeSelectItems={blockTypeSelectItems(editor.dictionary).filter(
+                  item => item.type !== 'heading' || Number(item.props?.level) >= 4,
+                )}
+              />
+            )}
+          />
+        )}
       </BlockNoteView>
     </EditorSurface>
   );
 }
 
-function SimpleEditorBody({ initialContent, onChange, disabled = false }: EditorProps) {
+function SimpleEditorBody({ initialContent, onChange, disabled = false, ariaLabel }: EditorProps) {
   const { theme } = useTheme();
   const editor = useCreateBlockNote({
     schema: simpleSchema,
+    domAttributes: { editor: ariaLabel ? { 'aria-label': ariaLabel } : {} },
     initialContent: toSimplePostDocument(initialContent)
       .blocks as (typeof simpleSchema.PartialBlock)[],
   });
@@ -233,15 +256,23 @@ function SimpleEditorBody({ initialContent, onChange, disabled = false }: Editor
         }
         editable={!disabled}
         editor={editor}
+        sideMenu={false}
+        formattingToolbar={!disabled}
         theme={theme === 'system' ? undefined : theme}
-      />
+      >
+        <SideMenuController sideMenu={EditorSideMenu} />
+      </BlockNoteView>
     </EditorSurface>
   );
 }
 
 export default function PostEditor(props: EditorProps) {
   return (
-    <div className="rte-page rte-editing" data-editor-type={props.type}>
+    <div
+      className="rte-page rte-editing"
+      data-editor-type={props.type}
+      onKeyDownCapture={handleToggleKeyDown}
+    >
       {props.type === 'rich' || props.type === 'comments' ? (
         <InsertionProvider>
           {props.type === 'comments' ? (
@@ -253,29 +284,6 @@ export default function PostEditor(props: EditorProps) {
       ) : (
         <SimpleEditorBody {...props} />
       )}
-    </div>
-  );
-}
-
-export function PostContent({ content, type }: { content: PostDocument; type: EditorType }) {
-  const { theme } = useTheme();
-  const editor = useCreateBlockNote(
-    {
-      schema,
-      trailingBlock: false,
-      initialContent: trimTrailingEmptyBlocks(
-        type === 'simple' ? toSimplePostDocument(content) : content,
-      ).blocks as (typeof schema.PartialBlock)[],
-    },
-    [type],
-  );
-  return (
-    <div className="rte-page rte-published">
-      <BlockNoteView
-        editor={editor}
-        editable={false}
-        theme={theme === 'system' ? undefined : theme}
-      />
     </div>
   );
 }

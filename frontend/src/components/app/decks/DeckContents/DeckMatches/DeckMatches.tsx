@@ -25,7 +25,7 @@ const DeckMatches: React.FC<DeckMatchesProps> = ({ deckId, setDeckId }) => {
 
   return (
     <>
-      <table>
+      <table className="deck-matches">
         {tournament && (
           <thead>
             <td colSpan={5} className="p-1 font-semibold text-xs bg-primary/10">

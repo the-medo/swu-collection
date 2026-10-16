@@ -1,0 +1,20 @@
+/* Size the shared deck artwork to the block, including narrow or nested editors.
+   The component keeps its overlapping cards and hover animation. */
+.rte-matchup-deck .deck-artwork {
+  width: clamp(3.75rem, 20cqw, 10rem);
+  height: clamp(4rem, 15cqw, 6.5rem);
+}
+.rte-matchup-deck .compact-deck-card {
+  width: clamp(3rem, 15cqw, 7.5rem);
+}
+
+/* The notes preview is a separate read-only editor inside the article block. */
+.rte-matchup-notes .rte-published .bn-editor {
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  font-size: inherit;
+}
+.rte-matchup-notes .rte-published .bn-container {
+  --bn-colors-editor-background: transparent;
+}

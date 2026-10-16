@@ -9,7 +9,9 @@ import {
   index,
   uniqueIndex,
   boolean,
+  check,
 } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 import { user } from './auth-schema.ts';
 import type {
   CreatorProfileInput,
@@ -65,9 +67,9 @@ export const creation = pgTable(
   'creation',
   {
     id: uuid('id').defaultRandom().primaryKey(),
-    creatorId: uuid('creator_id')
-      .notNull()
-      .references(() => creatorProfile.id, { onDelete: 'cascade' }),
+    creatorId: uuid('creator_id').references(() => creatorProfile.id, { onDelete: 'cascade' }),
+    ownerUserId: text('owner_user_id').references(() => user.id, { onDelete: 'cascade' }),
+    ownershipRevision: integer('ownership_revision').notNull().default(1),
     authorId: text('author_id').references(() => user.id, { onDelete: 'set null' }),
     draft: jsonb('draft').$type<CreationDocument>().notNull(),
     published: jsonb('published').$type<CreationDocument>(),
@@ -96,8 +98,34 @@ export const creation = pgTable(
   },
   t => [
     index('creation_creator').on(t.creatorId),
+    index('creation_personal_owner').on(t.ownerUserId, t.updatedAt, t.id),
+    check('creation_one_owner', sql`num_nonnulls(${t.creatorId}, ${t.ownerUserId}) = 1`),
+    check(
+      'creation_personal_article',
+      sql`${t.ownerUserId} IS NULL OR (${t.draft}->>'medium' = 'article' AND (${t.published} IS NULL OR ${t.published}->>'medium' = 'article') AND ${t.sourceVideoId} IS NULL)`,
+    ),
     index('creation_publication').on(t.publishedAt, t.id),
     index('creation_youtube_refresh').on(t.sourceCheckedAt, t.id),
+  ],
+);
+// Retry receipts for profile creation and explicit personal-article transfers.
+export const creatorPublishingRequest = pgTable(
+  'creator_publishing_request',
+  {
+    id: uuid('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    creatorId: uuid('creator_id')
+      .notNull()
+      .references(() => creatorProfile.id, { onDelete: 'cascade' }),
+    inputHash: text('input_hash').notNull(),
+    moved: integer('moved').notNull(),
+    createdAt: date('created_at').notNull().defaultNow(),
+  },
+  t => [
+    index('creator_publishing_request_user').on(t.userId),
+    index('creator_publishing_request_creator').on(t.creatorId),
   ],
 );
 export const creationRevision = pgTable(

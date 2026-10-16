@@ -19,7 +19,7 @@ import {
 
 const PostEditor = lazy(() => import('../../rich-text-editor/blocknote/BlocknoteEditor.tsx'));
 const PostContent = lazy(() =>
-  import('../../rich-text-editor/blocknote/BlocknoteEditor.tsx').then(module => ({
+  import('../../rich-text-editor/blocknote/PostContent.tsx').then(module => ({
     default: module.PostContent,
   })),
 );

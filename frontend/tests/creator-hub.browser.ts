@@ -84,8 +84,10 @@ try {
     },
   ]);
   await page.goto(`${origin}/creator-studio`);
+  await page.getByRole('button', { name: 'Create creator profile', exact: true }).click();
   await page.getByLabel('Creator or brand name').fill(creatorName);
   await page.getByLabel('Profile address').fill(slug);
+  await page.getByText('Branding and profile details (optional)', { exact: true }).click();
   await page
     .getByLabel('Tagline')
     .fill('Practical Star Wars Unlimited guides, one decision at a time.');
@@ -101,9 +103,58 @@ try {
   await page.getByRole('textbox', { name: 'Search languages' }).fill('French');
   await page.getByRole('button', { name: 'French', exact: true }).click();
   await page.keyboard.press('Escape');
-  await page.getByRole('button', { name: 'Save profile', exact: true }).click();
+  await page.getByRole('button', { name: 'Create profile', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Your creations', exact: true })).toBeVisible();
   const creator = (await (await page.request.get(`${api}/mine`)).json()).data[0];
+  // Non-article creation starts with an explicit choice; chapter timestamps stay video-only.
+  await page.getByRole('button', { name: 'Create something new', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Share a video', exact: true }).click();
+  await expect(page.getByLabel('Medium', { exact: true })).toHaveCount(0);
+  await expect(page.getByLabel('Video description', { exact: true })).toBeVisible();
+  await page.getByLabel('Title', { exact: true }).fill('A video with separate chapters');
+  await page
+    .getByLabel('Original content URL', { exact: true })
+    .fill('https://www.youtube.com/watch?v=abcdefghijk');
+  const chapterSection = page.getByRole('region', { name: 'Chapters', exact: true });
+  await chapterSection.getByRole('button', { name: 'Add chapter', exact: true }).click();
+  await page.getByLabel('Chapter 1 title', { exact: true }).fill('Build a plan');
+  await page
+    .getByRole('group', { name: 'Connection type' })
+    .getByRole('button', { name: 'Deck', exact: true })
+    .click();
+  await page.getByLabel('Your public decks').fill('Creator browser Sabine');
+  await page
+    .getByRole('button', { name: 'Connect deck: Creator browser Sabine deck', exact: true })
+    .click();
+  await expect(page.getByRole('spinbutton', { name: /^Timestamp in seconds/ })).toBeVisible();
+  await page.getByRole('spinbutton', { name: /^Timestamp in seconds/ }).fill('42');
+  await page.getByRole('button', { name: 'Preview', exact: true }).click();
+  await expect(page.getByText('Watch at 0:42', { exact: true })).toHaveAttribute(
+    'href',
+    'https://www.youtube.com/watch?v=abcdefghijk&t=42s',
+  );
+  await page.getByRole('button', { name: 'Edit', exact: true }).click();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByLabel('Chapter 1 title', { exact: true }).scrollIntoViewIfNeeded();
+  expect(await chapterSection.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+  expect((await chapterSection.boundingBox())!.y).toBeGreaterThanOrEqual(
+    (await page.getByRole('region', { name: 'Connect to SWUBASE', exact: true }).boundingBox())!.y,
+  );
+  await saveDraft();
+  const videoDrafts = (
+    await (await page.request.get(`${api}/creators/${creator.id}/studio`)).json()
+  ).data.items;
+  const savedVideo = videoDrafts.find(
+    (item: { document: { title: string } }) =>
+      item.document.title === 'A video with separate chapters',
+  );
+  expect(savedVideo.document.medium).toBe('video');
+  expect(
+    (await (await page.request.get(`${api}/creations/${savedVideo.id}/draft`)).json()).data.document
+      .chapters,
+  ).toEqual([{ title: 'Build a plan', startSeconds: 0 }]);
+  await page.getByRole('button', { name: 'Close', exact: true }).click();
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await page.getByRole('button', { name: 'Connections & editors', exact: true }).click();
   await expect(
     page.getByRole('heading', { name: 'YouTube connection', exact: true }),
@@ -176,6 +227,9 @@ try {
       });
     }
   });
+  // Reload status after installing the provider-free fixture, even without local YouTube configuration.
+  await page.getByRole('button', { name: 'Connections & editors', exact: true }).click();
+  await page.getByRole('button', { name: 'Connections & editors', exact: true }).click();
   await connectionPanel
     .getByRole('button', { name: 'Connect a YouTube channel', exact: true })
     .click();
@@ -279,6 +333,7 @@ try {
   await page.goto(`${origin}/creator-studio?creatorId=${creator.id}`);
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.getByRole('button', { name: 'Create something new', exact: true }).click();
+  await page.getByRole('menuitem', { name: 'Write an article', exact: true }).click();
   await page.getByRole('button', { name: 'Choose language', exact: true }).click();
   await page.getByRole('textbox', { name: 'Search languages' }).fill('Japanese');
   await expect(page.getByRole('button', { name: 'Japanese', exact: true })).toBeVisible();
@@ -303,13 +358,18 @@ try {
   await expect(page.getByRole('dialog')).toBeHidden();
   await page.getByRole('checkbox', { name: 'Deck guide', exact: true }).check();
   await page.getByRole('checkbox', { name: 'Premier', exact: true }).check();
-  await page.getByLabel('Subject type').selectOption('deck');
-  await page.getByLabel('Find a subject').fill('Creator browser Sabine');
-  await page.getByRole('button', { name: 'Creator browser Sabine deck', exact: true }).click();
+  await page
+    .getByRole('group', { name: 'Connection type' })
+    .getByRole('button', { name: 'Deck', exact: true })
+    .click();
+  await page.getByLabel('Your public decks').fill('Creator browser Sabine');
+  await page
+    .getByRole('button', { name: 'Connect deck: Creator browser Sabine deck', exact: true })
+    .click();
   await page.getByLabel('Series', { exact: true }).fill('Better decisions');
   await page.getByRole('checkbox', { name: 'Pin on creator profile' }).check();
-  await page.getByRole('button', { name: 'Add chapter', exact: true }).click();
-  await page.getByRole('textbox', { name: 'Chapter 1 title', exact: true }).fill('Build a plan');
+  await expect(page.getByRole('region', { name: 'Chapters', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('spinbutton', { name: /^Timestamp in seconds/ })).toHaveCount(0);
   await saveDraft();
   const items = (await (await page.request.get(`${api}/creators/${creator.id}/studio`)).json()).data
     .items;
@@ -359,17 +419,6 @@ try {
     path: `${screenshots}/article-editor-mobile-light.png`,
     animations: 'disabled',
   });
-  await page
-    .getByRole('textbox', { name: 'Chapter 1 title', exact: true })
-    .scrollIntoViewIfNeeded();
-  const chapterRow = page
-    .getByRole('spinbutton', { name: 'Chapter 1 start seconds' })
-    .locator('../..');
-  expect(await chapterRow.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
-  await page.screenshot({
-    path: `${screenshots}/chapters-mobile-light.png`,
-    animations: 'disabled',
-  });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.getByRole('button', { name: 'Publish', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Publish update', exact: true })).toBeVisible();
@@ -377,9 +426,7 @@ try {
   await expect(publicPage.getByRole('heading', { name: title, exact: true })).toBeVisible();
   await expect(publicPage.getByRole('main')).toHaveCount(1);
   await expect(publicPage.locator('.rte-card-link')).toContainText('Battlefield Marine');
-  await expect(
-    publicPage.getByRole('link', { name: 'Creator browser Sabine deck', exact: true }),
-  ).toBeVisible();
+  await expect(publicPage.getByRole('link', { name: /Creator browser Sabine deck/ })).toBeVisible();
   // Discovery has grouped format shortcuts, scoped flags, and only the three subject pickers.
   await publicPage.goto(`${origin}/content?creatorId=${creator.id}`);
   await expect(publicPage.getByRole('button', { name: 'English', exact: true })).toBeVisible();

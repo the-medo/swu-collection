@@ -6,8 +6,8 @@ type Candidate = {
   visibility: number;
 };
 
-export function findTournamentDeck(
-  candidates: Candidate[],
+export function findTournamentParticipant<T extends Candidate>(
+  candidates: T[],
   username: string,
   placement: number | null,
 ) {
@@ -21,6 +21,14 @@ export function findTournamentDeck(
   // Imported historical rows sometimes contain display names instead of usernames.
   // Include private candidates in the uniqueness check, but never expose their deck.
   const matching = named.length ? named : placed;
-  const candidate = matching.length === 1 ? matching[0] : undefined;
+  return matching.length === 1 ? matching[0] : undefined;
+}
+
+export function findTournamentDeck(
+  candidates: Candidate[],
+  username: string,
+  placement: number | null,
+) {
+  const candidate = findTournamentParticipant(candidates, username, placement);
   return candidate && candidate.visibility >= 1 ? { id: candidate.id, name: candidate.name } : null;
 }

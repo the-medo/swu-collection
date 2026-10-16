@@ -20,6 +20,11 @@ Editors have no persistent insertion header. Rich widgets and comment card
 links are available through the `/` menu; user mentions also open with `@`.
 Built-in formatting remains available through selection and slash menus.
 
+The rich editor's **Card image** command uses the card catalog picker and inserts
+a standard BlockNote image with the selected variant's URL. Images have the card
+name as alt text and an empty caption, and use the native resize and alignment
+controls. The selected URL and width are stored in the ordinary image block.
+
 Profile bios use `simple`. Their save endpoint enforces the same content policy;
 the client cannot grant itself rich permissions. Older bios containing widgets
 display/edit those references as ordinary text and links. Conversion is persisted
@@ -70,6 +75,14 @@ as comment authors, including an avatar, header, achievements and a profile link
 Public avatar data is fetched only when a mention's popup opens. Mentions send
 no notifications. Visitors can explore chart filters without changing the
 author's saved configuration.
+
+The rich editor's **Add album** command lists the signed-in user's albums, with
+search across loaded pages and a four-photo preview. Album widgets store only
+`{ kind: 'album', albumId }` in the v1 document. The existing viewer-scoped album
+API loads the current title and first four thumbnails; the full album opens in a
+new tab. Private albums remain owner-only, and failed or revoked access hides
+cached preview content. The picker explains private and unlisted visibility
+without changing it. Adding this widget requires no database migration.
 
 When adding a widget, update the shared payload schema, picker/command, renderer,
 and round-trip coverage. Persisted format changes require an explicit version

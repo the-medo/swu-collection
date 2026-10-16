@@ -1,15 +1,4 @@
-import {
-  cloneElement,
-  isValidElement,
-  useId,
-  useState,
-  type ReactElement,
-  type ReactNode,
-} from 'react';
-import { useCardList } from '@/api/lists/useCardList.ts';
-import { Input } from '@/components/ui/input.tsx';
-import { Button } from '@/components/ui/button.tsx';
-import { hubApi, creatorKeys, useHubQuery } from '@/api/creators';
+import { cloneElement, isValidElement, useId, type ReactElement, type ReactNode } from 'react';
 import {
   creationTags,
   dimensionLabels,
@@ -19,10 +8,6 @@ import {
   toggleTagIds,
   type TagDimension,
 } from '../../../../../shared/creators/taxonomy.ts';
-import { entityTypes, type EntityReference } from '../../../../../shared/creators/contracts.ts';
-import { ContentLeaderPicker } from './ContentLeaderPicker.tsx';
-import { CreatorSetLogo } from './CreatorSetLogo.tsx';
-import { creatorDescription, creatorSubheading } from './creatorStyles.ts';
 export const selectClass =
   'h-10 w-full min-w-0 rounded-lg border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50';
 export function Field({
@@ -142,122 +127,6 @@ export function TagPicker({
               })}
           </div>
         </details>
-      ))}
-    </div>
-  );
-}
-export function SubjectPicker({
-  references,
-  onChange,
-}: {
-  references: EntityReference[];
-  onChange: (refs: EntityReference[]) => void;
-}) {
-  const { data: cardList } = useCardList();
-  const [type, setType] = useState<EntityReference['type']>('leader'),
-    [search, setSearch] = useState('');
-  const result = useHubQuery(creatorKeys.subjects(type, search, 'authoring'), () =>
-    hubApi.subjects(type, search, 'authoring'),
-  );
-  return (
-    <div className="grid gap-3 rounded-xl border border-border p-4">
-      <p className={creatorSubheading}>Connect to SWUBASE</p>
-      <p className={creatorDescription}>
-        Choose the cards, decks, sets or events covered. Associated decks must be public.
-      </p>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Field label="Subject type">
-          <select
-            className={selectClass}
-            value={type}
-            onChange={e => setType(e.target.value as EntityReference['type'])}
-          >
-            {entityTypes.map(t => (
-              <option key={t}>{t}</option>
-            ))}
-          </select>
-        </Field>
-        {type !== 'leader' && (
-          <Field label="Find a subject">
-            <Input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search by name"
-            />
-          </Field>
-        )}
-      </div>
-      {type === 'leader' ? (
-        <ContentLeaderPicker
-          onChange={id => {
-            if (id && !references.some(ref => ref.type === 'leader' && ref.id === id))
-              onChange([...references, { type: 'leader', id, startSeconds: null }]);
-          }}
-        />
-      ) : (
-        <>
-          <Status loading={result.isPending} error={result.error} />
-          <div className="max-h-40 overflow-auto rounded-lg border border-border">
-            {result.data?.map(item => (
-              <button
-                type="button"
-                key={`${item.type}:${item.id}`}
-                className="block w-full px-3 py-2 text-left text-[12px] hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring disabled:opacity-40"
-                disabled={references.some(r => r.id === item.id && r.type === type)}
-                onClick={() => onChange([...references, { type, id: item.id, startSeconds: null }])}
-              >
-                {type === 'set' ? (
-                  <span className="flex items-center gap-3">
-                    <CreatorSetLogo code={item.id} />
-                    {item.label}
-                  </span>
-                ) : (
-                  item.label
-                )}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-      {references.map((ref, i) => (
-        <div
-          key={`${ref.type}:${ref.id}:${i}`}
-          className="flex flex-wrap items-center gap-2 text-sm"
-        >
-          <span className="min-w-0 flex-1 break-all">
-            {ref.type}:{' '}
-            {(['card', 'leader', 'base'].includes(ref.type)
-              ? cardList?.cards[ref.id]?.title
-              : undefined) ??
-              result.data?.find(r => r.type === ref.type && r.id === ref.id)?.label ??
-              ref.id}
-          </span>
-          <Input
-            aria-label={`Timestamp in seconds for ${ref.id}`}
-            type="number"
-            className="w-28"
-            min={0}
-            placeholder="Seconds"
-            value={ref.startSeconds ?? ''}
-            onChange={e =>
-              onChange(
-                references.map((r, index) =>
-                  index === i
-                    ? { ...r, startSeconds: e.target.value === '' ? null : Number(e.target.value) }
-                    : r,
-                ),
-              )
-            }
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => onChange(references.filter((_, index) => index !== i))}
-          >
-            Remove
-          </Button>
-        </div>
       ))}
     </div>
   );

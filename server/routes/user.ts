@@ -17,6 +17,8 @@ import { userProfileRoute } from './user/profile.ts';
 import { publicBattlefieldRoute } from './battlefields.ts';
 import { userAchievementsRoute } from './user/achievements.ts';
 import { userWalletRoute } from './user/wallet.ts';
+import { createUserTournamentReportRouter } from './user-tournament-report.ts';
+import { tournamentReportService } from '../lib/melee/tournamentReport.ts';
 
 const { email, emailVerified, calendarPrivacy, ...selectUser } = getTableColumns(user);
 export { selectUser };
@@ -30,6 +32,7 @@ export type UserCollectionsResponse = {
 export const userRoute = new Hono<AuthExtension>()
   .route('/search', userSearchRoute)
   .route('/', createUserTournamentsRouter(meleeTournamentService))
+  .route('/', createUserTournamentReportRouter(tournamentReportService))
   .route('/avatar', userAvatarPostRoute)
   .route('/', userHeaderRoute)
   .route('/', userProfileRoute)

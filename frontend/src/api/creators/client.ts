@@ -1,7 +1,14 @@
+import type {
+  ConnectionSubject,
+  ResolvedReference,
+} from '../../../../shared/creators/contracts.ts';
 import { api } from '@/lib/api.ts';
 import { createApiError } from '@/api/errors.ts';
 import type {
   Creation,
+  CreatorOnboarding,
+  CreatorOnboardingResult,
+  PersonalArticleCounts,
   CreationDocument,
   CreatorProfile,
   CreatorProfileInput,
@@ -81,9 +88,21 @@ export const hubApi = {
       decks: (EntityReference & { label: string; href: string })[];
       hasMore: boolean;
     }>(await root.creators[':id'].collections.$get({ param: { id } })),
-  studio: async (id: string, page = 1) =>
+  personalCounts: async () => data<PersonalArticleCounts>(await root.personal.counts.$get()),
+  onboard: async (input: CreatorOnboarding) =>
+    data<CreatorOnboardingResult>(await root.creators.onboard.$post({ json: input }, { headers })),
+  transferArticles: async (input: { creatorId: string; requestId: string }) =>
+    data<CreatorOnboardingResult>(
+      await root.creators[':id']['transfer-articles'].$post(
+        { param: { id: input.creatorId }, json: { requestId: input.requestId } },
+        { headers },
+      ),
+    ),
+  studio: async (id: string | null, page = 1) =>
     data<CreationList>(
-      await root.creators[':id'].studio.$get({ param: { id }, query: { page: String(page) } }),
+      id
+        ? await root.creators[':id'].studio.$get({ param: { id }, query: { page: String(page) } })
+        : await root.personal.articles.$get({ query: { page: String(page) } }),
     ),
   get: async (id: string) => data<Creation>(await root.creations[':id'].$get({ param: { id } })),
   draft: async (id: string) =>
@@ -91,12 +110,13 @@ export const hubApi = {
   revisions: async (id: string) =>
     data<CreatorRevision[]>(await root.creations[':id'].revisions.$get({ param: { id } })),
   saveCreation: async (input: {
-    creatorId: string;
+    creatorId: string | null;
+    ownershipRevision?: number;
     document: CreationDocument;
     id?: string;
     revision?: number;
   }) =>
-    data<{ id: string; revision: number }>(
+    data<{ id: string; revision: number; ownershipRevision: number }>(
       input.id
         ? await root.creations[':id'].$put(
             {
@@ -105,6 +125,7 @@ export const hubApi = {
                 creatorId: input.creatorId,
                 document: input.document,
                 revision: input.revision!,
+                ownershipRevision: input.ownershipRevision ?? 1,
               },
             },
             { headers },
@@ -114,12 +135,21 @@ export const hubApi = {
             { headers },
           ),
     ),
-  publish: async (input: { id: string; revision: number; unpublish?: boolean }) =>
+  publish: async (input: {
+    id: string;
+    revision: number;
+    unpublish?: boolean;
+    ownershipRevision?: number;
+  }) =>
     data<boolean>(
       await root.creations[':id'].publish.$post(
         {
           param: { id: input.id },
-          json: { revision: input.revision, unpublish: input.unpublish ?? false },
+          json: {
+            revision: input.revision,
+            unpublish: input.unpublish ?? false,
+            ownershipRevision: input.ownershipRevision ?? 1,
+          },
         },
         { headers },
       ),
@@ -128,9 +158,14 @@ export const hubApi = {
     type: EntityReference['type'],
     q: string,
     scope: 'discovery' | 'authoring' = 'discovery',
+    page = 1,
   ) =>
-    data<{ id: string; label: string; type: EntityReference['type']; date?: string }[]>(
-      await root.subjects.$get({ query: { type, q, scope } }),
+    data<ConnectionSubject[]>(
+      await root.subjects.$get({ query: { type, q, scope, page: String(page) } }),
+    ),
+  resolveSubjects: async (references: EntityReference[]) =>
+    data<ResolvedReference[]>(
+      await root.subjects.resolve.$post({ json: { references } }, { headers }),
     ),
   youtube: async (id: string) =>
     data<CreatorYoutubeStatus>(await root.creators[':id'].youtube.$get({ param: { id } })),

@@ -105,7 +105,12 @@ BEGIN
     TRUNCATE TABLE creator_channel_resolution;
   END IF;
   IF to_regclass('public.creator_profile') IS NOT NULL THEN
-    IF to_regclass('public.creation_report') IS NOT NULL THEN
+    IF to_regclass('public.creator_publishing_request') IS NOT NULL THEN
+      TRUNCATE TABLE creator_publishing_request, creation_report, creator_video_job, creator_video_spend, creator_imported_deck,
+        creation_reference, creation_tag, creation_revision, creation,
+        creator_member, creator_oauth_state, creator_youtube, creator_channel,
+        creator_youtube_channel, creator_profile;
+    ELSIF to_regclass('public.creation_report') IS NOT NULL THEN
       TRUNCATE TABLE creation_report, creator_video_job, creator_video_spend, creator_imported_deck,
         creation_reference, creation_tag, creation_revision, creation,
         creator_member, creator_oauth_state, creator_youtube, creator_channel,

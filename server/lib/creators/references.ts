@@ -1,15 +1,19 @@
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../../db/index.ts';
 import { deck } from '../../db/schema/deck.ts';
 import { tournament } from '../../db/schema/tournament.ts';
 import { getMergedCardList } from '../cards/cardListProvider.ts';
 import { setInfo } from '../../../lib/swu-resources/set-info.ts';
-import type { EntityReference } from '../../../shared/creators/contracts.ts';
+import type {
+  EntityReference,
+  ResolvedReference,
+  ConnectionSubject,
+} from '../../../shared/creators/contracts.ts';
 import type { Connection } from './types.ts';
 const uuid = (id: string) => z.uuid().safeParse(id).success;
 
-export type ResolvedReference = EntityReference & { label: string; href: string };
+export type { ResolvedReference } from '../../../shared/creators/contracts.ts';
 export const referenceKey = (ref: EntityReference) => `${ref.type}:${ref.id}`;
 
 /** Each response resolves database-backed subjects in at most two queries. */
@@ -25,13 +29,24 @@ export async function resolveReferences(
   const [decks, tournaments, cards] = await Promise.all([
     deckIds.length
       ? database
-          .select({ id: deck.id, name: deck.name })
+          .select({
+            id: deck.id,
+            name: deck.name,
+            leaderId: deck.leaderCardId1,
+            leader2Id: deck.leaderCardId2,
+            baseId: deck.baseCardId,
+          })
           .from(deck)
           .where(and(inArray(deck.id, deckIds), eq(deck.public, 1)))
       : [],
     tournamentIds.length
       ? database
-          .select({ id: tournament.id, name: tournament.name })
+          .select({
+            id: tournament.id,
+            name: tournament.name,
+            date: sql<string>`${tournament.date}::text`,
+            location: tournament.location,
+          })
           .from(tournament)
           .where(inArray(tournament.id, tournamentIds))
       : [],
@@ -39,20 +54,36 @@ export async function resolveReferences(
       ? getMergedCardList()
       : undefined,
   ]);
-  const deckNames = new Map(decks.map(row => [row.id, row.name]));
-  const tournamentNames = new Map(tournaments.map(row => [row.id, row.name]));
+  const deckNames = new Map(decks.map(row => [row.id, row]));
+  const tournamentNames = new Map(tournaments.map(row => [row.id, row]));
   return refs.flatMap(ref => {
-    const result = (label: string, href: string) => [{ ...ref, label, href }];
-    if (ref.type === 'deck')
-      return deckNames.has(ref.id) ? result(deckNames.get(ref.id)!, `/decks/${ref.id}`) : [];
-    if (ref.type === 'tournament')
-      return tournamentNames.has(ref.id)
-        ? result(tournamentNames.get(ref.id)!, `/tournaments/${ref.id}`)
+    const result = (label: string, href: string, details: Partial<ConnectionSubject> = {}) => [
+      { ...ref, ...details, label, href },
+    ];
+    if (ref.type === 'deck') {
+      const row = deckNames.get(ref.id);
+      return row
+        ? result(row.name, `/decks/${ref.id}`, {
+            leaderId: row.leaderId,
+            leader2Id: row.leader2Id,
+            baseId: row.baseId,
+          })
         : [];
+    }
+    if (ref.type === 'tournament') {
+      const row = tournamentNames.get(ref.id);
+      return row
+        ? result(row.name, `/tournaments/${ref.id}`, { date: row.date, location: row.location })
+        : [];
+    }
     if (ref.type === 'set') {
       const info = Object.values(setInfo).find(set => set.code === ref.id);
       return info
-        ? result(info.name, `/content?entityType=set&entityId=${encodeURIComponent(ref.id)}`)
+        ? result(
+            info.name,
+            `/cards/sets/${encodeURIComponent(ref.id)}?csCategory=all&csVariant=standard`,
+            { date: info.releaseDate },
+          )
         : [];
     }
     const card = cards?.[ref.id];

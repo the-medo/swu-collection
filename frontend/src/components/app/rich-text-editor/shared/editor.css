@@ -57,9 +57,6 @@
   .rte-decklist {
     padding: 1rem;
   }
-  .rte-page .bn-editor {
-    padding-inline: 35px 15px;
-  }
 }
 .rte-eyebrow {
   font-size: 0.7rem;
@@ -87,6 +84,8 @@
 
 .rte-editing .bn-editor {
   min-height: 240px;
+  /* Reserve space for both block controls, including on narrow screens. */
+  padding-inline: 60px 20px;
 }
 .rte-editing[data-editor-type='comments'] .bn-editor {
   min-height: 96px;

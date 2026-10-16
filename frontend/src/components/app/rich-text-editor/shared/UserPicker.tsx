@@ -9,6 +9,8 @@ import {
 } from '@/components/ui/command.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import type { UserMention } from './model.ts';
+import { ArrowUpRight, AtSign } from 'lucide-react';
+import { PickerNotice } from './PickerLayout.tsx';
 
 export function UserPicker({ onSelect }: { onSelect: (user: UserMention) => void }) {
   const [search, setSearch] = useState('');
@@ -19,7 +21,7 @@ export function UserPicker({ onSelect }: { onSelect: (user: UserMention) => void
   }, [search]);
   const users = useEditorUsers(query);
   return (
-    <Command shouldFilter={false} className="border">
+    <Command shouldFilter={false} className="rte-picker-command rounded-xl border shadow-sm">
       <CommandInput
         aria-label="Search users"
         placeholder="Search by display name…"
@@ -29,21 +31,41 @@ export function UserPicker({ onSelect }: { onSelect: (user: UserMention) => void
         autoFocus
       />
       {search.trim().length < 2 ? (
-        <p className="p-4 text-sm text-muted-foreground">Type at least two characters.</p>
+        <PickerNotice title="Who would you like to mention?" icon={AtSign}>
+          Type at least two characters of a player's display name.
+        </PickerNotice>
       ) : users.isError ? (
-        <div className="p-4" role="alert">
-          Could not search profiles. <Button onClick={() => void users.refetch()}>Try again</Button>
-        </div>
+        <PickerNotice title="Could not search profiles." error>
+          <Button className="mt-2" variant="outline" onClick={() => void users.refetch()}>
+            Try again
+          </Button>
+        </PickerNotice>
       ) : users.isFetching || query !== search ? (
-        <p className="p-4" role="status">
-          Searching…
-        </p>
+        <PickerNotice title="Searching profiles…" loading />
       ) : (
-        <CommandList>
-          <CommandEmpty>No matching profiles.</CommandEmpty>
+        <CommandList className="max-h-[min(360px,45dvh)] p-2">
+          <CommandEmpty>
+            <PickerNotice title="No matching profiles">Try another display name.</PickerNotice>
+          </CommandEmpty>
           {users.data?.map(user => (
-            <CommandItem key={user.id} value={user.id} onSelect={() => onSelect(user)}>
-              @{user.displayName}
+            <CommandItem
+              key={user.id}
+              value={user.id}
+              aria-label={`@${user.displayName}`}
+              className="gap-3 p-3"
+              onSelect={() => onSelect(user)}
+            >
+              <span
+                aria-hidden
+                className="grid size-10 shrink-0 place-items-center rounded-xl border bg-muted/50 text-sm font-semibold"
+              >
+                {user.displayName.slice(0, 2).toUpperCase()}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block break-words font-semibold">@{user.displayName}</span>
+                <span className="text-xs text-muted-foreground">SWUBASE player</span>
+              </span>
+              <ArrowUpRight className="rte-picker-arrow text-muted-foreground" aria-hidden />
             </CommandItem>
           ))}
         </CommandList>

@@ -1,36 +1,26 @@
 import { Pencil, Lightbulb, TriangleAlert, Sparkles } from 'lucide-react';
-import { useCardList } from '@/api/lists/useCardList.ts';
 import { Button } from '@/components/ui/button.tsx';
-import { MatchupCard } from '@/components/app/global/MatchupCard.tsx';
-import { CardArtwork, CardLink, DecklistEmbed } from './Embeds.tsx';
+import { MatchupEmbed } from './MatchupEmbed.tsx';
+import { CardArtwork, DecklistEmbed } from './Embeds.tsx';
 import { MetaEmbed } from './MetaEmbed.tsx';
+import { AlbumEmbed } from './AlbumEmbed.tsx';
 import { useContext } from 'react';
 import { InsertionContext } from './insertionContext.ts';
-import type { Insertion } from './model.ts';
-import { UserProfilePopover } from '@/components/app/users/UserProfilePopover.tsx';
+import type { Insertion, EditorInsertion } from './model.ts';
+import { InlineInsertionView } from './InlineInsertionView.tsx';
+import { cn } from '@/lib/utils.ts';
 
 export function InsertionView({
   value,
   onChange,
 }: {
   value: Insertion;
-  onChange?: (value: Insertion) => void;
+  onChange?: (value: EditorInsertion) => void;
 }) {
   const request = useContext(InsertionContext);
-  const catalog = useCardList();
-  if (value.kind === 'card-link') return <CardLink card={value.card} />;
+  if (value.kind === 'card-link' || value.kind === 'mention')
+    return <InlineInsertionView value={value} />;
   if (value.kind === 'decklist') return <DecklistEmbed deck={value.deck} />;
-  if (value.kind === 'mention')
-    return (
-      <UserProfilePopover user={value.user}>
-        <button
-          type="button"
-          className="rte-mention max-w-full box-decoration-clone rounded-md border border-primary/50 bg-primary/15 px-1.5 py-0.5 text-left align-baseline font-semibold whitespace-normal outline-offset-2 hover:bg-primary/25 focus-visible:outline-2 focus-visible:outline-ring"
-        >
-          @{value.user.displayName}
-        </button>
-      </UserProfilePopover>
-    );
   const Icon =
     value.kind === 'callout' && value.tone === 'warning'
       ? TriangleAlert
@@ -39,7 +29,10 @@ export function InsertionView({
         : Lightbulb;
   return (
     <div
-      className={`rte-widget rte-widget-${value.kind} my-4 w-full min-w-0 rounded-xl border bg-card p-3 sm:p-4`}
+      className={cn(
+        `rte-widget rte-widget-${value.kind} w-full min-w-0 rounded-xl border bg-card p-3 sm:p-4`,
+        value.kind === 'matchup' ? 'my-1' : 'my-4',
+      )}
       data-widget-kind={value.kind}
     >
       {onChange && request && (
@@ -67,29 +60,9 @@ export function InsertionView({
       ) : value.kind === 'meta-analysis' ? (
         <MetaEmbed value={value} onChange={onChange} />
       ) : value.kind === 'matchup' ? (
-        <MatchupCard
-          leaderCardId={value.leftLeader}
-          baseCardKey={value.leftBase}
-          opponentLeaderCardId={value.rightLeader}
-          opponentBaseCardKey={value.rightBase}
-        >
-          <span className="sr-only">
-            {catalog.data?.cards[value.leftLeader]?.name ?? value.leftLeader}
-            {value.leftBase
-              ? ` / ${catalog.data?.cards[value.leftBase]?.name ?? value.leftBase}`
-              : ''}
-            {' versus '}
-            {catalog.data?.cards[value.rightLeader]?.name ?? value.rightLeader}
-            {value.rightBase
-              ? ` / ${catalog.data?.cards[value.rightBase]?.name ?? value.rightBase}`
-              : ''}
-          </span>
-          {value.title && <strong className="break-words text-base">{value.title}</strong>}
-          {value.subtitle && (
-            <div className="break-words text-sm text-muted-foreground">{value.subtitle}</div>
-          )}
-          <p className="whitespace-pre-wrap break-words text-sm">{value.text}</p>
-        </MatchupCard>
+        <MatchupEmbed value={value} />
+      ) : value.kind === 'album' ? (
+        <AlbumEmbed albumId={value.albumId} />
       ) : value.kind === 'card-group' ? (
         <>
           <div className="rte-card-group flex flex-wrap items-start gap-4">
@@ -102,7 +75,16 @@ export function InsertionView({
           )}
         </>
       ) : (
-        <aside className="flex gap-3 border-l-4 border-primary pl-3">
+        <aside
+          className={cn(
+            'flex gap-3 border-l-4 pl-3',
+            value.tone === 'warning'
+              ? 'border-amber-500 dark:border-amber-400'
+              : value.tone === 'key-play'
+                ? 'border-violet-500 dark:border-violet-400'
+                : 'border-blue-500 dark:border-blue-400',
+          )}
+        >
           <Icon className="mt-1 size-5 shrink-0" />
           <div>
             <strong>{value.title}</strong>

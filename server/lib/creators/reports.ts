@@ -1,5 +1,6 @@
 import { and, desc, eq, gte, ne, sql } from 'drizzle-orm';
 import { db } from '../../db/index.ts';
+import { user } from '../../db/schema/auth-schema.ts';
 import { creation, creatorProfile } from '../../db/schema/creator_hub.ts';
 import { creationReport as reports } from '../../db/schema/creation_report.ts';
 import type {
@@ -98,12 +99,13 @@ export function createCreationReportsService(database: Database = db) {
           status: reports.status,
           createdAt: reports.createdAt,
           resolvedAt: reports.resolvedAt,
-          creatorName: sql<string>`${creatorProfile.profile}->>'name'`,
+          creatorName: sql<string>`coalesce(${creatorProfile.profile}->>'name', ${user.displayName}, 'Deleted user')`,
           publishedRevision: creation.publishedRevision,
         })
         .from(reports)
         .innerJoin(creation, eq(creation.id, reports.creationId))
-        .innerJoin(creatorProfile, eq(creatorProfile.id, creation.creatorId))
+        .leftJoin(creatorProfile, eq(creatorProfile.id, creation.creatorId))
+        .leftJoin(user, eq(user.id, creation.authorId))
         .where(status === 'open' ? eq(reports.status, 'open') : ne(reports.status, 'open'))
         .orderBy(desc(reports.createdAt), desc(reports.id))
         .limit(26)

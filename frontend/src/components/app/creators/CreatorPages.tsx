@@ -23,7 +23,7 @@ import {
   creatorTitle,
 } from './creatorStyles.ts';
 const PostContent = lazy(() =>
-  import('../rich-text-editor/blocknote/BlocknoteEditor.tsx').then(m => ({
+  import('../rich-text-editor/blocknote/PostContent.tsx').then(m => ({
     default: m.PostContent,
   })),
 );

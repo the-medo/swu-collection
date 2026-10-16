@@ -4,11 +4,14 @@ import { bodyLimit } from 'hono/body-limit';
 import { ProfanityError } from '../lib/moderation/content.ts';
 import { z } from 'zod';
 import type { AuthExtension } from '../auth/auth.ts';
+import { createCreatorTemplatesRoute } from './creator-templates.ts';
 import {
   creatorProfileSchema,
+  creatorOnboardingSchema,
   creationDocumentSchema,
   discoverySchema,
   entityTypes,
+  entityReferenceSchema,
   languageSchema,
   youtubeChannelSchema,
   youtubeImportSettingsSchema,
@@ -80,6 +83,7 @@ export function createCreatorHubRoute(
       await next();
     })
     .get('/tags', async c => c.json({ data: await service.taxonomy() }))
+    .route('/templates', createCreatorTemplatesRoute())
     .get('/reports', zValidator('query', creationReportListSchema), async c => {
       // Also guard the collection path independently of wildcard matching.
       const admin = await requireAdmin(c);
@@ -143,6 +147,36 @@ export function createCreatorHubRoute(
       if (!c.get('user')) return c.json({ message: 'Sign in to continue.' }, 401);
       return c.json({ data: await service.mine(c.get('user')!.id) });
     })
+    .get(
+      '/personal/articles',
+      zValidator('query', z.object({ page: z.coerce.number().int().min(1).max(1000).default(1) })),
+      async c => {
+        if (!c.get('user')) return c.json({ message: 'Sign in to continue.' }, 401);
+        return c.json({
+          data: await service.studio(null, c.get('user')!.id, c.req.valid('query').page),
+        });
+      },
+    )
+    .get('/personal/counts', async c => {
+      if (!c.get('user')) return c.json({ message: 'Sign in to continue.' }, 401);
+      return c.json({ data: await service.personalCounts(c.get('user')!.id) });
+    })
+    .post('/creators/onboard', zValidator('json', creatorOnboardingSchema), async c =>
+      c.json({ data: await service.onboard(c.get('user')!.id, c.req.valid('json')) }, 201),
+    )
+    .post(
+      '/creators/:id/transfer-articles',
+      zValidator('param', id),
+      zValidator('json', z.object({ requestId: z.uuid() })),
+      async c =>
+        c.json({
+          data: await service.transferArticles(
+            c.get('user')!.id,
+            c.req.valid('param').id,
+            c.req.valid('json').requestId,
+          ),
+        }),
+    )
     .post('/creators', zValidator('json', creatorProfileSchema), async c =>
       c.json({ data: await service.saveProfile(c.get('user')!.id, c.req.valid('json')) }, 201),
     )
@@ -210,6 +244,7 @@ export function createCreatorHubRoute(
           type: z.enum(entityTypes),
           q: z.string().trim().max(100).default(''),
           scope: z.enum(['discovery', 'authoring']).default('discovery'),
+          page: z.coerce.number().int().min(1).max(1000).default(1),
         }),
       ),
       async c =>
@@ -218,8 +253,14 @@ export function createCreatorHubRoute(
             c.req.valid('query').type,
             c.req.valid('query').q,
             c.req.valid('query').scope,
+            { userId: c.get('user')?.id, page: c.req.valid('query').page },
           ),
         }),
+    )
+    .post(
+      '/subjects/resolve',
+      zValidator('json', z.object({ references: z.array(entityReferenceSchema).max(50) })),
+      async c => c.json({ data: await service.resolveSubjects(c.req.valid('json').references) }),
     )
     .get('/creations', zValidator('query', discoverySchema), async c =>
       c.json({ data: await service.discover(c.req.valid('query')) }),
@@ -236,7 +277,10 @@ export function createCreatorHubRoute(
     })
     .post(
       '/creations',
-      zValidator('json', z.object({ creatorId: z.uuid(), document: creationDocumentSchema })),
+      zValidator(
+        'json',
+        z.object({ creatorId: z.uuid().nullable(), document: creationDocumentSchema }),
+      ),
       async c =>
         c.json(
           {
@@ -255,7 +299,8 @@ export function createCreatorHubRoute(
       zValidator(
         'json',
         z.object({
-          creatorId: z.uuid(),
+          creatorId: z.uuid().nullable(),
+          ownershipRevision: z.number().int().positive().default(1),
           document: creationDocumentSchema,
           revision: revision.shape.revision,
         }),
@@ -268,19 +313,30 @@ export function createCreatorHubRoute(
             c.req.valid('json').document,
             c.req.valid('param').id,
             c.req.valid('json').revision,
+            undefined,
+            undefined,
+            undefined,
+            c.req.valid('json').ownershipRevision,
           ),
         }),
     )
     .post(
       '/creations/:id/publish',
       zValidator('param', id),
-      zValidator('json', revision.extend({ unpublish: z.boolean().default(false) })),
+      zValidator(
+        'json',
+        revision.extend({
+          unpublish: z.boolean().default(false),
+          ownershipRevision: z.number().int().positive().default(1),
+        }),
+      ),
       async c => {
         await service.publish(
           c.req.valid('param').id,
           c.get('user')!.id,
           c.req.valid('json').revision,
           c.req.valid('json').unpublish,
+          c.req.valid('json').ownershipRevision,
         );
         return c.json({ data: true });
       },
