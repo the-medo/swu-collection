@@ -31,7 +31,7 @@ export interface UserSettings {
   cardGalleryShowLabels: boolean;
   cardGalleryShowPrices: boolean;
   // Card Pool Layout options
-  cpLayout_boxLayout: 'grid' | 'row';
+  cpLayout_boxLayout: 'grid' | 'row' | 'spread';
   cpLayout_cardPreview: 'static' | 'hover';
   cpLayout_imageSize: 'big' | 'small';
   cpLayout_catPosition: 'top' | 'left'; // Cost/Aspect/Type position
@@ -99,7 +99,7 @@ export const userSettingsSchema = z.object({
   cardGalleryShowLabels: booleanPreprocessor.default(false),
   cardGalleryShowPrices: booleanPreprocessor.default(false),
   // Card Pool Layout options
-  cpLayout_boxLayout: z.union([z.literal('grid'), z.literal('row')]).default('grid'),
+  cpLayout_boxLayout: z.enum(['grid', 'row', 'spread']).default('grid'),
   cpLayout_cardPreview: z.union([z.literal('static'), z.literal('hover')]).default('static'),
   cpLayout_imageSize: z.union([z.literal('big'), z.literal('small')]).default('big'),
   cpLayout_catPosition: z.union([z.literal('top'), z.literal('left')]).default('top'),

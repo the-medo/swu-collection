@@ -6,6 +6,17 @@ import {
   userSettingsUpdateSchema,
 } from './userSettings.ts';
 
+test('sealed pool layouts preserve the grid default and accept spread view as a partial update', () => {
+  expect(userSettingsSchema.parse({}).cpLayout_boxLayout).toBe('grid');
+  for (const layout of ['grid', 'row', 'spread']) {
+    expect(userSettingsSchema.parse({ cpLayout_boxLayout: layout }).cpLayout_boxLayout).toBe(layout);
+    expect(userSettingsUpdateSchema.parse({ cpLayout_boxLayout: layout })).toEqual({
+      cpLayout_boxLayout: layout,
+    });
+  }
+  expect(userSettingsUpdateSchema.safeParse({ cpLayout_boxLayout: 'unknown' }).success).toBe(false);
+});
+
 test('limited folder preference defaults to null, round-trips as text and patches only itself', () => {
   const id = crypto.randomUUID();
   expect(userSettingsSchema.parse({}).defaultLimitedFolderId).toBeNull();

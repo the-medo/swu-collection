@@ -8,10 +8,12 @@ import {
   RectangleVerticalIcon,
   Grid2X2,
   GalleryHorizontal,
+  X,
 } from 'lucide-react';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 import { useSetUserSetting } from '@/api/user/useSetUserSetting.ts';
 import { Checkbox } from '@/components/ui/checkbox';
+import type { UserSettings } from '../../../../../../../shared/lib/userSettings.ts';
 
 const CPLayoutOptions: React.FC = () => {
   const { data: boxLayout } = useGetUserSetting('cpLayout_boxLayout');
@@ -38,7 +40,7 @@ const CPLayoutOptions: React.FC = () => {
         title="Box layout"
         value={boxLayout}
         defaultValue="grid"
-        onChange={v => setBoxLayout(v as 'grid' | 'row')}
+        onChange={v => setBoxLayout(v as UserSettings['cpLayout_boxLayout'])}
         options={[
           {
             value: 'grid',
@@ -51,6 +53,12 @@ const CPLayoutOptions: React.FC = () => {
             tooltip: 'Row',
             ariaLabel: 'Row',
             icon: <GalleryHorizontal className="h-4 w-4" />,
+          },
+          {
+            value: 'spread',
+            tooltip: 'Spread view',
+            ariaLabel: 'Spread view',
+            icon: <X className="h-4 w-4" />,
           },
         ]}
       />
