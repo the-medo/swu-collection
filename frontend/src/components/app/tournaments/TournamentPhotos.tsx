@@ -1,3 +1,5 @@
+import { Link } from '@tanstack/react-router';
+import { usePermissions } from '@/hooks/usePermissions.ts';
 import { Images } from 'lucide-react';
 import { useGetTournament } from '@/api/tournaments/useGetTournament.ts';
 import { useTournamentAlbums } from '@/api/user-albums/useTournamentAlbums.ts';
@@ -10,6 +12,7 @@ import { CreateTournamentAlbumButton } from './CreateTournamentAlbumButton.tsx';
 import { TournamentAlbumCard } from './TournamentAlbumCard.tsx';
 
 export function TournamentPhotos({ tournamentId }: { tournamentId: string }) {
+  const canModerate = usePermissions()('admin', 'access');
   const tournamentQuery = useGetTournament(tournamentId);
   const tournament = tournamentQuery.data?.tournament;
   const query = useTournamentAlbums(tournamentId);
@@ -37,6 +40,8 @@ export function TournamentPhotos({ tournamentId }: { tournamentId: string }) {
   return (
     <section
       aria-label="Event albums"
+      tabIndex={-1}
+      data-album-moderation-focus
       className={`${albumTheme} @container/event-photos space-y-6 py-3`}
     >
       <AlbumHeader
@@ -50,6 +55,15 @@ export function TournamentPhotos({ tournamentId }: { tournamentId: string }) {
           />
         }
       />
+      {canModerate && (
+        <Link
+          to="/admin"
+          search={{ page: 'album-moderation' }}
+          className="inline-block text-sm underline underline-offset-4"
+        >
+          Manage blocked albums
+        </Link>
+      )}
       {query.isPending && (
         <p role="status" className="py-8 text-center text-sm text-muted-foreground">
           Loading albums…

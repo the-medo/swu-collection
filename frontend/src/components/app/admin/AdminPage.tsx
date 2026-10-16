@@ -1,3 +1,4 @@
+import { AlbumModerationPage } from './AlbumModerationPage.tsx';
 import CardGroupsPage from './card-groups/CardGroupsPage.tsx';
 import { UserReportsPage } from './user-reports/UserReportsPage';
 import { CreationReportsPage } from './CreationReportsPage';
@@ -55,6 +56,7 @@ export function AdminPage() {
           <AdminNavigation page={page} />
           <Card className="min-w-0" key={page}>
             <CardContent className="p-4">
+              {page === 'album-moderation' && <AlbumModerationPage />}
               {page === 'user-reports' && <UserReportsPage />}
               {page === 'creation-reports' && <CreationReportsPage />}
               {page === 'creator-imports' && <CreatorImportsPage />}

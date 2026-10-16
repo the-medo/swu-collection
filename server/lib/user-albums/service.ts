@@ -8,6 +8,8 @@ import { userAlbum as albums, userAlbumItem as items } from '../../db/schema/use
 import {
   userAlbumPageSize,
   type UserAlbum,
+  type BlockedEventAlbumList,
+  type moderateAlbumEventLinkInput,
   type UserAlbumPage,
   type UserAlbumList,
   type UserAlbumCursor,
@@ -41,7 +43,7 @@ const afterCursor = (cursor?: UserAlbumCursor) =>
         and(eq(albums.createdAt, cursor.beforeCreatedAt), lt(albums.id, cursor.beforeId)),
       )
     : undefined;
-function albumPage<T extends UserAlbum>(rows: T[]) {
+function albumPage<T extends { id: string; createdAt: string }>(rows: T[]) {
   const page = rows.slice(0, userAlbumPageSize);
   const last = page.at(-1);
   return {
@@ -106,7 +108,11 @@ async function mutate<T>(
 export function createUserAlbumService(
   storage: Pick<UserFileObjectStorage, 'publicUrl'> = createUserFileStorage(),
 ) {
-  async function summaries(tx: Transaction, condition: SQL | undefined): Promise<UserAlbum[]> {
+  async function summaries(
+    tx: Transaction,
+    condition: SQL | undefined,
+    viewerId?: string,
+  ): Promise<UserAlbum[]> {
     // Correlated indexed lookups keep counts and fallback covers in one query.
     const rows = await tx
       .select({
@@ -131,17 +137,68 @@ export function createUserAlbumService(
       .where(condition)
       .orderBy(desc(albums.createdAt), desc(albums.id))
       .limit(userAlbumPageSize + 1);
-    return rows.map(({ album, tournament: event, imageCount, coverId, coverKey, coverAlt }) => ({
-      ...album,
-      tournament: event?.id ? event : null,
-      imageCount,
-      cover:
-        coverId && coverKey
-          ? { fileId: coverId, thumbnailUrl: storage.publicUrl(coverKey), altText: coverAlt }
-          : null,
-    }));
+    return rows.map(
+      ({
+        album: { eventLinkBlocked, ...album },
+        tournament: event,
+        imageCount,
+        coverId,
+        coverKey,
+        coverAlt,
+      }) => ({
+        ...album,
+        ...(viewerId === album.userId ? { eventLinkBlocked } : {}),
+        tournament: event?.id ? event : null,
+        imageCount,
+        cover:
+          coverId && coverKey
+            ? { fileId: coverId, thumbnailUrl: storage.publicUrl(coverKey), altText: coverAlt }
+            : null,
+      }),
+    );
   }
   return {
+    async blockedEventAlbums(cursor?: UserAlbumCursor): Promise<BlockedEventAlbumList> {
+      const rows = await db
+        .select({
+          id: albums.id,
+          title: albums.title,
+          revision: albums.revision,
+          createdAt: albums.createdAt,
+          owner: { id: user.id, displayName: user.displayName },
+        })
+        .from(albums)
+        .innerJoin(user, eq(albums.userId, user.id))
+        .where(and(eq(albums.eventLinkBlocked, true), afterCursor(cursor)))
+        .orderBy(desc(albums.createdAt), desc(albums.id))
+        .limit(userAlbumPageSize + 1);
+      return albumPage(rows);
+    },
+    async moderateEventLink(id: string, input: z.infer<typeof moderateAlbumEventLinkInput>) {
+      // Resolve the owner before taking the same account -> album locks as owner writes.
+      const [owner] = await db
+        .select({ userId: albums.userId })
+        .from(albums)
+        .where(eq(albums.id, id));
+      if (!owner) throw missing();
+      return mutate(owner.userId, id, input.revision, async (tx, album) => {
+        if (album.eventLinkBlocked === input.blocked) return { id, revision: album.revision };
+        if (input.blocked && !album.eventLinkBlocked && !album.tournamentId)
+          throw new UserFileError(
+            'This album is no longer linked to an event. Reload and try again.',
+            409,
+          );
+        await tx
+          .update(albums)
+          .set({
+            eventLinkBlocked: input.blocked,
+            tournamentId: null,
+          })
+          .where(eq(albums.id, id));
+        // Restoring permission never republishes an album; its owner chooses whether to link again.
+        return bump(tx, id);
+      });
+    },
     async list(
       userId: string,
       cursor?: UserAlbumCursor,
@@ -156,6 +213,7 @@ export function createUserAlbumService(
               publicOnly ? eq(albums.visibility, 'public') : undefined,
               afterCursor(cursor),
             ),
+            publicOnly ? undefined : userId,
           );
           return albumPage(rows);
         },
@@ -240,7 +298,7 @@ export function createUserAlbumService(
     ): Promise<UserAlbumPage> {
       return db.transaction(
         async tx => {
-          const [album] = await summaries(tx, eq(albums.id, id));
+          const [album] = await summaries(tx, eq(albums.id, id), viewerId);
           if (!album || (album.visibility === 'private' && album.userId !== viewerId))
             throw missing();
           if (revision !== undefined && revision !== album.revision) throw conflict();
@@ -298,6 +356,8 @@ export function createUserAlbumService(
         const { revision, ...values } = input;
         const visibility = values.visibility ?? album.visibility;
         if (values.tournamentId) {
+          if (album.eventLinkBlocked)
+            throw new UserFileError('An admin has disabled event linking for this album.', 403);
           await validateTournamentLink(tx, values.tournamentId, visibility);
         }
         // Lowering privacy withdraws the album from the event and prevents later automatic relinking.

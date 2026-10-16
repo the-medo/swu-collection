@@ -8,10 +8,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs.t
 import { AlbumList } from '@/components/app/user-albums/AlbumList.tsx';
 import { AlbumEditor } from '@/components/app/user-albums/AlbumEditor.tsx';
 import { UserStorageMeter } from '@/components/app/user-albums/UserStorageMeter.tsx';
-import { validateUserImageFiles } from '@/api/user-files/uploadValidation.ts';
 import { useToast } from '@/hooks/use-toast.ts';
 import { useInfiniteUserFiles } from '@/api/user-files/useInfiniteUserFiles.ts';
-import { useUploadUserFile } from '@/api/user-files/useUploadUserFile.ts';
+import { useUserImageUploadQueue } from '@/api/user-files/useUserImageUploadQueue.ts';
 import { useInfiniteQueryScroll } from '@/hooks/useInfiniteQueryScroll.ts';
 import type { UserFile } from '../../../../../../../types/UserFile.ts';
 import { formatBytes } from './formatBytes.ts';
@@ -20,7 +19,8 @@ import { UploadDropzone } from './UploadDropzone.tsx';
 
 function UploadsLibrary({ userId, onBusy }: { userId: string; onBusy(busy: boolean): void }) {
   const [selected, setSelected] = useState<UserFile | null>(null);
-  const [progress, setProgress] = useState<{ current: number; total: number } | null>(null);
+  const queue = useUserImageUploadQueue(userId, onBusy);
+  const { progress } = queue;
   const uploadButton = useRef<HTMLButtonElement>(null);
   const libraryButton = useRef<HTMLButtonElement | null>(null);
   const libraryGrid = useRef<HTMLDivElement>(null);
@@ -30,17 +30,8 @@ function UploadsLibrary({ userId, onBusy }: { userId: string; onBusy(busy: boole
   const focusAfterLoad = useRef<{ index: number; source: Element; automatic: boolean } | null>(
     null,
   );
-  const activeUpload = useRef<AbortController | null>(null);
-  useEffect(
-    () => () => {
-      activeUpload.current?.abort();
-      onBusy(false);
-    },
-    [onBusy],
-  );
   const { toast } = useToast();
   const query = useInfiniteUserFiles(userId);
-  const upload = useUploadUserFile();
   const data = query.data?.pages[0];
   const files = useMemo(
     () => [
@@ -89,7 +80,7 @@ function UploadsLibrary({ userId, onBusy }: { userId: string; onBusy(busy: boole
   const full = !!data && data.usedBytes >= data.quotaBytes;
   const uploadFiles = async (files: File[]) => {
     if (!files.length) return;
-    if (activeUpload.current) {
+    if (queue.isRunning()) {
       toast({
         title: 'Upload in progress',
         description: 'Wait for your current images to finish uploading.',
@@ -106,33 +97,17 @@ function UploadsLibrary({ userId, onBusy }: { userId: string; onBusy(busy: boole
       });
       return;
     }
-    const controller = new AbortController();
-    activeUpload.current = controller;
-    onBusy(true);
-    let uploaded = 0;
-    try {
-      validateUserImageFiles(files);
-      for (const [index, file] of files.entries()) {
-        if (controller.signal.aborted) return;
-        setProgress({ current: index + 1, total: files.length });
-        await upload.mutateAsync({ userId, file, signal: controller.signal });
-        uploaded++;
-      }
-      if (!controller.signal.aborted)
-        toast({ title: `${uploaded} ${uploaded === 1 ? 'image' : 'images'} uploaded` });
-    } catch (error) {
-      if (controller.signal.aborted) return;
+    const result = await queue.run(files);
+    if (result.status === 'complete') {
+      toast({
+        title: `${result.completed} ${result.completed === 1 ? 'image' : 'images'} uploaded`,
+      });
+    } else if (result.status === 'failed') {
       toast({
         title: 'Upload stopped',
-        description: `${uploaded ? `${uploaded} uploaded. ` : ''}${error instanceof Error ? error.message : 'Please try again.'}`,
+        description: `${result.completed ? `${result.completed} uploaded. ` : ''}${result.error instanceof Error ? result.error.message : 'Please try again.'}`,
         variant: 'destructive',
       });
-    } finally {
-      activeUpload.current = null;
-      if (!controller.signal.aborted) {
-        setProgress(null);
-        onBusy(false);
-      }
     }
   };
   return (

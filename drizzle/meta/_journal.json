@@ -631,6 +631,13 @@
       "when": 1792532504012,
       "tag": "0089_mcp",
       "breakpoints": true
+    },
+    {
+      "idx": 90,
+      "version": "7",
+      "when": 1792754291619,
+      "tag": "0090_album_event_moderation",
+      "breakpoints": true
     }
   ]
 }

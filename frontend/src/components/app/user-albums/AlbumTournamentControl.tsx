@@ -34,7 +34,7 @@ export function AlbumTournamentControl({
   const trigger = useRef<HTMLButtonElement>(null);
   const cancel = useRef<HTMLButtonElement>(null);
   const searchId = useId();
-  const locked = disabled || mutation.isPending;
+  const locked = disabled || mutation.isPending || album.eventLinkBlocked;
   const searching = search !== debouncedSearch || query.isFetching;
   useEffect(() => {
     const timeout = setTimeout(() => setDebouncedSearch(search), 250);
@@ -89,7 +89,9 @@ export function AlbumTournamentControl({
           </>
         ) : (
           <p className="mt-1 text-sm text-muted-foreground">
-            Link a tournament to share your photos with everyone who attended.
+            {album.eventLinkBlocked
+              ? 'An admin has disabled event linking for this album. Only an admin can restore it. You can still manage your album and photos.'
+              : 'Link a tournament to share your photos with everyone who attended.'}
           </p>
         )}
       </div>
