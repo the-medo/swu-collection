@@ -7,16 +7,14 @@ import type {
   SectionWeeklyChange,
 } from '../../../../../../../types/DailySnapshots.ts';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
-import { getDeckKey2 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
-import { useCardList } from '@/api/lists/useCardList.ts';
+import type { WeeklyChangeStats } from './weeklyChangeData.ts';
 import { ArrowCell } from '@/components/app/daily-snapshots/sections/WeeklyChange/ArrowCell.tsx';
-
-const fixedKeys = ['unknown', 'others', ''];
 
 export interface WeeklyChangeAreaBumpTooltipProps {
   deckKey: string;
   metaInfo: MetaInfo; // derived from metaView in parent ('leaders' | 'leadersAndBase')
   payload: DailySnapshotSectionData<SectionWeeklyChange>;
+  stats: WeeklyChangeStats;
   labelRenderer: ReturnType<typeof useLabel>;
 }
 
@@ -42,13 +40,35 @@ const stripWeekend = (name?: string | null): string | undefined => {
   return name.replace(/Weekend/gi, '').trim();
 };
 
+const formatPct = (n: number) => `${n.toFixed(1)}%`;
+
+const Cell: React.FC<{ v: number; place: number | null; isPercent?: boolean }> = ({
+  v,
+  place,
+  isPercent,
+}) => (
+  <div className="flex items-center justify-end gap-1">
+    <span className="font-semibold tabular-nums text-sm">{isPercent ? formatPct(v) : v}</span>
+    {place ? (
+      <span
+        className={cn(
+          'inline-flex items-center rounded-full bg-muted px-1 py-px text-[9px] font-medium',
+          'text-muted-foreground',
+        )}
+      >
+        {toOrdinal(place)}
+      </span>
+    ) : null}
+  </div>
+);
+
 const WeeklyChangeAreaBumpTooltip: React.FC<WeeklyChangeAreaBumpTooltipProps> = ({
   deckKey,
   metaInfo,
   payload,
+  stats,
   labelRenderer,
 }) => {
-  const { data: cardListData } = useCardList();
   const [showCounts, setShowCounts] = useState(false); // default to percentages
 
   // Resolve week labels from tournament groups, removing the word "Weekend"
@@ -58,61 +78,8 @@ const WeeklyChangeAreaBumpTooltip: React.FC<WeeklyChangeAreaBumpTooltipProps> = 
     return { w1Name, w2Name } as const;
   }, [payload.data.week1Ext, payload.data.week2Ext]);
 
-  // Build grouped data identical to the chart's keying strategy
-  const grouped = useMemo(() => {
-    type Acc = {
-      id: string;
-      week1: { total: number; top8: number; champions: number };
-      week2: { total: number; top8: number; champions: number };
-    };
-
-    const map = new Map<string, Acc>();
-
-    payload.data.dataPoints.forEach(dp => {
-      if (fixedKeys.includes(dp.leaderCardId)) return;
-      const key =
-        metaInfo === 'leaders'
-          ? dp.leaderCardId
-          : getDeckKey2(dp.leaderCardId, dp.baseCardId, 'leadersAndBase', cardListData);
-
-      const acc = map.get(key) || {
-        id: key,
-        week1: { total: 0, top8: 0, champions: 0 },
-        week2: { total: 0, top8: 0, champions: 0 },
-      };
-
-      acc.week1.total += dp.week1.total ?? 0;
-      acc.week1.top8 += dp.week1.top8 ?? 0;
-      acc.week1.champions += dp.week1.champions ?? 0;
-
-      acc.week2.total += dp.week2.total ?? 0;
-      acc.week2.top8 += dp.week2.top8 ?? 0;
-      acc.week2.champions += dp.week2.champions ?? 0;
-
-      map.set(key, acc);
-    });
-
-    return Array.from(map.values());
-  }, [payload.data.dataPoints, metaInfo, cardListData]);
-
-  // Compute total denominators across all data points (including fixed keys) for accurate percentages
-  const totals = useMemo(() => {
-    const init = { total: 0, top8: 0, champions: 0 };
-    const w1 = { ...init } as { total: number; top8: number; champions: number };
-    const w2 = { ...init } as { total: number; top8: number; champions: number };
-
-    payload.data.dataPoints.forEach(dp => {
-      w1.total += dp.week1.total ?? 0;
-      w1.top8 += dp.week1.top8 ?? 0;
-      w1.champions += dp.week1.champions ?? 0;
-
-      w2.total += dp.week2.total ?? 0;
-      w2.top8 += dp.week2.top8 ?? 0;
-      w2.champions += dp.week2.champions ?? 0;
-    });
-
-    return { week1: w1, week2: w2 } as const;
-  }, [payload.data.dataPoints]);
+  // Share the complete grouped field and denominators with the chart.
+  const { grouped, totals } = stats;
 
   // Compute placements for each metric and week, using percentages
   const placements = useMemo(() => {
@@ -175,28 +142,6 @@ const WeeklyChangeAreaBumpTooltip: React.FC<WeeklyChangeAreaBumpTooltipProps> = 
     top8: placements.week2.top8[deckKey] ?? null,
     champions: placements.week2.champions[deckKey] ?? null,
   };
-
-  const formatPct = (n: number) => `${n.toFixed(1)}%`;
-
-  const Cell: React.FC<{ v: number; place: number | null; isPercent?: boolean }> = ({
-    v,
-    place,
-    isPercent,
-  }) => (
-    <div className="flex items-center justify-end gap-1">
-      <span className="font-semibold tabular-nums text-sm">{isPercent ? formatPct(v) : v}</span>
-      {place ? (
-        <span
-          className={cn(
-            'inline-flex items-center rounded-full bg-muted px-1 py-px text-[9px] font-medium',
-            'text-muted-foreground',
-          )}
-        >
-          {toOrdinal(place)}
-        </span>
-      ) : null}
-    </div>
-  );
 
   // Values to display based on toggle
   const w1Pct = {

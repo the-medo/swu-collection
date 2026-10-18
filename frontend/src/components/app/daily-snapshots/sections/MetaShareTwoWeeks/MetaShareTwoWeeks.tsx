@@ -8,8 +8,8 @@ import MetaShareTable from './MetaShareTable.tsx';
 import MetaShareTwoWeeksInfoTooltip from './MetaShareTwoWeeksInfoTooltip.tsx';
 import MetaShareDropdownMenu from './MetaShareDropdownMenu.tsx';
 import SectionHeader from '../components/SectionHeader.tsx';
-import { getDeckKey2 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
-import { useCardList } from '@/api/lists/useCardList.ts';
+import { getMetaShareData } from './metaShareData.ts';
+import { isKnownSnapshotDeckKey } from '../snapshotDeckKey.ts';
 import { DailySnapshotRow } from '@/api/daily-snapshot';
 import DecksForModalDialog from '@/components/app/decks/DecksForModal/DecksForModalDialog.tsx';
 import type { DailySnapshotMetaPart } from './MetaPartSelector.tsx';
@@ -29,8 +29,6 @@ export interface MetaShareTwoWeeksProps {
   sectionUpdatedAt?: string;
 }
 
-const fixedKeys = ['unknown', 'others'];
-
 const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
   payload,
   dailySnapshot,
@@ -39,40 +37,13 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
   const [metaPart, setMetaPart] = useState<DailySnapshotMetaPart>('total');
   const [metaView, setMetaView] = useState<DailySnapshotMetaView>('leaders');
   const [selectedDeckKey, setSelectedDeckKey] = useState<string | null>(null);
-  const { data: cardListData } = useCardList();
 
   const tournamentGroupId = payload.data.tournamentGroupExt?.tournamentGroup.id;
 
-  // Shared data processing logic
-  const processedData = useMemo(() => {
-    // Group data by appropriate key and sum statistics
-    const groupedData = new Map<string, { total: number; top8: number; winners: number }>();
-
-    payload.data.dataPoints.forEach(point => {
-      const key = fixedKeys.includes(point.leaderCardId)
-        ? point.leaderCardId
-        : getDeckKey2(point.leaderCardId, point.baseCardId, metaView, cardListData);
-
-      const existing = groupedData.get(key) || { total: 0, top8: 0, winners: 0 };
-      groupedData.set(key, {
-        total: existing.total + point.total,
-        top8: existing.top8 + point.top8,
-        winners: existing.winners + point.winners,
-      });
-    });
-
-    // Convert to array and add keys
-    const analysisData = Array.from(groupedData.entries()).map(([key, data]) => ({
-      key,
-      ...data,
-      sortValue: metaPart === 'total' ? data.total : metaPart === 'top8' ? data.top8 : data.winners,
-    }));
-
-    // Sort by the selected meta part descending
-    analysisData.sort((a, b) => (b.key === 'unknown' ? -1 : b.sortValue - a.sortValue));
-
-    return analysisData;
-  }, [payload.data.dataPoints, metaView, cardListData, metaPart]);
+  const processedData = useMemo(
+    () => getMetaShareData(payload.data.dataPoints, metaView, metaPart),
+    [payload.data.dataPoints, metaView, metaPart],
+  );
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -81,7 +52,8 @@ const MetaShareTwoWeeks: React.FC<MetaShareTwoWeeksProps> = ({
 
   // Derive leader card ID from the selected key (leaders or leadersAndBase format)
   const { leaderCardId: selectedLeaderCardId, baseCardId: selectedBaseCardId } = useMemo(() => {
-    if (!selectedDeckKey) return { leaderCardId: undefined, baseCardId: undefined };
+    if (!selectedDeckKey || !isKnownSnapshotDeckKey(selectedDeckKey))
+      return { leaderCardId: undefined, baseCardId: undefined };
     if (metaView === 'leadersAndBase') {
       const [leader, base] = selectedDeckKey.split('|');
       if (!leader || leader === 'unknown' || leader === 'others') {

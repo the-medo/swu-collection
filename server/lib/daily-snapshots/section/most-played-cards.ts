@@ -60,6 +60,6 @@ export default async function buildMostPlayedCardsSection(
     };
   } catch (e) {
     // On any failure, return empty dataset to keep snapshot flow resilient
-    return buildEmpty(tournamentGroupId);
+    return buildEmpty(groupExt);
   }
 }
