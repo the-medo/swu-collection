@@ -7,13 +7,8 @@ import { useChartColorsAndGradients } from '@/components/app/tournaments/Tournam
 import type { DailySnapshotMetaView } from './MetaViewSelector.tsx';
 import { useReducedMotion } from 'motion/react';
 
-export interface ProcessedDataItem {
-  key: string;
-  total: number;
-  top8: number;
-  winners: number;
-  sortValue: number;
-}
+import { collapseMetaShareData, type ProcessedDataItem } from './metaShareData.ts';
+import { isKnownSnapshotDeckKey } from '../snapshotDeckKey.ts';
 
 interface MetaSharePieChartProps {
   processedData: ProcessedDataItem[];
@@ -30,56 +25,15 @@ const MetaSharePieChart: React.FC<MetaSharePieChartProps> = ({
   const reducedMotion = useReducedMotion();
   const pieChartColorDefinitions = useChartColorsAndGradients();
 
-  // Transform processed data into chart data
-  const chartData = useMemo(() => {
-    // Take the top 20 items from already processed and sorted data
-    const top20Items = processedData.slice(0, 20).map((item, index) => ({
-      id: item.key || 'Unknown',
-      label: item.key || 'Unknown',
-      value: item.sortValue,
-      data: {
-        total: item.total,
-        top8: item.top8,
-        winners: item.winners,
-      },
-      originalIndex: index,
-    }));
-
-    // Calculate the sum of the remaining items (if any) and add "Others" at the end
-    if (processedData.length > 20) {
-      const remainingItems = processedData.slice(20);
-      const othersCount = remainingItems.reduce((sum, item) => sum + item.sortValue, 0);
-
-      // Only add "Others" category if there are remaining items with a non-zero sum
-      if (othersCount > 0) {
-        // Combine data from all remaining items
-        const combinedData = remainingItems.reduce(
-          (acc, item) => {
-            acc.total += item.total;
-            acc.top8 += item.top8;
-            acc.winners += item.winners;
-            return acc;
-          },
-          {
-            total: 0,
-            top8: 0,
-            winners: 0,
-          },
-        );
-
-        // Add the "Others" category at the end
-        top20Items.push({
-          id: 'Others',
-          label: 'Others',
-          value: othersCount,
-          data: combinedData,
-          originalIndex: 20,
-        });
-      }
-    }
-
-    return top20Items;
-  }, [processedData]);
+  const chartData = useMemo(
+    () =>
+      collapseMetaShareData(processedData, 20).map(item => ({
+        id: item.key,
+        label: item.key,
+        value: item.sortValue,
+      })),
+    [processedData],
+  );
 
   const totalCount = useMemo(() => {
     return processedData.reduce((sum, item) => sum + item.sortValue, 0);
@@ -122,13 +76,18 @@ const MetaSharePieChart: React.FC<MetaSharePieChartProps> = ({
         fill={fill}
         animate={!reducedMotion}
         layers={['arcs', 'arcLabels']}
-        onClick={node => onClick?.(node.id as string)}
+        onClick={node => {
+          const key = String(node.id);
+          if (isKnownSnapshotDeckKey(key)) onClick?.(key);
+        }}
         tooltip={({ datum }) => (
           <div className="bg-card p-2 rounded-md shadow-md border">
             <div className="flex items-center gap-2">
               {labelRenderer(datum.id as string, metaInfo, 'compact')}
               <span className="font-bold">{datum.value}</span>
-              <span className="text-xs">({((datum.value / totalCount) * 100).toFixed(1)}%)</span>
+              <span className="text-xs">
+                ({(totalCount > 0 ? (datum.value / totalCount) * 100 : 0).toFixed(1)}%)
+              </span>
             </div>
           </div>
         )}

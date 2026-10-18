@@ -1,6 +1,6 @@
 import { TrendingUp } from 'lucide-react';
 import * as React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ResponsiveAreaBump } from '@nivo/bump';
 import { DailySnapshotRow } from '@/api/daily-snapshot';
 import type {
@@ -14,8 +14,7 @@ import { type DailySnapshotMetaPart } from '../MetaShareTwoWeeks/MetaPartSelecto
 import { type DailySnapshotMetaView } from '../MetaShareTwoWeeks/MetaViewSelector.tsx';
 import { SectionInfoTooltip } from '../components/SectionInfoTooltip.tsx';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
-import { getDeckKey2 } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
-import { useCardList } from '@/api/lists/useCardList.ts';
+import { buildWeeklyChangeChartData, getWeeklyChangeStats } from './weeklyChangeData.ts';
 import WeeklyChangeAreaBumpTooltip from '@/components/app/daily-snapshots/sections/WeeklyChange/WeeklyChangeAreaBumpTooltip.tsx';
 import { ArrowCell } from '@/components/app/daily-snapshots/sections/WeeklyChange/ArrowCell.tsx';
 import WeeklyChangeDropdownMenu from '@/components/app/daily-snapshots/sections/WeeklyChange/WeeklyChangeDropdownMenu.tsx';
@@ -30,14 +29,7 @@ export interface WeeklyChangeProps {
   sectionUpdatedAt?: string;
 }
 
-// AreaBump datum type
-interface TwoWeekPoint {
-  x: string;
-  y: number;
-}
-
 const TOP_X = 6;
-const fixedKeys = ['unknown', 'others'];
 
 const WeeklyChange: React.FC<WeeklyChangeProps> = ({
   payload,
@@ -47,7 +39,6 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
   // selectors
   const [metaPart, setMetaPart] = useState<DailySnapshotMetaPart>('total'); // winners => champions mapping
   const [metaView, setMetaView] = useState<DailySnapshotMetaView>('leadersAndBase');
-  const { data: cardListData } = useCardList();
 
   // metaInfo for colors/labels based on view
   const metaInfo: MetaInfo = metaView === 'leaders' ? 'leaders' : 'leadersAndBase';
@@ -58,91 +49,39 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
   // active series for the always-visible details panel (defaults to top series)
   const [activeDeckKey, setActiveDeckKey] = useState<string | null>(null);
 
-  // Build chart data from the payload (two x points: 1 for week1, 2 for week2)
+  const stats = useMemo(
+    () => getWeeklyChangeStats(payload.data.dataPoints, metaView),
+    [payload.data.dataPoints, metaView],
+  );
+
   const { chartData, chartDefs, fill } = useMemo(() => {
-    // Group by key depending on metaView
-    const grouped = new Map<string, { w1: number; w2: number }>();
-
-    const getPartValue = (obj: { total: number; top8: number; champions: number }) => {
-      if (metaPart === 'total') return obj.total ?? 0;
-      if (metaPart === 'top8') return obj.top8 ?? 0;
-      // metaPart === 'winners' maps to champions in weekly change
-      return obj.champions ?? 0;
-    };
-
-    payload.data.dataPoints.forEach(dp => {
-      const key = fixedKeys.includes(dp.leaderCardId)
-        ? dp.leaderCardId
-        : getDeckKey2(dp.leaderCardId, dp.baseCardId, metaView, cardListData);
-
-      const prev = grouped.get(key) || { w1: 0, w2: 0 };
-      grouped.set(key, {
-        w1: prev.w1 + getPartValue(dp.week1),
-        w2: prev.w2 + getPartValue(dp.week2),
-      });
-    });
-
-    grouped.delete('unknown');
-
-    // Resolve x-axis labels from tournament group names (fallbacks if missing)
     const clean = (s: string) => s.replace(/^Weekend\s+/i, '').trim();
-    const x1Label = clean(payload.data.week1Ext?.tournamentGroup?.name ?? 'Week 1');
-    const x2Label = clean(payload.data.week2Ext?.tournamentGroup?.name ?? 'Week 2');
-
-    // Prepare per-series values for both weeks
-    const raw = Array.from(grouped.entries()).map(([id, vals]) => {
-      const w1 = vals.w1;
-      const w2 = vals.w2;
-      return {
-        id,
-        data: [
-          { x: x1Label, y: w1 },
-          { x: x2Label, y: w2 },
-        ] as TwoWeekPoint[],
-        sum: w1 + w2,
-        w1,
-        w2,
-      };
-    });
-
-    // Compute top-X for each week and include union
-    const topW1 = [...raw]
-      .sort((a, b) => b.w1 - a.w1)
-      .slice(0, metaPart === 'winners' ? raw.length : TOP_X)
-      .filter(s => s.w1 > 0)
-      .map(s => s.id);
-    const topW2 = [...raw]
-      .sort((a, b) => b.w2 - a.w2)
-      .slice(0, metaPart === 'winners' ? raw.length : TOP_X)
-      .filter(s => s.w2 > 0)
-      .map(s => s.id);
-    const includeIds = new Set<string>([...topW1, ...topW2]);
-
-    // Filter series and sort by total descending for consistent stacking
-    const filtered = raw.filter(s => includeIds.has(s.id)).sort((a, b) => b.sum - a.sum);
-
-    // Create gradient defs and fill mappings
-    const defs = filtered.map(item => colorDefsFactory(item.id, metaInfo));
-    const fillDefs = filtered.map(item => ({ match: { id: item.id }, id: item.id }));
-
-    // Strip helper fields
-    const finalData = filtered.map(({ id, data }) => ({ id, data }));
-
-    return { chartData: finalData, chartDefs: defs, fill: fillDefs };
+    const chartData = buildWeeklyChangeChartData(
+      stats,
+      metaPart === 'winners' ? 'champions' : metaPart,
+      [
+        clean(payload.data.week1Ext?.tournamentGroup?.name ?? 'Week 1'),
+        clean(payload.data.week2Ext?.tournamentGroup?.name ?? 'Week 2'),
+      ],
+      TOP_X,
+    );
+    return {
+      chartData,
+      chartDefs: chartData.map(item => colorDefsFactory(item.id, metaInfo)),
+      fill: chartData.map(item => ({ match: { id: item.id }, id: item.id })),
+    };
   }, [
-    payload.data.dataPoints,
+    stats,
     payload.data.week1Ext?.tournamentGroup?.name,
     payload.data.week2Ext?.tournamentGroup?.name,
     metaPart,
-    metaView,
-    cardListData,
     colorDefsFactory,
     metaInfo,
   ]);
 
   // Labels: only on the right side like WeekToWeek
   const endLabel = useMemo(() => {
-    return (d: { id: string; data: Array<{ x: number; y: number }> }) => {
+    return (d: { id: string; data: Array<{ x: string; y: number }> }) => {
       const l = d.data?.length || 0;
       if (!l) return '';
       if (d.data[l - 1]?.y === 0) return '';
@@ -167,19 +106,9 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
     payload.data.week2Ext,
   ].filter(Boolean) as TournamentGroupExtendedInfo[];
 
-  // set default active deck to the top series when data changes
-  useEffect(() => {
-    if (chartData && chartData.length > 0) {
-      setActiveDeckKey(prev => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const ids = chartData.map((s: any) => s.id as string);
-        if (prev && ids.includes(prev)) return prev;
-        return chartData[0]?.id as string;
-      });
-    } else {
-      setActiveDeckKey(null);
-    }
-  }, [chartData]);
+  const selectedDeckKey = chartData.some(serie => serie.id === activeDeckKey)
+    ? activeDeckKey
+    : (chartData[0]?.id ?? null);
 
   return (
     <div className="meta-section-content flex flex-col gap-4.5 w-full h-full min-w-0">
@@ -195,7 +124,14 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
               sectionDataWarning={true}
               tournamentGroupExtendedInfo={groups}
             >
-              <div>This section compares meta share over last two weeks.</div>
+              <div>
+                This section compares meta share over the last two weekends, including the current
+                weekend when available.
+              </div>
+              <div>
+                Band widths show percentages of each week’s field, including unknown decks in the
+                totals.
+              </div>
               <div>
                 Values in chart are sorted from the most played (on top) to less played.
                 <ul className="list-disc ml-4">
@@ -273,11 +209,12 @@ const WeeklyChange: React.FC<WeeklyChangeProps> = ({
             </div>
 
             <div className="meta-weekly-selection flex-[1_1_230px] min-w-0">
-              {activeDeckKey ? (
+              {selectedDeckKey ? (
                 <WeeklyChangeAreaBumpTooltip
-                  deckKey={activeDeckKey}
+                  deckKey={selectedDeckKey}
                   metaInfo={metaInfo}
                   payload={payload}
+                  stats={stats}
                   labelRenderer={labelRenderer}
                 />
               ) : (

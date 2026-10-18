@@ -3,7 +3,8 @@ import { useMemo } from 'react';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import type { DailySnapshotMetaPart } from './MetaPartSelector.tsx';
 import type { DailySnapshotMetaView } from './MetaViewSelector.tsx';
-import type { ProcessedDataItem } from './MetaSharePieChart.tsx';
+import { collapseMetaShareData, type ProcessedDataItem } from './metaShareData.ts';
+import { isKnownSnapshotDeckKey } from '../snapshotDeckKey.ts';
 import { cn } from '@/lib/utils.ts';
 
 interface MetaShareTableProps {
@@ -25,56 +26,10 @@ const MetaShareTable: React.FC<MetaShareTableProps> = ({
 }) => {
   const labelRenderer = useLabel();
 
-  // Transform processed data for table display
-  const tableData = useMemo(() => {
-    // Take the top 5 items from already processed and sorted data
-    const top5Items = processedData.slice(0, TOP_DISPLAY_COUNT).map(item => ({
-      key: item.key,
-      sortValue: item.sortValue,
-      total: item.total,
-      top8: item.top8,
-      winners: item.winners,
-    }));
-
-    // Calculate the sum of the remaining items (if any) for "Others" row and add at the end
-    if (processedData.length > TOP_DISPLAY_COUNT) {
-      const remainingItems = processedData.slice(TOP_DISPLAY_COUNT);
-      const othersData = remainingItems.reduce(
-        (acc, item) => {
-          acc.total += item.total;
-          acc.top8 += item.top8;
-          acc.winners += item.winners;
-          return acc;
-        },
-        {
-          total: 0,
-          top8: 0,
-          winners: 0,
-        },
-      );
-
-      // Only add "Others" row if there are remaining items with non-zero values
-      if (othersData.total > 0 || othersData.top8 > 0 || othersData.winners > 0) {
-        const othersSortValue =
-          metaPart === 'total'
-            ? othersData.total
-            : metaPart === 'top8'
-              ? othersData.top8
-              : othersData.winners;
-
-        // Add "Others" at the end
-        top5Items.push({
-          key: 'Others',
-          sortValue: othersSortValue,
-          total: othersData.total,
-          top8: othersData.top8,
-          winners: othersData.winners,
-        });
-      }
-    }
-
-    return top5Items;
-  }, [processedData, metaPart]);
+  const tableData = useMemo(
+    () => collapseMetaShareData(processedData, TOP_DISPLAY_COUNT),
+    [processedData],
+  );
 
   // Calculate column totals for percentage calculations
   const columnTotals = useMemo(() => {
@@ -152,18 +107,23 @@ const MetaShareTable: React.FC<MetaShareTableProps> = ({
               <tr
                 key={item.key}
                 data-selected={selectedDeckKey === item.key || undefined}
-                className={cn('hover:bg-muted/30', item.key !== 'Others' && 'cursor-pointer')}
-                onClick={item.key !== 'Others' ? () => onClick(item.key) : undefined}
+                className={cn(
+                  'hover:bg-muted/30',
+                  isKnownSnapshotDeckKey(item.key) && 'cursor-pointer',
+                )}
+                onClick={isKnownSnapshotDeckKey(item.key) ? () => onClick(item.key) : undefined}
               >
                 <td className="px-2 py-1">
                   <div className="flex items-center gap-2">
-                    {index < TOP_DISPLAY_COUNT && (
+                    {index < TOP_DISPLAY_COUNT && isKnownSnapshotDeckKey(item.key) && (
                       <span className="text-sm font-medium text-muted-foreground">
                         #{index + 1}
                       </span>
                     )}
-                    {item.key === 'Others' ? (
-                      <span className="text-sm font-medium">Others</span>
+                    {!isKnownSnapshotDeckKey(item.key) ? (
+                      <span className="text-sm font-medium">
+                        {item.key === 'unknown' ? 'Unknown' : 'Others'}
+                      </span>
                     ) : (
                       <button
                         type="button"

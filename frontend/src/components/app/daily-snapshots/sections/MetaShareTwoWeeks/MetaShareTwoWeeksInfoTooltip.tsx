@@ -29,6 +29,10 @@ const MetaShareTwoWeeksInfoTooltip: React.FC<MetaShareTwoWeeksInfoTooltipProps> 
         decks, Top 8, and Champions, and choose how decks are grouped (by leader or leader+base).
       </div>
       <div>
+        Shares include unknown decks in each total. Unknown results are listed separately from other
+        known leaders and do not receive a ranking.
+      </div>
+      <div>
         Percentage in "Top 8" and "Champions" columns is{' '}
         <span className="text-green-600">green</span> if it is bigger than its own "total" meta
         share and <span className="text-red-600">red</span> if it is below.
