@@ -1,3 +1,4 @@
+import { CreationDate } from './CreationDate.tsx';
 import { ConnectionLink } from './ConnectionLink.tsx';
 import { ConnectionContent } from './ConnectionContent.tsx';
 import { CreationPublisher } from './CreationPublisher.tsx';
@@ -305,7 +306,11 @@ export default function CreationPage({ id }: { id: string }) {
         </span>
       )}
       <span className="text-muted-foreground">
-        Published {publishedAt && new Date(publishedAt).toLocaleDateString()} ·{' '}
+        <CreationDate
+          publishedAt={publishedAt}
+          uploaded={document.medium === 'video' && sourceVerified}
+        />
+        {' · '}
         <LanguageFlag code={document.language} />
         {publishedAt &&
           updatedAt.slice(0, 10) !== publishedAt.slice(0, 10) &&

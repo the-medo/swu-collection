@@ -6,6 +6,8 @@ import { api } from '@/lib/api.ts';
 import { createApiError } from '@/api/errors.ts';
 import type {
   Creation,
+  CreatorDeckList,
+  CreatorSectionCounts,
   CreatorOnboarding,
   CreatorOnboardingResult,
   PersonalArticleCounts,
@@ -82,6 +84,15 @@ export const hubApi = {
         query: { ...query, page: String(query.page ?? 1), limit: String(query.limit ?? 24) },
       }),
     ),
+  decks: async (id: string, page = 1, limit = 12) =>
+    data<CreatorDeckList>(
+      await root.creators[':id'].decks.$get({
+        param: { id },
+        query: { page: String(page), limit: String(limit) },
+      }),
+    ),
+  sectionCounts: async (id: string) =>
+    data<CreatorSectionCounts>(await root.creators[':id'].counts.$get({ param: { id } })),
   collections: async (id: string) =>
     data<{
       series: string[];

@@ -1,3 +1,4 @@
+import { creatorKeys } from '@/api/creators/keys.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { Deck } from '../../../../types/Deck.ts';
@@ -34,6 +35,7 @@ export const useUpdateCardPoolDeck = (
       return (await res.json()) as UpdateCardPoolDeckResponse;
     },
     onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: creatorKeys.collectionsRoot });
       void queryClient.invalidateQueries({ queryKey: dailySealedKeys.all });
       void queryClient.invalidateQueries({ queryKey: ['card-pool-decks', id], exact: false });
       void queryClient.invalidateQueries({ queryKey: ['deck', deckId] });

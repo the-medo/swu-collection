@@ -35,6 +35,7 @@ export function documentFromVideo(
     title: metadata.title,
     summary: metadata.description.slice(0, 1000),
     videoDescription: metadata.description,
+    durationSeconds: metadata.durationSeconds ?? null,
     medium: 'video',
     body: emptyPostDocument(),
     coverUrl: metadata.thumbnail,

@@ -1,3 +1,4 @@
+import { creatorKeys } from '@/api/creators/keys.ts';
 import type { InfiniteData, QueryClient } from '@tanstack/react-query';
 import { deckFolderKeys } from '@/api/deck-folders/queryKeys.ts';
 import { deckDiscussionKeys } from './discussionKeys.ts';
@@ -47,6 +48,7 @@ export const applyDeletedDeckCaches = (
   affectedCardPoolIds: string[],
 ) => {
   removeDecksFromListCache(queryClient, deckIds);
+  void queryClient.invalidateQueries({ queryKey: creatorKeys.collectionsRoot });
   void queryClient.invalidateQueries({ queryKey: discussionKeys.recent });
   void queryClient.invalidateQueries({ queryKey: dailySealedKeys.all });
   void queryClient.invalidateQueries({ queryKey: deckFolderKeys.all });

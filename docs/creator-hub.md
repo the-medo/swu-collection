@@ -31,7 +31,9 @@ proximity to today; search narrows the first 50 matches. Leaders use the shared
 visual leader selector. Authoring still supports card/base/deck relationships and
 historical events so existing connected content remains accessible.
 
-Language buttons use flags with accessible language names. Content discovery,
+Language displays and pickers use SWUBASE-hosted country flag images with accessible
+language names, including regional variants. They do not depend on emoji flag support.
+An unavailable flag falls back to a language icon with the same accessible name. Content discovery,
 creator directories, and creator content tabs return available languages from
 all matching public rows, before pagination and excluding the language filter
 itself. A creator's declared languages describe their profile; published content
@@ -65,8 +67,47 @@ reuse the current rich editor and public entity views.
 Creator profiles support branding, introductions, specialties, languages, social
 and support links, pinned publications, series, and owner-managed editors.
 Profile addresses are fixed after creation; display names and branding remain
-editable. Directory and publication lists are paginated. Selecting a primary
-language includes regional variants. Owner and editor access is enforced on the
+editable. The directory and global discovery retain pagination. Creator profiles
+use shareable subpages: `/creators/:slug` for all content, then `/videos`,
+`/articles`, `/podcasts`, `/decks`, `/series`, and `/about`. Language, tag,
+search and series choices live in URL search parameters; refresh and browser
+back/forward restore them. Selecting a primary language includes regional variants.
+Section tabs show total eligible published content (`Videos (20)`, `Articles (5)`)
+independently of the current filters and page. Deck counts include distinct public
+decks linked by eligible publications; series counts include distinct nonempty
+series names. Empty sections are hidden unless opened directly, while All content
+and About remain visible without counts. `GET /api/creator-hub/creators/:id/counts`
+provides these totals and shares cache invalidation with creator collections.
+While totals load, only All content, About and the current section are shown. If
+the request fails, every section remains accessible without a count.
+
+Creator content loads six publications at a time, preserving server-side pinned
+and series ordering. Scrolling loads another batch, with a keyboard-accessible
+Load more button and explicit retry on failure. Cards show publication dates;
+channel-imported videos use their original upload dates. Used classification tags
+appear with counts across all eligible publications in the current media tab,
+language, search and series, before classification-tag selections and pagination.
+Tag matching keeps discovery's existing OR-within / AND-across dimension semantics.
+Counts and results exclude drafts and unavailable/expired provider metadata.
+
+Video thumbnail badges include duration when available (`Video · 12:34`, or
+`Video · 1:05:20` for hour-long videos). Imports retain `durationSeconds` in the
+video document; metadata refresh/removal updates or scrubs it alongside the other
+provider fields. Older videos can use unexpired import-queue metadata until their
+next refresh populates the document. Missing durations leave the badge as `Video`.
+Duration is provider-owned and cannot be overridden by an editor. The first refresh
+that adds duration to an older video advances its revision and update timestamps,
+like other metadata changes; feed ordering still uses the publication date.
+
+The Decks subpage reuses the global public deck table, including artwork, prices,
+owner, format and updated date. `GET /api/creator-hub/creators/:id/decks` loads
+12 rows at a time, newest update first with an ID tie-breaker. A deck is included
+once when referenced by at least one eligible publication of this creator and
+currently public; private and unlisted decks are excluded even for their owner.
+This endpoint paginates independently of the older collections summary's 200-row
+bound. Search and classification filters apply to publications, not this deck table.
+
+Owner and editor access is enforced on the
 server; editors can author and publish but cannot manage the profile or its
 connected accounts.
 
@@ -639,7 +680,8 @@ memberships, integration credentials, pending OAuth state, worker jobs, usage, c
 taxonomy rows remain. Creator API and admin-import request logging and error telemetry exclude sensitive
 payloads and OAuth query parameters. Unexpected errors emit only a fixed category,
 method, route pattern, allowlisted error type and database SQLSTATE to server logs. Subject resolution is batched per response;
-series and deck summaries are bounded at 200 entries with a visible overflow notice.
+the legacy collections response bounds series and deck summaries at 200 entries.
+The creator Decks subpage uses its dedicated paginated endpoint instead.
 Public API responses remain uncached by intermediaries so access changes are checked
 on each request.
 
@@ -711,6 +753,8 @@ bunx drizzle-kit check --config=drizzle.config.ts
 CREATOR_HUB_DB_TEST=1 CREATOR_WORKER_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test server/lib/creators
 CREATOR_HUB_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/creator-hub.browser.ts
 CREATOR_VIDEO_BROWSER_ORIGIN=https://your-worktree-origin bun frontend/tests/creator-video.browser.ts
+# After building, without account/database writes:
+CREATOR_BROWSING_BROWSER_TEST=1 bun frontend/tests/creator-browsing.browser.ts
 bun run --cwd frontend build
 ```
 

@@ -2,6 +2,7 @@ import type { DiscoveryQuery, EntityReference } from '../../../../shared/creator
 const root = ['creator-hub'] as const;
 const publicRoot = [...root, 'public'] as const;
 const privateRoot = [...root, 'private'] as const;
+const infiniteDiscoveryRoot = [...publicRoot, 'discovery', 'infinite'] as const;
 export const creatorKeys = {
   all: root,
   reports: [...privateRoot, 'reports'] as const,
@@ -15,9 +16,13 @@ export const creatorKeys = {
   profile: (slug: string) => [...publicRoot, 'profile', slug] as const,
   discoveries: [...publicRoot, 'discovery'] as const,
   discovery: (query: Partial<DiscoveryQuery>) => [...publicRoot, 'discovery', query] as const,
+  infiniteDiscoveries: infiniteDiscoveryRoot,
+  infiniteDiscovery: (query: Partial<DiscoveryQuery>) => [...infiniteDiscoveryRoot, query] as const,
+  decks: (id?: string) => [...publicRoot, 'collections', 'decks', id] as const,
   creations: [...publicRoot, 'creation'] as const,
   creation: (id: string) => [...publicRoot, 'creation', id] as const,
   collectionsRoot: [...publicRoot, 'collections'] as const,
+  sectionCounts: (id?: string) => [...publicRoot, 'collections', 'counts', id] as const,
   collections: (id?: string) => [...publicRoot, 'collections', id] as const,
   personalCounts: [...privateRoot, 'personal-counts'] as const,
   mine: [...privateRoot, 'mine'] as const,

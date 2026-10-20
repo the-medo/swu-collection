@@ -69,6 +69,7 @@ import { Route as ListsCardListIdIndexRouteImport } from './routes/lists/$cardLi
 import { Route as LimitedPublicIndexRouteImport } from './routes/limited/public/index'
 import { Route as GalleriesGalleryIdIndexRouteImport } from './routes/galleries/$galleryId/index'
 import { Route as DecksDeckIdIndexRouteImport } from './routes/decks/$deckId/index'
+import { Route as CreatorsSlugIndexRouteImport } from './routes/creators/$slug/index'
 import { Route as CollectionsCollectionIdIndexRouteImport } from './routes/collections/$collectionId/index'
 import { Route as AlbumsAlbumIdIndexRouteImport } from './routes/albums/$albumId/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
@@ -84,6 +85,7 @@ import { Route as TournamentsTournamentIdCardStatsRouteImport } from './routes/t
 import { Route as TeamsTeamIdEventsRouteImport } from './routes/teams/$teamId/events'
 import { Route as DecksFolderFolderIdRouteImport } from './routes/decks/folder/$folderId'
 import { Route as DecksDeckIdEditRouteImport } from './routes/decks/$deckId/edit'
+import { Route as CreatorsSlugTabRouteImport } from './routes/creators/$slug/$tab'
 import { Route as CardsSetsSetCodeRouteImport } from './routes/cards/sets/$setCode'
 import { Route as CardsGroupsGroupIdRouteImport } from './routes/cards/groups/$groupId'
 import { Route as CardsDetailCardIdRouteImport } from './routes/cards/detail/$cardId'
@@ -416,6 +418,11 @@ const DecksDeckIdIndexRoute = DecksDeckIdIndexRouteImport.update({
   path: '/decks/$deckId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreatorsSlugIndexRoute = CreatorsSlugIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CreatorsSlugRoute,
+} as any)
 const CollectionsCollectionIdIndexRoute =
   CollectionsCollectionIdIndexRouteImport.update({
     id: '/collections/$collectionId/',
@@ -499,6 +506,11 @@ const DecksDeckIdEditRoute = DecksDeckIdEditRouteImport.update({
   id: '/decks/$deckId/edit',
   path: '/decks/$deckId/edit',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorsSlugTabRoute = CreatorsSlugTabRouteImport.update({
+  id: '/$tab',
+  path: '/$tab',
+  getParentRoute: () => CreatorsSlugRoute,
 } as any)
 const CardsSetsSetCodeRoute = CardsSetsSetCodeRouteImport.update({
   id: '/cards/sets/$setCode',
@@ -668,7 +680,7 @@ export interface FileRoutesByFullPath {
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
   '/content/$creationId': typeof ContentCreationIdRoute
-  '/creators/$slug': typeof CreatorsSlugRoute
+  '/creators/$slug': typeof CreatorsSlugRouteWithChildren
   '/decks/favorite': typeof DecksFavoriteRoute
   '/decks/public': typeof DecksPublicRoute
   '/decks/tournament': typeof DecksTournamentRoute
@@ -694,6 +706,7 @@ export interface FileRoutesByFullPath {
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/cards/groups/$groupId': typeof CardsGroupsGroupIdRoute
   '/cards/sets/$setCode': typeof CardsSetsSetCodeRoute
+  '/creators/$slug/$tab': typeof CreatorsSlugTabRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
   '/teams/$teamId/events': typeof TeamsTeamIdEventsRoute
@@ -709,6 +722,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/albums/$albumId': typeof AlbumsAlbumIdIndexRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
+  '/creators/$slug/': typeof CreatorsSlugIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
   '/galleries/$galleryId': typeof GalleriesGalleryIdIndexRoute
   '/limited/public': typeof LimitedPublicIndexRoute
@@ -765,7 +779,6 @@ export interface FileRoutesByTo {
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
   '/content/$creationId': typeof ContentCreationIdRoute
-  '/creators/$slug': typeof CreatorsSlugRoute
   '/decks/favorite': typeof DecksFavoriteRoute
   '/decks/public': typeof DecksPublicRoute
   '/decks/tournament': typeof DecksTournamentRoute
@@ -790,6 +803,7 @@ export interface FileRoutesByTo {
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/cards/groups/$groupId': typeof CardsGroupsGroupIdRoute
   '/cards/sets/$setCode': typeof CardsSetsSetCodeRoute
+  '/creators/$slug/$tab': typeof CreatorsSlugTabRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
   '/teams/$teamId/events': typeof TeamsTeamIdEventsRoute
@@ -805,6 +819,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/albums/$albumId': typeof AlbumsAlbumIdIndexRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdIndexRoute
+  '/creators/$slug': typeof CreatorsSlugIndexRoute
   '/decks/$deckId': typeof DecksDeckIdIndexRoute
   '/galleries/$galleryId': typeof GalleriesGalleryIdIndexRoute
   '/limited/public': typeof LimitedPublicIndexRoute
@@ -863,7 +878,7 @@ export interface FileRoutesById {
   '/collections/public': typeof CollectionsPublicRoute
   '/collections/your': typeof CollectionsYourRoute
   '/content/$creationId': typeof ContentCreationIdRoute
-  '/creators/$slug': typeof CreatorsSlugRoute
+  '/creators/$slug': typeof CreatorsSlugRouteWithChildren
   '/decks/favorite': typeof DecksFavoriteRoute
   '/decks/public': typeof DecksPublicRoute
   '/decks/tournament': typeof DecksTournamentRoute
@@ -890,6 +905,7 @@ export interface FileRoutesById {
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
   '/cards/groups/$groupId': typeof CardsGroupsGroupIdRoute
   '/cards/sets/$setCode': typeof CardsSetsSetCodeRoute
+  '/creators/$slug/$tab': typeof CreatorsSlugTabRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
   '/teams/$teamId/events': typeof TeamsTeamIdEventsRoute
@@ -905,6 +921,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/albums/$albumId/': typeof AlbumsAlbumIdIndexRoute
   '/collections/$collectionId/': typeof CollectionsCollectionIdIndexRoute
+  '/creators/$slug/': typeof CreatorsSlugIndexRoute
   '/decks/$deckId/': typeof DecksDeckIdIndexRoute
   '/galleries/$galleryId/': typeof GalleriesGalleryIdIndexRoute
   '/limited/public/': typeof LimitedPublicIndexRoute
@@ -991,6 +1008,7 @@ export interface FileRouteTypes {
     | '/cards/detail/$cardId'
     | '/cards/groups/$groupId'
     | '/cards/sets/$setCode'
+    | '/creators/$slug/$tab'
     | '/decks/$deckId/edit'
     | '/decks/folder/$folderId'
     | '/teams/$teamId/events'
@@ -1006,6 +1024,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/albums/$albumId'
     | '/collections/$collectionId'
+    | '/creators/$slug/'
     | '/decks/$deckId'
     | '/galleries/$galleryId'
     | '/limited/public'
@@ -1062,7 +1081,6 @@ export interface FileRouteTypes {
     | '/collections/public'
     | '/collections/your'
     | '/content/$creationId'
-    | '/creators/$slug'
     | '/decks/favorite'
     | '/decks/public'
     | '/decks/tournament'
@@ -1087,6 +1105,7 @@ export interface FileRouteTypes {
     | '/cards/detail/$cardId'
     | '/cards/groups/$groupId'
     | '/cards/sets/$setCode'
+    | '/creators/$slug/$tab'
     | '/decks/$deckId/edit'
     | '/decks/folder/$folderId'
     | '/teams/$teamId/events'
@@ -1102,6 +1121,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/albums/$albumId'
     | '/collections/$collectionId'
+    | '/creators/$slug'
     | '/decks/$deckId'
     | '/galleries/$galleryId'
     | '/limited/public'
@@ -1186,6 +1206,7 @@ export interface FileRouteTypes {
     | '/cards/detail/$cardId'
     | '/cards/groups/$groupId'
     | '/cards/sets/$setCode'
+    | '/creators/$slug/$tab'
     | '/decks/$deckId/edit'
     | '/decks/folder/$folderId'
     | '/teams/$teamId/events'
@@ -1201,6 +1222,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/'
     | '/albums/$albumId/'
     | '/collections/$collectionId/'
+    | '/creators/$slug/'
     | '/decks/$deckId/'
     | '/galleries/$galleryId/'
     | '/limited/public/'
@@ -1255,7 +1277,7 @@ export interface RootRouteChildren {
   CollectionsPublicRoute: typeof CollectionsPublicRoute
   CollectionsYourRoute: typeof CollectionsYourRoute
   ContentCreationIdRoute: typeof ContentCreationIdRoute
-  CreatorsSlugRoute: typeof CreatorsSlugRoute
+  CreatorsSlugRoute: typeof CreatorsSlugRouteWithChildren
   DecksFavoriteRoute: typeof DecksFavoriteRoute
   DecksPublicRoute: typeof DecksPublicRoute
   DecksTournamentRoute: typeof DecksTournamentRoute
@@ -1722,6 +1744,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DecksDeckIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/creators/$slug/': {
+      id: '/creators/$slug/'
+      path: '/'
+      fullPath: '/creators/$slug/'
+      preLoaderRoute: typeof CreatorsSlugIndexRouteImport
+      parentRoute: typeof CreatorsSlugRoute
+    }
     '/collections/$collectionId/': {
       id: '/collections/$collectionId/'
       path: '/collections/$collectionId'
@@ -1826,6 +1855,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/decks/$deckId/edit'
       preLoaderRoute: typeof DecksDeckIdEditRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/creators/$slug/$tab': {
+      id: '/creators/$slug/$tab'
+      path: '/$tab'
+      fullPath: '/creators/$slug/$tab'
+      preLoaderRoute: typeof CreatorsSlugTabRouteImport
+      parentRoute: typeof CreatorsSlugRoute
     }
     '/cards/sets/$setCode': {
       id: '/cards/sets/$setCode'
@@ -2089,6 +2125,20 @@ const StatisticsRouteWithChildren = StatisticsRoute._addFileChildren(
   StatisticsRouteChildren,
 )
 
+interface CreatorsSlugRouteChildren {
+  CreatorsSlugTabRoute: typeof CreatorsSlugTabRoute
+  CreatorsSlugIndexRoute: typeof CreatorsSlugIndexRoute
+}
+
+const CreatorsSlugRouteChildren: CreatorsSlugRouteChildren = {
+  CreatorsSlugTabRoute: CreatorsSlugTabRoute,
+  CreatorsSlugIndexRoute: CreatorsSlugIndexRoute,
+}
+
+const CreatorsSlugRouteWithChildren = CreatorsSlugRoute._addFileChildren(
+  CreatorsSlugRouteChildren,
+)
+
 interface TeamsTeamIdStatisticsStatisticsLayoutRouteChildren {
   TeamsTeamIdStatisticsStatisticsLayoutDashboardIndexRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutDashboardIndexRoute
   TeamsTeamIdStatisticsStatisticsLayoutDecksIndexRoute: typeof TeamsTeamIdStatisticsStatisticsLayoutDecksIndexRoute
@@ -2171,7 +2221,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollectionsPublicRoute: CollectionsPublicRoute,
   CollectionsYourRoute: CollectionsYourRoute,
   ContentCreationIdRoute: ContentCreationIdRoute,
-  CreatorsSlugRoute: CreatorsSlugRoute,
+  CreatorsSlugRoute: CreatorsSlugRouteWithChildren,
   DecksFavoriteRoute: DecksFavoriteRoute,
   DecksPublicRoute: DecksPublicRoute,
   DecksTournamentRoute: DecksTournamentRoute,

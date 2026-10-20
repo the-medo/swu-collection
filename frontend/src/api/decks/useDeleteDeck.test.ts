@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test';
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient, QueryObserver } from '@tanstack/react-query';
+import { creatorKeys } from '../creators/keys.ts';
 import {
   applyBulkDeletedDeckCaches,
   applyDeletedDeckCaches,
@@ -138,6 +139,31 @@ describe('deck deletion cache update', () => {
     expect(queryClient.getQueryData(['deck-content', 'deleted-deck', 'viewer'])).toBeUndefined();
     expect(queryClient.getQueryData(['decks-bulk', 'deleted-deck'])).toBeUndefined();
     expect(queryClient.getQueryState(['card-pool', 'pool-1'])?.isInvalidated).toBe(true);
+  });
+
+  test('refreshes an actively viewed creator deck list after deletion', async () => {
+    const client = new QueryClient();
+    const key = creatorKeys.decks('creator');
+    client.setQueryData(key, { items: [{ deck: { id: 'deleted-deck' } }] });
+    const observer = new QueryObserver(client, {
+      queryKey: key,
+      queryFn: async () => ({ items: [] }),
+      staleTime: Infinity,
+    });
+    let unsubscribe = () => {};
+    try {
+      const refreshed = new Promise<void>(resolve => {
+        unsubscribe = observer.subscribe(result => {
+          if (result.data?.items.length === 0) resolve();
+        });
+      });
+      applyDeletedDeckCaches(client, ['deleted-deck'], []);
+      await refreshed;
+      expect(client.getQueryData(key)).toEqual({ items: [] });
+    } finally {
+      unsubscribe();
+      client.clear();
+    }
   });
 
   test('can invalidate every deck list after a bulk deletion', async () => {

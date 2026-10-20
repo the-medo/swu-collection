@@ -1,3 +1,4 @@
+import { CreationDate } from './CreationDate.tsx';
 import { CreationPublisher } from './CreationPublisher.tsx';
 import { LanguageFlag } from './CreatorLanguages.tsx';
 import { Link } from '@tanstack/react-router';
@@ -13,11 +14,23 @@ import {
   creatorSubheading,
   creatorTheme,
 } from './creatorStyles.ts';
+
+function videoDuration(seconds: number | null | undefined) {
+  if (seconds == null || !Number.isSafeInteger(seconds) || seconds <= 0) return null;
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainder = String(seconds % 60).padStart(2, '0');
+  return hours
+    ? `${hours}:${String(minutes).padStart(2, '0')}:${remainder}`
+    : `${minutes}:${remainder}`;
+}
+
 export function CreationCards({ items }: { items: CreationSummary[] }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
       {items.map(item => {
         const doc = item.document;
+        const duration = doc.medium === 'video' ? videoDuration(doc.durationSeconds) : null;
         const Icon =
           doc.medium === 'article'
             ? BookOpen
@@ -53,12 +66,18 @@ export function CreationCards({ items }: { items: CreationSummary[] }) {
               <Badge className="absolute bottom-3 left-3 gap-1.5 border-white/20 bg-[#17352e] px-2.5 py-1 text-[10px] font-medium capitalize text-[#fffaf0] hover:bg-[#17352e]">
                 <Icon size={12} />
                 {doc.medium}
+                {duration && (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <span className="tabular-nums">{duration}</span>
+                  </>
+                )}
               </Badge>
             </Link>
             <div className="flex flex-1 flex-col gap-3 p-5">
               <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground">
-                <CreationPublisher creation={item} />
-                <span>
+                <CreationPublisher creation={item} avatar compact />
+                <span className="shrink-0">
                   <LanguageFlag code={doc.language} />
                 </span>
               </div>
@@ -72,18 +91,27 @@ export function CreationCards({ items }: { items: CreationSummary[] }) {
                 </Link>
               </h3>
               {doc.summary && <p className={`${creatorDescription} line-clamp-3`}>{doc.summary}</p>}
-              <div className="mt-auto flex flex-wrap gap-1">
-                {doc.tags.slice(0, 3).map(id => (
-                  <Badge key={id} variant="secondary">
-                    {creationTagMap.get(id)?.label ?? id}
-                  </Badge>
-                ))}
-                {item.sourceVerified && <Badge variant="outline">Channel import</Badge>}
-                {doc.medium !== 'article' && !item.sourceVerified && (
-                  <Badge variant="outline">Shared resource</Badge>
-                )}
-                {doc.freshness === 'historical' && <Badge variant="outline">Historical</Badge>}
-              </div>
+              <footer className="mt-auto grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2">
+                <div className="flex min-w-0 flex-wrap gap-1">
+                  {doc.tags.slice(0, 3).map(id => (
+                    <Badge key={id} variant="secondary">
+                      {creationTagMap.get(id)?.label ?? id}
+                    </Badge>
+                  ))}
+                  {doc.pinned && <Badge variant="outline">Pinned</Badge>}
+                  {item.sourceVerified && <Badge variant="outline">Channel import</Badge>}
+                  {doc.medium !== 'article' && !item.sourceVerified && (
+                    <Badge variant="outline">Shared resource</Badge>
+                  )}
+                  {doc.freshness === 'historical' && <Badge variant="outline">Historical</Badge>}
+                </div>
+                <span className="whitespace-nowrap text-right text-[10px] leading-5 text-muted-foreground">
+                  <CreationDate
+                    publishedAt={item.publishedAt}
+                    uploaded={doc.medium === 'video' && item.sourceVerified}
+                  />
+                </span>
+              </footer>
             </div>
           </article>
         );

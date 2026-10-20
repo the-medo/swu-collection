@@ -1,3 +1,4 @@
+import { creatorKeys } from '@/api/creators/keys.ts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import { toast } from '@/hooks/use-toast.ts';
@@ -32,6 +33,7 @@ export const usePutDeck = (deckId: string | undefined) => {
       return response.json() as unknown as { data: any };
     },
     onSuccess: result => {
+      void queryClient.invalidateQueries({ queryKey: creatorKeys.collectionsRoot });
       void queryClient.invalidateQueries({ queryKey: deckDiscussionKeys.deck(result.data.id) });
       void invalidateBoundDiscussion(queryClient, result.data.id);
       void queryClient.invalidateQueries({ queryKey: dailySealedKeys.all });

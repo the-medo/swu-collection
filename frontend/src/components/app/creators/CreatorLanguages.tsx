@@ -1,41 +1,56 @@
 import { useId, useState } from 'react';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown, Check, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
+import { cn } from '@/lib/utils.ts';
 import { creatorLanguages, languageInfo } from '../../../../../shared/creators/languages.ts';
+import { creatorSelectedControl } from './creatorStyles.ts';
 
 export function LanguageFlag({ code }: { code: string }) {
-  const { flag, label } = languageInfo(code);
+  const { countryCode, label } = languageInfo(code);
+  const [failedCountry, setFailedCountry] = useState<string>();
   return (
-    <span role="img" aria-label={label} title={label} className="text-xl leading-none">
-      {flag}
+    <span title={label} className="inline-flex shrink-0 items-center align-middle">
+      {countryCode && failedCountry !== countryCode ? (
+        <img
+          src={`https://images.swubase.com/flags/countries/${countryCode}.webp`}
+          alt={label}
+          width={24}
+          height={16}
+          className="h-4 w-6 rounded-[2px] object-cover"
+          onError={() => setFailedCountry(countryCode)}
+        />
+      ) : (
+        <Languages size={20} role="img" aria-label={label} />
+      )}
     </span>
   );
 }
 
 const flagButton =
   'flex h-10 min-w-10 items-center justify-center rounded-lg border px-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
-const selectedClass =
-  'border-[var(--creator-border)] bg-[var(--creator-soft)] text-[var(--creator-accent)]';
 
 export function LanguageFilter({
   available,
   value,
   onChange,
+  compact = false,
 }: {
   available: string[];
   value?: string;
   onChange: (value: string | undefined) => void;
+  compact?: boolean;
 }) {
+  const buttonClass = cn(flagButton, compact && 'h-8 min-w-8');
   return (
-    <fieldset className="min-w-0 space-y-2">
-      <legend className="text-[12px] font-semibold">Language</legend>
-      <div className="flex flex-wrap gap-2">
+    <fieldset className={cn('min-w-0', !compact && 'space-y-2')}>
+      <legend className={compact ? 'sr-only' : 'text-[12px] font-semibold'}>Language</legend>
+      <div className={cn('flex flex-wrap gap-2', compact && 'gap-1.5')}>
         <button
           type="button"
           aria-pressed={!value}
-          className={`${flagButton} text-xs ${!value ? selectedClass : 'border-border hover:bg-muted'}`}
+          className={`${buttonClass} text-xs ${!value ? creatorSelectedControl : 'border-border hover:bg-muted'}`}
           onClick={() => onChange(undefined)}
         >
           All languages
@@ -50,7 +65,7 @@ export function LanguageFilter({
               title={info.label}
               aria-label={info.label}
               aria-pressed={selected}
-              className={`${flagButton} ${selected ? selectedClass : 'border-border hover:bg-muted'}`}
+              className={`${buttonClass} ${selected ? creatorSelectedControl : 'border-border hover:bg-muted'}`}
               onClick={() => onChange(selected ? undefined : code)}
             >
               <LanguageFlag code={code} />
@@ -80,7 +95,9 @@ export function LanguagePicker({
   const [open, setOpen] = useState(false),
     [search, setSearch] = useState('');
   const values = [...new Set(selected.map(code => languageInfo(code).code))];
-  const choices = [...new Set([...creatorLanguages, ...values].map(code => languageInfo(code).code))]
+  const choices = [
+    ...new Set([...creatorLanguages, ...values].map(code => languageInfo(code).code)),
+  ]
     .map(languageInfo)
     .filter(info => `${info.code} ${info.label}`.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => a.label.localeCompare(b.label));
@@ -140,7 +157,7 @@ export function LanguagePicker({
                   aria-label={info.label}
                   aria-pressed={checked}
                   disabled={multiple && !checked && values.length >= 10}
-                  className={`${flagButton} relative h-auto! min-h-10 justify-start! gap-2 text-left disabled:opacity-40 ${checked ? selectedClass : 'border-border hover:bg-muted'}`}
+                  className={`${flagButton} relative h-auto! min-h-10 justify-start! gap-2 text-left disabled:opacity-40 ${checked ? creatorSelectedControl : 'border-border hover:bg-muted'}`}
                   onClick={() => {
                     onChange(
                       multiple

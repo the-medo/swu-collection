@@ -3,6 +3,8 @@
 // Heading resets need a parent gap (rather than space-y margins) for spacing.
 export const creatorTheme =
   '[--creator-accent:#326149] [--creator-soft:#eef2e9] [--creator-border:#d9e1d2] dark:[--creator-accent:#b9d4a8] dark:[--creator-soft:#1d2720] dark:[--creator-border:#364437]';
+export const creatorSelectedControl =
+  'border-[var(--creator-border)] bg-[var(--creator-soft)] text-[var(--creator-accent)] hover:bg-[var(--creator-soft)] hover:text-[var(--creator-accent)]';
 export const creatorPanel = 'min-w-0 rounded-[20px] border border-border bg-card p-5 sm:p-6';
 export const creatorTitle =
   'm-0! border-0! p-0! text-[30px]! font-semibold! leading-[1.12]! tracking-[-0.045em]! break-words sm:text-[40px]!';

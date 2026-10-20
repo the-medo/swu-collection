@@ -2,7 +2,7 @@ import { CONNECTION_TOURNAMENT_PAGE_SIZE } from '../../../shared/creators/contra
 import { user } from '../../db/schema/auth-schema.ts';
 import { db } from '../../db/index.ts';
 import type { Database } from './types.ts';
-import { and, asc, desc, eq, inArray, sql, type SQL } from 'drizzle-orm';
+import { and, asc, count, desc, eq, getTableColumns, inArray, sql, type SQL } from 'drizzle-orm';
 import {
   creation,
   creationTag,
@@ -10,6 +10,7 @@ import {
   creatorProfile,
 } from '../../db/schema/creator_hub.ts';
 import { deck } from '../../db/schema/deck.ts';
+import { entityPrice } from '../../db/schema/entity_price.ts';
 import { tournament } from '../../db/schema/tournament.ts';
 import { tournamentType } from '../../db/schema/tournament_type.ts';
 import { getMergedCardList } from '../cards/cardListProvider.ts';
@@ -18,6 +19,7 @@ import type {
   DiscoveryQuery,
   EntityReference,
   ConnectionSubject,
+  CreatorSectionCounts,
 } from '../../../shared/creators/contracts.ts';
 import { creationListSelection, publicCreation } from './list.ts';
 import { resolveReference, resolveReferences, type ResolvedReference } from './references.ts';
@@ -25,7 +27,59 @@ import { CreatorError } from './errors.ts';
 import { escapedSearch, groupDiscoveryTags, availableLanguages } from './filters.ts';
 
 export function createDiscoveryService(database: Database = db) {
+  // Share the visibility/reference predicate between the deck table and its tab count.
+  const publicCreatorDecks = (creatorId: string) =>
+    and(
+      eq(deck.public, 1),
+      inArray(
+        deck.id,
+        database
+          .select({
+            id: sql<string>`CASE WHEN ${creationReference.entityType} = 'deck' THEN ${creationReference.entityId}::uuid END`,
+          })
+          .from(creationReference)
+          .innerJoin(creation, eq(creation.id, creationReference.creationId))
+          .where(
+            and(
+              eq(creationReference.entityType, 'deck'),
+              eq(creation.creatorId, creatorId),
+              publicCreation(),
+            ),
+          ),
+      ),
+    );
   return {
+    async sectionCounts(creatorId: string): Promise<CreatorSectionCounts> {
+      const [[media], [decks]] = await Promise.all([
+        database
+          .select({
+            videos:
+              sql<number>`count(*) FILTER (WHERE ${creation.published}->>'medium' = 'video')`.mapWith(
+                Number,
+              ),
+            articles:
+              sql<number>`count(*) FILTER (WHERE ${creation.published}->>'medium' = 'article')`.mapWith(
+                Number,
+              ),
+            podcasts:
+              sql<number>`count(*) FILTER (WHERE ${creation.published}->>'medium' = 'audio')`.mapWith(
+                Number,
+              ),
+            series:
+              sql<number>`count(DISTINCT nullif(${creation.published}->>'series', ''))`.mapWith(
+                Number,
+              ),
+          })
+          .from(creation)
+          .where(and(eq(creation.creatorId, creatorId), publicCreation())),
+        database
+          .select({ count: count() })
+          .from(deck)
+          .innerJoin(user, eq(deck.userId, user.id))
+          .where(publicCreatorDecks(creatorId)),
+      ]);
+      return { ...media, decks: decks.count };
+    },
     async discover(query: DiscoveryQuery) {
       const filters: (SQL | undefined)[] = [publicCreation()];
       if (query.q)
@@ -39,17 +93,17 @@ export function createDiscoveryService(database: Database = db) {
       if (query.after) filters.push(sql`${creation.publishedAt} >= ${query.after}::date`);
       if (query.before)
         filters.push(sql`${creation.publishedAt} < ${query.before}::date + interval '1 day'`);
-      for (const ids of groupDiscoveryTags(query.tags))
-        filters.push(
-          sql`EXISTS (SELECT 1 FROM ${creationTag} WHERE ${creationTag.creationId} = ${creation.id} AND ${inArray(creationTag.tagId, ids)})`,
-        );
+      const tagGroups = groupDiscoveryTags(query.tags);
+      const tagFilter = (ids: string[]) =>
+        sql`EXISTS (SELECT 1 FROM ${creationTag} WHERE ${creationTag.creationId} = ${creation.id} AND ${inArray(creationTag.tagId, ids)})`;
+      const tagFilters = tagGroups.map(tagFilter);
       let subject: ResolvedReference | null = null;
       if (query.entityType && query.entityId) {
         subject = await resolveReference(
           { type: query.entityType, id: query.entityId, startSeconds: null },
           database,
         );
-        if (!subject) return { items: [], hasMore: false, languages: [] };
+        if (!subject) return { items: [], hasMore: false, languages: [], tagCounts: [] };
         const entityTypes = ['card', 'leader', 'base'].includes(query.entityType)
           ? ['card', 'leader', 'base']
           : [query.entityType];
@@ -60,17 +114,33 @@ export function createDiscoveryService(database: Database = db) {
       const languageRows = await database
         .selectDistinct({ language: sql<string>`${creation.published}->>'language'` })
         .from(creation)
-        .where(and(...filters));
+        .where(and(...filters, ...tagFilters));
       if (query.language)
         filters.push(
           sql`(lower(${creation.published}->>'language') = ${query.language.toLowerCase()} OR lower(${creation.published}->>'language') LIKE ${query.language.toLowerCase() + '-%'})`,
         );
+      // Counts cover the entire tab/language/search, not just the loaded page.
+      // Keep other classifications visible when a tag is selected.
+      const tagCounts = query.creatorId
+        ? await database
+            .select({ id: creationTag.tagId, count: count() })
+            .from(creation)
+            .innerJoin(creationTag, eq(creationTag.creationId, creation.id))
+            .where(
+              and(
+                ...filters,
+                ...tagGroups.filter(ids => ids[0].startsWith('medium:')).map(tagFilter),
+              ),
+            )
+            .groupBy(creationTag.tagId)
+            .orderBy(asc(creationTag.tagId))
+        : [];
       const rows = await database
         .select(creationListSelection())
         .from(creation)
         .leftJoin(creatorProfile, eq(creation.creatorId, creatorProfile.id))
         .leftJoin(user, eq(creation.authorId, user.id))
-        .where(and(...filters))
+        .where(and(...filters, ...tagFilters))
         .orderBy(
           ...(query.series
             ? [sql`(${creation.published}->>'seriesOrder')::int ASC`]
@@ -86,7 +156,45 @@ export function createDiscoveryService(database: Database = db) {
         items: rows.slice(0, query.limit ?? 24),
         hasMore: rows.length > (query.limit ?? 24),
         languages: availableLanguages(languageRows),
+        tagCounts,
         subject: subject ? { type: subject.type, id: subject.id, label: subject.label } : undefined,
+      };
+    },
+    async decks(creatorId: string, query: { page: number; limit: number }) {
+      // Start from the creator’s eligible references so deck IDs use the primary-key index.
+      // IN deduplicates decks linked by multiple creations and never exposes drafts.
+      const rows = await database
+        .select({
+          deck: getTableColumns(deck),
+          user: { id: user.id, displayName: user.displayName, image: user.image },
+        })
+        .from(deck)
+        .innerJoin(user, eq(deck.userId, user.id))
+        .where(publicCreatorDecks(creatorId))
+        .orderBy(desc(deck.updatedAt), desc(deck.id))
+        .limit(query.limit + 1)
+        .offset((query.page - 1) * query.limit);
+      const items = rows.slice(0, query.limit);
+      const prices = items.length
+        ? await database
+            .select()
+            .from(entityPrice)
+            .where(
+              and(
+                eq(entityPrice.type, 'deck'),
+                inArray(
+                  entityPrice.entityId,
+                  items.map(row => row.deck.id),
+                ),
+              ),
+            )
+        : [];
+      return {
+        items: items.map(row => ({
+          ...row,
+          entityPrices: prices.filter(price => price.entityId === row.deck.id),
+        })),
+        hasMore: rows.length > query.limit,
       };
     },
     async collections(creatorId: string) {

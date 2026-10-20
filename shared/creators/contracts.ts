@@ -122,6 +122,7 @@ export const creationDocumentSchema = z
     title: z.string().trim().min(1).max(200),
     summary: z.string().trim().max(1000).default(''),
     videoDescription: z.string().max(20_000).default(''),
+    durationSeconds: z.number().int().positive().nullable().optional(),
     medium: z.enum(['article', 'video', 'audio', 'external']),
     body: postDocumentSchemas.rich,
     coverUrl: optionalUrl,
@@ -212,6 +213,7 @@ export type CreationSummary = Omit<Creation, 'document' | 'references'> & {
     | 'summary'
     | 'medium'
     | 'coverUrl'
+    | 'durationSeconds'
     | 'language'
     | 'tags'
     | 'freshness'
@@ -223,12 +225,20 @@ export type CreationSummary = Omit<Creation, 'document' | 'references'> & {
 export type CreationList = { items: CreationSummary[]; hasMore: boolean };
 export type DiscoveryResult = CreationList & {
   languages: string[];
+  tagCounts: { id: string; count: number }[];
   subject?: Pick<EntityReference, 'type' | 'id'> & { label: string };
 };
 export type CreatorDirectoryResult = {
   items: CreatorProfile[];
   hasMore: boolean;
   languages: string[];
+};
+export type CreatorSectionCounts = {
+  videos: number;
+  articles: number;
+  podcasts: number;
+  decks: number;
+  series: number;
 };
 export type CreatorTaxonomy = CreationTag[];
 export type CreatorRevision = { revision: number; createdAt: string; document: CreationDocument };
@@ -242,3 +252,16 @@ export const creatorOnboardingSchema = z.object({
 export type CreatorOnboarding = z.infer<typeof creatorOnboardingSchema>;
 export type CreatorOnboardingResult = { id: string; slug: string; moved: number };
 export type PersonalArticleCounts = { total: number; drafts: number };
+
+export const creatorDeckQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).max(1000).default(1),
+  limit: z.coerce.number().int().min(1).max(24).default(12),
+});
+export type CreatorDeckList = {
+  items: {
+    deck: import('../../types/Deck.ts').Deck;
+    user: { id: string; displayName: string; image: string | null };
+    entityPrices: import('../../server/db/schema/entity_price.ts').EntityPrice[];
+  }[];
+  hasMore: boolean;
+};
