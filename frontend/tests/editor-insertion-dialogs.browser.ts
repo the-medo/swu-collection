@@ -50,6 +50,7 @@ const commands = [
   ['card-link', 'Card link'],
   ['decklist', 'Decklist'],
   ['album', 'Add album'],
+  ['pool', 'Sealed pool'],
   ['meta-analysis', 'Meta analysis'],
   ['matchup', 'Matchup'],
   ['card-group', 'Card group'],
@@ -159,6 +160,14 @@ try {
           await expect(dialog).toContainText('Sign in to choose one of your albums');
           await expect(
             dialog.getByRole('button', { name: 'Insert album', exact: true }),
+          ).toBeDisabled();
+        }
+        if (kind === 'pool') {
+          await expect(
+            dialog.getByRole('textbox', { name: 'SWUBASE pool link or ID' }),
+          ).toBeVisible();
+          await expect(
+            dialog.getByRole('button', { name: 'Insert pool', exact: true }),
           ).toBeDisabled();
         }
         if (kind === 'meta-analysis') {

@@ -30,5 +30,6 @@ export type TournamentReport = {
   };
   deck: TournamentReportDeck | null;
   rounds: TournamentReportRound[];
+  roundsWarning?: string;
   hasMetaDecks: boolean;
 };

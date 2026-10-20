@@ -110,6 +110,7 @@ export const insertionSchema = z.union([
   z.object({ kind: z.literal('card-link'), card: cardReferenceSchema }),
   z.object({ kind: z.literal('decklist'), deck: deckReferenceSchema }),
   z.object({ kind: z.literal('album'), albumId: z.uuid() }),
+  z.object({ kind: z.literal('pool'), poolId: z.uuid() }),
   z.object({ kind: z.literal('mention'), user: mentionSchema }),
   widgetSchema,
 ]);
@@ -122,6 +123,7 @@ export function insertionLabel(value: Insertion) {
   if (value.kind === 'card-image' || value.kind === 'card-link') return value.card.name;
   if (value.kind === 'decklist') return `SWUBASE deck: ${deckHref(value.deck.deckId)}`;
   if (value.kind === 'album') return `SWUBASE album: ${albumHref(value.albumId)}`;
+  if (value.kind === 'pool') return `SWUBASE sealed pool: ${poolHref(value.poolId)}`;
   if (value.kind === 'mention') return `@${value.user.displayName}`;
   if (value.kind === 'callout') return `${value.title}: ${value.text}`;
   if (value.kind === 'meta-analysis') return `Meta analysis: ${value.scope} ${value.id}`;
@@ -138,6 +140,7 @@ export function insertionHref(value: Insertion) {
   if (value.kind === 'card-image' || value.kind === 'card-link') return cardHref(value.card.cardId);
   if (value.kind === 'decklist') return deckHref(value.deck.deckId);
   if (value.kind === 'album') return albumHref(value.albumId);
+  if (value.kind === 'pool') return poolHref(value.poolId);
   if (value.kind === 'mention') return profileHref(value.user.id);
   if (value.kind === 'meta-analysis')
     return value.scope === 'tournament'
@@ -149,3 +152,4 @@ export function insertionHref(value: Insertion) {
 export const cardHref = (id: string) => `/cards/detail/${encodeURIComponent(id)}`;
 export const deckHref = (id: string) => `/decks/${encodeURIComponent(id)}`;
 export const albumHref = (id: string) => `/albums/${encodeURIComponent(id)}`;
+export const poolHref = (id: string) => `/limited/pool/${encodeURIComponent(id)}/detail`;

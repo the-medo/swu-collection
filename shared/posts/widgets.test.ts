@@ -12,6 +12,7 @@ import {
   insertionHref,
   insertionLabel,
   insertionSchema,
+  poolHref,
   widgetSchema,
 } from './widgets.ts';
 
@@ -19,6 +20,55 @@ const albumId = '11111111-1111-4111-8111-111111111111';
 const albumDocument = (data: unknown) => ({
   version: 1,
   blocks: [{ id: 'album', type: 'swuBlock', props: { data: JSON.stringify(data) }, children: [] }],
+});
+
+test('sealed pools persist only a reference and retain a link in text fallbacks', () => {
+  const value = { kind: 'pool', poolId: albumId };
+  const document = postDocumentSchemas.rich.parse(
+    albumDocument({ ...value, name: 'Private title', leaders: ['private-leader'] }),
+  );
+  const block = document.blocks[0];
+  if (block.type !== 'swuBlock') throw new Error('Expected pool widget');
+  expect(JSON.parse(block.props.data)).toEqual(value);
+  expect(postDocumentSchemas.rich.parse(document)).toEqual(document);
+  const href = `/limited/pool/${albumId}/detail`;
+  expect(insertionHref(insertionSchema.parse(value))).toBe(href);
+  expect(postPlainText(document)).toBe(`SWUBASE sealed pool: ${href}`);
+  const simple = toSimplePostDocument(document).blocks[0];
+  if (simple.type !== 'paragraph') throw new Error('Expected fallback paragraph');
+  expect(simple.content).toEqual([
+    {
+      type: 'link',
+      href,
+      content: [{ type: 'text', text: `SWUBASE sealed pool: ${href}`, styles: {} }],
+    },
+  ]);
+  expect(poolHref('a/b?c')).toBe('/limited/pool/a%2Fb%3Fc/detail');
+});
+
+test('sealed pool references reject malformed IDs and stay exclusive to rich block widgets', () => {
+  for (const poolId of ['', 'https://example.invalid/pool', '../settings', null, 42])
+    expect(
+      postDocumentSchemas.rich.safeParse(albumDocument({ kind: 'pool', poolId })).success,
+    ).toBe(false);
+  const value = { kind: 'pool', poolId: albumId };
+  const document = albumDocument(value);
+  expect(postDocumentSchemas.comments.safeParse(document).success).toBe(false);
+  expect(postDocumentSchemas.simple.safeParse(document).success).toBe(false);
+  expect(
+    postDocumentSchemas.rich.safeParse({
+      version: 1,
+      blocks: [
+        {
+          id: 'paragraph',
+          type: 'paragraph',
+          props: {},
+          children: [],
+          content: [{ type: 'swuInline', props: { data: JSON.stringify(value) } }],
+        },
+      ],
+    }).success,
+  ).toBe(false);
 });
 
 test('albums persist references without copying private metadata or photos into articles', () => {

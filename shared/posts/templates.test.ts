@@ -118,3 +118,25 @@ test('rounds are adjacent children of their toggle, with no empty paragraph spac
   expect(rounds.children.map(block => block.type)).toEqual(['swuBlock', 'swuBlock']);
   expect(postDocumentSchemas.rich.safeParse(body).success).toBe(true);
 });
+
+test('limited reports include opponent and score matchups without decklist or meta embeds', () => {
+  const body = createArticleTemplate('tournament-report', {
+    ...report,
+    tournament: { ...report.tournament, format: 'Sealed play' },
+    deck: null,
+    rounds: [{ ...report.rounds[0]!, opponentDeck: null }],
+    hasMetaDecks: false,
+  });
+  const embeds = flatten(body.blocks)
+    .filter(block => block.type === 'swuBlock')
+    .map(block => JSON.parse(block.props.data));
+  expect(embeds).toHaveLength(1);
+  expect(embeds[0]).toMatchObject({
+    kind: 'matchup',
+    title: 'Round 1',
+    subtitle: 'vs. Leia',
+    footer: 'Win · Games 2–1–0 · Overall 1–0–0',
+  });
+  for (const field of ['leftLeader', 'leftBase', 'rightLeader', 'rightBase'])
+    expect(embeds[0][field]).toBeUndefined();
+});

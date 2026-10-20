@@ -9,6 +9,7 @@ import {
 import { CardPicker } from './CardPicker.tsx';
 import { DeckPicker } from './DeckPicker.tsx';
 import { AlbumPicker } from './AlbumPicker.tsx';
+import { PoolPicker } from './PoolPicker.tsx';
 import { InsertionContext } from './insertionContext.ts';
 import { UserPicker } from './UserPicker.tsx';
 import { WidgetPicker } from './WidgetPicker.tsx';
@@ -92,6 +93,11 @@ export function InsertionProvider({ children }: { children: ReactNode }) {
             )}
             {kind === 'decklist' ? (
               <DeckPicker onSelect={deck => finish({ kind: 'decklist', deck })} />
+            ) : kind === 'pool' ? (
+              <PoolPicker
+                initialId={initial?.kind === 'pool' ? initial.poolId : undefined}
+                onSelect={poolId => finish({ kind: 'pool', poolId })}
+              />
             ) : kind === 'album' ? (
               <AlbumPicker
                 initialId={initial?.kind === 'album' ? initial.albumId : undefined}
