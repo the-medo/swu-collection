@@ -12,12 +12,13 @@ export function languageInfo(code: string) {
     return {
       code: locale.toString(),
       label: names.of(locale.toString()) ?? code,
+      countryCode: region && /^[A-Z]{2}$/.test(region) ? region.toLowerCase() : undefined,
       flag:
         region && /^[A-Z]{2}$/.test(region)
           ? [...region].map(letter => String.fromCodePoint(127397 + letter.charCodeAt(0))).join('')
           : '🌐',
     };
   } catch {
-    return { code, label: code, flag: '🌐' };
+    return { code, label: code, flag: '🌐', countryCode: undefined };
   }
 }

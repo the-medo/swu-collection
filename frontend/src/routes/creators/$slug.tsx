@@ -1,6 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { CreatorPage } from '@/components/app/creators/CreatorPages.tsx';
-export const Route = createFileRoute('/creators/$slug')({ component: Page });
-function Page() {
-  return <CreatorPage slug={Route.useParams().slug} />;
-}
+import { createFileRoute, Outlet } from '@tanstack/react-router';
+import { creatorPageSearchSchema } from '@/components/app/creators/creatorPageSearch.ts';
+export const Route = createFileRoute('/creators/$slug')({
+  validateSearch: creatorPageSearchSchema,
+  component: Outlet,
+});

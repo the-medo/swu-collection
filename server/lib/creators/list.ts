@@ -2,6 +2,7 @@ import { METADATA_RETENTION_MS } from './youtube-lifecycle-policy.ts';
 import { user } from '../../db/schema/auth-schema.ts';
 import { sql } from 'drizzle-orm';
 import { creation, creatorProfile } from '../../db/schema/creator_hub.ts';
+import { creatorVideoJob } from '../../db/schema/creator_video_job.ts';
 import type { CreationSummary } from '../../../shared/creators/contracts.ts';
 
 /** Do not serve stale provider metadata even if a scheduled maintenance run was missed. */
@@ -24,6 +25,14 @@ export function creationListSelection(edit = false) {
     document: sql<CreationSummary['document']>`jsonb_build_object(
       'title', ${document}->'title', 'summary', ${document}->'summary',
       'medium', ${document}->'medium', 'coverUrl', ${document}->'coverUrl',
+      'durationSeconds', CASE WHEN ${document}->>'medium' = 'video' THEN
+        coalesce(nullif(${document}->'durationSeconds', 'null'::jsonb),
+          (SELECT ${creatorVideoJob.metadata}->'durationSeconds' FROM ${creatorVideoJob}
+           WHERE ${creatorVideoJob.videoId} = ${creation.sourceVideoId}
+             AND ${creatorVideoJob.creatorId} = ${creation.creatorId}
+             AND coalesce(${creation.sourceStatus}, 'active') = 'active'
+             AND ${creatorVideoJob.metadataFetchedAt} > now() - (${METADATA_RETENTION_MS}::double precision * interval '1 millisecond')))
+        ELSE NULL END,
       'language', ${document}->'language', 'tags', ${document}->'tags',
       'freshness', ${document}->'freshness', 'pinned', ${document}->'pinned',
       'series', ${document}->'series', 'seriesOrder', ${document}->'seriesOrder')`,

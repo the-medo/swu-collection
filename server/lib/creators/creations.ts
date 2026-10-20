@@ -114,12 +114,19 @@ export function createCreationsService(database: Database = db) {
             throw new CreatorError(
               'An imported video must keep its original YouTube source. Create a separate creation to share another resource.',
             );
+          // Duration belongs to provider metadata, even when an editor submits a full document.
+          document = {
+            ...document,
+            durationSeconds: existing.sourceVideoId ? existing.draft.durationSeconds : undefined,
+          };
           if (existing?.sourceVideoId)
             manuallyEditedFields = trackManualEdits(
               existing.draft,
               document,
               existing.manuallyEditedFields,
             );
+        } else if (!sourceVideoId) {
+          document = { ...document, durationSeconds: undefined };
         }
         const [row] = id
           ? await tx

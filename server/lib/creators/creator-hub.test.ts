@@ -68,7 +68,10 @@ test('language cues retain regional variants and valid canonical language codes'
     label: 'Brazilian Portuguese',
     flag: '🇧🇷',
   });
-  expect(languageInfo('en')).toMatchObject({ flag: '🇬🇧' });
+  expect(languageInfo('en')).toMatchObject({ flag: '🇬🇧', countryCode: 'gb' });
+  expect(languageInfo('en-US').countryCode).toBe('us');
+  expect(languageInfo('pt-br').countryCode).toBe('br');
+  expect(languageInfo('invalid_code').countryCode).toBeUndefined();
   expect(languageInfo('zh-Hant').flag).toBe('🇹🇼');
 });
 test('existing full profiles remain editable after group expansion and canonicalize duplicate languages', () => {

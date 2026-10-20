@@ -6,6 +6,7 @@ import { db } from '../../db/index.ts';
 import { user } from '../../db/schema/auth-schema.ts';
 import { deck } from '../../db/schema/deck.ts';
 import {
+  creation,
   creatorOauthState,
   creatorProfile,
   creatorTag,
@@ -250,7 +251,10 @@ test.skipIf(process.env.CREATOR_HUB_DB_TEST !== '1')(
         (await request(owner, 'POST', '/creations', { creatorId: directoryId, document: doc }))
           .status,
       ).toBe(403);
-      const item = await creatorService.save(profile.id, editor, doc);
+      const item = await creatorService.save(profile.id, editor, { ...doc, durationSeconds: 999 });
+      expect(
+        (await creatorService.get(item.id, editor, true)).document.durationSeconds,
+      ).toBeUndefined();
       expect((await request(null, 'GET', `/creations/${item.id}`)).status).toBe(404);
       expect((await request(null, 'GET', `/creations/${item.id}/draft`)).status).toBe(401);
       expect((await request(stranger, 'GET', `/creations/${item.id}/draft`)).status).toBe(403);
@@ -529,6 +533,19 @@ test.skipIf(process.env.CREATOR_HUB_DB_TEST !== '1')(
       const importedDraft = await creatorService.get(imported.id, owner, true);
       expect(importedDraft.sourceVerified).toBe(true);
       expect(importedDraft.document.language).toBe('pt-BR');
+      expect(importedDraft.document.durationSeconds).toBe(300);
+      const durationEdit = await request(owner, 'PUT', `/creations/${imported.id}`, {
+        creatorId: profile.id,
+        document: { ...importedDraft.document, durationSeconds: 999 },
+        revision: importedDraft.revision,
+        ownershipRevision: importedDraft.ownershipRevision,
+      });
+      expect(durationEdit.status).toBe(200);
+      expect((await creatorService.get(imported.id, owner, true)).document.durationSeconds).toBe(
+        300,
+      );
+      const [durationRow] = await db.select().from(creation).where(eq(creation.id, imported.id));
+      expect(durationRow.manuallyEditedFields).not.toContain('durationSeconds');
       await expect(
         creatorService.save(
           profile.id,

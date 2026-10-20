@@ -2,6 +2,7 @@ import { expect, test } from 'bun:test';
 import { documentFromVideo, type VideoMetadata } from './video.ts';
 import { videoDocument, descriptionDeckLinks } from './worker/metadata.ts';
 import { ANALYSIS_VERSION, type Analysis } from './worker/contracts.ts';
+import { refreshedVideoDocument, scrubVideoDocument } from './metadata-lifecycle.ts';
 
 test('manual and worker imports retain full descriptions, late links, chapters and language', () => {
   const description =
@@ -34,6 +35,18 @@ test('manual and worker imports retain full descriptions, late links, chapters a
   const worker = videoDocument(metadata, analysis, 'en', []);
   expect({ ...worker, body: null }).toEqual({ ...manual, body: null });
   expect(manual.videoDescription).toBe(description);
+  expect(manual.durationSeconds).toBe(600);
+  const refreshed = refreshedVideoDocument(
+    { ...manual, durationSeconds: undefined },
+    { ...metadata, durationSeconds: 754 },
+    ['title', 'durationSeconds'],
+  );
+  expect(refreshed.durationSeconds).toBe(754);
+  expect(scrubVideoDocument(refreshed).durationSeconds).toBeNull();
+  expect(
+    documentFromVideo({ ...metadata, durationSeconds: undefined }, { fallbackLanguage: 'en' })
+      .durationSeconds,
+  ).toBeNull();
   expect(manual.summary.length).toBeLessThanOrEqual(1000);
   expect(manual.summary).not.toContain('swuforge');
   expect(descriptionDeckLinks(manual.videoDescription).links[0].sourceDeckId).toBe(

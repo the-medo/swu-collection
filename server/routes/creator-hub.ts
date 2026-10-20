@@ -1,3 +1,4 @@
+import { creatorDeckQuerySchema } from '../../shared/creators/contracts.ts';
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { bodyLimit } from 'hono/body-limit';
@@ -218,8 +219,18 @@ export function createCreatorHubRoute(
         return c.json({ data: true });
       },
     )
+    .get(
+      '/creators/:id/decks',
+      zValidator('param', id),
+      zValidator('query', creatorDeckQuerySchema),
+      async c =>
+        c.json({ data: await service.decks(c.req.valid('param').id, c.req.valid('query')) }),
+    )
     .get('/creators/:id/collections', zValidator('param', id), async c =>
       c.json({ data: await service.collections(c.req.valid('param').id) }),
+    )
+    .get('/creators/:id/counts', zValidator('param', id), async c =>
+      c.json({ data: await service.sectionCounts(c.req.valid('param').id) }),
     )
     .get(
       '/creators/:id/studio',

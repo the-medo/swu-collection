@@ -19,6 +19,7 @@ export const providerFields = [
   'title',
   'summary',
   'videoDescription',
+  'durationSeconds',
   'coverUrl',
   'language',
   'chapters',
@@ -32,7 +33,7 @@ export function refreshedVideoDocument(
   const fresh = documentFromVideo(metadata, { fallbackLanguage: document.language });
   const changes = Object.fromEntries(
     providerFields
-      .filter(field => !protectedFields.includes(field))
+      .filter(field => field === 'durationSeconds' || !protectedFields.includes(field))
       .map(field => [field, fresh[field]]),
   );
   return { ...document, ...changes };
@@ -45,6 +46,7 @@ export function scrubVideoDocument(document: CreationDocument): CreationDocument
     title: 'YouTube video unavailable',
     summary: '',
     videoDescription: '',
+    durationSeconds: null,
     coverUrl: '',
     chapters: [],
     language: 'en',
