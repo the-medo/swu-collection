@@ -52,6 +52,15 @@ export const editorCommands: Record<InsertKind, EditorCommand> = {
     modes: ['rich'],
     aliases: [],
   },
+  pool: {
+    label: 'Sealed pool',
+    description: 'Share a sealed pool with its leaders and a link to build it.',
+    dialogDescription:
+      'Paste a public or unlisted sealed pool link or ID to share it with your readers.',
+    icon: Layers3,
+    modes: ['rich'],
+    aliases: ['sealed'],
+  },
   album: {
     label: 'Add album',
     description: 'Share an album with a four-photo preview.',

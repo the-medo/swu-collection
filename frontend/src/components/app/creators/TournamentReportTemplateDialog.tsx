@@ -250,6 +250,21 @@ export function TournamentReportTemplateDialog({
                         </span>
                       </div>
                       <div className="space-y-3 p-4">
+                        {report.data.roundsWarning && (
+                          <div
+                            role="alert"
+                            className="space-y-2 rounded-lg border bg-background p-3 text-sm"
+                          >
+                            <p>{report.data.roundsWarning}</p>
+                            <Button
+                              variant="outline"
+                              disabled={report.isFetching}
+                              onClick={() => void report.refetch()}
+                            >
+                              {report.isFetching ? 'Loading rounds…' : 'Retry rounds'}
+                            </Button>
+                          </div>
+                        )}
                         <p className="text-xs text-muted-foreground">
                           Intro · Pre-tournament & preparation ·{' '}
                           {report.data.deck?.hasDecklist ? 'Decklist' : 'Deck choice'} · Rounds ·

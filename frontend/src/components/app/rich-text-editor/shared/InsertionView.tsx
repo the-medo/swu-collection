@@ -4,6 +4,7 @@ import { MatchupEmbed } from './MatchupEmbed.tsx';
 import { CardArtwork, DecklistEmbed } from './Embeds.tsx';
 import { MetaEmbed } from './MetaEmbed.tsx';
 import { AlbumEmbed } from './AlbumEmbed.tsx';
+import { PoolEmbed } from './PoolEmbed.tsx';
 import { useContext } from 'react';
 import { InsertionContext } from './insertionContext.ts';
 import type { Insertion, EditorInsertion } from './model.ts';
@@ -30,7 +31,8 @@ export function InsertionView({
   return (
     <div
       className={cn(
-        `rte-widget rte-widget-${value.kind} w-full min-w-0 rounded-xl border bg-card p-3 sm:p-4`,
+        `rte-widget rte-widget-${value.kind} w-full min-w-0`,
+        value.kind !== 'pool' && 'rounded-xl border bg-card p-3 sm:p-4',
         value.kind === 'matchup' ? 'my-1' : 'my-4',
       )}
       data-widget-kind={value.kind}
@@ -63,6 +65,8 @@ export function InsertionView({
         <MatchupEmbed value={value} />
       ) : value.kind === 'album' ? (
         <AlbumEmbed albumId={value.albumId} />
+      ) : value.kind === 'pool' ? (
+        <PoolEmbed poolId={value.poolId} />
       ) : value.kind === 'card-group' ? (
         <>
           <div className="rte-card-group flex flex-wrap items-start gap-4">

@@ -58,7 +58,7 @@ test('validates IDs and handles unavailable history without leaking internals', 
   const { app, calls } = fixture('owner');
   expect((await app.request('/user/owner/tournaments/not-an-id/report')).status).toBe(400);
   expect(calls).toHaveLength(0);
-  for (const status of [404, 409] as const) {
+  for (const status of [404, 409, 502] as const) {
     const response = await fixture(
       'owner',
       new MeleeConnectionError('Safe message', status),

@@ -14,7 +14,15 @@ const leaderPositionClassName = cn(
   '[transform:translate(_calc(-50%_+_var(--fan-position)_*_26cqi),_calc(var(--fan-drop)_*_var(--fan-curve))_)_rotate(var(--fan-angle))]',
 );
 
-export function LeaderHand({ pool, date }: { pool: DailySealedPool; date?: string }) {
+export function LeaderHand({
+  pool,
+  date,
+  cardLinks = 'home',
+}: {
+  pool: Pick<DailySealedPool, 'leaders'> & { set: string | null };
+  date?: string;
+  cardLinks?: 'home' | 'detail';
+}) {
   const cards = useCardList();
   if (cards.isError) {
     return (
@@ -67,13 +75,22 @@ export function LeaderHand({ pool, date }: { pool: DailySealedPool; date?: strin
         return (
           <Link
             key={cardId}
-            to="/"
-            search={previous => ({
-              ...previous,
-              homeMode: 'today',
-              poolDate: date,
-              modalCardId: cardId,
-            })}
+            {...(cardLinks === 'home'
+              ? {
+                  to: '/' as const,
+                  search: (previous: Record<string, unknown>) => ({
+                    ...previous,
+                    homeMode: 'today' as const,
+                    poolDate: date,
+                    modalCardId: cardId,
+                  }),
+                }
+              : {
+                  to: '/cards/detail/$cardId' as const,
+                  params: { cardId },
+                  target: '_blank',
+                  rel: 'noopener noreferrer',
+                })}
             className={cn(
               leaderPositionClassName,
               '[&:hover]:z-20',

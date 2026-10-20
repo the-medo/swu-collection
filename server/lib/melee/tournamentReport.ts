@@ -10,12 +10,16 @@ import { createMeleeTournamentService } from './tournaments.ts';
 import { findTournamentParticipant } from './tournamentDeck.ts';
 import { MeleeConnectionError } from './profile.ts';
 import { reportRounds } from './reportRounds.ts';
+import { fetchMeleePlayerReport } from './playerReport.ts';
 import type {
   TournamentReport,
   TournamentReportDeck,
 } from '../../../shared/types/TournamentReport.ts';
 
-export function createTournamentReportService(database: typeof db) {
+export function createTournamentReportService(
+  database: typeof db,
+  fetchPlayerReport = fetchMeleePlayerReport,
+) {
   const history = createMeleeTournamentService(database);
   return {
     async get(userId: string, tournamentId: string): Promise<TournamentReport> {
@@ -97,6 +101,16 @@ export function createTournamentReportService(database: typeof db) {
             .where(and(inArray(deck.id, ids), eq(deck.public, 1)))
         : [];
       const decks = new Map(publicDecks.map(row => [row.id, row]));
+      let rounds = participant ? reportRounds(matches, participant.id, decks) : [];
+      let roundsWarning: string | undefined;
+      if (!rounds.length) {
+        try {
+          rounds = await fetchPlayerReport(event.meleeId, connection.username);
+        } catch (error) {
+          if (!(error instanceof MeleeConnectionError)) throw error;
+          roundsWarning = error.message;
+        }
+      }
       // Auto-fill meta only when imported public card lists exist, independently
       // of whether this author's deck matched. This is deliberately stricter than
       // the manual meta widget, which also supports leader/base-only entries.
@@ -126,7 +140,8 @@ export function createTournamentReportService(database: typeof db) {
           completed: event.completed,
         },
         deck: participant ? (decks.get(participant.id) ?? null) : null,
-        rounds: participant ? reportRounds(matches, participant.id, decks) : [],
+        rounds,
+        ...(roundsWarning ? { roundsWarning } : {}),
         hasMetaDecks: metaDecks.length > 0,
       };
     },

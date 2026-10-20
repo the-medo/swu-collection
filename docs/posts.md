@@ -84,6 +84,18 @@ new tab. Private albums remain owner-only, and failed or revoked access hides
 cached preview content. The picker explains private and unlisted visibility
 without changing it. Adding this widget requires no database migration.
 
+The rich editor's **Sealed pool** command (`/pool`, also `/sealed`) accepts a pool
+URL or UUID and stores only `{ kind: 'pool', poolId }`. Pasted URLs supply an ID;
+the URL itself is never fetched or stored. `/api/card-pools/:id/embed` loads the
+current title, set and leader counts for ready, non-archived public or unlisted
+sealed/prerelease pools. It applies the same rule to owners and other readers,
+returns `private, no-store`, and unavailable responses hide cached previews.
+The widget reuses the homepage's leader-card fan. **Build this pool** opens the
+pool detail page in a new tab, preserving the reader's default deck visibility.
+Pack counts are shown only for generated, unedited sealed pools; prerelease
+leaders also contain fixed promotional cards. This reference-only addition needs
+no database migration.
+
 When adding a widget, update the shared payload schema, picker/command, renderer,
 and round-trip coverage. Persisted format changes require an explicit version
 and migration/compatibility strategy.
@@ -160,6 +172,11 @@ its parent when possible and posts at the top level if that parent is gone.
 
 Run `bun test shared/posts/content.test.ts server/routes/posts.test.ts` for the
 stored-format boundary and API authorization/validation checks.
+Pool widgets additionally use `bun test shared/posts/pool.test.ts shared/posts/widgets.test.ts`,
+`SWUBASE_POOL_EMBED_DB_TEST=1 bun --env-file=.env.worktree test server/routes/card-pools/embed.db.test.ts`,
+and `EDITOR_POOLS_TEST=1 bun frontend/tests/editor-pools.browser.ts`. The last
+command starts a temporary loopback Vite server and uses API fixtures without
+writing articles or pools.
 With an isolated worktree running, `bun run play:browser:editors` exercises
 simple profile persistence, command/paste restrictions, authorization, conflicts,
 clearing, formatting, visitor rendering, mobile layout, and the post sanitization

@@ -5,6 +5,7 @@ import { dailyPoolDiscussionRoute } from './card-pools/discussion.ts';
 import { dailyCardPoolGetRoute } from './card-pools/daily/get.ts';
 import { cardPoolsPostRoute } from './card-pools/post.ts';
 import { cardPoolsIdGetRoute } from './card-pools/_id/get.ts';
+import { cardPoolsIdEmbedGetRoute } from './card-pools/_id/embed/get.ts';
 import { cardPoolsIdPatchRoute } from './card-pools/_id/patch.ts';
 import { cardPoolsIdDeleteRoute } from './card-pools/_id/delete.ts';
 import { cardPoolsIdCardsGetRoute } from './card-pools/_id/cards/get.ts';
@@ -22,6 +23,7 @@ export const cardPoolsRoute = new Hono<AuthExtension>()
   .route('/', cardPoolsGetRoute)
   .route('/', cardPoolsPostRoute)
   .route('/:id', cardPoolsIdGetRoute)
+  .route('/:id/embed', cardPoolsIdEmbedGetRoute)
   .route('/:id', cardPoolsIdPatchRoute)
   .route('/:id', cardPoolsIdDeleteRoute)
   .route('/:id/cards', cardPoolsIdCardsGetRoute)

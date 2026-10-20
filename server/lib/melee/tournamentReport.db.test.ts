@@ -12,6 +12,8 @@ import { tournamentMatch } from '../../db/schema/tournament_match.ts';
 import { deck } from '../../db/schema/deck.ts';
 import { deckCard } from '../../db/schema/deck_card.ts';
 import { createTournamentReportService } from './tournamentReport.ts';
+import type { TournamentReportRound } from '../../../shared/types/TournamentReport.ts';
+import { MeleeConnectionError } from './profile.ts';
 
 const databaseTest = test.skipIf(process.env.SWUBASE_MELEE_DB_TEST !== '1');
 if (process.env.SWUBASE_MELEE_DB_TEST === '1') {
@@ -49,7 +51,14 @@ databaseTest(
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-    const service = createTournamentReportService(db);
+    const fetchCalls: [number, string][] = [];
+    let fallback: TournamentReportRound[] = [];
+    let failure = false;
+    const service = createTournamentReportService(db, async (meleeId, username) => {
+      fetchCalls.push([meleeId, username]);
+      if (failure) throw new MeleeConnectionError('Could not load your rounds from Melee.', 502);
+      return fallback;
+    });
     await expect(service.get(userId, eventId)).rejects.toMatchObject({ status: 409 });
     await db.insert(meleeConnection).values({
       userId,
@@ -58,6 +67,7 @@ databaseTest(
       displayName: 'Author',
     });
     await expect(service.get(userId, eventId)).rejects.toMatchObject({ status: 404 });
+    expect(fetchCalls).toHaveLength(0);
     const meleeId = randomInt(1_800_000_000, 2_000_000_000);
     await db.insert(tournament).values({
       id: eventId,
@@ -84,6 +94,32 @@ databaseTest(
       status: 4,
       refreshedAt: new Date(),
     });
+    // Limited events have history but neither imported decks nor stored matches.
+    fallback = [
+      {
+        round: 1,
+        opponentName: 'Limited opponent',
+        opponentDeck: null,
+        outcome: 'loss',
+        games: { wins: 1, losses: 2, draws: 0 },
+        record: { wins: 0, losses: 1, draws: 0 },
+      },
+    ];
+    const limited = await service.get(userId, eventId);
+    expect(fetchCalls).toEqual([[meleeId, 'report-test-account']]);
+    expect(limited.deck).toBeNull();
+    expect(limited.rounds).toEqual(fallback);
+    expect(limited.hasMetaDecks).toBe(false);
+    expect(
+      await db.select().from(tournamentMatch).where(eq(tournamentMatch.tournamentId, eventId)),
+    ).toEqual([]);
+    failure = true;
+    const unavailable = await service.get(userId, eventId);
+    expect(unavailable.rounds).toEqual([]);
+    expect(unavailable.tournament.name).toBe('Report fixture');
+    expect(unavailable.roundsWarning).toBe('Could not load your rounds from Melee.');
+    failure = false;
+    fallback = [];
     await db.insert(deck).values([
       {
         id: ownDeckId,
@@ -121,6 +157,12 @@ databaseTest(
       .values({ deckId: ownDeckId, cardId: 'battlefield-marine', board: 1, quantity: 3 });
     expect((await service.get(userId, eventId)).hasMetaDecks).toBe(false);
     await db.update(tournament).set({ imported: true }).where(eq(tournament.id, eventId));
+    failure = true;
+    const deckWithoutRounds = await service.get(userId, eventId);
+    expect(deckWithoutRounds.deck?.id).toBe(ownDeckId);
+    expect(deckWithoutRounds.hasMetaDecks).toBe(true);
+    expect(deckWithoutRounds.roundsWarning).toBeDefined();
+    failure = false;
     await db.insert(tournamentMatch).values([
       {
         tournamentId: eventId,
@@ -180,7 +222,10 @@ databaseTest(
         isBye: true,
       },
     ]);
+    const callsBeforeImported = fetchCalls.length;
+    failure = true; // Existing imported rounds do not depend on Melee availability.
     const result = await service.get(userId, eventId);
+    expect(fetchCalls).toHaveLength(callsBeforeImported);
     expect(result.hasMetaDecks).toBe(true);
     expect(result.deck).toMatchObject({
       id: ownDeckId,
@@ -234,5 +279,6 @@ databaseTest(
     expect(ambiguous.deck).toBeNull();
     expect(ambiguous.rounds).toEqual([]);
     expect(ambiguous.hasMetaDecks).toBe(true);
+    expect(ambiguous.roundsWarning).toBeDefined();
   },
 );
