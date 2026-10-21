@@ -9,7 +9,6 @@ import {
 } from './content.ts';
 import { postDocumentSchemas } from '../../shared/posts/content.ts';
 import { insertionSchema } from '../../shared/posts/widgets.ts';
-import { articleScopes } from './tools.ts';
 
 const paragraph = (id: string, text: string) => ({
   id,
@@ -126,15 +125,4 @@ test('authoring guide schemas are serializable; boundaries reject deep and unsaf
       blocks: [{ type: 'image', props: { url: 'javascript:alert(1)' } }],
     }),
   ).toThrow();
-});
-test('permission challenges request operation-specific additions', () => {
-  expect(articleScopes('publish_article')).toEqual(['articles:read', 'articles:publish']);
-  expect(articleScopes('prepare_article_template', { template: 'tournament-report' })).toContain(
-    'melee:read',
-  );
-  expect(
-    articleScopes('prepare_article_template', { template: 'tournament-report', blank: true }),
-  ).not.toContain('melee:read');
-  expect(articleScopes('prepare_article_template', { deckId: 'deck' })).toContain('decks:read');
-  expect(articleScopes('constructor')).toEqual([]);
 });

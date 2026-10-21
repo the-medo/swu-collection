@@ -259,6 +259,37 @@ opt-in local database integration test, which CI skips. The maintainer is select
 for sanitizer changes; re-enable its schedule after migrations and its deployment
 finish.
 
+## Tool results and errors
+
+Successful calls return the tool's data in `structuredContent` and the same data
+as JSON in text content. Result fields, links and usage counts are defined by
+each tool; the transport does not infer them from property names.
+
+Execution failures return `isError: true`, a readable text message, and
+`structuredContent` containing `code`, `status`, `message` and `retryable`.
+`status` describes the tool failure; it does not change a successful MCP
+transport response into an HTTP error.
+
+| Code | Status | Client action |
+| --- | --- | --- |
+| `invalid_request`, `validation_error` | 400 | Correct the input; validation errors include up to ten `issues` with paths/messages. |
+| `unauthenticated`, `forbidden` | 401, 403 | Reconnect or obtain access. |
+| `not_found` | 404 | Check the ID and access; private and nonexistent resources share this response. |
+| `conflict` | 409 | Reread and reconcile content/ownership revisions or request-ID reuse. |
+| `too_large` | 413 | Reduce input/output size or resolve the reported storage quota limit. |
+| `rate_limited` | 429 | Wait before retrying; admission denials include `retryAfterSeconds: 60`. |
+| `timeout`, `unavailable` | 408, 5xx | Retry later with backoff. |
+
+Only rate limits, timeouts and temporary service failures have `retryable: true`.
+For article mutations, retries must keep the same `requestId` and arguments;
+after reconciling a conflict, use a new ID. An unavailable response can follow a
+committed write if recording usage failed. Unexpected exceptions return a generic
+message and are not included in logs or responses.
+
+Authentication/scope challenges still use HTTP status and `WWW-Authenticate`.
+Malformed protocol requests and input rejected by the MCP SDK retain its error
+format; clients must also handle failures without our structured error fields.
+
 ## Usage and revocation
 
 `mcp_tool_usage` stores user ID, registered client ID, tool, start time, outcome,
@@ -306,6 +337,24 @@ connected-apps management UI in this first version. Logging out or ending the
 granting SWUBASE session also stops access. Revoking only a refresh token prevents
 future refresh; an already issued JWT can survive for its remaining five-minute
 lifetime while its session and consent remain live.
+
+## Adding or changing tools
+
+`mcp/tools/registry.ts` combines the card/deck definitions in
+`mcp/tools/catalog.ts` and the article definitions in `mcp/articles/tools.ts`.
+Each `defineTool` declaration supplies its name, strict input schema, scopes,
+annotations, typed execution handler and explicit result-count function. Declare
+argument-dependent permissions through `additionalScopes`; both OAuth challenges
+and execution checks use that function with validated input and defaults. Invalid
+arguments cannot execute a handler. Ownership and membership checks remain in
+the domain services.
+
+The registry derives `McpToolName`, registers tools with the SDK, and supplies
+request-size limits (350 KB by default; 14 MB for image uploads). Handler output
+types are retained through metering and result serialization; only the SDK
+boundary erases them to its generic structured-content type. Add any editor or
+public links in the relevant handler and update the compatibility/integration
+tests when intentionally changing the public contract.
 
 ## Local development and validation
 

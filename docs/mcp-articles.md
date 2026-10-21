@@ -56,6 +56,9 @@ the **same UUID and identical arguments**. Reusing it with different arguments
 returns a conflict. After a stale content/ownership conflict, reread, reconcile,
 and submit the new operation with a new UUID. Receipts are scoped to user and
 client and committed atomically with the database mutation.
+See [tool errors](mcp.md#tool-results-and-errors) for structured error codes and
+retry guidance. Conflicts require reconciliation; temporary failures allow
+retrying the same operation.
 Receipts retain only hashes and minimal result IDs/revisions until account
 deletion; there is no time-based expiry that could turn a delayed retry into a
 duplicate operation. Automatic receipt compaction is deferred.

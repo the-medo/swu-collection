@@ -23,8 +23,34 @@ import {
   MCP_RESOURCE_SCOPES,
   MCP_SCOPE,
 } from '../shared/mcp/config.ts';
-import { articleToolScopes } from './articles/tools.ts';
+import type { McpToolName } from './tools/registry.ts';
 import { readFile } from 'node:fs/promises';
+
+// Public tool names are a compatibility contract, independent of registration.
+const articleToolNames = [
+  'get_article_workspace',
+  'get_article_authoring_guide',
+  'list_articles',
+  'get_article',
+  'create_article',
+  'update_article',
+  'edit_article_blocks',
+  'list_article_revisions',
+  'compare_article_revisions',
+  'restore_article_revision',
+  'validate_article',
+  'publish_article',
+  'unpublish_article',
+  'preview_article_transfer',
+  'transfer_personal_articles',
+  'search_article_assets',
+  'list_article_templates',
+  'get_article_template_meta',
+  'prepare_article_template',
+  'list_article_tournaments',
+  'list_article_images',
+  'upload_article_image',
+] as const satisfies readonly McpToolName[];
 
 const enabled = process.env.SWUBASE_MCP_DB_TEST === '1';
 if (enabled) {
@@ -506,13 +532,7 @@ test.skipIf(!enabled)(
       try {
         await client.connect(transport);
         expect((await client.listTools()).tools.map(tool => tool.name).sort()).toEqual(
-          [
-            'search_cards',
-            'get_cards',
-            'list_my_decks',
-            'get_deck',
-            ...Object.keys(articleToolScopes),
-          ].sort(),
+          ['search_cards', 'get_cards', 'list_my_decks', 'get_deck', ...articleToolNames].sort(),
         );
         const result = await client.callTool({
           name: 'search_cards',
@@ -647,6 +667,11 @@ test.skipIf(!enabled)(
       });
       expect(denied.isError).toBe(true);
       expect(denied).toEqual(absent);
+      expect(absent.structuredContent).toMatchObject({
+        code: 'not_found',
+        status: 404,
+        retryable: false,
+      });
       for (const visibility of ['public', 'unlisted'] as const) {
         const allowed = await client.callTool({
           name: 'get_deck',
@@ -693,6 +718,11 @@ test.skipIf(!enabled)(
       expect(JSON.stringify(limited.structuredContent)).not.toContain('another-pool-private-card');
       const huge = await client.callTool({ name: 'get_deck', arguments: { deckId: deckIds.huge } });
       expect(huge.isError).toBe(true);
+      expect(huge.structuredContent).toMatchObject({
+        code: 'too_large',
+        status: 413,
+        retryable: false,
+      });
       expect(huge.content).toMatchObject([
         { text: 'This deck exceeds the supported content limit.' },
       ]);
@@ -994,10 +1024,22 @@ test.skipIf(!enabled)(
     const cards = await signed([]),
       writer = await signed(['articles:read', 'articles:write']),
       publisher = await signed(['articles:read', 'articles:publish']);
-    for (const name of Object.keys(articleToolScopes)) {
+    for (const name of articleToolNames) {
       const denied = await rawCall(cards, name);
       expect(denied.status).toBe(403);
       expect(denied.headers.get('WWW-Authenticate')).toContain('offline_access');
+    }
+    for (const [name, args, scopes] of [
+      [
+        'prepare_article_template',
+        { template: 'tournament-report', deckId: deckIds.own },
+        ['melee:read', 'decks:read'],
+      ],
+      ['search_article_assets', { kind: 'deck', includeMine: true }, ['decks:read']],
+    ] as const) {
+      const denied = await rawCall(writer, name, args);
+      expect(denied.status).toBe(403);
+      for (const scope of scopes) expect(denied.headers.get('WWW-Authenticate')).toContain(scope);
     }
     const client = new Client({ name: 'article-author', version: '1.0' });
     await client.connect(
@@ -1051,7 +1093,10 @@ test.skipIf(!enabled)(
         expect(
           (await publisherClient.callTool({ name: 'publish_article', arguments: publication }))
             .structuredContent,
-        ).toMatchObject({ published: true });
+        ).toMatchObject({
+          published: true,
+          publicUrl: new URL(issuer).origin + '/content/' + saved.id,
+        });
       } finally {
         await publisherClient.close();
       }
@@ -1062,7 +1107,32 @@ test.skipIf(!enabled)(
             arguments: { articleId: saved.id, view: 'published' },
           })
         ).structuredContent,
-      ).toMatchObject({ document: { title: 'Protocol article' } });
+      ).toMatchObject({
+        document: { title: 'Protocol article' },
+        editorUrl: expect.stringContaining(new URL(issuer).origin),
+        publicUrl: new URL(issuer).origin + '/content/' + saved.id,
+      });
+      const missing = await client.callTool({
+        name: 'get_article',
+        arguments: { articleId: crypto.randomUUID() },
+      });
+      expect(missing).toMatchObject({
+        isError: true,
+        structuredContent: { code: 'not_found', status: 404, retryable: false },
+      });
+      const conflict = await client.callTool({
+        name: 'update_article',
+        arguments: {
+          ...publication,
+          requestId: crypto.randomUUID(),
+          expectedRevision: saved.revision + 100,
+          fields: { title: 'Stale update' },
+        },
+      });
+      expect(conflict).toMatchObject({
+        isError: true,
+        structuredContent: { code: 'conflict', status: 409, retryable: false },
+      });
       expect(
         (
           await client.callTool({

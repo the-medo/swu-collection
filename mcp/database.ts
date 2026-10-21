@@ -1,7 +1,9 @@
+import type { McpToolName } from './tools/registry.ts';
+export type { McpToolName } from './tools/registry.ts';
 import { createArticleRepository } from './articles/repository.ts';
 import { createArticleAssets } from './articles/assets.ts';
 import { createArticleTemplates } from './articles/templates.ts';
-import type { ArticleServices, ArticleToolName } from './articles/tools.ts';
+import type { ArticleServices } from './articles/tools.ts';
 import { mcpMutation } from '../server/db/schema/mcp-mutation.ts';
 import postgres from 'postgres';
 import { and, arrayContains, count, eq, gt, isNull, or, sql } from 'drizzle-orm';
@@ -29,12 +31,6 @@ const identityClaims = z.object({
   scope: z.string().max(1000),
 });
 export type Identity = { userId: string; clientId: string; scopes: string[] };
-export type McpToolName =
-  | 'search_cards'
-  | 'get_cards'
-  | 'list_my_decks'
-  | 'get_deck'
-  | ArticleToolName;
 export interface McpRepository extends DeckRepository {
   articleServices?: ArticleServices;
   authorize(claims: unknown): Promise<Identity | 'invalid' | 'restricted'>;
