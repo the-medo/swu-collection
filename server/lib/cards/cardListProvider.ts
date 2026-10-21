@@ -1,6 +1,6 @@
 import { desc } from 'drizzle-orm';
 import { cardList } from '../../db/lists.ts';
-import { db } from '../../db';
+import type { db } from '../../db';
 import { previewCard } from '../../db/schema/preview_card.ts';
 import type { CardList } from '../../../lib/swu-resources/types.ts';
 import { normalizePreviewCardPayload } from './previewCardPayload.ts';
@@ -59,6 +59,8 @@ export async function getPreviewCardValidationErrors(): Promise<PreviewCardValid
   return cache.validationErrors;
 }
 
+export type CardCatalogReader = () => Promise<CardList>;
+
 export async function getMergedCardList(): Promise<CardList> {
   const previewCache = await getPreviewCardCache();
   const version = `${officialCardListVersion}:${previewCache.version}`;
@@ -73,6 +75,30 @@ export async function getMergedCardList(): Promise<CardList> {
   };
 
   return mergedCardListCache.cards;
+}
+
+/** Separate runtimes refresh previews without importing the main connection/cache. */
+export function createIndependentCardCatalog(
+  database: Pick<typeof db, 'select'>,
+  ttlMs = 30_000,
+  now = Date.now,
+): CardCatalogReader {
+  let cached: CardList | undefined;
+  let expiresAt = 0;
+  let pending: Promise<CardList> | undefined;
+  return async () => {
+    if (cached && now() < expiresAt) return cached;
+    pending ??= loadPreviewCardCache(database)
+      .then(previews => {
+        cached = mergeCardLists(cardList, previews.cards);
+        expiresAt = now() + ttlMs;
+        return cached;
+      })
+      .finally(() => {
+        pending = undefined;
+      });
+    return pending;
+  };
 }
 
 export function mergeCardLists(officialCards: CardList, previewCards: CardList): CardList {
@@ -151,8 +177,11 @@ async function getPreviewCardCache(): Promise<PreviewCardCache> {
   }
 }
 
-async function loadPreviewCardCache(): Promise<PreviewCardCache> {
-  const rows = await db.select().from(previewCard).orderBy(desc(previewCard.updatedAt));
+async function loadPreviewCardCache(
+  database?: Pick<typeof db, 'select'>,
+): Promise<PreviewCardCache> {
+  database ??= (await import('../../db/index.ts')).db;
+  const rows = await database.select().from(previewCard).orderBy(desc(previewCard.updatedAt));
 
   const cards: CardList = {};
   const validationErrors: PreviewCardValidationError[] = [];

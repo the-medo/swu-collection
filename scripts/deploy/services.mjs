@@ -50,6 +50,8 @@ export function servicesForPath(path) {
     ].includes(path)
   )
     return ['main', 'mcp'];
+  if (/^server\/lib\/(creators|cards|melee|moderation|user-files)\//.test(path))
+    return ['main', 'mcp'];
   if (path.startsWith('server/')) {
     // Worker imports Crossfire adapters, Discord delivery and Drizzle schemas.
     // Auth and catalog changes are conservative shared-dependency triggers too.

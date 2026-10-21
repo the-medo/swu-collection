@@ -83,7 +83,7 @@ test.skipIf(process.env.CREATOR_LIFECYCLE_DB_TEST !== '1')(
       exchange,
       clock: () => time,
     });
-    const creations = createCreationsService();
+    const creations = createCreationsService(db);
     async function addVideo(index: number, origin: 'public' | 'oauth' = 'public', age = 8) {
       const videoId = `life${String(index).padStart(7, '0')}`;
       const metadata: VideoMetadata = {

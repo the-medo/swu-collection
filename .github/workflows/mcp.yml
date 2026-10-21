@@ -6,7 +6,7 @@ on:
     paths: &mcp_paths
       - 'mcp/**'
       - 'Dockerfile.mcp*'
-      - 'shared/mcp/**'
+      - 'shared/**'
       - 'server/**'
       - 'lib/swu-resources/types.ts'
       - 'lib/swu-resources/set-info.ts'

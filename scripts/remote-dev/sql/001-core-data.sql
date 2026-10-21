@@ -135,6 +135,9 @@ $creator_hub$;
 -- The MCP migration adds these tables atomically; older backups have none.
 DO $mcp$
 BEGIN
+  IF to_regclass('public.mcp_mutation') IS NOT NULL THEN
+    TRUNCATE TABLE mcp_mutation;
+  END IF;
   IF to_regclass('public.jwks') IS NOT NULL THEN
     -- Session and its referencing OAuth tables must be truncated together.
     TRUNCATE TABLE account, session, verification, jwks, oauth_access_token,
@@ -500,6 +503,11 @@ DROP TABLE development_card_pools_to_delete;
 
 DO $$
 BEGIN
+  IF to_regclass('public.mcp_mutation') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM mcp_mutation) THEN
+      RAISE EXCEPTION 'MCP mutation receipts remain after sanitization.';
+    END IF;
+  END IF;
   IF to_regclass('public.jwks') IS NOT NULL THEN
     IF EXISTS (SELECT 1 FROM jwks)
       OR EXISTS (SELECT 1 FROM oauth_access_token)

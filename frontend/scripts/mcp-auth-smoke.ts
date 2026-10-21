@@ -162,6 +162,9 @@ try {
   await page.goto(reduced.location.href);
   await checkBrowserSignature();
   await expect(page.getByText('Read your saved decks', { exact: false })).toBeVisible();
+  await expect(page.getByText('Create and edit article drafts', { exact: false })).toBeVisible();
+  await expect(page.getByText('Publish article drafts', { exact: false })).toBeVisible();
+  await expect(page.getByText('Upload images to your account', { exact: false })).toBeVisible();
   const cardOnly = page.getByRole('button', { name: 'Allow card access only', exact: true });
   await expect(cardOnly).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -184,6 +187,7 @@ try {
   expect(reducedTokens.scope.split(' ')).toEqual([...MCP_DEFAULT_SCOPES]);
   expect(typeof reducedTokens.refresh_token).toBe('string');
   expect(reducedTokens.scope).not.toContain(MCP_DECK_SCOPE);
+  expect(reducedTokens.scope).not.toContain('articles:');
 
   callback = undefined;
   const approved = await authorization();

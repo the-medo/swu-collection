@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { authClient, useSession } from '@/lib/auth-client.ts';
 import { useMcpAuthorization } from '@/api/mcp/useMcpAuthorization.ts';
-import { MCP_DECK_SCOPE } from '../../../../../shared/mcp/config.ts';
+import { MCP_SCOPE_DESCRIPTIONS, MCP_DEFAULT_SCOPES } from '../../../../../shared/mcp/config.ts';
 
 export default function McpConsent() {
   const session = useSession();
@@ -19,7 +19,11 @@ export default function McpConsent() {
         accept,
         oauth_query: oauthQuery,
         ...(cardOnly
-          ? { scope: request.data.scopes.filter(scope => scope !== MCP_DECK_SCOPE).join(' ') }
+          ? {
+              scope: request.data.scopes
+                .filter(scope => (MCP_DEFAULT_SCOPES as readonly string[]).includes(scope))
+                .join(' '),
+            }
           : {}),
       });
       if (result.error || !result.data?.url)
@@ -54,13 +58,13 @@ export default function McpConsent() {
             Return access to: <strong>{request.data.redirectTarget}</strong>
           </p>
           <ul className="list-disc space-y-2 pl-5">
-            <li>Search the official Star Wars Unlimited card catalog.</li>
-            {request.data.scopes.includes(MCP_DECK_SCOPE) ? (
-              <li>
-                Read your saved decks, including private decks, and decks shared with you or
-                available by link.
-              </li>
-            ) : null}
+            {request.data.scopes
+              .filter(scope => scope in MCP_SCOPE_DESCRIPTIONS)
+              .map(scope => (
+                <li key={scope}>
+                  {MCP_SCOPE_DESCRIPTIONS[scope as keyof typeof MCP_SCOPE_DESCRIPTIONS]}
+                </li>
+              ))}
             {request.data.scopes.includes('offline_access') ? (
               <li>Stay connected until you revoke access or your SWUBASE session expires.</li>
             ) : null}
@@ -70,7 +74,9 @@ export default function McpConsent() {
             <Button disabled={pending} onClick={() => respond(true)}>
               {pending ? 'Continuing…' : 'Allow access'}
             </Button>
-            {request.data.scopes.includes(MCP_DECK_SCOPE) ? (
+            {request.data.scopes.some(
+              scope => !(MCP_DEFAULT_SCOPES as readonly string[]).includes(scope),
+            ) ? (
               <Button variant="outline" disabled={pending} onClick={() => respond(true, true)}>
                 Allow card access only
               </Button>

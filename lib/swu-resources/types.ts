@@ -110,3 +110,7 @@ export interface CardDataWithVariants<T = CardVariant[]> {
 
 export type CardListVariants = Record<string, CardVariant | undefined>;
 export type CardList = Record<string, CardDataWithVariants<CardListVariants> | undefined>;
+
+export type CardsBySetAndNumber = Partial<
+  Record<SwuSet, Record<number, { variant: CardVariant; cardId: string }> | undefined>
+>;

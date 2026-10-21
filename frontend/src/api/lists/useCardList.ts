@@ -4,7 +4,6 @@ import type {
   CardDataWithVariants,
   CardList,
   CardListVariants,
-  CardVariant,
 } from '../../../../lib/swu-resources/types.ts';
 import { SwuSet } from '../../../../types/enums.ts';
 import { setInfo } from '../../../../lib/swu-resources/set-info.ts';
@@ -19,9 +18,8 @@ import {
   setPreviewCardListVersion,
 } from '@/dexie/cardList.ts';
 
-export type CardsBySetAndNumber = Partial<
-  Record<SwuSet, Record<number, { variant: CardVariant; cardId: string }> | undefined>
->;
+export type { CardsBySetAndNumber } from '../../../../lib/swu-resources/types.ts';
+import type { CardsBySetAndNumber } from '../../../../lib/swu-resources/types.ts';
 export type CardsByCardType = Partial<
   Record<string, Record<string, CardDataWithVariants<CardListVariants> | undefined> | undefined>
 >;
@@ -82,7 +80,7 @@ export const useCardList = (): UseQueryResult<CardListResponse> => {
             await setPreviewCardListVersion(data.preview.lastUpdated);
           }
         }
-      } catch (error) {
+      } catch {
         // Fall through using whatever we loaded from IndexedDB above.
       }
 

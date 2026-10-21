@@ -1,6 +1,5 @@
 import { createHash } from 'node:crypto';
 import { and, eq, isNull, sql } from 'drizzle-orm';
-import { db } from '../../db/index.ts';
 import { user } from '../../db/schema/auth-schema.ts';
 import { creation, creatorProfile, creatorPublishingRequest } from '../../db/schema/creator_hub.ts';
 import type {
@@ -26,7 +25,7 @@ export async function lockPersonalOwner(tx: Transaction, userId: string) {
 export const personalArticles = (userId: string) =>
   and(eq(creation.ownerUserId, userId), isNull(creation.creatorId));
 
-export function createOwnershipService(database: Database = db) {
+export function createOwnershipService(database: Database, lockOwner = lockPersonalOwner) {
   async function transfer(
     viewerId: string,
     requestId: string,
@@ -35,7 +34,7 @@ export function createOwnershipService(database: Database = db) {
     const inputHash = createHash('sha256').update(JSON.stringify(target)).digest('hex');
     try {
       return await database.transaction(async tx => {
-        await lockPersonalOwner(tx, viewerId);
+        await lockOwner(tx, viewerId);
         const [receipt] = await tx
           .select()
           .from(creatorPublishingRequest)

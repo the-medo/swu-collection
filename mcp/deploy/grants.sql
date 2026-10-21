@@ -22,3 +22,25 @@ GRANT SELECT (team_id, user_id) ON team_member TO swubase_mcp;
 GRANT SELECT (id, user_id, started_at),
   INSERT (id, user_id, client_id, tool, started_at, outcome, result_count, duration_ms),
   UPDATE (outcome, result_count, duration_ms) ON mcp_tool_usage TO swubase_mcp;
+
+-- Article ownership, drafts, revisions and public indexes. Authentication and
+-- entitlement rows remain read-only; narrowly scoped functions supply row locks.
+GRANT SELECT (display_name, image) ON "user" TO swubase_mcp;
+GRANT EXECUTE ON FUNCTION public.mcp_lock_user(text), public.mcp_prepare_image_quota(text) TO swubase_mcp;
+GRANT SELECT, INSERT ON creation TO swubase_mcp;
+GRANT UPDATE (draft, revision, updated_at, manually_edited_fields, published,
+  published_revision, published_at, public_updated_at, published_manually_edited_fields,
+  creator_id, owner_user_id, ownership_revision) ON creation TO swubase_mcp;
+GRANT SELECT, INSERT, DELETE ON creation_revision, creation_tag, creation_reference TO swubase_mcp;
+GRANT SELECT ON creator_profile, creator_member TO swubase_mcp;
+GRANT UPDATE (updated_at) ON creator_profile TO swubase_mcp;
+GRANT SELECT, INSERT ON creator_publishing_request, mcp_mutation TO swubase_mcp;
+GRANT SELECT ON preview_card, meta, tournament, tournament_type, tournament_deck,
+  tournament_match, tournament_group, tournament_group_tournament, format TO swubase_mcp;
+GRANT SELECT (id, user_id, name, visibility, type, status, archived_at, updated_at)
+  ON card_pools TO swubase_mcp;
+GRANT SELECT (id, user_id, title, visibility, created_at) ON user_album TO swubase_mcp;
+GRANT SELECT ON user_file_storage, user_file TO swubase_mcp;
+GRANT INSERT ON user_file TO swubase_mcp;
+GRANT SELECT ON melee_connection, user_melee_tournaments, user_melee_tournament_sync TO swubase_mcp;
+GRANT INSERT, UPDATE, DELETE ON user_melee_tournaments, user_melee_tournament_sync TO swubase_mcp;

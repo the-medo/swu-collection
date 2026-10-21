@@ -1,3 +1,4 @@
+import type { CardCatalogReader } from '../cards/cardListProvider.ts';
 import { METADATA_RETENTION_MS } from './youtube-lifecycle-policy.ts';
 import { eq } from 'drizzle-orm';
 import { creation, creationReference, creationTag } from '../../db/schema/creator_hub.ts';
@@ -23,7 +24,11 @@ export async function removeCreatorPublication(tx: Tx, id: string) {
   await tx.delete(creationReference).where(eq(creationReference.creationId, id));
 }
 
-export async function writeCreatorPublication(tx: Tx, row: typeof creation.$inferSelect) {
+export async function writeCreatorPublication(
+  tx: Tx,
+  row: typeof creation.$inferSelect,
+  catalog?: CardCatalogReader,
+) {
   if (row.sourceVideoId && row.sourceStatus && row.sourceStatus !== 'active')
     throw new CreatorError('This YouTube video is unavailable or its stored metadata was removed.');
   if (
@@ -35,7 +40,10 @@ export async function writeCreatorPublication(tx: Tx, row: typeof creation.$infe
   assertCreationTextAllowed(document);
   if (document.medium === 'article' && isPostEmpty(document.body))
     throw new CreatorError('Write your article before publishing.');
-  if ((await resolveReferences(document.references, tx)).length !== document.references.length)
+  if (
+    (await resolveReferences(document.references, tx, catalog)).length !==
+    document.references.length
+  )
     throw new CreatorError(
       'A linked subject is unavailable. Decks must be public before they can be associated with a publication.',
     );

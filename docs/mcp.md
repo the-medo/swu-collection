@@ -1,7 +1,9 @@
 # SWUBASE MCP
 
 The separate Bun/Hono service lives in `mcp/` and exposes Streamable HTTP at
-**`https://mcp.swubase.com/mcp`**. It provides four read-only tools:
+**`https://mcp.swubase.com/mcp`**. It provides card/deck discovery and authenticated article authoring. The four
+card/deck tools remain read-only; see [article authoring](mcp-articles.md) for the
+22 article, template and image tools:
 
 | Tool            | Scope        | Behaviour                                                                                                                                                                                 |
 | --------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -78,13 +80,16 @@ PKCE S256. Clients discover the issuer and register dynamically. The provider
 limits dynamic registration to five requests per IP per minute in
 production. No automatic cleanup of abandoned client registrations is included;
 review their retention with an owner/admin connection.
-`cards:read`, `decks:read` and optional `offline_access` are available;
+`cards:read`, `decks:read`, `articles:read`, `articles:write`,
+`articles:publish`, `images:read`, `images:write`, `melee:read` and optional
+`offline_access` are available;
 client-credentials grants are disabled. Dynamic registration preserves the full
 supported capability set even when SDK clients submit only the initial card
 scopes; user consent still determines which scopes tokens may use. See
 [Better Auth registration scopes](https://better-auth.com/docs/plugins/oauth-provider#dynamic-client-registration-scopes). Dynamic client names are self-reported and shown with their client ID.
 The initial authentication challenge requests `cards:read` and `offline_access`;
-deck access is requested when a deck tool is first called. Both challenges include
+Additional permissions are requested when the corresponding tool is first called,
+while preserving existing approved scopes. Both challenges include
 `offline_access`, so discovery-driven
 clients receive a refresh token. Access tokens last five minutes. The MCP service also checks the live user,
 session, client, resource and consent on every request, so bans, expired/deleted
@@ -105,7 +110,7 @@ describe the underlying authorization and transport.
 ## First production rollout
 
 1. Pause the maintainer's scheduled sanitized export until its updated cleanup
-   is deployed. It must remove OAuth credentials, signing keys and usage from
+   is deployed. It must remove OAuth credentials, signing keys, usage and mutation receipts from
    new backups; guards also support backups taken before MCP existed. Keep
    further production pushes paused until the migration handoff completes.
 2. In the **existing main app**, add the runtime environment variable:
@@ -119,7 +124,10 @@ describe the underlying authorization and transport.
    stay on the main app; no new provider callback for the MCP hostname is needed.
 
 3. Deploy the main app after merging this branch. Migration `0089_mcp` adds the OAuth
-   tables and usage ledger without modifying existing account tables. Startup
+   tables and usage ledger without modifying existing account tables. Migrations
+   `0090_mcp_article_receipts` and `0091_mcp_content_locks` add retry receipts and
+   two restricted row-lock/quota functions. They do not rewrite existing articles
+   or upgrade Better Auth. Startup
    completes migrations before auth initialization and HTTP admission. Verify
    `Migration complete` and `Server running` in Coolify, then check
    `https://swubase.com/.well-known/oauth-authorization-server/api/auth` returns JSON
@@ -134,10 +142,12 @@ describe the underlying authorization and transport.
    \i mcp/deploy/grants.sql
    ```
 
-   The grant script reads only the columns needed for access checks and inserts/
-   updates usage. It cannot read session tokens, OAuth secrets, signing keys,
-   email addresses or collections. Deck and card-pool content is SELECT-only;
-   folder/team columns are restricted to those needed for access checks. No schema ownership or migration rights
+   The grant script permits article draft/publication writes, history, image rows,
+   Melee cache refreshes, retry receipts and metering, plus bounded resource reads. It cannot read session tokens, OAuth secrets, signing keys,
+   email addresses or collection contents. Album metadata is readable for article widgets. Deck and card-pool content is SELECT-only;
+   folder/team columns are restricted to those needed for access checks. The two
+   security-definer functions lock user/quota rows and initialize default quotas;
+   MCP has no permission to update auth records or storage allowances. No schema ownership or migration rights
    are required. Apply the script using a checkout containing this branch, or
    copy its SQL into your administrator session. `DBNAME` is a built-in psql
    variable for the connected database.
@@ -184,6 +194,11 @@ The image defaults to `0.0.0.0:3210`; setting the values explicitly makes the
 Coolify configuration visible. The service needs outbound HTTPS to the main
 app's JWKS endpoint and private PostgreSQL access. It needs no Better Auth secret,
 Google/GitHub credentials, frontend build variables or public host-port mapping.
+For image uploads, also supply the existing image-storage runtime variables
+`R2_ENDPOINT`, `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY`, with access to the
+`swu-images/user-files/` objects. Image browsing and article editing work without
+these credentials; uploads report storage unavailable. The image pipeline uses
+the same public `images.swubase.com` URLs and quotas as the main app.
 Native MCP clients do not need `MCP_ALLOWED_ORIGINS`. For a browser-based client,
 add its exact HTTPS origin to that comma-separated variable. Wildcards are refused.
 
@@ -231,7 +246,8 @@ Coolify Auto Deploy if GitHub Actions owns deployments, as described in
 
 `mcp/` and `Dockerfile.mcp*` select only MCP. Root dependencies, shared contracts,
 auth, database schema and catalog changes also select MCP, as do the shared
-deck-access and card-pool conversion helpers copied into the MCP image. The workflow offers a
+deck-access, card-pool conversion, creator, catalog, Melee, moderation and image
+services copied into the MCP image. The workflow offers a
 manual `mcp` selection. Migration pushes hold **both MCP and Crossfire** until the
 main app's migrations are verified. Crossfire uses the existing protected
 approval job; MCP is omitted from the automatic deployment matrix and requires
@@ -304,7 +320,7 @@ development Vite configuration includes this route. Start the existing app with
 ```bash
 bun --env-file=.env --env-file=.env.worktree run mcp:start
 bun run mcp:check
-SWUBASE_MCP_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test mcp/oauth.db.test.ts
+SWUBASE_MCP_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test mcp/oauth.db.test.ts mcp/articles/repository.db.test.ts
 SWUBASE_MCP_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test mcp/sanitization.db.test.ts
 SWUBASE_MCP_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/scripts/mcp-auth-smoke.ts
 node --test scripts/deploy/*.test.mjs

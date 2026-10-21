@@ -1,3 +1,8 @@
+import { createArticleRepository } from './articles/repository.ts';
+import { createArticleAssets } from './articles/assets.ts';
+import { createArticleTemplates } from './articles/templates.ts';
+import type { ArticleServices, ArticleToolName } from './articles/tools.ts';
+import { mcpMutation } from '../server/db/schema/mcp-mutation.ts';
 import postgres from 'postgres';
 import { and, arrayContains, count, eq, gt, isNull, or, sql } from 'drizzle-orm';
 import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
@@ -24,8 +29,14 @@ const identityClaims = z.object({
   scope: z.string().max(1000),
 });
 export type Identity = { userId: string; clientId: string; scopes: string[] };
-export type McpToolName = 'search_cards' | 'get_cards' | 'list_my_decks' | 'get_deck';
+export type McpToolName =
+  | 'search_cards'
+  | 'get_cards'
+  | 'list_my_decks'
+  | 'get_deck'
+  | ArticleToolName;
 export interface McpRepository extends DeckRepository {
+  articleServices?: ArticleServices;
   authorize(claims: unknown): Promise<Identity | 'invalid' | 'restricted'>;
   admit(identity: Pick<Identity, 'userId' | 'clientId'>, tool: McpToolName): Promise<string | null>;
   finish(
@@ -42,7 +53,13 @@ export function createMcpRepository(
   resource: string,
   callsPerMinute: number,
 ): McpRepository {
+  const assets = createArticleAssets(database);
   return {
+    articleServices: {
+      articles: createArticleRepository(database),
+      assets,
+      templates: createArticleTemplates(database, assets),
+    },
     ...createDeckRepository(database),
     async authorize(claims) {
       const parsed = identityClaims.safeParse(claims);
@@ -140,6 +157,7 @@ export function createMcpRepository(
         .where(eq(mcpToolUsage.id, id));
     },
     async health() {
+      await database.select({ requestId: mcpMutation.requestId }).from(mcpMutation).limit(1);
       await database.select({ id: mcpToolUsage.id }).from(mcpToolUsage).limit(1);
     },
   };

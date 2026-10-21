@@ -10,7 +10,7 @@ const server = Bun.serve({
   hostname: config.host,
   port: config.port,
   fetch: app.fetch,
-  maxRequestBodySize: 16_384,
+  maxRequestBodySize: 14_000_000,
 });
 console.log(`SWUBASE MCP listening on port ${server.port}`);
 const stop = async () => {

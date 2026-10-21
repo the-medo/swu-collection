@@ -1,3 +1,9 @@
+import { z } from 'zod';
+import { CreatorError } from '../server/lib/creators/errors.ts';
+import { MeleeConnectionError } from '../server/lib/melee/profile.ts';
+import { UserFileError } from '../server/lib/user-files/errors.ts';
+import { ProfanityError } from '../server/lib/moderation/content.ts';
+import { articleScopes, registerArticleTools } from './articles/tools.ts';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { bodyLimit } from 'hono/body-limit';
@@ -5,7 +11,6 @@ import { createMcpProtectedRequestHandler } from '@better-auth/mcp';
 import { createInsufficientScopeError } from 'better-auth/oauth2';
 import { createMcpHandler, McpServer } from '@modelcontextprotocol/server';
 import {
-  MCP_AUTH_SCOPES,
   MCP_DECK_SCOPE,
   MCP_DEFAULT_SCOPES,
   MCP_RESOURCE_SCOPES,
@@ -56,7 +61,7 @@ export function createMcpApp(
       maxAge: 600,
     }),
   );
-  app.use('/mcp', bodyLimit({ maxSize: 16_384 }));
+  app.use('/mcp', bodyLimit({ maxSize: 14_000_000 }));
   app.get('/health', async c => {
     await repository.health();
     return c.json({ status: 'ok' });
@@ -81,7 +86,7 @@ export function createMcpApp(
       );
       const identity = { userId, clientId: authInfo.clientId };
       const websiteOrigin = new URL(config.issuer).origin;
-      const server = new McpServer({ name: 'swubase', version: '0.2.0' });
+      const server = new McpServer({ name: 'swubase', version: '0.3.0' });
 
       async function runTool(
         tool: McpToolName,
@@ -89,6 +94,10 @@ export function createMcpApp(
           | { data: Record<string, unknown>; count: number }
           | Promise<{ data: Record<string, unknown>; count: number }>,
       ) {
+        if (articleScopes(tool).some(scope => !grantedScopes.has(scope)))
+          return toolError(
+            'Reconnect to SWUBASE and approve the permissions required by this tool.',
+          );
         if (deckTools.has(tool) && !grantedScopes.has(MCP_DECK_SCOPE))
           return toolError('Reconnect to SWUBASE and approve decks:read access.');
         const started = performance.now();
@@ -100,6 +109,17 @@ export function createMcpApp(
           let count = 0;
           try {
             const result = await action();
+            if (typeof result.data.editorPath === 'string')
+              result.data.editorUrl = websiteOrigin + result.data.editorPath;
+            if (
+              (result.data.published === true || result.data.publishedAt) &&
+              typeof result.data.id === 'string'
+            )
+              result.data.publicUrl = websiteOrigin + '/content/' + result.data.id;
+            if (Buffer.byteLength(JSON.stringify(result.data)) > 700_000)
+              throw new ToolFailure(
+                'Result is too large. Use smaller pages, selected template sections, or outline format.',
+              );
             count = result.count;
             outcome = 'success';
             return {
@@ -112,6 +132,37 @@ export function createMcpApp(
           }
         } catch (error) {
           if (error instanceof ToolFailure) return toolError(error.message);
+          if (
+            error instanceof CreatorError ||
+            error instanceof MeleeConnectionError ||
+            error instanceof UserFileError ||
+            error instanceof ProfanityError
+          )
+            return {
+              ...toolError(error.message),
+              structuredContent: {
+                code:
+                  error.status === 409
+                    ? 'conflict'
+                    : error.status === 403
+                      ? 'forbidden'
+                      : 'invalid_request',
+                status: error.status,
+                message: error.message,
+              },
+            };
+          if (error instanceof z.ZodError) {
+            const issues = error.issues
+              .slice(0, 10)
+              .map(issue => ({ path: issue.path.join('.'), message: issue.message }));
+            return {
+              ...toolError(
+                'Invalid article input: ' +
+                  issues.map(issue => `${issue.path}: ${issue.message}`).join('; '),
+              ),
+              structuredContent: { code: 'validation_error', issues },
+            };
+          }
           console.error('[mcp] Tool execution failed.');
           return toolError('The tool is temporarily unavailable. Please retry later.');
         }
@@ -182,6 +233,13 @@ export function createMcpApp(
             return { data: deckDetails(result, websiteOrigin), count: 1 };
           }),
       );
+      if (repository.articleServices)
+        registerArticleTools(
+          server,
+          repository.articleServices,
+          { ...identity, scopes: [...grantedScopes] },
+          runTool,
+        );
       return server;
     },
     { legacy: 'stateless', onerror: () => console.error('[mcp] Protocol request failed.') },
@@ -214,13 +272,24 @@ export function createMcpApp(
             },
           },
         );
-      if (request.method === 'POST' && !identity.scopes.includes(MCP_DECK_SCOPE)) {
-        const message = await request
-          .clone()
-          .json()
-          .catch(() => null);
-        if (message?.method === 'tools/call' && deckTools.has(message?.params?.name))
-          throw createInsufficientScopeError([...MCP_AUTH_SCOPES]);
+      if (request.method === 'POST') {
+        const raw = await request.clone().text();
+        let message;
+        try {
+          message = JSON.parse(raw);
+        } catch {
+          message = null;
+        }
+        const name = message?.method === 'tools/call' ? message?.params?.name : undefined;
+        if (Buffer.byteLength(raw) > (name === 'upload_article_image' ? 14_000_000 : 350_000))
+          return Response.json({ message: 'Tool input is too large.' }, { status: 413 });
+        const required = deckTools.has(name)
+          ? [MCP_DECK_SCOPE]
+          : articleScopes(name, message?.params?.arguments);
+        if (required.some(scope => !identity.scopes.includes(scope)))
+          throw createInsufficientScopeError([
+            ...new Set([...MCP_DEFAULT_SCOPES, ...identity.scopes, ...required]),
+          ]);
       }
       return handler.fetch(request, {
         authInfo: {

@@ -23,6 +23,7 @@ import {
   MCP_RESOURCE_SCOPES,
   MCP_SCOPE,
 } from '../shared/mcp/config.ts';
+import { articleToolScopes } from './articles/tools.ts';
 import { readFile } from 'node:fs/promises';
 
 const enabled = process.env.SWUBASE_MCP_DB_TEST === '1';
@@ -457,7 +458,7 @@ test.skipIf(!enabled)(
     expect(stepUp.status).toBe(403);
     expect(stepUp.headers.get('WWW-Authenticate')).toContain('insufficient_scope');
     requestedScopes = stepUp.headers.get('WWW-Authenticate')!.match(/\bscope="([^"]+)"/)![1]!;
-    expect(requestedScopes.split(' ')).toEqual([...MCP_AUTH_SCOPES]);
+    expect(requestedScopes.split(' ')).toEqual([...MCP_DEFAULT_SCOPES, MCP_DECK_SCOPE]);
     const upgraded = await authorizationQuery(true);
     expect(upgraded.location.pathname).toBe('/mcp/consent');
     const approved = await authRequest('/oauth2/consent', {
@@ -504,12 +505,15 @@ test.skipIf(!enabled)(
       });
       try {
         await client.connect(transport);
-        expect((await client.listTools()).tools.map(tool => tool.name)).toEqual([
-          'search_cards',
-          'get_cards',
-          'list_my_decks',
-          'get_deck',
-        ]);
+        expect((await client.listTools()).tools.map(tool => tool.name).sort()).toEqual(
+          [
+            'search_cards',
+            'get_cards',
+            'list_my_decks',
+            'get_deck',
+            ...Object.keys(articleToolScopes),
+          ].sort(),
+        );
         const result = await client.callTool({
           name: 'search_cards',
           arguments: { query: 'luke', limit: 2 },
@@ -944,6 +948,147 @@ test.skipIf(!enabled)(
         await sql`drop owned by ${sql(role)}`;
         await sql`drop role ${sql(role)}`;
       }
+    }
+  },
+);
+
+test.skipIf(!enabled)(
+  'article protocol separates draft/publication consent and honors live revocation',
+  async () => {
+    await sql`update oauth_consent set scopes = ${sql.array([...MCP_AUTH_SCOPES])} where user_id = ${userId} and client_id = ${clientId}`;
+    await sql`delete from mcp_tool_usage where user_id = ${userId}`;
+    const signed = async (scopes: string[]) => {
+      const now = Math.floor(Date.now() / 1000);
+      return (
+        await signingAuth.api.signJWT({
+          body: {
+            payload: {
+              sub: userId,
+              sid: sessionId,
+              azp: clientId,
+              scope: [MCP_SCOPE, ...scopes].join(' '),
+              iss: issuer,
+              aud: resource,
+              iat: now,
+              exp: now + 300,
+            },
+          },
+        })
+      ).token;
+    };
+    const rawCall = (accessToken: string, name: string, args: Record<string, unknown> = {}) =>
+      fetch(resource, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json, text/event-stream',
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'tools/call',
+          params: { name, arguments: args },
+        }),
+      });
+    const cards = await signed([]),
+      writer = await signed(['articles:read', 'articles:write']),
+      publisher = await signed(['articles:read', 'articles:publish']);
+    for (const name of Object.keys(articleToolScopes)) {
+      const denied = await rawCall(cards, name);
+      expect(denied.status).toBe(403);
+      expect(denied.headers.get('WWW-Authenticate')).toContain('offline_access');
+    }
+    const client = new Client({ name: 'article-author', version: '1.0' });
+    await client.connect(
+      new StreamableHTTPClientTransport(new URL(resource), {
+        requestInit: { headers: { Authorization: `Bearer ${writer}` } },
+      }),
+    );
+    try {
+      const guide = await client.callTool({ name: 'get_article_authoring_guide', arguments: {} });
+      expect(guide.isError).not.toBe(true);
+      expect(guide.structuredContent).toHaveProperty('widgetSchema');
+      const prepared = await client.callTool({
+        name: 'prepare_article_template',
+        arguments: { template: 'deck-guide', blank: true },
+      });
+      expect(prepared.isError).not.toBe(true);
+      const input = {
+        requestId: crypto.randomUUID(),
+        fields: {
+          title: 'Protocol article',
+          body: (prepared.structuredContent as Record<string, unknown>).body,
+        },
+      };
+      const created = await client.callTool({ name: 'create_article', arguments: input });
+      expect(created.isError).not.toBe(true);
+      expect(
+        (await client.callTool({ name: 'create_article', arguments: input })).structuredContent,
+      ).toEqual(created.structuredContent);
+      const saved = created.structuredContent as {
+        id: string;
+        revision: number;
+        ownershipRevision: number;
+      };
+      const publication = {
+        articleId: saved.id,
+        expectedRevision: saved.revision,
+        expectedOwnershipRevision: saved.ownershipRevision,
+        requestId: crypto.randomUUID(),
+      };
+      const deniedPublish = await rawCall(writer, 'publish_article', publication);
+      expect(deniedPublish.status).toBe(403);
+      expect(deniedPublish.headers.get('WWW-Authenticate')).toContain('articles:publish');
+      expect(deniedPublish.headers.get('WWW-Authenticate')).not.toContain('images:write');
+      const publisherClient = new Client({ name: 'article-publisher', version: '1.0' });
+      await publisherClient.connect(
+        new StreamableHTTPClientTransport(new URL(resource), {
+          requestInit: { headers: { Authorization: `Bearer ${publisher}` } },
+        }),
+      );
+      try {
+        expect(
+          (await publisherClient.callTool({ name: 'publish_article', arguments: publication }))
+            .structuredContent,
+        ).toMatchObject({ published: true });
+      } finally {
+        await publisherClient.close();
+      }
+      expect(
+        (
+          await client.callTool({
+            name: 'get_article',
+            arguments: { articleId: saved.id, view: 'published' },
+          })
+        ).structuredContent,
+      ).toMatchObject({ document: { title: 'Protocol article' } });
+      expect(
+        (
+          await client.callTool({
+            name: 'create_article',
+            arguments: { ...input, requestId: crypto.randomUUID(), userId: foreignUserId },
+          })
+        ).isError,
+      ).toBe(true);
+      await sql`update oauth_consent set scopes = array['cards:read', 'articles:read'] where user_id = ${userId} and client_id = ${clientId}`;
+      expect(
+        (
+          await rawCall(writer, 'create_article', {
+            requestId: crypto.randomUUID(),
+            fields: { title: 'Revoked' },
+          })
+        ).status,
+      ).toBe(403);
+      expect((await rawCall(writer, 'get_article', { articleId: saved.id })).status).toBe(200);
+      const [usage] =
+        await sql`select string_agg(tool, ',') as tools from mcp_tool_usage where user_id = ${userId}`;
+      expect(usage!.tools).toContain('create_article');
+      const [receipt] =
+        await sql`select result::text from mcp_mutation where user_id = ${userId} and request_id = ${input.requestId}`;
+      expect(receipt!.result).not.toContain('Protocol article');
+    } finally {
+      await client.close();
     }
   },
 );

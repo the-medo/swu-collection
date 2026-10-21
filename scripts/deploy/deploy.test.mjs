@@ -22,6 +22,10 @@ test('service boundaries follow independently deployed build/runtime inputs', ()
     [['mcp/cards.test.ts', 'docs/mcp.md'], []],
     [['server/lib/decks/transformCardPoolDeckCards.ts'], ['main', 'mcp']],
     [['server/lib/decks/deckFolderAccess.ts'], ['main', 'mcp']],
+    ...['creators', 'cards', 'melee', 'moderation', 'user-files'].map(area => [
+      [`server/lib/${area}/service.ts`],
+      ['main', 'mcp'],
+    ]),
     [['lib/swu-resources/set-info.ts'], ['main', 'crossfire', 'mcp']],
     [
       ['server/db/json/card-list.json', 'server/auth/auth.ts'],

@@ -30,6 +30,7 @@ test.skipIf(!enabled)(
         await transaction`insert into oauth_access_token (id, token, client_id, refresh_id, session_id, user_id, expires_at, created_at, scopes) values (${id}, ${id}, ${id}, ${id}, ${id}, 'swubase', now() + interval '1 hour', now(), array['cards:read'])`;
         await transaction`insert into oauth_client_assertion (id, expires_at) values (${id}, now() + interval '1 hour')`;
         await transaction`insert into mcp_tool_usage (user_id, client_id, tool) values ('swubase', ${id}, 'search_cards')`;
+        await transaction`insert into mcp_mutation (user_id, client_id, request_id, tool, input_hash, result) values ('swubase', ${id}, ${crypto.randomUUID()}, 'create_article', 'fixture-hash', '{}'::jsonb)`;
         for (const file of [
           '000-crossfire.sql',
           '001-core-data.sql',
@@ -53,6 +54,7 @@ test.skipIf(!enabled)(
           'oauth_access_token',
           'oauth_client_assertion',
           'mcp_tool_usage',
+          'mcp_mutation',
         ];
         for (const table of privateTables) {
           const [row] =
@@ -79,7 +81,7 @@ test.skipIf(!enabled)(
       await sql.begin(async transaction => {
         // Simulate an older backup without touching the persistent schema/data.
         await transaction.unsafe(
-          'DROP TABLE oauth_access_token, oauth_refresh_token, oauth_consent, oauth_client_resource, oauth_client, oauth_resource, oauth_client_assertion, mcp_tool_usage, jwks',
+          'DROP TABLE oauth_access_token, oauth_refresh_token, oauth_consent, oauth_client_resource, oauth_client, oauth_resource, oauth_client_assertion, mcp_tool_usage, mcp_mutation, jwks',
         );
         for (const file of [
           '000-crossfire.sql',
