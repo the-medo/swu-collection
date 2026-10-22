@@ -1,9 +1,10 @@
 # SWUBASE MCP
 
 The separate Bun/Hono service lives in `mcp/` and exposes Streamable HTTP at
-**`https://mcp.swubase.com/mcp`**. It provides card/deck discovery, collection ownership checks, and authenticated article authoring. The four
-card/deck tools remain read-only; see [article authoring](mcp-articles.md) for the
-22 article, template and image tools:
+**`https://mcp.swubase.com/mcp`**. Its 34 tools provide card/deck discovery,
+collection ownership checks, deck editing, and authenticated article authoring.
+The four original discovery tools are read-only; see
+[article authoring](mcp-articles.md) for the 22 article, template and image tools:
 
 | Tool            | Scope        | Behaviour                                                                                                                                                                                 |
 | --------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -58,6 +59,57 @@ then deploy MCP. Existing clients registered before a scope was introduced may
 need to reconnect with a new client registration to request it. The default
 card-only grant is unchanged. No database migration is required for these reads.
 
+## Deck creation and editing
+
+Four tools require both `decks:read` and `decks:write` in the token and live consent:
+
+- `create_deck`: create an owned normal deck with metadata and up to 500 card/board
+  rows, private by default. Empty and unfinished decks are allowed.
+- `duplicate_deck`: copy an accessible normal deck into the current user's
+  account, private by default. Supply a new name and the source's revision.
+  All three boards and saved IDs are preserved, including archived cards;
+  private card notes, folder membership and import links are omitted.
+- `update_deck`: patch an owned deck's name, description, format, leaders/base
+  or visibility. Omitted fields are preserved; null clears a leader/base.
+- `update_deck_cards`: atomically set absolute quantities for up to 100 unique
+  card/board pairs. Zero removes a card, omitted pairs remain unchanged, and
+  existing notes survive quantity changes. Supply both source and destination
+  quantities together to move cards between boards.
+
+`export_deck` needs only `decks:read` and accepts `native`, `json` or `text`.
+Native export preserves logical card IDs, metadata and all three boards; pass
+its metadata/cards to `create_deck` with a new request ID (omit the export's
+`version`). JSON/text use the app's export conventions and omit maybeboard.
+Exports report missing/preview IDs and omit private notes and folder/import
+metadata. JSON includes only the author's public display name.
+
+Read `get_deck` before editing or duplicating and pass its opaque `revision` as
+`expectedRevision`. A conflict returns 409 without partial changes: read again,
+reconcile, and submit a new UUID `requestId`. Every write requires a UUID
+`requestId`; retries must reuse the same ID and identical input. Durable receipts
+are isolated by user and client, and replay checks current ownership. A replay
+returns the original result/revision even if the deck has since changed; read
+again before making another edit. Receipts store IDs, revisions and change
+summaries, without deck names, descriptions or notes.
+
+Only owned normal decks can be edited, even when another user's deck is public
+or shared. Limited/card-pool decks are excluded from these five tools. New cards
+and leader/base selections use the merged official and active-preview catalog;
+unknown saved IDs can be duplicated, exported or removed. Creates allow formats
+1, 2, 5, 6, 7 and 8; a second leader requires Twin Suns (2). Quantities range from
+0 to 1,000. These tools validate card types and bounds, not deck legality.
+
+Creation and metadata edits maintain aspect/base metadata without resetting
+favorites, comments or score. Changed decks bump `updatedAt` for list ordering
+and price freshness. A legacy deck missing its metadata row must first be saved
+in the main app, which coordinates counter repair. Open browser tabs may need a refresh to see agent edits;
+MCP does not push frontend cache updates or generate thumbnail images.
+
+Deploy the main app with `decks:write` consent support, reapply
+`mcp/deploy/grants.sql`, then deploy MCP. The grants include the existing deck
+insertion trigger's empty discussion/binding writes. These deck tools reuse the
+existing mutation-receipt table and require no new migration or package upgrade.
+
 ## Tool inputs and examples
 
 Search requires a name/ID `query` or at least one filter. All filter groups combine
@@ -106,8 +158,8 @@ bases that the app's merged preview catalog would hide. Agents must not treat
 unclassified rows as confirmed units. Reads fail explicitly above 500
 normal card rows or 1,000 physical pool cards rather than silently truncating.
 Descriptions are capped at 4,000 characters with `descriptionTruncated`; card
-notes, user identifiers and folder metadata are not returned. Collection tools
-are described below. Deck mutations and server-computed legality analysis are not
+notes, user identifiers and folder metadata are not returned. Collection and
+deck-write tools are described above. Server-computed legality analysis is not
 included in this version.
 
 Login stays on the main application. The Better Auth MCP/OAuth provider uses
@@ -116,7 +168,7 @@ PKCE S256. Clients discover the issuer and register dynamically. The provider
 limits dynamic registration to five requests per IP per minute in
 production. No automatic cleanup of abandoned client registrations is included;
 review their retention with an owner/admin connection.
-`cards:read`, `decks:read`, `collections:read`, `articles:read`, `articles:write`,
+`cards:read`, `decks:read`, `decks:write`, `collections:read`, `articles:read`, `articles:write`,
 `articles:publish`, `images:read`, `images:write`, `melee:read` and optional
 `offline_access` are available;
 client-credentials grants are disabled. Dynamic registration preserves the full
@@ -179,8 +231,11 @@ describe the underlying authorization and transport.
    ```
 
    The grant script permits article draft/publication writes, history, image rows,
-   Melee cache refreshes, retry receipts and metering, plus bounded resource reads. It cannot read session tokens, OAuth secrets, signing keys,
-   email addresses or collection contents. Album metadata is readable for article widgets. Deck and card-pool content is SELECT-only;
+   Melee cache refreshes, retry receipts and metering, plus collection ownership reads
+   and normal deck writes. It cannot read session tokens, OAuth secrets, signing keys,
+   email addresses, card notes or collection prices. Album metadata is readable for
+   article widgets. Card-pool content is SELECT-only. Deck writes cannot change
+   ownership, delete decks or update favorites/comment counters;
    folder/team columns are restricted to those needed for access checks. The two
    security-definer functions lock user/quota rows and initialize default quotas;
    MCP has no permission to update auth records or storage allowances. No schema ownership or migration rights
@@ -282,7 +337,7 @@ Coolify Auto Deploy if GitHub Actions owns deployments, as described in
 
 `mcp/` and `Dockerfile.mcp*` select only MCP. Root dependencies, shared contracts,
 auth, database schema and catalog changes also select MCP, as do the shared
-deck-access, card-pool conversion, creator, catalog, Melee, moderation and image
+deck-access, metadata/export, card-pool conversion, creator, catalog, Melee, moderation and image
 services copied into the MCP image. The workflow offers a
 manual `mcp` selection. Migration pushes hold **both MCP and Crossfire** until the
 main app's migrations are verified. Crossfire uses the existing protected
@@ -290,8 +345,9 @@ approval job; MCP is omitted from the automatic deployment matrix and requires
 a manual run for service `mcp` after verification. Re-running the push retains
 the MCP hold. A separate `Check MCP` workflow runs the
 focused typecheck and unit tests without database or production credentials.
-OAuth, reconnect challenges, revocation, all four tools, deck privacy, folder-sharing access and database grants are covered by the
-opt-in local database integration test, which CI skips. The maintainer is selected
+OAuth, reconnect challenges, revocation, collection/deck privacy, write retries
+and conflicts, folder-sharing access and database grants are covered by the
+opt-in local database integration tests, which CI skips. The maintainer is selected
 for sanitizer changes; re-enable its schedule after migrations and its deployment
 finish.
 
@@ -306,15 +362,15 @@ Execution failures return `isError: true`, a readable text message, and
 `status` describes the tool failure; it does not change a successful MCP
 transport response into an HTTP error.
 
-| Code | Status | Client action |
-| --- | --- | --- |
-| `invalid_request`, `validation_error` | 400 | Correct the input; validation errors include up to ten `issues` with paths/messages. |
-| `unauthenticated`, `forbidden` | 401, 403 | Reconnect or obtain access. |
-| `not_found` | 404 | Check the ID and access; private and nonexistent resources share this response. |
-| `conflict` | 409 | Reread and reconcile content/ownership revisions or request-ID reuse. |
-| `too_large` | 413 | Reduce input/output size or resolve the reported storage quota limit. |
-| `rate_limited` | 429 | Wait before retrying; admission denials include `retryAfterSeconds: 60`. |
-| `timeout`, `unavailable` | 408, 5xx | Retry later with backoff. |
+| Code                                  | Status   | Client action                                                                        |
+| ------------------------------------- | -------- | ------------------------------------------------------------------------------------ |
+| `invalid_request`, `validation_error` | 400      | Correct the input; validation errors include up to ten `issues` with paths/messages. |
+| `unauthenticated`, `forbidden`        | 401, 403 | Reconnect or obtain access.                                                          |
+| `not_found`                           | 404      | Check the ID and access; private and nonexistent resources share this response.      |
+| `conflict`                            | 409      | Reread and reconcile content/ownership revisions or request-ID reuse.                |
+| `too_large`                           | 413      | Reduce input/output size or resolve the reported storage quota limit.                |
+| `rate_limited`                        | 429      | Wait before retrying; admission denials include `retryAfterSeconds: 60`.             |
+| `timeout`, `unavailable`              | 408, 5xx | Retry later with backoff.                                                            |
 
 Only rate limits, timeouts and temporary service failures have `retryable: true`.
 For article mutations, retries must keep the same `requestId` and arguments;
@@ -378,7 +434,8 @@ lifetime while its session and consent remain live.
 
 `mcp/tools/registry.ts` combines the card/deck definitions in
 `mcp/tools/catalog.ts`, collection definitions in `mcp/tools/collections.ts`,
-and article definitions in `mcp/articles/tools.ts`.
+deck authoring/export definitions in `mcp/tools/deck-writing.ts`, and article
+definitions in `mcp/articles/tools.ts`.
 Each `defineTool` declaration supplies its name, strict input schema, scopes,
 annotations, typed execution handler and explicit result-count function. Declare
 argument-dependent permissions through `additionalScopes`; both OAuth challenges

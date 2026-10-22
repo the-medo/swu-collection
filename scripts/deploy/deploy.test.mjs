@@ -22,6 +22,8 @@ test('service boundaries follow independently deployed build/runtime inputs', ()
     [['mcp/cards.test.ts', 'docs/mcp.md'], []],
     [['server/lib/decks/transformCardPoolDeckCards.ts'], ['main', 'mcp']],
     [['server/lib/decks/deckFolderAccess.ts'], ['main', 'mcp']],
+    [['server/lib/decks/metadata.ts'], ['main', 'mcp']],
+    [['server/lib/decks/deckExport.ts'], ['main', 'mcp']],
     ...['creators', 'cards', 'melee', 'moderation', 'user-files'].map(area => [
       [`server/lib/${area}/service.ts`],
       ['main', 'mcp'],

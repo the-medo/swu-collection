@@ -14,7 +14,7 @@ COPY mcp ./mcp
 COPY shared ./shared
 COPY types ./types
 COPY lib ./lib
-COPY server/lib/decks/transformCardPoolDeckCards.ts server/lib/decks/deckFolderAccess.ts ./server/lib/decks/
+COPY server/lib/decks/transformCardPoolDeckCards.ts server/lib/decks/deckFolderAccess.ts server/lib/decks/metadata.ts server/lib/decks/deckExport.ts ./server/lib/decks/
 COPY server/lib/creators ./server/lib/creators
 COPY server/lib/cards ./server/lib/cards
 COPY server/lib/melee ./server/lib/melee

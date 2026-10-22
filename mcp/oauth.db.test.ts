@@ -4,6 +4,7 @@ import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { and, eq, inArray } from 'drizzle-orm';
 import { deck } from '../server/db/schema/deck.ts';
 import { deckCard } from '../server/db/schema/deck_card.ts';
+import { deckInformation } from '../server/db/schema/deck_information.ts';
 import { cardPools, cardPoolCards } from '../server/db/schema/card_pool.ts';
 import { cardPoolDeckCards } from '../server/db/schema/card_pool_deck.ts';
 import { deckListInput } from './decks.ts';
@@ -73,6 +74,7 @@ let requestedScopes = MCP_SCOPE;
 let signingAuth: typeof import('../server/auth/auth.ts').auth;
 const userId = `mcp-test-${crypto.randomUUID()}`;
 const sessionId = crypto.randomUUID();
+const authoredDeckIds: string[] = [];
 const foreignUserId = `mcp-foreign-${crypto.randomUUID()}`;
 const deckIds = {
   linkShared: crypto.randomUUID(),
@@ -333,6 +335,13 @@ beforeAll(async () => {
 afterAll(async () => {
   if (!enabled) return;
   try {
+    if (authoredDeckIds.length) {
+      await database
+        .delete(deckInformation)
+        .where(inArray(deckInformation.deckId, authoredDeckIds));
+      await database.delete(deckCard).where(inArray(deckCard.deckId, authoredDeckIds));
+      await database.delete(deck).where(inArray(deck.id, authoredDeckIds));
+    }
     await database.delete(deckFolder).where(inArray(deckFolder.id, folderIds));
     await database.delete(teamMember).where(eq(teamMember.teamId, teamId));
     await database.delete(team).where(eq(team.id, teamId));
@@ -540,6 +549,11 @@ test.skipIf(!enabled)(
             'list_my_collections',
             'get_card_ownership',
             'get_deck_missing_cards',
+            'create_deck',
+            'duplicate_deck',
+            'update_deck',
+            'update_deck_cards',
+            'export_deck',
             ...articleToolNames,
           ].sort(),
         );
@@ -974,9 +988,10 @@ test.skipIf(!enabled)(
         'select note from deck_card',
         'select name from deck_folder',
         'select role from team_member',
-        "update deck set name = 'unauthorized'",
-        'delete from deck_card',
-        "update card_pool_deck_cards set location = 'trash'",
+        "update deck set user_id = 'unauthorized' where false",
+        'delete from deck where false',
+        "update deck_card set note = 'unauthorized' where false",
+        "update card_pool_deck_cards set location = 'trash' where false",
       ]) {
         await expect(runtimeSql.unsafe(query).execute()).rejects.toMatchObject({ code: '42501' });
       }
@@ -1060,6 +1075,71 @@ test.skipIf(!enabled)(
     });
     expect(deckDenied.status).toBe(403);
     expect(deckDenied.headers.get('WWW-Authenticate')).toContain('decks:read');
+    const deckWriter = await signed(['decks:read', 'decks:write']);
+    const deckReader = await signed(['decks:read']);
+    const deniedCreate = await rawCall(deckReader, 'create_deck', {});
+    expect(deniedCreate.status).toBe(403);
+    expect(deniedCreate.headers.get('WWW-Authenticate')).toContain('decks:write');
+    const deckClient = new Client({ name: 'deck-author', version: '1.0' });
+    await deckClient.connect(
+      new StreamableHTTPClientTransport(new URL(resource), {
+        requestInit: { headers: { Authorization: `Bearer ${deckWriter}` } },
+      }),
+    );
+    try {
+      const args = {
+        requestId: crypto.randomUUID(),
+        name: 'Protocol deck',
+        formatId: 1,
+        cards: [{ cardId: 'coruscant-guard', board: 'main', quantity: 2 }],
+      };
+      const made = await deckClient.callTool({ name: 'create_deck', arguments: args });
+      expect(made.isError).not.toBe(true);
+      const data = made.structuredContent as { deckId: string; revision: string };
+      authoredDeckIds.push(data.deckId);
+      expect(
+        (await deckClient.callTool({ name: 'create_deck', arguments: args })).structuredContent,
+      ).toEqual(made.structuredContent);
+      const read = await deckClient.callTool({
+        name: 'get_deck',
+        arguments: { deckId: data.deckId },
+      });
+      expect(read.structuredContent).toMatchObject({
+        revision: data.revision,
+        visibility: 'private',
+      });
+      const edited = await deckClient.callTool({
+        name: 'update_deck_cards',
+        arguments: {
+          requestId: crypto.randomUUID(),
+          deckId: data.deckId,
+          expectedRevision: data.revision,
+          cards: [{ cardId: 'coruscant-guard', board: 'main', quantity: 3 }],
+        },
+      });
+      expect(edited).toMatchObject({
+        structuredContent: {
+          changedCards: [{ cardId: 'coruscant-guard', board: 1, before: 2, after: 3 }],
+        },
+      });
+      const exported = await deckClient.callTool({
+        name: 'export_deck',
+        arguments: { deckId: data.deckId },
+      });
+      expect(exported).toMatchObject({
+        structuredContent: {
+          maybeboardIncluded: true,
+          data: { cards: [{ cardId: 'coruscant-guard', board: 'main', quantity: 3 }] },
+        },
+      });
+      const spoofed = await deckClient.callTool({
+        name: 'create_deck',
+        arguments: { ...args, requestId: crypto.randomUUID(), userId: foreignUserId },
+      });
+      expect(spoofed.isError).toBe(true);
+    } finally {
+      await deckClient.close();
+    }
     const client = new Client({ name: 'article-author', version: '1.0' });
     await client.connect(
       new StreamableHTTPClientTransport(new URL(resource), {
@@ -1171,6 +1251,7 @@ test.skipIf(!enabled)(
       ).toBe(403);
       expect((await rawCall(writer, 'get_article', { articleId: saved.id })).status).toBe(200);
       expect((await rawCall(collectionToken, 'list_my_collections')).status).toBe(403);
+      expect((await rawCall(deckWriter, 'create_deck', {})).status).toBe(403);
       const [usage] =
         await sql`select string_agg(tool, ',') as tools from mcp_tool_usage where user_id = ${userId}`;
       expect(usage!.tools).toContain('create_article');

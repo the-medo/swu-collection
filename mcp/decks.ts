@@ -1,3 +1,4 @@
+import { inputHash } from './articles/receipts.ts';
 import { z } from 'zod';
 import { and, asc, count, desc, eq, gt, ilike, or } from 'drizzle-orm';
 import type { Database } from '../server/lib/creators/types.ts';
@@ -38,7 +39,7 @@ export const deckListInput = z.strictObject({
 export const deckGetInput = z.strictObject({
   deckId: z.guid().describe('Deck UUID from list_my_decks or a SWUBASE /decks/ URL.'),
 });
-const deckColumns = {
+export const deckColumns = {
   id: deck.id,
   userId: deck.userId,
   name: deck.name,
@@ -52,7 +53,7 @@ const deckColumns = {
   createdAt: deck.createdAt,
   updatedAt: deck.updatedAt,
 };
-type DeckRow = Pick<typeof deck.$inferSelect, keyof typeof deckColumns>;
+export type DeckRow = Pick<typeof deck.$inferSelect, keyof typeof deckColumns>;
 
 export function createDeckRepository(database: Database) {
   return {
@@ -176,6 +177,22 @@ export function deckSummary(row: DeckRow, websiteOrigin: string) {
   };
 }
 
+export function deckRevision(result: {
+  deck: DeckRow;
+  contents: { cardId: string; board: number; quantity: number }[];
+}) {
+  return inputHash({
+    deck: {
+      ...result.deck,
+      createdAt: result.deck.createdAt.toISOString(),
+      updatedAt: result.deck.updatedAt.toISOString(),
+    },
+    cards: [...result.contents].sort(
+      (a, b) => a.board - b.board || a.cardId.localeCompare(b.cardId),
+    ),
+  });
+}
+
 export function deckDetails(
   result: { deck: DeckRow; contents: { cardId: string; board: number; quantity: number }[] },
   websiteOrigin: string,
@@ -186,6 +203,7 @@ export function deckDetails(
   });
   return {
     ...deckSummary(result.deck, websiteOrigin),
+    revision: deckRevision(result),
     description: result.deck.description.slice(0, 4000),
     descriptionTruncated: result.deck.description.length > 4000,
     catalog: 'official' as const,

@@ -47,6 +47,8 @@ export function servicesForPath(path) {
     [
       'server/lib/decks/transformCardPoolDeckCards.ts',
       'server/lib/decks/deckFolderAccess.ts',
+      'server/lib/decks/metadata.ts',
+      'server/lib/decks/deckExport.ts',
     ].includes(path)
   )
     return ['main', 'mcp'];

@@ -48,3 +48,12 @@ GRANT INSERT, UPDATE, DELETE ON user_melee_tournaments, user_melee_tournament_sy
 -- Collection ownership: read-only, without private notes, prices or secondary amounts.
 GRANT SELECT (id, user_id, title, collection_type, public, for_sale, for_decks, updated_at) ON collection TO swubase_mcp;
 GRANT SELECT (collection_id, card_id, variant_id, foil, condition, language, amount) ON collection_card TO swubase_mcp;
+
+-- Normal deck authoring. Ownership/limited-deck policy is enforced by the tools.
+GRANT INSERT ON deck, deck_card, deck_information TO swubase_mcp;
+GRANT UPDATE (name, description, format, public, leader_card_id_1, leader_card_id_2, base_card_id, updated_at) ON deck TO swubase_mcp;
+GRANT UPDATE (quantity), DELETE ON deck_card TO swubase_mcp;
+GRANT SELECT (deck_id), UPDATE (aspect_command, aspect_vigilance, aspect_aggression, aspect_cunning, aspect_heroism, aspect_villainy, base_aspect, base_special_name) ON deck_information TO swubase_mcp;
+-- The existing AFTER INSERT deck trigger creates its empty discussion/binding.
+GRANT INSERT (type), SELECT (id) ON discussion TO swubase_mcp;
+GRANT INSERT (deck_id, discussion_id) ON deck_discussion TO swubase_mcp;
