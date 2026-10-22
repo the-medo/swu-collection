@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { and, asc, count, desc, eq, gt, ilike, or } from 'drizzle-orm';
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import type { Database } from '../server/lib/creators/types.ts';
 import { deck } from '../server/db/schema/deck.ts';
 import { deckReadAccess } from '../server/lib/decks/deckFolderAccess.ts';
 import { deckCard } from '../server/db/schema/deck_card.ts';
@@ -54,7 +54,7 @@ const deckColumns = {
 };
 type DeckRow = Pick<typeof deck.$inferSelect, keyof typeof deckColumns>;
 
-export function createDeckRepository(database: PostgresJsDatabase) {
+export function createDeckRepository(database: Database) {
   return {
     async listDecks(userId: string, input: z.infer<typeof deckListInput>) {
       const filters = [eq(deck.userId, userId)];

@@ -1,7 +1,7 @@
 # SWUBASE MCP
 
 The separate Bun/Hono service lives in `mcp/` and exposes Streamable HTTP at
-**`https://mcp.swubase.com/mcp`**. It provides card/deck discovery and authenticated article authoring. The four
+**`https://mcp.swubase.com/mcp`**. It provides card/deck discovery, collection ownership checks, and authenticated article authoring. The four
 card/deck tools remain read-only; see [article authoring](mcp-articles.md) for the
 22 article, template and image tools:
 
@@ -22,6 +22,41 @@ requested, without approving deck reads.
 Preview cards are excluded from card discovery and details. Deck reads retain
 unknown/preview IDs and quantities with `catalogAvailable: false` and
 `missingCardIds`; agents must not invent their text.
+
+## Collection ownership
+
+Three tools require additional `collections:read` consent:
+
+- `list_my_collections`: paginated owned lists, defaulting to normal collections;
+  `type` can also select `wantlist`, `card-list`, or `all`.
+- `get_card_ownership`: browse owned logical cards or filter up to 100 `cardIds`;
+  retain each holding's collection, printing, foil, condition and language.
+- `get_deck_missing_cards`: compare an accessible normal deck with the current
+  user's collections; also requires `decks:read`.
+
+Ownership defaults to normal collections marked `forDecks`. Set `forDecksOnly`
+to false to include other normal collections, and optionally narrow with
+`collectionIds` (all must be owned normal collections). Only positive `amount`
+counts; secondary amounts, wantlists and card lists are excluded. Holdings never
+include notes or prices. Unknown/preview IDs keep their saved quantities with
+`catalogAvailable: false`. Reads use a consistent database snapshot.
+
+Missing-card checks sum main and sideboard quantities by default and include
+leaders/base. Select `boards` or disable `includeLeadersAndBase` explicitly to
+change that. All printings/conditions/languages count by logical card ID; copies
+are not reserved across other saved decks. Pool decks use their own limited
+inventory and are rejected by this check. Results are inventory comparisons,
+not deck-legality certification.
+
+Both list tools return `total`, `limit` and `offset`; read all relevant pages
+before treating an absent requested card as unowned. Pages cap at 100 logical
+cards/lists and 1,000 printing rows; narrow the selection if printing/output
+limits are exceeded. These tools do not change collections or wantlists.
+
+Deploy the main app with the new consent scope, reapply `mcp/deploy/grants.sql`,
+then deploy MCP. Existing clients registered before a scope was introduced may
+need to reconnect with a new client registration to request it. The default
+card-only grant is unchanged. No database migration is required for these reads.
 
 ## Tool inputs and examples
 
@@ -71,8 +106,9 @@ bases that the app's merged preview catalog would hide. Agents must not treat
 unclassified rows as confirmed units. Reads fail explicitly above 500
 normal card rows or 1,000 physical pool cards rather than silently truncating.
 Descriptions are capped at 4,000 characters with `descriptionTruncated`; card
-notes, user identifiers and folder metadata are not returned. There are no deck
-mutations, collection tools or server-computed deck analysis in this version.
+notes, user identifiers and folder metadata are not returned. Collection tools
+are described below. Deck mutations and server-computed legality analysis are not
+included in this version.
 
 Login stays on the main application. The Better Auth MCP/OAuth provider uses
 existing Google/GitHub accounts, signed consent requests, authorization codes and
@@ -80,7 +116,7 @@ PKCE S256. Clients discover the issuer and register dynamically. The provider
 limits dynamic registration to five requests per IP per minute in
 production. No automatic cleanup of abandoned client registrations is included;
 review their retention with an owner/admin connection.
-`cards:read`, `decks:read`, `articles:read`, `articles:write`,
+`cards:read`, `decks:read`, `collections:read`, `articles:read`, `articles:write`,
 `articles:publish`, `images:read`, `images:write`, `melee:read` and optional
 `offline_access` are available;
 client-credentials grants are disabled. Dynamic registration preserves the full
@@ -341,7 +377,8 @@ lifetime while its session and consent remain live.
 ## Adding or changing tools
 
 `mcp/tools/registry.ts` combines the card/deck definitions in
-`mcp/tools/catalog.ts` and the article definitions in `mcp/articles/tools.ts`.
+`mcp/tools/catalog.ts`, collection definitions in `mcp/tools/collections.ts`,
+and article definitions in `mcp/articles/tools.ts`.
 Each `defineTool` declaration supplies its name, strict input schema, scopes,
 annotations, typed execution handler and explicit result-count function. Declare
 argument-dependent permissions through `additionalScopes`; both OAuth challenges

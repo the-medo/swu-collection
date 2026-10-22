@@ -532,7 +532,16 @@ test.skipIf(!enabled)(
       try {
         await client.connect(transport);
         expect((await client.listTools()).tools.map(tool => tool.name).sort()).toEqual(
-          ['search_cards', 'get_cards', 'list_my_decks', 'get_deck', ...articleToolNames].sort(),
+          [
+            'search_cards',
+            'get_cards',
+            'list_my_decks',
+            'get_deck',
+            'list_my_collections',
+            'get_card_ownership',
+            'get_deck_missing_cards',
+            ...articleToolNames,
+          ].sort(),
         );
         const result = await client.callTool({
           name: 'search_cards',
@@ -1041,6 +1050,16 @@ test.skipIf(!enabled)(
       expect(denied.status).toBe(403);
       for (const scope of scopes) expect(denied.headers.get('WWW-Authenticate')).toContain(scope);
     }
+    const collectionToken = await signed(['collections:read']);
+    const collectionDenied = await rawCall(writer, 'list_my_collections');
+    expect(collectionDenied.status).toBe(403);
+    expect(collectionDenied.headers.get('WWW-Authenticate')).toContain('collections:read');
+    expect((await rawCall(collectionToken, 'list_my_collections')).status).toBe(200);
+    const deckDenied = await rawCall(collectionToken, 'get_deck_missing_cards', {
+      deckId: deckIds.own,
+    });
+    expect(deckDenied.status).toBe(403);
+    expect(deckDenied.headers.get('WWW-Authenticate')).toContain('decks:read');
     const client = new Client({ name: 'article-author', version: '1.0' });
     await client.connect(
       new StreamableHTTPClientTransport(new URL(resource), {
@@ -1151,6 +1170,7 @@ test.skipIf(!enabled)(
         ).status,
       ).toBe(403);
       expect((await rawCall(writer, 'get_article', { articleId: saved.id })).status).toBe(200);
+      expect((await rawCall(collectionToken, 'list_my_collections')).status).toBe(403);
       const [usage] =
         await sql`select string_agg(tool, ',') as tools from mcp_tool_usage where user_id = ${userId}`;
       expect(usage!.tools).toContain('create_article');

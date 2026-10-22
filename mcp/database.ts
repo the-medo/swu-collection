@@ -1,3 +1,4 @@
+import { createCollectionRepository, type CollectionRepository } from './collections.ts';
 import type { McpToolName } from './tools/registry.ts';
 export type { McpToolName } from './tools/registry.ts';
 import { createArticleRepository } from './articles/repository.ts';
@@ -33,6 +34,7 @@ const identityClaims = z.object({
 export type Identity = { userId: string; clientId: string; scopes: string[] };
 export interface McpRepository extends DeckRepository {
   articleServices?: ArticleServices;
+  collections?: CollectionRepository;
   authorize(claims: unknown): Promise<Identity | 'invalid' | 'restricted'>;
   admit(identity: Pick<Identity, 'userId' | 'clientId'>, tool: McpToolName): Promise<string | null>;
   finish(
@@ -51,6 +53,7 @@ export function createMcpRepository(
 ): McpRepository {
   const assets = createArticleAssets(database);
   return {
+    collections: createCollectionRepository(database),
     articleServices: {
       articles: createArticleRepository(database),
       assets,

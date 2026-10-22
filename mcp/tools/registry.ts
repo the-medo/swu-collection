@@ -1,16 +1,23 @@
+import { createCollectionTools } from './collections.ts';
+import type { CollectionRepository } from '../collections.ts';
 import { createArticleTools, type ArticleServices } from '../articles/tools.ts';
 import { createCatalogTools } from './catalog.ts';
 import type { DeckRepository } from '../decks.ts';
 
 export type McpTool =
   | ReturnType<typeof createArticleTools>[number]
-  | ReturnType<typeof createCatalogTools>[number];
+  | ReturnType<typeof createCatalogTools>[number]
+  | ReturnType<typeof createCollectionTools>[number];
 export type McpToolName = McpTool['name'];
 export function createToolRegistry(
-  services: DeckRepository & { articleServices?: ArticleServices },
+  services: DeckRepository & {
+    articleServices?: ArticleServices;
+    collections?: CollectionRepository;
+  },
 ) {
   const tools = [
     ...createCatalogTools(services),
+    ...(services.collections ? createCollectionTools(services.collections) : []),
     ...(services.articleServices ? createArticleTools(services.articleServices) : []),
   ];
   const byName = new Map<string, McpTool>();

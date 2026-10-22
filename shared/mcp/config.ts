@@ -1,4 +1,5 @@
 export const MCP_SCOPE = 'cards:read';
+export const MCP_COLLECTION_READ_SCOPE = 'collections:read';
 export const MCP_DECK_SCOPE = 'decks:read';
 export const MCP_ARTICLE_READ_SCOPE = 'articles:read';
 export const MCP_ARTICLE_WRITE_SCOPE = 'articles:write';
@@ -9,6 +10,7 @@ export const MCP_MELEE_SCOPE = 'melee:read';
 export const MCP_RESOURCE_SCOPES = [
   MCP_SCOPE,
   MCP_DECK_SCOPE,
+  MCP_COLLECTION_READ_SCOPE,
   MCP_ARTICLE_READ_SCOPE,
   MCP_ARTICLE_WRITE_SCOPE,
   MCP_ARTICLE_PUBLISH_SCOPE,
@@ -18,6 +20,8 @@ export const MCP_RESOURCE_SCOPES = [
 ] as const;
 export const MCP_SCOPE_DESCRIPTIONS: Record<(typeof MCP_RESOURCE_SCOPES)[number], string> = {
   'cards:read': 'Search the official Star Wars Unlimited card catalog.',
+  'collections:read':
+    'Read your collections and owned card quantities, including private collections, to find missing cards for decks.',
   'decks:read':
     'Read your saved decks, including private decks, and decks shared with you or available by link.',
   'articles:read':

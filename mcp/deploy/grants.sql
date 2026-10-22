@@ -44,3 +44,7 @@ GRANT SELECT ON user_file_storage, user_file TO swubase_mcp;
 GRANT INSERT ON user_file TO swubase_mcp;
 GRANT SELECT ON melee_connection, user_melee_tournaments, user_melee_tournament_sync TO swubase_mcp;
 GRANT INSERT, UPDATE, DELETE ON user_melee_tournaments, user_melee_tournament_sync TO swubase_mcp;
+
+-- Collection ownership: read-only, without private notes, prices or secondary amounts.
+GRANT SELECT (id, user_id, title, collection_type, public, for_sale, for_decks, updated_at) ON collection TO swubase_mcp;
+GRANT SELECT (collection_id, card_id, variant_id, foil, condition, language, amount) ON collection_card TO swubase_mcp;
