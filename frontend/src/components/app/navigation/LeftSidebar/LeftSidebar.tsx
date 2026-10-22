@@ -1,23 +1,18 @@
 import { useLocation } from '@tanstack/react-router';
 import { useCrossfireInvitations } from '@/components/app/crossfire/invitationContext.ts';
 import {
-  Book,
-  BookCheck,
-  BookOpen,
-  BookOpenCheck,
   ChartPieIcon,
   ChartSpline,
   LayoutGrid,
   Map,
-  NotebookTabs,
   Plus,
   Scale,
-  ScrollText,
-  Search,
   Star,
   TrophyIcon,
-  Package,
   Users,
+  ArrowUpRight,
+  Radio,
+  X,
 } from 'lucide-react';
 
 import {
@@ -63,6 +58,15 @@ import { Badge } from '@/components/ui/badge.tsx';
 import { CrossfireLogo } from '@/components/app/crossfire/CrossfireLogo.tsx';
 import { SidebarYourTournaments } from './SidebarYourTournaments.tsx';
 import { useSidebarSettings } from '@/api/user/useSidebarSettings.ts';
+import { Button } from '@/components/ui/button.tsx';
+import {
+  CardListIcon,
+  CollectionIcon,
+  DeckIcon,
+  SealedDeckIcon,
+  WantlistIcon,
+} from '@/components/app/global/icons/CardLibraryIcons.tsx';
+import './left-sidebar.css';
 
 const getGroups = (
   setOpenMobile: (open: boolean) => void,
@@ -72,11 +76,7 @@ const getGroups = (
   {
     id: 'analysis-and-decks',
     title: 'Analysis & Decks',
-    actionLabel: 'Add Deck',
-    action: () => {},
-    icon: BookCheck,
     items: [
-      // Creator hub routes stay available by direct link during monitoring.
       {
         title: 'Meta analysis',
         url: '/meta',
@@ -117,13 +117,13 @@ const getGroups = (
       {
         title: 'Your decks',
         url: '/decks/your',
-        icon: BookCheck,
+        icon: DeckIcon,
         authenticated: true,
         menuAction: (
           <NewDeckDialog
             trigger={
-              <SidebarMenuAction title="Add Collection">
-                <Plus /> <span className="sr-only">Add Collection</span>
+              <SidebarMenuAction title="Add Deck">
+                <Plus /> <span className="sr-only">Add Deck</span>
               </SidebarMenuAction>
             }
           />
@@ -132,31 +132,25 @@ const getGroups = (
       {
         title: 'Decks',
         url: '/decks/public',
-        icon: Book,
-        menuAction: (
-          <Link
-            to="/decks/favorite"
-            onClick={() => {
-              setOpenMobile(false);
-            }}
-          >
-            {state === 'expanded' ? (
-              <SidebarMenuAction title="Favorite Decks">
+        icon: DeckIcon,
+        menuAction:
+          state === 'expanded' ? (
+            <SidebarMenuAction asChild title="Favorite Decks">
+              <Link to="/decks/favorite" onClick={() => setOpenMobile(false)}>
                 <Star /> <span className="sr-only">Favorite Decks</span>
-              </SidebarMenuAction>
-            ) : (
-              <>
-                <Star /> <span className="sr-only">Favorite Decks</span>
-              </>
-            )}
-          </Link>
-        ),
+              </Link>
+            </SidebarMenuAction>
+          ) : (
+            <Link to="/decks/favorite" onClick={() => setOpenMobile(false)}>
+              <Star /> <span className="sr-only">Favorite Decks</span>
+            </Link>
+          ),
         displayMenuActionWhenCollapsed: true,
       },
       {
         title: 'Sealed deck',
         url: '/limited',
-        icon: Package,
+        icon: SealedDeckIcon,
       },
       {
         title: 'Your statistics',
@@ -189,15 +183,12 @@ const getGroups = (
   },
   {
     id: 'lists',
-    title: 'Lists',
-    action: () => {},
-    icon: BookOpenCheck,
-    sidebarGroupAction: null,
+    title: 'Collections & Lists',
     items: [
       {
         title: 'Your collections',
         url: '/collections/your',
-        icon: BookOpenCheck,
+        icon: CollectionIcon,
         authenticated: true,
         menuAction: (
           <NewCollectionDialog
@@ -213,7 +204,7 @@ const getGroups = (
       {
         title: 'Your wantlists',
         url: '/wantlists/your',
-        icon: ScrollText,
+        icon: WantlistIcon,
         authenticated: true,
         menuAction: (
           <NewCollectionDialog
@@ -229,12 +220,12 @@ const getGroups = (
       {
         title: 'Your other lists',
         url: '/lists/your',
-        icon: NotebookTabs,
+        icon: CardListIcon,
         authenticated: true,
         menuAction: (
           <NewCollectionDialog
             trigger={
-              <SidebarMenuAction title="Add Wantlist">
+              <SidebarMenuAction title="Add card list">
                 <Plus /> <span className="sr-only">Add card list</span>
               </SidebarMenuAction>
             }
@@ -246,12 +237,12 @@ const getGroups = (
       {
         title: 'Collections',
         url: '/collections/public',
-        icon: BookOpen,
+        icon: CollectionIcon,
       },
       {
         title: 'Wantlists',
         url: '/wantlists/public',
-        icon: ScrollText,
+        icon: WantlistIcon,
       },
     ],
   },
@@ -269,7 +260,8 @@ export function LeftSidebar() {
   });
   const { count: invitationCount } = useCrossfireInvitations();
   const { theme } = useTheme();
-  const { open, state, isMobile, setOpenMobile } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
+  const expanded = isMobile || state === 'expanded';
   const teamMatch = useMatch({ from: '/teams/$teamId', shouldThrow: false });
 
   const teamIdOrShortcut = teamMatch?.params?.teamId;
@@ -280,247 +272,275 @@ export function LeftSidebar() {
 
   const groups = useMemo(
     () =>
-      getGroups(setOpenMobile, state, teams ?? [])
+      getGroups(setOpenMobile, expanded ? 'expanded' : 'collapsed', teams ?? [])
         .filter(group => group.id !== 'lists' || showLists)
         .map(group => ({
           ...group,
           items: group.items.filter(item => item.url !== '/crossfire' || canCrossfire),
         })),
-    [setOpenMobile, state, teams, canCrossfire, showLists],
+    [setOpenMobile, expanded, teams, canCrossfire, showLists],
   );
 
   const swubaseLogo = theme === 'light' ? LogoLightTheme : LogoDarkTheme;
 
   return (
     <Sidebar collapsible="icon" variant="sidebar">
-      <SidebarHeader>
-        {activeTeam?.logoUrl && teamIdOrShortcut ? (
-          <div
-            className={cn('relative', { 'self-center': !isMobile, 'self-start pl-4': isMobile })}
-          >
-            <Link
-              to="/teams/$teamId"
-              params={{ teamId: teamIdOrShortcut }}
-              onClick={() => setOpenMobile(false)}
-            >
-              <img
-                src={activeTeam.logoUrl}
-                alt={`${activeTeam.name} logo`}
-                className={cn('rounded-lg object-cover', {
-                  'w-8 h-8': state === 'collapsed' || isMobile,
-                  'w-32 h-32': state !== 'collapsed' && !isMobile,
-                })}
-              />
-            </Link>
-            {activeTeam?.logoUrl && state !== 'collapsed' && (
-              <div
-                className={cn(
-                  'bg-background absolute bottom-1 -right-7 rounded-lg justify-end p-1',
-                )}
-              >
-                <Link to="/" onClick={() => setOpenMobile(false)}>
-                  <img
-                    src={swubaseLogo}
-                    alt="SWUBase"
-                    className="w-6 h-6 opacity-60 hover:opacity-100 transition-opacity"
-                  />
-                </Link>
-              </div>
-            )}
-          </div>
-        ) : (
-          <Link
-            to="/"
-            className={cn({ 'self-center': !isMobile, 'self-start pl-4': isMobile })}
-            onClick={() => setOpenMobile(false)}
-          >
-            {isCrossfire && canCrossfire ? (
-              <span aria-label="Crossfire">
-                <CrossfireLogo className={isMobile ? 'h-8 w-16' : 'h-20 w-32'} />
-              </span>
-            ) : isMobile ? (
-              <div className="w-full flex justify-between gap-4">
-                <img src={swubaseLogo} className="w-8 h-8" alt="Logo" />
-                <h3 className="mb-0">
-                  <span className="font-normal">SWU</span>
-                  <span className="font-bold">BASE</span>
-                </h3>
-              </div>
-            ) : (
-              <img src={swubaseLogo} alt="Logo" className="w-32" />
-            )}
-          </Link>
-        )}
-      </SidebarHeader>
-      <SidebarSeparator />
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            {open ? (
+      <div className="left-sidebar flex h-full min-h-0 flex-col" data-expanded={expanded}>
+        <SidebarHeader className="p-3 pb-2 group-data-[collapsible=icon]:p-2">
+          <div className="flex items-center gap-2">
+            {activeTeam?.logoUrl && teamIdOrShortcut ? (
               <>
-                <CardSearchCommand id="card-search-left-sidebar" />
-                <SidebarMenu>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                      <Link
-                        to={'/cards/search'}
-                        className="[&.active]:font-bold"
-                        onClick={() => {
-                          setOpenMobile(false);
-                        }}
-                      >
-                        <LayoutGrid />
-                        Card database
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenu>
+                <Link
+                  to="/teams/$teamId"
+                  params={{ teamId: teamIdOrShortcut }}
+                  className="sidebar-brand flex min-w-0 flex-1 items-center gap-3 rounded-xl"
+                  onClick={() => setOpenMobile(false)}
+                  aria-label={activeTeam.name}
+                >
+                  <img
+                    src={activeTeam.logoUrl}
+                    alt=""
+                    className={cn(
+                      'shrink-0 rounded-lg object-cover',
+                      expanded ? 'size-10' : 'size-8',
+                    )}
+                  />
+                  {expanded && (
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-semibold">
+                        {activeTeam.name}
+                      </span>
+                      <span className="block text-[10px] text-muted-foreground">
+                        Your team on SWUBASE
+                      </span>
+                    </span>
+                  )}
+                </Link>
+                {expanded && (
+                  <Link
+                    to="/"
+                    aria-label="SWUBASE home"
+                    onClick={() => setOpenMobile(false)}
+                    className="sidebar-brand shrink-0 rounded-lg p-1"
+                  >
+                    <img src={swubaseLogo} alt="" className="size-6" />
+                  </Link>
+                )}
               </>
             ) : (
-              <SidebarMenuButton asChild>
-                <Link
-                  to="/cards/search"
-                  className="[&.active]:font-bold"
-                  onClick={() => {
-                    setOpenMobile(false);
-                  }}
-                >
-                  <Search />
-                  <span>Search</span>
-                </Link>
-              </SidebarMenuButton>
+              <Link
+                to="/"
+                aria-label="SWUBASE home"
+                className="sidebar-brand flex min-w-0 flex-1 items-center gap-3 rounded-xl"
+                onClick={() => setOpenMobile(false)}
+              >
+                {isCrossfire && canCrossfire ? (
+                  <CrossfireLogo className={expanded ? 'h-10 w-12 shrink-0' : 'size-8 shrink-0'} />
+                ) : (
+                  <span
+                    className={cn(
+                      'grid shrink-0 place-items-center rounded-xl bg-[#17352e]',
+                      expanded ? 'size-11' : 'size-8 rounded-lg',
+                    )}
+                  >
+                    <img
+                      src={LogoDarkTheme}
+                      alt=""
+                      className={cn('brightness-0 invert', expanded ? 'size-8' : 'size-6')}
+                    />
+                  </span>
+                )}
+                {expanded && (
+                  <span className="min-w-0">
+                    <span className="block text-[23px] leading-none tracking-[-0.06em]">
+                      <span className="font-normal">SWU</span>
+                      <strong className="font-bold">BASE</strong>
+                    </span>
+                    <span className="mt-1 block text-[10px] text-muted-foreground">
+                      Your Unlimited companion
+                    </span>
+                  </span>
+                )}
+              </Link>
             )}
-          </SidebarGroupContent>
-        </SidebarGroup>
-        {user && <SidebarYourTournaments key={user.id} />}
-        {groups.map(g => (
-          <SidebarGroup key={g.id} className="py-0">
-            <SidebarGroupLabel>{g.title}</SidebarGroupLabel>
-            {g.sidebarGroupAction ?? null}
-            <SidebarGroupContent>
+            {isMobile && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8 shrink-0"
+                aria-label="Close menu"
+                onClick={() => setOpenMobile(false)}
+              >
+                <X className="size-4" />
+              </Button>
+            )}
+          </div>
+        </SidebarHeader>
+        <SidebarContent
+          role="navigation"
+          aria-label="Main navigation"
+          className="gap-3 pb-3 group-data-[collapsible=icon]:overflow-y-auto"
+        >
+          <SidebarGroup className="gap-2 pt-2 pb-0">
+            <SidebarGroupContent className="space-y-2">
+              {expanded && (
+                <div className="sidebar-card-search">
+                  <CardSearchCommand id="card-search-left-sidebar" />
+                </div>
+              )}
               <SidebarMenu>
-                {g.items.map(i => (
-                  <Fragment key={i.title}>
-                    {!i.authenticated || (i.authenticated && user) ? (
-                      <>
-                        <SidebarMenuItem>
-                          <SidebarMenuButton asChild>
-                            <Link
-                              to={i.url}
-                              className="[&.active]:font-bold"
-                              onClick={() => {
-                                setOpenMobile(false);
-                              }}
-                            >
-                              <i.icon />
-                              <span>{i.title}</span>
-                              {i.url === '/crossfire' && invitationCount > 0 && (
-                                <Badge
-                                  aria-label={`${invitationCount} Crossfire invitations`}
-                                  size="small"
-                                  className="ml-auto px-2"
-                                >
-                                  {invitationCount}
-                                </Badge>
-                              )}
-                              {'beta' in i && i.beta && (
-                                <Badge size="small" className="text-xs px-2" variant="outline">
-                                  Beta
-                                </Badge>
-                              )}
-                            </Link>
-                          </SidebarMenuButton>
-                          {'menuAction' in i && state !== 'collapsed' ? i.menuAction : null}
-                        </SidebarMenuItem>
-                        {'items' in i && i.items && i.items.length > 0 && (
-                          <SidebarMenuSub>
-                            {i.items.map(subItem => (
-                              <SidebarMenuSubItem key={subItem.title} className="relative">
-                                <SidebarMenuSubButton asChild size="md">
-                                  <Link
-                                    to={subItem.url}
-                                    onClick={() => {
-                                      setOpenMobile(false);
-                                    }}
-                                  >
-                                    <span>{subItem.title}</span>
-                                  </Link>
-                                </SidebarMenuSubButton>
-                                {'statisticsUrl' in subItem && subItem.statisticsUrl && (
-                                  <SidebarMenuAction asChild title="Team statistics">
-                                    <Link
-                                      to={subItem.statisticsUrl}
-                                      onClick={() => setOpenMobile(false)}
-                                      className="text-muted-foreground hover:text-foreground transition-colors"
-                                    >
-                                      <ChartSpline className="h-3.5 w-3.5" />
-                                      <span className="sr-only">Team statistics</span>
-                                    </Link>
-                                  </SidebarMenuAction>
-                                )}
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild tooltip="Card database" className="sidebar-database">
+                    <Link to="/cards/search" onClick={() => setOpenMobile(false)}>
+                      <LayoutGrid aria-hidden="true" />
+                      <span className="flex-1">Card database</span>
+                      {expanded && (
+                        <ArrowUpRight className="size-3.5! opacity-60" aria-hidden="true" />
+                      )}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild tooltip="Creators" className="sidebar-creators">
+                    <Link to="/creators" onClick={() => setOpenMobile(false)}>
+                      <Radio className="sidebar-creators-icon" aria-hidden="true" />
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-center gap-2 font-semibold">
+                          Creators
+                          {expanded && <span className="sidebar-preview">Preview</span>}
+                        </span>
+                        {expanded && (
+                          <span className="mt-1 block text-[10px] font-normal opacity-80">
+                            Fresh voices. More ways to play.
+                          </span>
                         )}
-                        {'menuAction' in i &&
-                          'displayMenuActionWhenCollapsed' in i &&
-                          state === 'collapsed' && (
-                            <SidebarMenuItem>
-                              <SidebarMenuButton asChild>{i.menuAction}</SidebarMenuButton>
-                            </SidebarMenuItem>
-                          )}
-                        {'separator' in i && i.separator ? <SidebarSeparator /> : null}
-                      </>
-                    ) : null}
-                  </Fragment>
-                ))}
+                      </span>
+                      {expanded && (
+                        <ArrowUpRight className="size-3.5! opacity-60" aria-hidden="true" />
+                      )}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-        ))}
-        {/*<SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link
-                    to={'/tools'}
-                    className="[&.active]:font-bold"
-                    onClick={() => {
-                      setOpenMobile(false);
-                    }}
-                  >
-                    <Hammer />
-                    <span>Tools</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>*/}
-        <SidebarGroup>
-          <SidebarGroupLabel>Comparer</SidebarGroupLabel>
-          <SidebarGroupAction asChild>
-            <Link
-              to={'/comparer'}
-              title="Open comparer"
-              onClick={() => {
-                setOpenMobile(false);
-              }}
-            >
-              <Scale className="w-4 h-4" /> <span className="sr-only">Open comparer</span>
-            </Link>
-          </SidebarGroupAction>
-          <SidebarGroupContent>
-            <SidebarComparer setOpenMobile={setOpenMobile} />
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SocialLinks />
-      <SidebarSeparator />
-      <SidebarFooter>
-        <SignIn isLeftSidebar />
-      </SidebarFooter>
+          {user && <SidebarYourTournaments key={user.id} />}
+          {groups.map(g => (
+            <SidebarGroup key={g.id} className="py-0">
+              <SidebarGroupLabel>{g.title}</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {g.items.map(i => (
+                    <Fragment key={i.title}>
+                      {!i.authenticated || (i.authenticated && user) ? (
+                        <>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton asChild tooltip={i.title}>
+                              <Link
+                                to={i.url}
+                                className="[&.active]:font-bold"
+                                onClick={() => {
+                                  setOpenMobile(false);
+                                }}
+                              >
+                                <i.icon />
+                                <span>{i.title}</span>
+                                {i.url === '/crossfire' && invitationCount > 0 && (
+                                  <Badge
+                                    aria-label={`${invitationCount} Crossfire invitations`}
+                                    size="small"
+                                    className="ml-auto px-2"
+                                  >
+                                    {invitationCount}
+                                  </Badge>
+                                )}
+                                {'beta' in i && i.beta && (
+                                  <Badge size="small" className="text-xs px-2" variant="outline">
+                                    Beta
+                                  </Badge>
+                                )}
+                              </Link>
+                            </SidebarMenuButton>
+                            {'menuAction' in i && expanded ? i.menuAction : null}
+                          </SidebarMenuItem>
+                          {'items' in i && i.items && i.items.length > 0 && (
+                            <SidebarMenuSub>
+                              {i.items.map(subItem => (
+                                <SidebarMenuSubItem key={subItem.title} className="relative">
+                                  <SidebarMenuSubButton
+                                    asChild
+                                    size="md"
+                                    className={cn(
+                                      'statisticsUrl' in subItem && subItem.statisticsUrl && 'pr-8',
+                                    )}
+                                  >
+                                    <Link
+                                      to={subItem.url}
+                                      title={subItem.title}
+                                      onClick={() => {
+                                        setOpenMobile(false);
+                                      }}
+                                    >
+                                      <span>{subItem.title}</span>
+                                    </Link>
+                                  </SidebarMenuSubButton>
+                                  {'statisticsUrl' in subItem && subItem.statisticsUrl && (
+                                    <SidebarMenuAction asChild title="Team statistics">
+                                      <Link
+                                        to={subItem.statisticsUrl}
+                                        onClick={() => setOpenMobile(false)}
+                                        className="text-muted-foreground hover:text-foreground transition-colors"
+                                      >
+                                        <ChartSpline className="h-3.5 w-3.5" />
+                                        <span className="sr-only">Team statistics</span>
+                                      </Link>
+                                    </SidebarMenuAction>
+                                  )}
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          )}
+                          {'menuAction' in i &&
+                            'displayMenuActionWhenCollapsed' in i &&
+                            !expanded && (
+                              <SidebarMenuItem>
+                                <SidebarMenuButton asChild>{i.menuAction}</SidebarMenuButton>
+                              </SidebarMenuItem>
+                            )}
+                          {'separator' in i && i.separator ? <SidebarSeparator /> : null}
+                        </>
+                      ) : null}
+                    </Fragment>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          ))}
+          <SidebarGroup>
+            <SidebarGroupLabel>Comparer</SidebarGroupLabel>
+            <SidebarGroupAction asChild>
+              <Link
+                to={'/comparer'}
+                title="Open comparer"
+                onClick={() => {
+                  setOpenMobile(false);
+                }}
+              >
+                <Scale className="w-4 h-4" /> <span className="sr-only">Open comparer</span>
+              </Link>
+            </SidebarGroupAction>
+            <SidebarGroupContent>
+              <SidebarComparer setOpenMobile={setOpenMobile} />
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        <div className="border-t border-border/70 px-1 py-1 group-data-[collapsible=icon]:px-0">
+          <SocialLinks />
+        </div>
+        <SidebarFooter className="pt-0">
+          <SignIn isLeftSidebar forceTextButton={expanded} />
+        </SidebarFooter>
+      </div>
       <SidebarRail />
     </Sidebar>
   );

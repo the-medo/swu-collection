@@ -11,7 +11,8 @@ import { useCallback } from 'react';
 import { DISCORD_LINK, GITHUB_LINK } from '../../../../../../shared/consts/constants.ts';
 
 const SocialLinks: React.FC = () => {
-  const { open } = useSidebar();
+  const { open, isMobile, setOpenMobile } = useSidebar();
+  const expanded = isMobile || open;
   const { theme, setTheme } = useTheme();
 
   const switchTheme = useCallback(() => {
@@ -25,21 +26,19 @@ const SocialLinks: React.FC = () => {
   return (
     <div
       className={cn('flex w-full items-center justify-center gap-2', {
-        'px-2 py-2 justify-between': open,
+        'px-2 py-1 justify-between': expanded,
       })}
     >
-      <div className={cn('flex items-center gap-2', { 'flex-col': !open })}>
+      <div className={cn('flex items-center gap-2', { 'flex-col': !expanded })}>
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 [&_svg]:size-4 fill-foreground stroke-foreground"
+          className="relative h-8 w-8 rounded-lg [&_svg]:size-4"
           onClick={switchTheme}
-          asChild
+          aria-label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
         >
-          <div>
-            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          </div>
+          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
         </Button>
         {/*{session.data && (
           <>
@@ -66,7 +65,7 @@ const SocialLinks: React.FC = () => {
           </>
         )}*/}
       </div>
-      {open && (
+      {expanded && (
         <div className={cn('flex items-center gap-1')}>
           <TooltipProvider>
             <Tooltip>
@@ -108,7 +107,11 @@ const SocialLinks: React.FC = () => {
                   className="h-8 w-8 [&_svg]:size-4 fill-foreground stroke-foreground"
                   asChild
                 >
-                  <Link to="/support" aria-label="Support SWUBASE">
+                  <Link
+                    to="/support"
+                    aria-label="Support SWUBASE"
+                    onClick={() => setOpenMobile(false)}
+                  >
                     <Heart
                       className="overflow-visible fill-current opacity-80"
                       strokeWidth={2.5}

@@ -165,6 +165,7 @@ const Sidebar = React.forwardRef<
     ref,
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+    const mobileReturnFocusRef = React.useRef<HTMLElement | null>(null);
 
     if (collapsible === 'none') {
       return (
@@ -187,7 +188,21 @@ const Sidebar = React.forwardRef<
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
+            aria-label="Navigation"
+            aria-labelledby={undefined}
             aria-describedby={undefined}
+            onOpenAutoFocus={() => {
+              mobileReturnFocusRef.current =
+                document.activeElement instanceof HTMLElement ? document.activeElement : null;
+            }}
+            onCloseAutoFocus={event => {
+              // The sidebar toggle lives outside the Sheet's trigger context.
+              if (mobileReturnFocusRef.current?.isConnected) {
+                event.preventDefault();
+                mobileReturnFocusRef.current.focus();
+              }
+              mobileReturnFocusRef.current = null;
+            }}
             className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
             style={
               {
