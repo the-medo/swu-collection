@@ -1,4 +1,5 @@
 export const MCP_SCOPE = 'cards:read';
+export const MCP_USAGE_READ_SCOPE = 'usage:read';
 export const MCP_CARD_POOL_READ_SCOPE = 'card-pools:read';
 export const MCP_COLLECTION_READ_SCOPE = 'collections:read';
 export const MCP_DECK_WRITE_SCOPE = 'decks:write';
@@ -15,6 +16,7 @@ export const MCP_RESOURCE_SCOPES = [
   MCP_DECK_WRITE_SCOPE,
   MCP_COLLECTION_READ_SCOPE,
   MCP_CARD_POOL_READ_SCOPE,
+  MCP_USAGE_READ_SCOPE,
   MCP_ARTICLE_READ_SCOPE,
   MCP_ARTICLE_WRITE_SCOPE,
   MCP_ARTICLE_PUBLISH_SCOPE,
@@ -25,6 +27,8 @@ export const MCP_RESOURCE_SCOPES = [
 export const MCP_SCOPE_DESCRIPTIONS: Record<(typeof MCP_RESOURCE_SCOPES)[number], string> = {
   'card-pools:read':
     'Read your card pools, including private pools and their physical cards, plus public or link-accessible pools to propose limited decks.',
+  'usage:read':
+    'Read summaries of your MCP activity across agent clients, including tools, dates, outcomes and server execution time.',
   'cards:read': 'Search the official Star Wars Unlimited card catalog.',
   'collections:read':
     'Read your collections and owned card quantities, including private collections, to find missing cards for decks.',

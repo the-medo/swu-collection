@@ -1,3 +1,4 @@
+import { createAccountRepository, type AccountRepository } from './account.ts';
 import { createCardPoolRepository, type CardPoolRepository } from './card-pools.ts';
 import { createDeckWritingRepository, type DeckWritingRepository } from './deck-writing.ts';
 import { createCollectionRepository, type CollectionRepository } from './collections.ts';
@@ -38,6 +39,7 @@ export interface McpRepository extends DeckRepository {
   articleServices?: ArticleServices;
   collections?: CollectionRepository;
   cardPools?: CardPoolRepository;
+  account?: AccountRepository;
   deckWriting?: DeckWritingRepository;
   authorize(claims: unknown): Promise<Identity | 'invalid' | 'restricted'>;
   admit(identity: Pick<Identity, 'userId' | 'clientId'>, tool: McpToolName): Promise<string | null>;
@@ -59,6 +61,7 @@ export function createMcpRepository(
   return {
     collections: createCollectionRepository(database),
     cardPools: createCardPoolRepository(database),
+    account: createAccountRepository(database, resource, callsPerMinute),
     deckWriting: createDeckWritingRepository(database),
     articleServices: {
       articles: createArticleRepository(database),

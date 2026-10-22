@@ -546,6 +546,8 @@ test.skipIf(!enabled)(
             'get_cards',
             'list_my_decks',
             'get_deck',
+            'get_my_mcp_access',
+            'get_my_mcp_usage',
             'list_my_card_pools',
             'get_card_pool',
             'list_my_collections',
@@ -1067,6 +1069,45 @@ test.skipIf(!enabled)(
       expect(denied.status).toBe(403);
       for (const scope of scopes) expect(denied.headers.get('WWW-Authenticate')).toContain(scope);
     }
+    const usageToken = await signed(['usage:read']);
+    const deniedUsage = await rawCall(cards, 'get_my_mcp_usage');
+    expect(deniedUsage.status).toBe(403);
+    expect(deniedUsage.headers.get('WWW-Authenticate')).toContain('usage:read');
+    const accessClient = new Client({ name: 'account-reader', version: '1.0' });
+    await accessClient.connect(
+      new StreamableHTTPClientTransport(new URL(resource), {
+        requestInit: { headers: { Authorization: `Bearer ${usageToken}` } },
+      }),
+    );
+    try {
+      const access = await accessClient.callTool({ name: 'get_my_mcp_access', arguments: {} });
+      expect(access.structuredContent).toMatchObject({
+        clientId,
+        permissions: expect.arrayContaining([
+          { scope: 'usage:read', description: expect.any(String), granted: true },
+          { scope: 'decks:write', description: expect.any(String), granted: false },
+        ]),
+        rateLimit: { sharedAcrossClients: true },
+      });
+      expect(
+        (await accessClient.callTool({ name: 'get_my_mcp_usage', arguments: {} }))
+          .structuredContent,
+      ).toMatchObject({
+        clients: 'current',
+        totals: { calls: expect.any(Number), unfinishedCalls: 1 },
+      });
+      expect(
+        (
+          await accessClient.callTool({
+            name: 'get_my_mcp_usage',
+            arguments: { userId: foreignUserId },
+          })
+        ).isError,
+      ).toBe(true);
+    } finally {
+      await accessClient.close();
+    }
+    expect((await rawCall(cards, 'get_my_mcp_access')).status).toBe(200);
     const poolToken = await signed(['card-pools:read']);
     for (const name of ['list_my_card_pools', 'get_card_pool']) {
       const denied = await rawCall(cards, name);
@@ -1074,6 +1115,26 @@ test.skipIf(!enabled)(
       expect(denied.headers.get('WWW-Authenticate')).toContain('card-pools:read');
     }
     expect((await rawCall(poolToken, 'list_my_card_pools')).status).toBe(200);
+    const poolClient = new Client({ name: 'pool-reader', version: '1.0' });
+    await poolClient.connect(
+      new StreamableHTTPClientTransport(new URL(resource), {
+        requestInit: { headers: { Authorization: `Bearer ${poolToken}` } },
+      }),
+    );
+    try {
+      expect(
+        (await poolClient.callTool({ name: 'get_card_pool', arguments: { poolId: poolIds[0] } }))
+          .structuredContent,
+      ).toMatchObject({
+        pool: { poolId: poolIds[0] },
+        totalPhysicalCards: expect.any(Number),
+        cards: expect.arrayContaining([
+          expect.objectContaining({ cardPoolNumbers: expect.any(Array) }),
+        ]),
+      });
+    } finally {
+      await poolClient.close();
+    }
     const collectionToken = await signed(['collections:read']);
     const collectionDenied = await rawCall(writer, 'list_my_collections');
     expect(collectionDenied.status).toBe(403);
@@ -1261,6 +1322,8 @@ test.skipIf(!enabled)(
       expect((await rawCall(writer, 'get_article', { articleId: saved.id })).status).toBe(200);
       expect((await rawCall(collectionToken, 'list_my_collections')).status).toBe(403);
       expect((await rawCall(poolToken, 'list_my_card_pools')).status).toBe(403);
+      expect((await rawCall(usageToken, 'get_my_mcp_usage')).status).toBe(403);
+      expect((await rawCall(usageToken, 'get_my_mcp_access')).status).toBe(200);
       expect((await rawCall(deckWriter, 'create_deck', {})).status).toBe(403);
       const [usage] =
         await sql`select string_agg(tool, ',') as tools from mcp_tool_usage where user_id = ${userId}`;

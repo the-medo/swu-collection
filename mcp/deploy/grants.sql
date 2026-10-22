@@ -60,3 +60,6 @@ GRANT INSERT (deck_id, discussion_id) ON deck_discussion TO swubase_mcp;
 
 -- Pool inventory and bounded metadata; no pool writes.
 GRANT SELECT (set, description, custom, edited, created_at) ON card_pools TO swubase_mcp;
+
+-- Account-scoped summaries of the existing MCP ledger; no prompts or tokens.
+GRANT SELECT (client_id, tool, outcome, result_count, duration_ms) ON mcp_tool_usage TO swubase_mcp;

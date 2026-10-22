@@ -1,8 +1,9 @@
 # SWUBASE MCP
 
 The separate Bun/Hono service lives in `mcp/` and exposes Streamable HTTP at
-**`https://mcp.swubase.com/mcp`**. Its 36 tools provide card/deck discovery,
-collection ownership checks, deck editing, and authenticated article authoring.
+**`https://mcp.swubase.com/mcp`**. Its 38 tools provide card/deck discovery,
+collection ownership checks, deck editing, sealed-pool assistance, account/usage
+reports, and authenticated article authoring.
 The four original discovery tools are read-only; see
 [article authoring](mcp-articles.md) for the 22 article, template and image tools:
 
@@ -133,6 +134,35 @@ truncation flag; owner IDs and other users' private pools are not returned.
 Reapply the grant script and deploy main-app consent support before MCP. No new
 migration is needed.
 
+## Account access and usage
+
+`get_my_mcp_access` works with default `cards:read` consent. It reports the
+current client's ID, the account's public display name, supported resource scopes and
+which are effective for this request, and the configured rolling one-minute
+budget shared across all clients for that user. Effective permissions are the
+intersection of token scopes and live consent; ownership, membership and resource
+state checks still apply. Missing scopes require reconnection/approval, not an
+account-role upgrade.
+
+`get_my_mcp_usage` requires separate `usage:read` consent because it can expose
+activity across clients. It defaults to the current client and the last seven
+days; select `clients: "all"` to include all of your clients, and `days` from 1 to 90. Optional exact `tool` filtering and grouping by `tool`, `client`, or UTC `day`
+are supported. Group pages cap at 100. Totals always cover the complete filtered
+period, independent of pagination; each response uses one database snapshot.
+
+Counts include admitted successful, failed and unfinished tool calls. Unfinished
+means no final outcome was recorded, including interrupted requests. Discovery,
+authentication/scope failures and rate-limit rejections are excluded. Both report
+tools consume the normal rate budget, so the current report may appear unfinished
+in its own totals; they cannot bypass an exhausted budget. Remaining capacity is
+a snapshot, not reserved capacity. Deleted client IDs remain in historical usage.
+Result counts have tool-specific units, and durations measure server execution;
+these reports do not contain prompts, credentials, model token counts or costs.
+
+Deploy the main app with the new consent description and reapply the usage-column
+SELECT grants before MCP. These tools reuse the existing usage ledger without a
+schema migration or package upgrade.
+
 ## Tool inputs and examples
 
 Search requires a name/ID `query` or at least one filter. All filter groups combine
@@ -191,7 +221,7 @@ PKCE S256. Clients discover the issuer and register dynamically. The provider
 limits dynamic registration to five requests per IP per minute in
 production. No automatic cleanup of abandoned client registrations is included;
 review their retention with an owner/admin connection.
-`cards:read`, `decks:read`, `decks:write`, `collections:read`, `card-pools:read`, `articles:read`, `articles:write`,
+`cards:read`, `decks:read`, `decks:write`, `collections:read`, `card-pools:read`, `usage:read`, `articles:read`, `articles:write`,
 `articles:publish`, `images:read`, `images:write`, `melee:read` and optional
 `offline_access` are available;
 client-credentials grants are disabled. Dynamic registration preserves the full
@@ -410,7 +440,8 @@ format; clients must also handle failures without our structured error fields.
 `mcp_tool_usage` stores user ID, registered client ID, tool, start time, outcome,
 result count and duration. It records admitted, validated tool executions,
 including empty searches and failures. Counts mean returned cards for card tools,
-returned summaries for `list_my_decks`, and one for a successful `get_deck`. Authentication failures, discovery,
+returned summaries for list tools, physical cards for `get_card_pool`, groups for
+`get_my_mcp_usage`, and one for `get_deck`/`get_my_mcp_access`. Authentication failures, discovery,
 validation failures and rate-limit denials are not tool executions. Browser and
 server telemetry omit OAuth pages, API requests and their signed query strings. Admission is
 limited per user across clients/replicas (60 per minute by default); it is not a
@@ -457,7 +488,8 @@ lifetime while its session and consent remain live.
 
 `mcp/tools/registry.ts` combines the card/deck definitions in
 `mcp/tools/catalog.ts`, collection definitions in `mcp/tools/collections.ts`,
-pool definitions in `mcp/tools/card-pools.ts`, deck authoring/export definitions
+pool definitions in `mcp/tools/card-pools.ts`, account definitions in
+`mcp/tools/account.ts`, deck authoring/export definitions
 in `mcp/tools/deck-writing.ts`, and article
 definitions in `mcp/articles/tools.ts`.
 Each `defineTool` declaration supplies its name, strict input schema, scopes,
