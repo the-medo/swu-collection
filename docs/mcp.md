@@ -1,7 +1,7 @@
 # SWUBASE MCP
 
 The separate Bun/Hono service lives in `mcp/` and exposes Streamable HTTP at
-**`https://mcp.swubase.com/mcp`**. Its 34 tools provide card/deck discovery,
+**`https://mcp.swubase.com/mcp`**. Its 36 tools provide card/deck discovery,
 collection ownership checks, deck editing, and authenticated article authoring.
 The four original discovery tools are read-only; see
 [article authoring](mcp-articles.md) for the 22 article, template and image tools:
@@ -110,6 +110,29 @@ Deploy the main app with `decks:write` consent support, reapply
 insertion trigger's empty discussion/binding writes. These deck tools reuse the
 existing mutation-receipt table and require no new migration or package upgrade.
 
+## Sealed-pool assistance
+
+`list_my_card_pools` and `get_card_pool` require `card-pools:read` consent.
+Listing shows only your pools, with literal-name, set, type, status and visibility
+filters; archived pools are excluded unless requested. Pages default to 10 and
+cap at 25. Get accepts an owned or public/unlisted pool by ID, matching the app's
+visibility rule, including archived pools when addressed directly.
+
+A pool read returns the entire stored inventory, grouped by logical card ID with
+quantities and exact physical `cardPoolNumbers`, plus full official/active-preview
+card details. Leaders and bases remain in the inventory. Unknown IDs keep their
+copies with null details and appear in `missingCardIds`. Separate `basicBaseOptions`
+use the app's set-specific catalog and are not extra physical copies. Reads fail
+above 1,000 physical cards or the shared output-size limit, without truncating
+inventory. In-progress pools may be incomplete.
+
+An agent can propose alternative builds using these reads; a physical copy may
+appear only once within each build. These tools do not save pool decks or certify
+event legality. Pool descriptions are capped at 4,000 characters with an explicit
+truncation flag; owner IDs and other users' private pools are not returned.
+Reapply the grant script and deploy main-app consent support before MCP. No new
+migration is needed.
+
 ## Tool inputs and examples
 
 Search requires a name/ID `query` or at least one filter. All filter groups combine
@@ -168,7 +191,7 @@ PKCE S256. Clients discover the issuer and register dynamically. The provider
 limits dynamic registration to five requests per IP per minute in
 production. No automatic cleanup of abandoned client registrations is included;
 review their retention with an owner/admin connection.
-`cards:read`, `decks:read`, `decks:write`, `collections:read`, `articles:read`, `articles:write`,
+`cards:read`, `decks:read`, `decks:write`, `collections:read`, `card-pools:read`, `articles:read`, `articles:write`,
 `articles:publish`, `images:read`, `images:write`, `melee:read` and optional
 `offline_access` are available;
 client-credentials grants are disabled. Dynamic registration preserves the full
@@ -434,7 +457,8 @@ lifetime while its session and consent remain live.
 
 `mcp/tools/registry.ts` combines the card/deck definitions in
 `mcp/tools/catalog.ts`, collection definitions in `mcp/tools/collections.ts`,
-deck authoring/export definitions in `mcp/tools/deck-writing.ts`, and article
+pool definitions in `mcp/tools/card-pools.ts`, deck authoring/export definitions
+in `mcp/tools/deck-writing.ts`, and article
 definitions in `mcp/articles/tools.ts`.
 Each `defineTool` declaration supplies its name, strict input schema, scopes,
 annotations, typed execution handler and explicit result-count function. Declare

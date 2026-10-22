@@ -546,6 +546,8 @@ test.skipIf(!enabled)(
             'get_cards',
             'list_my_decks',
             'get_deck',
+            'list_my_card_pools',
+            'get_card_pool',
             'list_my_collections',
             'get_card_ownership',
             'get_deck_missing_cards',
@@ -1065,6 +1067,13 @@ test.skipIf(!enabled)(
       expect(denied.status).toBe(403);
       for (const scope of scopes) expect(denied.headers.get('WWW-Authenticate')).toContain(scope);
     }
+    const poolToken = await signed(['card-pools:read']);
+    for (const name of ['list_my_card_pools', 'get_card_pool']) {
+      const denied = await rawCall(cards, name);
+      expect(denied.status).toBe(403);
+      expect(denied.headers.get('WWW-Authenticate')).toContain('card-pools:read');
+    }
+    expect((await rawCall(poolToken, 'list_my_card_pools')).status).toBe(200);
     const collectionToken = await signed(['collections:read']);
     const collectionDenied = await rawCall(writer, 'list_my_collections');
     expect(collectionDenied.status).toBe(403);
@@ -1251,6 +1260,7 @@ test.skipIf(!enabled)(
       ).toBe(403);
       expect((await rawCall(writer, 'get_article', { articleId: saved.id })).status).toBe(200);
       expect((await rawCall(collectionToken, 'list_my_collections')).status).toBe(403);
+      expect((await rawCall(poolToken, 'list_my_card_pools')).status).toBe(403);
       expect((await rawCall(deckWriter, 'create_deck', {})).status).toBe(403);
       const [usage] =
         await sql`select string_agg(tool, ',') as tools from mcp_tool_usage where user_id = ${userId}`;

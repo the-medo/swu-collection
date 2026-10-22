@@ -57,3 +57,6 @@ GRANT SELECT (deck_id), UPDATE (aspect_command, aspect_vigilance, aspect_aggress
 -- The existing AFTER INSERT deck trigger creates its empty discussion/binding.
 GRANT INSERT (type), SELECT (id) ON discussion TO swubase_mcp;
 GRANT INSERT (deck_id, discussion_id) ON deck_discussion TO swubase_mcp;
+
+-- Pool inventory and bounded metadata; no pool writes.
+GRANT SELECT (set, description, custom, edited, created_at) ON card_pools TO swubase_mcp;

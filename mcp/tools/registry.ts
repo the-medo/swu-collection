@@ -1,3 +1,5 @@
+import { createCardPoolTools } from './card-pools.ts';
+import type { CardPoolRepository } from '../card-pools.ts';
 import { createDeckWritingTools } from './deck-writing.ts';
 import type { DeckWritingRepository } from '../deck-writing.ts';
 import { createCollectionTools } from './collections.ts';
@@ -9,6 +11,7 @@ import type { DeckRepository } from '../decks.ts';
 export type McpTool =
   | ReturnType<typeof createArticleTools>[number]
   | ReturnType<typeof createCatalogTools>[number]
+  | ReturnType<typeof createCardPoolTools>[number]
   | ReturnType<typeof createCollectionTools>[number]
   | ReturnType<typeof createDeckWritingTools>[number];
 export type McpToolName = McpTool['name'];
@@ -16,11 +19,13 @@ export function createToolRegistry(
   services: DeckRepository & {
     articleServices?: ArticleServices;
     collections?: CollectionRepository;
+    cardPools?: CardPoolRepository;
     deckWriting?: DeckWritingRepository;
   },
 ) {
   const tools = [
     ...createCatalogTools(services),
+    ...(services.cardPools ? createCardPoolTools(services.cardPools) : []),
     ...(services.deckWriting ? createDeckWritingTools(services.deckWriting) : []),
     ...(services.collections ? createCollectionTools(services.collections) : []),
     ...(services.articleServices ? createArticleTools(services.articleServices) : []),
