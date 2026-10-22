@@ -7,6 +7,7 @@ import ComparerEntryBadge from '@/components/app/comparer/SidebarComparer/Compar
 import { SidebarMenuButton, useSidebar } from '@/components/ui/sidebar.tsx';
 import { Scale } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
+import { cn } from '@/lib/utils.ts';
 
 interface SidebarComparerProps {
   setOpenMobile: (open: boolean) => void;
@@ -16,42 +17,34 @@ const SidebarComparer: React.FC<SidebarComparerProps> = ({ setOpenMobile }) => {
   const { entries, mainId } = useComparerStore();
   const { setMainId, removeComparerEntry } = useComparerStoreActions();
   const { open, isMobile } = useSidebar();
+  const expanded = open || isMobile;
 
-  // If sidebar is collapsed, show only a single icon with a badge
-  if (!open && !isMobile) {
-    return (
+  return (
+    <div>
       <SidebarMenuButton asChild tooltip="Comparer">
         <Link
-          to={'/comparer'}
-          className="relative [&.active]:font-bold"
-          onClick={() => {
-            setOpenMobile(false);
-          }}
+          to="/comparer"
+          aria-label="Open comparer"
+          className="relative"
+          onClick={() => setOpenMobile(false)}
         >
-          <Scale className="w-4 h-4" /> <span className="sr-only">Open comparer</span>
+          <Scale className="size-4" />
+          <span className="flex-1">Comparer</span>
           {entries.length > 0 && (
             <span
               aria-label={`${entries.length} comparison entries`}
-              className="absolute top-0 right-0 bg-primary text-primary-foreground rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-bold"
+              className={cn(
+                'flex size-4 shrink-0 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground',
+                !expanded && 'absolute top-0 right-0',
+              )}
             >
               {entries.length}
             </span>
           )}
         </Link>
       </SidebarMenuButton>
-    );
-  }
-
-  // If sidebar is open, show the full list of entries
-  return (
-    <div>
-      <div className="flex flex-col gap-2 p-3 rounded-xl border border-border bg-card/60">
-        <div className="w-full flex flex-wrap gap-1">
-          {entries.length === 0 && (
-            <span className="text-[11px] leading-relaxed text-muted-foreground">
-              Add decks or lists to compare.
-            </span>
-          )}
+      {expanded && entries.length > 0 && (
+        <div className="mt-1 flex max-h-24 flex-wrap gap-1 overflow-y-auto rounded-lg border border-border bg-card/60 p-1">
           {entries
             .slice()
             .sort((a, b) => {
@@ -69,7 +62,7 @@ const SidebarComparer: React.FC<SidebarComparerProps> = ({ setOpenMobile }) => {
               />
             ))}
         </div>
-      </div>
+      )}
     </div>
   );
 };

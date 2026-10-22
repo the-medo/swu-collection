@@ -6,7 +6,6 @@ import {
   LayoutGrid,
   Map,
   Plus,
-  Scale,
   Star,
   TrophyIcon,
   Users,
@@ -18,10 +17,8 @@ import {
 import {
   Sidebar,
   SidebarContent,
-  SidebarContext,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
@@ -29,11 +26,7 @@ import {
   SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   SidebarRail,
-  SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar.tsx';
 import { Link, useMatch } from '@tanstack/react-router';
@@ -52,7 +45,6 @@ import SocialLinks from '@/components/app/navigation/LeftSidebar/SocialLinks.tsx
 import { cn } from '@/lib/utils.ts';
 import { CollectionType } from '../../../../../../types/enums.ts';
 import SidebarComparer from '../../comparer/SidebarComparer/SidebarComparer.tsx';
-import { Fragment, useMemo } from 'react';
 import { UserTeam } from '../../../../../../server/routes/teams/get.ts';
 import { Badge } from '@/components/ui/badge.tsx';
 import { CrossfireLogo } from '@/components/app/crossfire/CrossfireLogo.tsx';
@@ -66,187 +58,224 @@ import {
   SealedDeckIcon,
   WantlistIcon,
 } from '@/components/app/global/icons/CardLibraryIcons.tsx';
+import { SidebarNavigationItem, type SidebarNavigationEntry } from './SidebarNavigationItem.tsx';
 import './left-sidebar.css';
 
-const getGroups = (
-  setOpenMobile: (open: boolean) => void,
-  state: SidebarContext['state'],
-  teams: UserTeam[],
-) => [
-  {
-    id: 'analysis-and-decks',
-    title: 'Analysis & Decks',
-    items: [
-      {
-        title: 'Meta analysis',
-        url: '/meta',
-        icon: ChartPieIcon,
-      },
-      {
-        title: 'Tournaments',
-        url: '/tournaments',
-        icon: TrophyIcon,
-        menuAction:
-          state === 'expanded' ? (
+const getGroups = ({
+  setOpenMobile,
+  teams,
+  authenticated,
+  showLists,
+  canCrossfire,
+  invitationCount,
+}: {
+  setOpenMobile: (open: boolean) => void;
+  teams: UserTeam[];
+  authenticated: boolean;
+  showLists: boolean;
+  canCrossfire: boolean;
+  invitationCount: number;
+}): { id: string; title: string; items: SidebarNavigationEntry[] }[] => {
+  const teamsItem: SidebarNavigationEntry = {
+    title: 'Teams',
+    url: '/teams',
+    icon: Users,
+    action: (
+      <NewTeamDialog
+        trigger={
+          <SidebarMenuAction title="Create Team">
+            <Plus />
+            <span className="sr-only">Create Team</span>
+          </SidebarMenuAction>
+        }
+      />
+    ),
+    items: teams.map(team => ({
+      title: team.name,
+      url: `/teams/${team.shortcut ?? team.id}`,
+      statisticsUrl: `/teams/${team.shortcut ?? team.id}/statistics`,
+    })),
+  };
+  const publicLists: SidebarNavigationEntry[] = showLists
+    ? [
+        { title: 'Collections', url: '/collections/public', icon: CollectionIcon },
+        { title: 'Wantlists', url: '/wantlists/public', icon: WantlistIcon },
+      ]
+    : [];
+  return [
+    {
+      id: 'explore',
+      title: 'Explore',
+      items: [
+        { title: 'Meta analysis', url: '/meta', icon: ChartPieIcon },
+        {
+          title: 'Tournaments',
+          url: '/tournaments',
+          icon: TrophyIcon,
+          action: (
             <SidebarMenuAction asChild title="Tournament map">
               <Link to="/tournaments/map" onClick={() => setOpenMobile(false)}>
-                <Map /> <span className="sr-only">Tournament map</span>
+                <Map />
+                <span className="sr-only">Tournament map</span>
               </Link>
             </SidebarMenuAction>
-          ) : (
-            <Link to="/tournaments/map" title="Tournament map" onClick={() => setOpenMobile(false)}>
-              <Map /> <span className="sr-only">Tournament map</span>
-            </Link>
           ),
-        displayMenuActionWhenCollapsed: true,
-        separator: true,
-        items: [
-          {
-            title: 'Planetary Qualifiers',
-            url: '/tournaments/planetary-qualifiers',
-          },
-        ],
-      },
-      {
-        title: 'Crossfire',
-        url: '/crossfire',
-        icon: CrossfireLogo,
-        authenticated: true,
-        beta: true,
-      },
-      {
-        title: 'Your decks',
-        url: '/decks/your',
-        icon: DeckIcon,
-        authenticated: true,
-        menuAction: (
-          <NewDeckDialog
-            trigger={
-              <SidebarMenuAction title="Add Deck">
-                <Plus /> <span className="sr-only">Add Deck</span>
-              </SidebarMenuAction>
-            }
-          />
-        ),
-      },
-      {
-        title: 'Decks',
-        url: '/decks/public',
-        icon: DeckIcon,
-        menuAction:
-          state === 'expanded' ? (
+          items: [
+            { title: 'Planetary Qualifiers', url: '/tournaments/planetary-qualifiers' },
+            { title: 'Tournament map', url: '/tournaments/map' },
+            ...(authenticated ? [{ title: 'Your calendar', url: '/tournaments/calendar' }] : []),
+          ],
+          content: authenticated ? <SidebarYourTournaments /> : undefined,
+        },
+        {
+          title: 'Public decks',
+          url: '/decks/public',
+          icon: DeckIcon,
+          action: (
             <SidebarMenuAction asChild title="Favorite Decks">
               <Link to="/decks/favorite" onClick={() => setOpenMobile(false)}>
-                <Star /> <span className="sr-only">Favorite Decks</span>
+                <Star />
+                <span className="sr-only">Favorite Decks</span>
               </Link>
             </SidebarMenuAction>
-          ) : (
-            <Link to="/decks/favorite" onClick={() => setOpenMobile(false)}>
-              <Star /> <span className="sr-only">Favorite Decks</span>
-            </Link>
           ),
-        displayMenuActionWhenCollapsed: true,
-      },
-      {
-        title: 'Sealed deck',
-        url: '/limited',
-        icon: SealedDeckIcon,
-      },
-      {
-        title: 'Your statistics',
-        url: '/statistics',
-        icon: ChartSpline,
-      },
-      {
-        title: 'Teams',
-        url: '/teams',
-        icon: Users,
-        menuAction: (
-          <NewTeamDialog
-            trigger={
-              <SidebarMenuAction title="Create Team">
-                <Plus /> <span className="sr-only">Create Team</span>
-              </SidebarMenuAction>
-            }
-          />
-        ),
-        items:
-          teams && teams.length > 0
-            ? teams.map(team => ({
-                title: team.name,
-                url: `/teams/${team.shortcut ?? team.id}`,
-                statisticsUrl: `/teams/${team.shortcut ?? team.id}/statistics`,
-              }))
-            : [],
-      },
-    ],
-  },
-  {
-    id: 'lists',
-    title: 'Collections & Lists',
-    items: [
-      {
-        title: 'Your collections',
-        url: '/collections/your',
-        icon: CollectionIcon,
-        authenticated: true,
-        menuAction: (
-          <NewCollectionDialog
-            trigger={
-              <SidebarMenuAction title="Add Collection">
-                <Plus /> <span className="sr-only">Add Collection</span>
-              </SidebarMenuAction>
-            }
-            collectionType={CollectionType.COLLECTION}
-          />
-        ),
-      },
-      {
-        title: 'Your wantlists',
-        url: '/wantlists/your',
-        icon: WantlistIcon,
-        authenticated: true,
-        menuAction: (
-          <NewCollectionDialog
-            trigger={
-              <SidebarMenuAction title="Add Wantlist">
-                <Plus /> <span className="sr-only">Add Wantlist</span>
-              </SidebarMenuAction>
-            }
-            collectionType={CollectionType.WANTLIST}
-          />
-        ),
-      },
-      {
-        title: 'Your other lists',
-        url: '/lists/your',
-        icon: CardListIcon,
-        authenticated: true,
-        menuAction: (
-          <NewCollectionDialog
-            trigger={
-              <SidebarMenuAction title="Add card list">
-                <Plus /> <span className="sr-only">Add card list</span>
-              </SidebarMenuAction>
-            }
-            collectionType={CollectionType.OTHER}
-          />
-        ),
-        separator: true,
-      },
-      {
-        title: 'Collections',
-        url: '/collections/public',
-        icon: CollectionIcon,
-      },
-      {
-        title: 'Wantlists',
-        url: '/wantlists/public',
-        icon: WantlistIcon,
-      },
-    ],
-  },
-];
+          items: authenticated ? undefined : [{ title: 'Favorite decks', url: '/decks/favorite' }],
+        },
+        {
+          title: 'Creators',
+          url: '/creators',
+          icon: Radio,
+          className: 'sidebar-creators',
+          badge: <span className="sidebar-preview">Preview</span>,
+        },
+        ...(!authenticated ? [...publicLists, teamsItem] : []),
+      ],
+    },
+    ...(authenticated
+      ? [
+          {
+            id: 'your-space',
+            title: 'Your space',
+            items: [
+              {
+                title: 'Decks',
+                label: 'Your decks',
+                url: '/decks/your',
+                icon: DeckIcon,
+                action: (
+                  <NewDeckDialog
+                    trigger={
+                      <SidebarMenuAction title="Add Deck">
+                        <Plus />
+                        <span className="sr-only">Add Deck</span>
+                      </SidebarMenuAction>
+                    }
+                  />
+                ),
+                items: [{ title: 'Favorite decks', url: '/decks/favorite' }],
+              },
+              ...(showLists
+                ? [
+                    {
+                      title: 'Collections',
+                      label: 'Your collections',
+                      url: '/collections/your',
+                      icon: CollectionIcon,
+                      action: (
+                        <NewCollectionDialog
+                          collectionType={CollectionType.COLLECTION}
+                          trigger={
+                            <SidebarMenuAction title="Add Collection">
+                              <Plus />
+                              <span className="sr-only">Add Collection</span>
+                            </SidebarMenuAction>
+                          }
+                        />
+                      ),
+                      items: [{ title: 'Public collections', url: '/collections/public' }],
+                    },
+                    {
+                      title: 'Wantlists',
+                      label: 'Your wantlists',
+                      url: '/wantlists/your',
+                      icon: WantlistIcon,
+                      action: (
+                        <NewCollectionDialog
+                          collectionType={CollectionType.WANTLIST}
+                          trigger={
+                            <SidebarMenuAction title="Add Wantlist">
+                              <Plus />
+                              <span className="sr-only">Add Wantlist</span>
+                            </SidebarMenuAction>
+                          }
+                        />
+                      ),
+                      items: [{ title: 'Public wantlists', url: '/wantlists/public' }],
+                    },
+                    {
+                      title: 'Lists',
+                      label: 'Your other lists',
+                      url: '/lists/your',
+                      icon: CardListIcon,
+                      action: (
+                        <NewCollectionDialog
+                          collectionType={CollectionType.OTHER}
+                          trigger={
+                            <SidebarMenuAction title="Add card list">
+                              <Plus />
+                              <span className="sr-only">Add card list</span>
+                            </SidebarMenuAction>
+                          }
+                        />
+                      ),
+                    },
+                  ]
+                : []),
+              teamsItem,
+              {
+                title: 'Statistics',
+                label: 'Your statistics',
+                url: '/statistics',
+                icon: ChartSpline,
+              },
+            ],
+          },
+        ]
+      : []),
+    {
+      id: 'play',
+      title: 'Play',
+      items: [
+        ...(authenticated && canCrossfire
+          ? [
+              {
+                title: 'Crossfire',
+                url: '/crossfire',
+                icon: CrossfireLogo,
+                badge: (
+                  <>
+                    {invitationCount > 0 && (
+                      <Badge
+                        aria-label={`${invitationCount} Crossfire invitations`}
+                        size="small"
+                        className="ml-auto px-2"
+                      >
+                        {invitationCount}
+                      </Badge>
+                    )}
+                    <Badge size="small" className="text-[10px] px-1.5" variant="outline">
+                      Beta
+                    </Badge>
+                  </>
+                ),
+              },
+            ]
+          : []),
+        { title: 'Sealed deck', url: '/limited', icon: SealedDeckIcon },
+      ],
+    },
+  ];
+};
 
 export function LeftSidebar() {
   const user = useUser();
@@ -270,16 +299,14 @@ export function LeftSidebar() {
 
   const { data: teams } = useTeams();
 
-  const groups = useMemo(
-    () =>
-      getGroups(setOpenMobile, expanded ? 'expanded' : 'collapsed', teams ?? [])
-        .filter(group => group.id !== 'lists' || showLists)
-        .map(group => ({
-          ...group,
-          items: group.items.filter(item => item.url !== '/crossfire' || canCrossfire),
-        })),
-    [setOpenMobile, expanded, teams, canCrossfire, showLists],
-  );
+  const groups = getGroups({
+    setOpenMobile,
+    teams: teams ?? [],
+    authenticated: Boolean(user),
+    showLists,
+    canCrossfire,
+    invitationCount,
+  });
 
   const swubaseLogo = theme === 'light' ? LogoLightTheme : LogoDarkTheme;
 
@@ -400,140 +427,25 @@ export function LeftSidebar() {
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild tooltip="Creators" className="sidebar-creators">
-                    <Link to="/creators" onClick={() => setOpenMobile(false)}>
-                      <Radio className="sidebar-creators-icon" aria-hidden="true" />
-                      <span className="min-w-0 flex-1">
-                        <span className="flex items-center gap-2 font-semibold">
-                          Creators
-                          {expanded && <span className="sidebar-preview">Preview</span>}
-                        </span>
-                        {expanded && (
-                          <span className="mt-1 block text-[10px] font-normal opacity-80">
-                            Fresh voices. More ways to play.
-                          </span>
-                        )}
-                      </span>
-                      {expanded && (
-                        <ArrowUpRight className="size-3.5! opacity-60" aria-hidden="true" />
-                      )}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-          {user && <SidebarYourTournaments key={user.id} />}
-          {groups.map(g => (
-            <SidebarGroup key={g.id} className="py-0">
-              <SidebarGroupLabel>{g.title}</SidebarGroupLabel>
+          {groups.map(group => (
+            <SidebarGroup key={group.id} className="py-0">
+              <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {g.items.map(i => (
-                    <Fragment key={i.title}>
-                      {!i.authenticated || (i.authenticated && user) ? (
-                        <>
-                          <SidebarMenuItem>
-                            <SidebarMenuButton asChild tooltip={i.title}>
-                              <Link
-                                to={i.url}
-                                className="[&.active]:font-bold"
-                                onClick={() => {
-                                  setOpenMobile(false);
-                                }}
-                              >
-                                <i.icon />
-                                <span>{i.title}</span>
-                                {i.url === '/crossfire' && invitationCount > 0 && (
-                                  <Badge
-                                    aria-label={`${invitationCount} Crossfire invitations`}
-                                    size="small"
-                                    className="ml-auto px-2"
-                                  >
-                                    {invitationCount}
-                                  </Badge>
-                                )}
-                                {'beta' in i && i.beta && (
-                                  <Badge size="small" className="text-xs px-2" variant="outline">
-                                    Beta
-                                  </Badge>
-                                )}
-                              </Link>
-                            </SidebarMenuButton>
-                            {'menuAction' in i && expanded ? i.menuAction : null}
-                          </SidebarMenuItem>
-                          {'items' in i && i.items && i.items.length > 0 && (
-                            <SidebarMenuSub>
-                              {i.items.map(subItem => (
-                                <SidebarMenuSubItem key={subItem.title} className="relative">
-                                  <SidebarMenuSubButton
-                                    asChild
-                                    size="md"
-                                    className={cn(
-                                      'statisticsUrl' in subItem && subItem.statisticsUrl && 'pr-8',
-                                    )}
-                                  >
-                                    <Link
-                                      to={subItem.url}
-                                      title={subItem.title}
-                                      onClick={() => {
-                                        setOpenMobile(false);
-                                      }}
-                                    >
-                                      <span>{subItem.title}</span>
-                                    </Link>
-                                  </SidebarMenuSubButton>
-                                  {'statisticsUrl' in subItem && subItem.statisticsUrl && (
-                                    <SidebarMenuAction asChild title="Team statistics">
-                                      <Link
-                                        to={subItem.statisticsUrl}
-                                        onClick={() => setOpenMobile(false)}
-                                        className="text-muted-foreground hover:text-foreground transition-colors"
-                                      >
-                                        <ChartSpline className="h-3.5 w-3.5" />
-                                        <span className="sr-only">Team statistics</span>
-                                      </Link>
-                                    </SidebarMenuAction>
-                                  )}
-                                </SidebarMenuSubItem>
-                              ))}
-                            </SidebarMenuSub>
-                          )}
-                          {'menuAction' in i &&
-                            'displayMenuActionWhenCollapsed' in i &&
-                            !expanded && (
-                              <SidebarMenuItem>
-                                <SidebarMenuButton asChild>{i.menuAction}</SidebarMenuButton>
-                              </SidebarMenuItem>
-                            )}
-                          {'separator' in i && i.separator ? <SidebarSeparator /> : null}
-                        </>
-                      ) : null}
-                    </Fragment>
+                  {group.items.map(item => (
+                    <SidebarNavigationItem key={item.url} item={item} />
                   ))}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
           ))}
-          <SidebarGroup>
-            <SidebarGroupLabel>Comparer</SidebarGroupLabel>
-            <SidebarGroupAction asChild>
-              <Link
-                to={'/comparer'}
-                title="Open comparer"
-                onClick={() => {
-                  setOpenMobile(false);
-                }}
-              >
-                <Scale className="w-4 h-4" /> <span className="sr-only">Open comparer</span>
-              </Link>
-            </SidebarGroupAction>
-            <SidebarGroupContent>
-              <SidebarComparer setOpenMobile={setOpenMobile} />
-            </SidebarGroupContent>
-          </SidebarGroup>
         </SidebarContent>
+        <div className="px-2 pb-2">
+          <SidebarComparer setOpenMobile={setOpenMobile} />
+        </div>
         <div className="border-t border-border/70 px-1 py-1 group-data-[collapsible=icon]:px-0">
           <SocialLinks />
         </div>

@@ -7,10 +7,6 @@ import { useSidebarSettings } from '@/api/user/useSidebarSettings.ts';
 import { useSavedTournaments } from '@/api/tournaments/useSavedTournaments.ts';
 import { Button } from '@/components/ui/button.tsx';
 import {
-  SidebarGroup,
-  SidebarGroupAction,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -49,34 +45,26 @@ export function SidebarYourTournaments() {
 }
 
 function SidebarTournamentSection({ children }: PropsWithChildren) {
-  const { state, isMobile, setOpenMobile } = useSidebar();
-  const expanded = isMobile || state === 'expanded';
+  const { setOpenMobile } = useSidebar();
   return (
-    <SidebarGroup role="group" aria-label="Your tournaments in sidebar" className="py-0">
-      <SidebarGroupLabel>Your tournaments</SidebarGroupLabel>
-      <SidebarGroupAction asChild title="Your calendar" className="top-1.5">
-        <Link to="/tournaments/calendar" onClick={() => setOpenMobile(false)}>
-          <CalendarDays />
+    <div
+      role="group"
+      aria-label="Your tournaments in sidebar"
+      className="mt-2 border-t border-border/60 pt-2"
+    >
+      <div className="flex items-center justify-between px-2 pb-1 text-[10px] font-medium text-muted-foreground">
+        <span>Your tournaments</span>
+        <Link
+          to="/tournaments/calendar"
+          onClick={() => setOpenMobile(false)}
+          className="rounded p-1 hover:text-foreground"
+        >
+          <CalendarDays className="size-3.5" />
           <span className="sr-only">Your calendar</span>
         </Link>
-      </SidebarGroupAction>
-      <SidebarGroupContent>
-        {!expanded ? (
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Your tournaments">
-                <Link to="/tournaments/calendar">
-                  <CalendarDays />
-                  <span>Your tournaments</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        ) : (
-          children
-        )}
-      </SidebarGroupContent>
-    </SidebarGroup>
+      </div>
+      {children}
+    </div>
   );
 }
 
