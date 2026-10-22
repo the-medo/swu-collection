@@ -159,7 +159,7 @@ export function parseTextToJson(
         author: author,
       },
       ...(leader && { leader }),
-      ...(leader2 && { leader2 }),
+      ...(leader2 && { secondleader: leader2 }),
       ...(base && { base }),
       deck,
       sideboard,

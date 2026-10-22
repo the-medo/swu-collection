@@ -19,7 +19,7 @@ export interface DeckExportJSON {
     author: string;
   };
   leader?: DeckExportJSONCard;
-  leader2?: DeckExportJSONCard;
+  secondleader?: DeckExportJSONCard;
   base?: DeckExportJSONCard;
   deck: DeckExportJSONCard[];
   sideboard: DeckExportJSONCard[];
@@ -73,7 +73,7 @@ export function createDeckJsonExport(
 
   // Add second leader if exists
   if (deck.leaderCardId2) {
-    exportData.leader2 = {
+    exportData.secondleader = {
       id: formatCardId(deck.leaderCardId2, cardList),
       count: 1,
     };
