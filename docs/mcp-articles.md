@@ -115,9 +115,9 @@ duration and count, without article prose, image payloads or credentials.
 ## Rollout
 
 Follow [MCP deployment](mcp.md). Deploy the updated sanitizer and main app first,
-verify migrations `0090_mcp_article_receipts` and `0091_mcp_content_locks`, then
+verify migration `0089_mcp`, then
 reapply `mcp/deploy/grants.sql` before deploying MCP. Existing installations also
-need these grants. The additive migrations create a receipt table and restricted
+need these grants. The additive migration includes the receipt table and restricted
 functions; existing account/article data is not rewritten. No packages or Better
 Auth version change in this feature.
 

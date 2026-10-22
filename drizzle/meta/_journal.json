@@ -631,20 +631,6 @@
       "when": 1792532504012,
       "tag": "0089_mcp",
       "breakpoints": true
-    },
-    {
-      "idx": 90,
-      "version": "7",
-      "when": 1792539353484,
-      "tag": "0090_mcp_article_receipts",
-      "breakpoints": true
-    },
-    {
-      "idx": 91,
-      "version": "7",
-      "when": 1792539408945,
-      "tag": "0091_mcp_content_locks",
-      "breakpoints": true
     }
   ]
 }

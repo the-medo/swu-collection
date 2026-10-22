@@ -176,3 +176,40 @@ CREATE INDEX "oauthRefreshToken_userId_idx" ON "oauth_refresh_token" USING btree
 CREATE INDEX "oauthRefreshToken_authorizationCodeId_idx" ON "oauth_refresh_token" USING btree ("authorization_code_id");--> statement-breakpoint
 CREATE INDEX "mcp_tool_usage_user_started_idx" ON "mcp_tool_usage" USING btree ("user_id","started_at");--> statement-breakpoint
 CREATE INDEX "mcp_tool_usage_started_idx" ON "mcp_tool_usage" USING btree ("started_at");
+--> statement-breakpoint
+CREATE TABLE "mcp_mutation" (
+	"user_id" text NOT NULL,
+	"client_id" text NOT NULL,
+	"request_id" uuid NOT NULL,
+	"tool" text NOT NULL,
+	"input_hash" text NOT NULL,
+	"result" jsonb NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "mcp_mutation_user_id_client_id_request_id_pk" PRIMARY KEY("user_id","client_id","request_id")
+);
+--> statement-breakpoint
+ALTER TABLE "mcp_mutation" ADD CONSTRAINT "mcp_mutation_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;
+--> statement-breakpoint
+-- Lock-only capability for the restricted MCP role. PUBLIC cannot call these
+-- functions. The separately applied MCP grants opt the runtime role in.
+CREATE FUNCTION public.mcp_lock_user(p_user_id text) RETURNS void
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog, public AS $$
+BEGIN
+  PERFORM id FROM public."user" WHERE id = p_user_id FOR NO KEY UPDATE;
+  IF NOT FOUND THEN RAISE EXCEPTION 'User unavailable' USING ERRCODE = 'P0002'; END IF;
+END;
+$$;
+--> statement-breakpoint
+REVOKE ALL ON FUNCTION public.mcp_lock_user(text) FROM PUBLIC;
+--> statement-breakpoint
+-- Provision only the table's default allowance. No caller-selected quota and
+-- no permission to alter existing entitlements.
+CREATE FUNCTION public.mcp_prepare_image_quota(p_user_id text) RETURNS void
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog, public AS $$
+BEGIN
+  INSERT INTO public.user_file_storage (user_id) VALUES (p_user_id) ON CONFLICT DO NOTHING;
+  PERFORM user_id FROM public.user_file_storage WHERE user_id = p_user_id FOR UPDATE;
+END;
+$$;
+--> statement-breakpoint
+REVOKE ALL ON FUNCTION public.mcp_prepare_image_quota(text) FROM PUBLIC;

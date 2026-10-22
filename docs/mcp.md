@@ -265,11 +265,9 @@ describe the underlying authorization and transport.
    stay on the main app; no new provider callback for the MCP hostname is needed.
 
 3. Deploy the main app after merging this branch. Migration `0089_mcp` adds the OAuth
-   tables and usage ledger without modifying existing account tables. Migrations
-   `0090_mcp_article_receipts` and `0091_mcp_content_locks` add retry receipts and
-   two restricted row-lock/quota functions. They do not rewrite existing articles
-   or upgrade Better Auth. Startup
-   completes migrations before auth initialization and HTTP admission. Verify
+   tables, usage ledger, retry receipts and two restricted row-lock/quota functions.
+   It does not modify existing account tables, rewrite articles or upgrade Better
+   Auth. Startup completes migrations before auth initialization and HTTP admission. Verify
    `Migration complete` and `Server running` in Coolify, then check
    `https://swubase.com/.well-known/oauth-authorization-server/api/auth` returns JSON
    with issuer `https://swubase.com/api/auth` and a registration endpoint.
