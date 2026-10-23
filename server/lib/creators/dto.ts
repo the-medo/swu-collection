@@ -9,9 +9,10 @@ import {
 } from '../../db/schema/creator_hub.ts';
 import type { Creation, CreatorProfile } from '../../../shared/creators/contracts.ts';
 import { resolveReferences } from './references.ts';
+import type { CardCatalogReader } from '../cards/cardListProvider.ts';
 import type { Database } from './types.ts';
 
-export function createCreatorDtos(database: Database) {
+export function createCreatorDtos(database: Database, catalog?: CardCatalogReader) {
   const publicDto = async (
     row: typeof creation.$inferSelect,
     profile: typeof creatorProfile.$inferSelect | null,
@@ -19,7 +20,7 @@ export function createCreatorDtos(database: Database) {
     author: Pick<typeof user.$inferSelect, 'id' | 'displayName' | 'image'> | null = null,
   ): Promise<Creation> => {
     const document = edit ? row.draft : row.published!;
-    const references = await resolveReferences(document.references, database);
+    const references = await resolveReferences(document.references, database, catalog);
     return {
       id: row.id,
       creatorId: row.creatorId,

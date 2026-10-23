@@ -1,5 +1,4 @@
 import { and, desc, eq, inArray, lte, sql } from 'drizzle-orm';
-import { db } from '../../db/index.ts';
 import { meta } from '../../db/schema/meta.ts';
 import { tournament } from '../../db/schema/tournament.ts';
 import { tournamentType } from '../../db/schema/tournament_type.ts';
@@ -19,9 +18,10 @@ export type TemplateMetaInput =
 
 export async function getArticleTemplateMeta(
   input: TemplateMetaInput,
-  database: Connection = db,
+  database?: Connection,
   now = new Date(),
 ): Promise<TemplateMeta> {
+  database ??= (await import('../../db/index.ts')).db;
   const today = now.toISOString().slice(0, 10);
   let source: TemplateMeta['source'];
   let filter;

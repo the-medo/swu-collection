@@ -28,7 +28,7 @@ import { disconnectYoutubeInTransaction } from './metadata-lifecycle.ts';
 import { youtubeClient } from './worker/providers.ts';
 import { refreshYoutubeAccess } from './youtube-access.ts';
 
-const creatorService = createCreationsService();
+const creatorService = createCreationsService(db);
 const scope = youtubeScope;
 export const stateHash = (value: string) => createHash('sha256').update(value).digest('hex');
 const channelsSchema = z.object({

@@ -1,9 +1,8 @@
 import { and, eq, inArray, sql } from 'drizzle-orm';
 import { z } from 'zod';
-import { db } from '../../db/index.ts';
 import { deck } from '../../db/schema/deck.ts';
 import { tournament } from '../../db/schema/tournament.ts';
-import { getMergedCardList } from '../cards/cardListProvider.ts';
+import { getMergedCardList, type CardCatalogReader } from '../cards/cardListProvider.ts';
 import { setInfo } from '../../../lib/swu-resources/set-info.ts';
 import type {
   EntityReference,
@@ -19,8 +18,10 @@ export const referenceKey = (ref: EntityReference) => `${ref.type}:${ref.id}`;
 /** Each response resolves database-backed subjects in at most two queries. */
 export async function resolveReferences(
   refs: EntityReference[],
-  database: Connection = db,
+  database?: Connection,
+  catalog: CardCatalogReader = getMergedCardList,
 ): Promise<ResolvedReference[]> {
+  database ??= (await import('../../db/index.ts')).db;
   const ids = (type: EntityReference['type']) => [
     ...new Set(refs.filter(r => r.type === type && uuid(r.id)).map(r => r.id)),
   ];
@@ -50,9 +51,7 @@ export async function resolveReferences(
           .from(tournament)
           .where(inArray(tournament.id, tournamentIds))
       : [],
-    refs.some(ref => ['card', 'leader', 'base'].includes(ref.type))
-      ? getMergedCardList()
-      : undefined,
+    refs.some(ref => ['card', 'leader', 'base'].includes(ref.type)) ? catalog() : undefined,
   ]);
   const deckNames = new Map(decks.map(row => [row.id, row]));
   const tournamentNames = new Map(tournaments.map(row => [row.id, row]));
@@ -99,6 +98,6 @@ export async function resolveReferences(
     );
   });
 }
-export async function resolveReference(ref: EntityReference, database: Connection = db) {
+export async function resolveReference(ref: EntityReference, database?: Connection) {
   return (await resolveReferences([ref], database))[0] ?? null;
 }

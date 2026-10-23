@@ -29,9 +29,9 @@ export interface DeckExportJSON {
  * Format a deck for JSON export
  */
 export function createDeckJsonExport(
-  deck: Deck,
+  deck: Pick<Deck, 'name' | 'leaderCardId1' | 'leaderCardId2' | 'baseCardId'>,
   deckCards: DeckCard[],
-  user: User,
+  user: Pick<User, 'displayName'>,
   cardList: CardList,
 ): DeckExportJSON {
   // Group cards by board and transform
@@ -94,7 +94,7 @@ export function createDeckJsonExport(
  * Format a deck for plain text export
  */
 export function createDeckTextExport(
-  deck: Deck,
+  deck: Pick<Deck, 'name' | 'leaderCardId1' | 'leaderCardId2' | 'baseCardId'>,
   deckCards: DeckCard[],
   cardList: CardList,
 ): string {

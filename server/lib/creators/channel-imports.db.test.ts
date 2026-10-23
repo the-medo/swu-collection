@@ -82,7 +82,7 @@ test.skipIf(process.env.CREATOR_HUB_DB_TEST !== '1')(
       },
     };
     const controls = createChannelImportsService(db, { youtube: api });
-    const creations = createCreationsService();
+    const creations = createCreationsService(db);
     const store = createWorkerStore();
     const app = new Hono<AuthExtension>()
       .use('*', async (c, next) => {

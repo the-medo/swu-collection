@@ -2,9 +2,8 @@ import { eq, sql } from 'drizzle-orm';
 import { db } from '../../db';
 import { deck } from '../../db/schema/deck.ts';
 import { getMergedCardList } from '../cards/cardListProvider.ts';
-import { SwuAspect } from '../../../types/enums.ts';
 import { deckInformation } from '../../db/schema/deck_information.ts';
-import { baseSpecialNames } from '../../../shared/lib/basicBases.ts';
+import { buildDeckMetadata } from './metadata.ts';
 import { deckDiscussion } from '../../db/schema/deck_discussion.ts';
 import { discussionComment } from '../../db/schema/discussion.ts';
 
@@ -17,39 +16,7 @@ export async function updateDeckInformation(deckId: string) {
   if (!deckData) return;
 
   const cardList = await getMergedCardList();
-  const leader1 = deckData.leaderCardId1 ? cardList[deckData.leaderCardId1] : null;
-  const leader2 = deckData.leaderCardId2 ? cardList[deckData.leaderCardId2] : null;
-  const baseCard = deckData.baseCardId ? cardList[deckData.baseCardId] : null;
-  const baseSpecialName = deckData.baseCardId
-    ? (baseSpecialNames[deckData.baseCardId] ?? null)
-    : null;
-
-  // Initialize aspect counts
-  const aspectCounts = {
-    [SwuAspect.COMMAND]: 0,
-    [SwuAspect.VIGILANCE]: 0,
-    [SwuAspect.AGGRESSION]: 0,
-    [SwuAspect.CUNNING]: 0,
-    [SwuAspect.HEROISM]: 0,
-    [SwuAspect.VILLAINY]: 0,
-  };
-
-  // Process leader1 aspects
-  if (leader1 && leader1.aspects) {
-    leader1.aspects.forEach(aspect => aspectCounts[aspect]++);
-  }
-
-  // Process leader2 aspects
-  if (leader2 && leader2.aspects) {
-    leader2.aspects.forEach(aspect => aspectCounts[aspect]++);
-  }
-
-  // Process base aspects and determine base aspect
-  let baseAspect = null;
-  if (baseCard && baseCard.aspects && baseCard.aspects.length > 0) {
-    baseAspect = baseCard.aspects[0];
-    aspectCounts[baseAspect]++;
-  }
+  const metadata = buildDeckMetadata(deckData, cardList);
 
   // Insert or update the deck information
   await db.transaction(async tx => {
@@ -79,14 +46,7 @@ export async function updateDeckInformation(deckId: string) {
       .insert(deckInformation)
       .values({
         deckId: deckData.id,
-        aspectCommand: aspectCounts[SwuAspect.COMMAND],
-        aspectVigilance: aspectCounts[SwuAspect.VIGILANCE],
-        aspectAggression: aspectCounts[SwuAspect.AGGRESSION],
-        aspectCunning: aspectCounts[SwuAspect.CUNNING],
-        aspectHeroism: aspectCounts[SwuAspect.HEROISM],
-        aspectVillainy: aspectCounts[SwuAspect.VILLAINY],
-        baseAspect,
-        baseSpecialName,
+        ...metadata,
         favoritesCount: 0,
         commentsCount: sql<number>`(SELECT count(*)::integer FROM ${discussionComment} JOIN ${deckDiscussion} ON ${deckDiscussion.discussionId} = ${discussionComment.discussionId} WHERE ${deckDiscussion.deckId} = ${deckData.id} AND ${discussionComment.deletedAt} IS NULL)`,
         score: 0,
@@ -94,14 +54,7 @@ export async function updateDeckInformation(deckId: string) {
       .onConflictDoUpdate({
         target: [deckInformation.deckId],
         set: {
-          aspectCommand: aspectCounts[SwuAspect.COMMAND],
-          aspectVigilance: aspectCounts[SwuAspect.VIGILANCE],
-          aspectAggression: aspectCounts[SwuAspect.AGGRESSION],
-          aspectCunning: aspectCounts[SwuAspect.CUNNING],
-          aspectHeroism: aspectCounts[SwuAspect.HEROISM],
-          aspectVillainy: aspectCounts[SwuAspect.VILLAINY],
-          baseAspect,
-          baseSpecialName,
+          ...metadata,
           // Don't update counts here to avoid resetting them
         },
       });

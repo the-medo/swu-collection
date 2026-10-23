@@ -1,6 +1,6 @@
+import type { CardCatalogReader } from '../cards/cardListProvider.ts';
 import { user } from '../../db/schema/auth-schema.ts';
 import { lockPersonalOwner, personalArticles } from './ownership.ts';
-import { db } from '../../db/index.ts';
 import type { Database } from './types.ts';
 import { CreatorError } from './errors.ts';
 import { and, desc, eq, lt, sql } from 'drizzle-orm';
@@ -19,8 +19,12 @@ import { writeCreatorPublication, removeCreatorPublication } from './publication
 import { now } from './types.ts';
 import { trackManualEdits } from './manual-edits.ts';
 
-export function createCreationsService(database: Database = db) {
-  const { publicDto } = createCreatorDtos(database);
+export function createCreationsService(
+  database: Database,
+  lockOwner = lockPersonalOwner,
+  catalog?: CardCatalogReader,
+) {
+  const { publicDto } = createCreatorDtos(database, catalog);
   return {
     async studio(creatorId: string | null, viewerId: string, page = 1) {
       if (creatorId) await requireCreator(database, creatorId, viewerId);
@@ -71,7 +75,7 @@ export function createCreationsService(database: Database = db) {
       return database.transaction(async tx => {
         if (creatorId) await requireCreator(tx, creatorId, viewerId, !!sourceChannelId, true);
         else {
-          await lockPersonalOwner(tx, viewerId);
+          await lockOwner(tx, viewerId);
           if (document.medium !== 'article' || sourceVideoId || sourceChannelId)
             throw new CreatorError('Personal publications must be articles.');
         }
@@ -199,14 +203,14 @@ export function createCreationsService(database: Database = db) {
         if (item.creatorId) await requireCreator(tx, item.creatorId, viewerId, false, true);
         else {
           await requireCreationAccess(tx, item, viewerId);
-          await lockPersonalOwner(tx, viewerId);
+          await lockOwner(tx, viewerId);
         }
         const [row] = await tx.select().from(creation).where(eq(creation.id, id)).for('update');
         if (!row || row.revision !== revision || row.ownershipRevision !== ownershipRevision)
           throw new CreatorError('This draft changed. Reload before publishing.', 409);
         await requireCreationAccess(tx, row, viewerId);
         if (unpublish) await removeCreatorPublication(tx, id);
-        else await writeCreatorPublication(tx, row);
+        else await writeCreatorPublication(tx, row, catalog);
       });
     },
     async revisions(id: string, viewerId: string) {
