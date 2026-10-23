@@ -89,6 +89,30 @@ upload through All images shows its album count, removes it from every album,
 clears explicit cover references, and frees storage once. Storage errors retain
 the existing retry behavior. Saved avatar/header copies remain independent.
 
+Admins can remove an album from events on `/tournaments/<id>/photos`. After
+confirmation, removal clears its tournament link and persistently blocks that
+album from linking to any event. Its privacy, images, and owner access remain
+unchanged. Only owner responses include the moderation flag; public album views
+do not expose it. The owner's editor explains the restriction; changing privacy or
+renaming the album does not clear it. Admin → Tournaments → Album moderation
+lists blocked albums and can restore event linking. Restoration does not publish
+or relink the album; the owner must choose an event again, with public consent.
+
+`/api/admin/user-albums/blocked` provides a cursor-paginated list with only album
+ID, title, revision, creation time, and owner identity, including albums whose
+owners have since made them private. It does not expose private album photos.
+`POST /api/admin/user-albums/:id/event-link` accepts `{ revision, blocked }` and
+requires the existing admin-access permission and `X-Requested-With: swubase`.
+Moderation uses the same account/album lock order and revision checks as owner
+writes. Migration `0090_album_event_moderation` adds `event_link_blocked` and a
+constraint preventing a blocked album from retaining a tournament link. Apply
+it before deploying the follow-up API. Album moderation state is removed by the
+existing contributor-dump album truncation.
+
+All images and the album editor share `useUserImageUploadQueue` for batch
+validation, sequential uploads, progress, overlapping-batch protection, and
+cancellation on leaving. Each screen keeps its own success/error presentation.
+
 Uploads into an album use two steps: upload the file, then add its ID to the
 album. If the second step fails, the image stays in All images and Retry adding
 saved image retries membership without uploading or charging storage again.
@@ -311,6 +335,7 @@ USER_FILES_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test server/li
 USER_ALBUMS_DB_TEST=1 USER_FILES_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test server/lib/user-albums server/lib/user-files server/routes/user-files-client.test.ts
 USER_ALBUMS_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/user-albums.browser.ts
 USER_ALBUMS_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/album-tournaments.browser.ts
+USER_ALBUMS_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/album-followup.browser.ts
 USER_UPLOADS_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/user-uploads.browser.ts
 USER_HEADER_DB_TEST=1 IMAGE_GALLERY_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test server/lib/user-header server/lib/image-gallery server/routes/user/header.test.ts server/routes/image-gallery.test.ts
 USER_HEADER_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/profile-header.browser.ts

@@ -26,6 +26,21 @@ export const createUserAlbumInput = z.strictObject({
   tournamentId: z.uuid().optional(),
 });
 export const albumRevisionInput = z.strictObject({ revision: z.number().int().min(0) });
+export const moderateAlbumEventLinkInput = albumRevisionInput.extend({
+  blocked: z.boolean(),
+});
+export interface BlockedEventAlbum {
+  id: string;
+  title: string;
+  revision: number;
+  createdAt: string;
+  owner: { id: string; displayName: string };
+}
+export interface BlockedEventAlbumList {
+  albums: BlockedEventAlbum[];
+  hasMore: boolean;
+  nextCursor: UserAlbumCursor | null;
+}
 export const updateUserAlbumInput = albumRevisionInput.extend({
   title: title.optional(),
   description: description.optional(),
@@ -86,6 +101,8 @@ export interface UserAlbum {
   visibility: AlbumVisibility;
   coverFileId: string | null;
   tournamentId: string | null;
+  // Included only in the owner’s album responses.
+  eventLinkBlocked?: boolean;
   tournament: AlbumTournament | null;
   cover: Pick<UserAlbumImage, 'fileId' | 'thumbnailUrl' | 'altText'> | null;
   imageCount: number;

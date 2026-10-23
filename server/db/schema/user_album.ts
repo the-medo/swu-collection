@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm';
 import {
+  boolean,
   check,
   index,
   integer,
@@ -26,6 +27,7 @@ export const userAlbum = pgTable(
     visibility: text('visibility').$type<AlbumVisibility>().notNull().default('unlisted'),
     coverFileId: uuid('cover_file_id').references(() => userFile.id, { onDelete: 'set null' }),
     tournamentId: uuid('tournament_id').references(() => tournament.id, { onDelete: 'set null' }),
+    eventLinkBlocked: boolean('event_link_blocked').notNull().default(false),
     revision: integer('revision').notNull().default(0),
     createdAt: timestamp('created_at', { mode: 'string', withTimezone: true })
       .notNull()
@@ -45,6 +47,13 @@ export const userAlbum = pgTable(
     check(
       'user_album_tournament_public_check',
       sql`${table.tournamentId} IS NULL OR ${table.visibility} = 'public'`,
+    ),
+    index('user_album_blocked_created_idx')
+      .on(table.createdAt, table.id)
+      .where(sql`${table.eventLinkBlocked}`),
+    check(
+      'user_album_event_link_blocked_check',
+      sql`NOT ${table.eventLinkBlocked} OR ${table.tournamentId} IS NULL`,
     ),
     index('user_album_cover_idx').on(table.coverFileId),
     check(

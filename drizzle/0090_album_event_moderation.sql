@@ -1,0 +1,3 @@
+ALTER TABLE "user_album" ADD COLUMN "event_link_blocked" boolean DEFAULT false NOT NULL;--> statement-breakpoint
+CREATE INDEX "user_album_blocked_created_idx" ON "user_album" USING btree ("created_at","id") WHERE "user_album"."event_link_blocked";--> statement-breakpoint
+ALTER TABLE "user_album" ADD CONSTRAINT "user_album_event_link_blocked_check" CHECK (NOT "user_album"."event_link_blocked" OR "user_album"."tournament_id" IS NULL);

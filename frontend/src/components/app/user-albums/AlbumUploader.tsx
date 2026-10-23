@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useUserFiles } from '@/api/user-files/useUserFiles.ts';
-import { useUploadUserFile } from '@/api/user-files/useUploadUserFile.ts';
-import { validateUserImageFiles } from '@/api/user-files/uploadValidation.ts';
+import { useUserImageUploadQueue } from '@/api/user-files/useUserImageUploadQueue.ts';
 import { useAlbumMutation } from '@/api/user-albums/useAlbumMutation.ts';
 import { UploadDropzone } from '../pages/settings/uploads/UploadDropzone.tsx';
 import { Button } from '@/components/ui/button.tsx';
@@ -17,22 +16,14 @@ export function AlbumUploader({
   editorBusy: boolean;
 }) {
   const usage = useUserFiles(album.userId, 0).data;
-  const upload = useUploadUserFile();
+  const queue = useUserImageUploadQueue(album.userId, onBusy);
+  const { progress } = queue;
   const attach = useAlbumMutation();
   const button = useRef<HTMLButtonElement>(null);
-  const active = useRef<AbortController | null>(null);
-  const [progress, setProgress] = useState<{ current: number; total: number } | null>(null);
   const [pendingFile, setPendingFile] = useState<string | null>(null);
   const [message, setMessage] = useState('');
-  useEffect(
-    () => () => {
-      active.current?.abort();
-      onBusy(false);
-    },
-    [onBusy],
-  );
   const uploadFiles = async (files: File[]) => {
-    if (!files.length || active.current || attach.isPending) return;
+    if (!files.length || queue.isRunning() || attach.isPending) return;
     if (editorBusy) {
       setMessage('Wait for the album to finish updating before uploading more images.');
       return;
@@ -49,49 +40,25 @@ export function AlbumUploader({
       );
       return;
     }
-    const controller = new AbortController();
-    active.current = controller;
-    onBusy(true);
     setMessage('');
-    let completed = 0;
-    let savedFileId: string | null = null;
     let revision = album.revision;
-    try {
-      validateUserImageFiles(files);
-      for (const [index, file] of files.entries()) {
-        setProgress({ current: index + 1, total: files.length });
-        const saved = await upload.mutateAsync({
-          userId: album.userId,
-          file,
-          signal: controller.signal,
-        });
-        // A completed upload is durable: finish attaching it even if navigation
-        // was explicitly confirmed while its response was arriving.
-        savedFileId = saved.id;
-        const result = await attach.mutateAsync({
-          action: 'add',
-          id: album.id,
-          input: { revision, fileIds: [saved.id] },
-        });
-        if (controller.signal.aborted) return;
-        revision = result.revision;
-        savedFileId = null;
-        completed++;
-      }
-      setMessage(`${completed} ${completed === 1 ? 'image' : 'images'} added to this album.`);
-    } catch (error) {
-      if (!controller.signal.aborted) {
-        setPendingFile(savedFileId);
-        setMessage(
-          `${completed} added. ${savedFileId ? 'The last image was uploaded to All images, but could not be added to this album. Retry adding it below. ' : ''}${error instanceof Error ? error.message : 'Please try again.'}`,
-        );
-      }
-    } finally {
-      active.current = null;
-      if (!controller.signal.aborted) {
-        setProgress(null);
-        onBusy(false);
-      }
+    const result = await queue.run(files, async saved => {
+      const attached = await attach.mutateAsync({
+        action: 'add',
+        id: album.id,
+        input: { revision, fileIds: [saved.id] },
+      });
+      revision = attached.revision;
+    });
+    if (result.status === 'complete') {
+      setMessage(
+        `${result.completed} ${result.completed === 1 ? 'image' : 'images'} added to this album.`,
+      );
+    } else if (result.status === 'failed') {
+      setPendingFile(result.savedFile?.id ?? null);
+      setMessage(
+        `${result.completed} added. ${result.savedFile ? 'The last image was uploaded to All images, but could not be added to this album. Retry adding it below. ' : ''}${result.error instanceof Error ? result.error.message : 'Please try again.'}`,
+      );
     }
   };
   return (

@@ -36,6 +36,7 @@ export const adminSections = [
       { id: 'resource-submissions', label: 'Resource submissions', icon: Inbox },
       { id: 'tournament-results', label: 'Results', icon: ListChecks },
       { id: 'pq-tools', label: 'PQ tools', icon: Flag },
+      { id: 'album-moderation', label: 'Album moderation', icon: Image },
       { id: 'event-highlights', label: 'Event highlights', icon: Image },
     ],
   },

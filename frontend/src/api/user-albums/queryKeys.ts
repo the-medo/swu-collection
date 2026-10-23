@@ -1,4 +1,5 @@
 export const userAlbumKeys = {
+  blocked: (viewer: string | undefined) => ['user-albums', viewer, 'blocked'] as const,
   all: ['user-albums'] as const,
   tournament: (viewer: string | undefined, id: string) =>
     ['user-albums', viewer, 'tournament', id] as const,

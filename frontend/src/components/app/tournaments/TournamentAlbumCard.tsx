@@ -1,3 +1,4 @@
+import { AlbumModerationAction } from '../user-albums/AlbumModerationAction.tsx';
 import { useId } from 'react';
 import { Link } from '@tanstack/react-router';
 import { ArrowUpRight, Images } from 'lucide-react';
@@ -98,6 +99,7 @@ export function TournamentAlbumCard({
             {album.description}
           </p>
         )}
+        {!compact && <AlbumModerationAction album={album} block />}
       </div>
     </article>
   );
