@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { YoutubeClaimButton, YoutubeClaimConfirmation } from './YoutubeClaim.tsx';
 import { Link } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button.tsx';
@@ -37,7 +38,10 @@ export type StudioSearch = {
   creatorId?: string;
   creationId?: string;
   page?: number;
-  youtube?: 'connected' | 'failed';
+  youtube?: 'connected' | 'failed' | 'claimed' | 'confirm';
+  youtubeClaimId?: string;
+  youtubeError?: 'already_claimed' | 'channel_mismatch';
+  transferredDecks?: number;
   youtubeChannelId?: string;
 };
 export default function CreatorStudio({
@@ -99,10 +103,39 @@ export default function CreatorStudio({
       <Status loading={mine.isPending} error={mine.error} />
       {search.youtube === 'failed' && (
         <p role="alert" className={`${creatorPanel} text-[13px]!`}>
-          YouTube could not be connected. Try again with the account that manages your channel.
+          {search.youtubeError === 'already_claimed'
+            ? 'This creator profile has already been claimed by another user. Connecting YouTube cannot change its owner.'
+            : search.youtubeError === 'channel_mismatch'
+              ? 'That YouTube channel does not belong to the profile you selected. Try again and choose the right channel or brand account.'
+              : 'YouTube could not be connected. Try again and choose the account that manages your channel. If the problem continues, contact SWUBASE support.'}
         </p>
       )}
-      {profileMode ? (
+      {search.youtube === 'claimed' && profile && (
+        <div role="status" className={`${creatorPanel} space-y-2`}>
+          <h2 className={creatorHeading}>You now own {profile.name}</h2>
+          <p className={creatorDescription}>
+            Your existing videos and profile are ready to manage in this studio.
+            {!!search.transferredDecks &&
+              ` ${search.transferredDecks} deck${search.transferredDecks === 1 ? '' : 's'} moved to your “Youtube Connection Decklists” folder and are unlisted.`}
+          </p>
+        </div>
+      )}
+      {search.youtube === 'confirm' && search.youtubeClaimId ? (
+        <YoutubeClaimConfirmation
+          claimId={search.youtubeClaimId}
+          onCancel={() => onChange({ youtube: undefined })}
+          onConnected={result => {
+            setSettings(true);
+            setProfileMode(null);
+            onChange({
+              creatorId: result.creatorId,
+              youtube: result.claimed ? 'claimed' : 'connected',
+              youtubeChannelId: result.channelId,
+              transferredDecks: result.transferredDecks,
+            });
+          }}
+        />
+      ) : profileMode ? (
         <ProfileEditor
           key={profileMode === 'edit' ? profile?.id : 'new'}
           profile={profileMode === 'edit' ? profile : undefined}
@@ -162,6 +195,7 @@ export default function CreatorStudio({
                   </Button>
                 </>
               )}
+              {!editing && <YoutubeClaimButton>Connect or claim a channel</YoutubeClaimButton>}
               <Button
                 variant="ghost"
                 disabled={editing || counts.isFetching}
@@ -193,7 +227,8 @@ export default function CreatorStudio({
                 key={profile.id}
                 id={profile.id}
                 connectedChannelId={
-                  search.youtube === 'connected' && search.creatorId === profile.id
+                  ['connected', 'claimed'].includes(search.youtube ?? '') &&
+                  search.creatorId === profile.id
                     ? search.youtubeChannelId
                     : undefined
                 }

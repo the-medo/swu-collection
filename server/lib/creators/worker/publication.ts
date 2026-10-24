@@ -1,8 +1,14 @@
-import { and, asc, eq, inArray, sql } from 'drizzle-orm';
-import { creation, creationRevision, creatorProfile } from '../../../db/schema/creator_hub.ts';
+import { and, asc, eq, gte, inArray, sql } from 'drizzle-orm';
+import {
+  creation,
+  creationReference,
+  creationRevision,
+  creatorProfile,
+} from '../../../db/schema/creator_hub.ts';
 import {
   creatorVideoJob as jobs,
   creatorImportedDeck,
+  creatorClaimedDeck,
 } from '../../../db/schema/creator_video_job.ts';
 import { deck } from '../../../db/schema/deck.ts';
 import { writeCreatorPublication } from '../publication.ts';
@@ -75,6 +81,7 @@ export function createPublicationStore(database: Database) {
               .select({
                 deck,
                 mapping: creatorImportedDeck,
+                wasClaimed: sql<boolean>`EXISTS (SELECT 1 FROM ${creatorClaimedDeck} WHERE ${creatorClaimedDeck.deckId} = ${deck.id})`,
                 untouched: sql<boolean>`${deck.updatedAt} = ${deck.createdAt}`,
               })
               .from(creatorImportedDeck)
@@ -99,7 +106,11 @@ export function createPublicationStore(database: Database) {
                   .set({ public: 1, updatedAt: new Date() })
                   .where(eq(deck.id, row.deck.id));
                 allowedDecks.add(row.deck.id);
-              } else if (row.deck.public === 1) allowedDecks.add(row.deck.id);
+              } else if (
+                row.deck.public === 1 ||
+                (row.deck.public === 2 && !row.mapping.pendingPublication && row.wasClaimed)
+              )
+                allowedDecks.add(row.deck.id);
               if (allowedDecks.has(row.deck.id) && row.mapping.pendingPublication)
                 await tx
                   .update(creatorImportedDeck)
@@ -111,6 +122,39 @@ export function createPublicationStore(database: Database) {
                       eq(creatorImportedDeck.sourceDeckId, row.mapping.sourceDeckId),
                     ),
                   );
+            }
+          }
+          // Another creator may claim a shared original after this run imported
+          // it. These references came from importVideoDeck, not client input.
+          // Keep them if the original was transferred during this job's lease.
+          const movedIds = deckIds.filter(id => !allowedDecks.has(id));
+          if (movedIds.length) {
+            const moved = await tx
+              .select({ id: deck.id })
+              .from(deck)
+              .innerJoin(creatorClaimedDeck, eq(creatorClaimedDeck.deckId, deck.id))
+              .where(
+                and(
+                  inArray(deck.id, movedIds),
+                  inArray(deck.public, [1, 2]),
+                  gte(creatorClaimedDeck.claimedAt, job.updatedAt),
+                ),
+              )
+              .orderBy(asc(deck.id))
+              .for('update', { of: deck });
+            if (moved.length) {
+              // Establish the trusted worker links before scoped publication
+              // validation; both the links and publication commit together.
+              await tx
+                .insert(creationReference)
+                .values(
+                  moved.map(row => ({
+                    creationId: inserted.id,
+                    entityType: 'deck',
+                    entityId: row.id,
+                  })),
+                );
+              for (const row of moved) allowedDecks.add(row.id);
             }
           }
           for (const id of deckIds)

@@ -2,6 +2,11 @@ import type {
   ConnectionSubject,
   ResolvedReference,
 } from '../../../../shared/creators/contracts.ts';
+import type {
+  YoutubeClaimChoice,
+  YoutubeClaimPreview,
+  YoutubeConnectionResult,
+} from '../../../../shared/creators/claims.ts';
 import { api } from '@/lib/api.ts';
 import { createApiError } from '@/api/errors.ts';
 import type {
@@ -37,6 +42,21 @@ async function data<T>(response: Response): Promise<T> {
   return (await response.json()).data as T;
 }
 export const hubApi = {
+  claimYoutube: async (creatorId?: string) =>
+    data<{ url: string }>(await root.youtube.claim.$post({ json: { creatorId } }, { headers })),
+  youtubeClaim: async (claimId: string) =>
+    data<YoutubeClaimPreview>(await root.youtube.claims[':claimId'].$get({ param: { claimId } })),
+  confirmYoutubeClaim: async (input: { claimId: string; choice: YoutubeClaimChoice }) =>
+    data<YoutubeConnectionResult>(
+      await root.youtube.claims[':claimId'].$post(
+        { param: { claimId: input.claimId }, json: input.choice },
+        { headers },
+      ),
+    ),
+  cancelYoutubeClaim: async (claimId: string) =>
+    data<boolean>(
+      await root.youtube.claims[':claimId'].$delete({ param: { claimId } }, { headers }),
+    ),
   reportStatus: async (id: string) =>
     data<{ reported: boolean }>(await root.creations[':id'].report.$get({ param: { id } })),
   reportCreation: async (input: { id: string; details: string; clientReportId: string }) =>
@@ -170,13 +190,14 @@ export const hubApi = {
     q: string,
     scope: 'discovery' | 'authoring' = 'discovery',
     page = 1,
+    creatorId?: string,
   ) =>
     data<ConnectionSubject[]>(
-      await root.subjects.$get({ query: { type, q, scope, page: String(page) } }),
+      await root.subjects.$get({ query: { type, q, scope, page: String(page), creatorId } }),
     ),
-  resolveSubjects: async (references: EntityReference[]) =>
+  resolveSubjects: async (references: EntityReference[], creatorId?: string) =>
     data<ResolvedReference[]>(
-      await root.subjects.resolve.$post({ json: { references } }, { headers }),
+      await root.subjects.resolve.$post({ json: { references, creatorId } }, { headers }),
     ),
   youtube: async (id: string) =>
     data<CreatorYoutubeStatus>(await root.creators[':id'].youtube.$get({ param: { id } })),

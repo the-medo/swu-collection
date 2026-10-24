@@ -1,3 +1,4 @@
+import { ClaimedBadge } from './YoutubeClaim.tsx';
 import { LanguageFilter, LanguageFlag } from './CreatorLanguages.tsx';
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
@@ -117,7 +118,10 @@ export function CreatorDirectory() {
             </div>
             <div className="flex flex-1 flex-col gap-3 p-5 sm:p-6">
               <CreatorAvatar name={profile.name} src={profile.avatarUrl} className="-mt-14" />
-              <h2 className={creatorHeading}>{profile.name}</h2>
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className={creatorHeading}>{profile.name}</h2>
+                {profile.ownerId && <ClaimedBadge />}
+              </div>
               {profile.tagline && (
                 <p className={`${creatorDescription} line-clamp-3`}>{profile.tagline}</p>
               )}

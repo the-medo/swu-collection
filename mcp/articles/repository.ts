@@ -439,12 +439,22 @@ export function createArticleRepository(database: Database, catalog = articleCat
         if (error instanceof Error) issues.push({ path: 'document', message: error.message });
         else throw error;
       }
-      const resolved = await resolveReferences(document.references, database, catalog);
+      const [profile] = row?.creatorId
+        ? await database
+            .select({ ownerId: creatorProfile.ownerId })
+            .from(creatorProfile)
+            .where(eq(creatorProfile.id, row.creatorId))
+        : [];
+      const resolved = await resolveReferences(document.references, database, catalog, {
+        creatorId: row?.creatorId ?? undefined,
+        ownerId: profile?.ownerId,
+      });
       document.references.forEach((ref, index) => {
         if (!resolved.some(value => value.type === ref.type && value.id === ref.id))
           issues.push({
             path: `references.${index}`,
-            message: 'Unavailable subject. Associated decks must be public.',
+            message:
+              'Unavailable subject. Use a public deck or an unlisted deck owned by this creator.',
           });
       });
       return {

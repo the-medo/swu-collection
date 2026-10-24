@@ -120,22 +120,23 @@ providers and may need refreshing when a creator changes their branding.
 
 These records create no user profiles, login accounts, memberships, or YouTube
 credentials. Public YouTube links are ordinary profile links, not verified
-connections. An unowned profile is readable in discovery but cannot be managed
-or connected through the studio. Claiming ownership is not implemented yet.
-If someone tries to register an occupied directory address, the API directs them
-to contact SWUBASE on Discord to request access rather than silently duplicating
-or taking over that profile.
+connections. An unowned profile is readable in discovery. Signed-in users can verify their
+YouTube channel to claim it before managing its content. If someone tries to
+register an occupied directory address, the API directs them to the YouTube
+claim flow without duplicating or changing the profile's owner.
 
 Drafts and published versions are separate. Saving a draft never changes the
-public article. Publishing is explicit and revision-checked. Only public decks
-can be deliberately associated with public creations; publishing must never
-change a referenced deck's visibility. Existing embedded deck widgets remain
+public article. Publishing is explicit and revision-checked. Public decks and
+unlisted decks owned by the creator can be explicitly associated with creator
+publications; personal articles require public deck connections. Publishing never
+changes a referenced deck's visibility. Existing embedded deck widgets remain
 live views and apply their own access checks. Immutable deck versions are being
 developed separately and are not claimed by this feature.
 
 The Connect to SWUBASE picker reuses card search, leader/base selectors and the
 Crossfire deck row with its decklist preview. Its deck choices are restricted on
-the server to the signed-in user's public decks; existing public associations
+the server to the signed-in user's public decks, plus their unlisted decks when
+they own the selected creator profile; existing public associations
 and imported video references are preserved regardless of ownership. Tournament
 choices start with My tournaments (the same Saved, Maybe and Going list as the
 map/calendar). All tournaments includes future local events and loads 12 at a
@@ -143,9 +144,10 @@ time, newest first. Connection boxes fit three across on wide layouts, open
 card/leader/base details in a local dialog, and open deck/tournament details in a
 new tab without leaving the draft. Selected and
 published connections show live public metadata (artwork, names, dates and
-locations) rather than storing display snapshots in the document. Private or
-unlisted decks are omitted when resolving connections. Video previews retain each
-connection's timestamp.
+locations) rather than storing display snapshots in the document. Private decks
+are omitted. Unlisted decks require the creator scope described in the ownership
+section; authoring lookups verify access to that profile. Video previews retain
+each connection's timestamp.
 
 Articles autosave valid drafts, offer private previews and four starter templates,
 and support cards, live decklists, matchup widgets and tournament analysis through
@@ -269,7 +271,7 @@ The connection is separate from Google sign-in. It requests only
 `https://www.googleapis.com/auth/youtube.readonly`. The callback verifies a
 single-use, expiring state against the signed-in user and exact session, uses PKCE,
 and obtains the channel identity from `channels.list(mine=true)`. A channel can be
-connected to only one creator profile. Access and refresh tokens and pending PKCE
+connected to only one creator profile. Access and refresh tokens, pending profile confirmations and PKCE
 verifiers are encrypted with AES-256-GCM; API responses never return them.
 
 Configure the following server values through the deployment's secret store or a
@@ -411,15 +413,16 @@ The worker discovers uploads from all connected channels, including secondary
 channels. Ownerless, staff-curated directory profiles may also supply canonical
 `youtube.com/channel/UC…` or `youtube.com/@handle` links. Handles are resolved
 through YouTube and cached for up to 24 hours. Owned profiles require a channel
-association established through OAuth; loss of Google access does not remove that
-association or stop public imports. A self-entered social link is not proof of ownership. Conflicting
+association established through OAuth or preserved when their curated profile is
+claimed; loss of Google access does not remove that association or stop public imports. A self-entered social link is not proof of ownership. Conflicting
 channel assignments are skipped and reported. `channels.ts` refreshes curated
 associations once per run/discovery, then eligibility reads the canonical records;
 video processing no longer reparses every profile's links. Corrections to curated
 profile links take effect at the next `discover`, `enqueue`, or `run` invocation;
 a running batch uses its synchronized associations. Stop ingestion before urgent
-link corrections. Ownership changes and profile deletion take effect immediately. An owner assignment
-immediately disables curated import authority until OAuth is connected. Imports recheck channel identity
+link corrections. Ownership changes and profile deletion take effect immediately. The claim transaction preserves existing curated channels as public import
+associations and connects the verified channel. Assigning an owner directly with
+SQL bypasses this step and must not be used for self-service claims. Imports recheck channel identity
 and public/embed availability before processing; upcoming/live broadcasts wait
 until they end. This is polling, not a YouTube webhook subscription.
 
@@ -443,8 +446,9 @@ imports first stage unlisted decks under the profile owner, or the existing
 `swubase` system user for unowned profiles. The source mapping and deck insertion
 commit together. Untouched staged decks become public in the same transaction
 as the video publication. A conflict or rollback leaves them unlisted. Existing
-public imports can be reused; pre-existing private/unlisted decks and staged decks
-that the owner has edited are never automatically promoted. Deleted or privatized worker imports stay suppressed on retry.
+public imports can be reused. Claim-transferred imports with a per-deck claim record can
+also be reused while remaining unlisted; private decks and edited staged decks
+are never automatically promoted. Deleted or privatized worker imports stay suppressed on retry.
 Unknown-card/partial decks, unavailable links, and deck text rejected by moderation
 are omitted and reported without blocking video publication. A missing format defaults a new deck
 to Premier and is reported; two leaders identify Twin Suns. Imported leaders and
@@ -462,7 +466,7 @@ do not import decks before review. Upcoming/stuck videos wait for up to 30 days,
 then are skipped (an explicit reclassification can requeue them). Existing
 creations, creator edits, deletions and unpublishing are never overwritten or
 resurrected by a repeated import. Review drafts remain in Creator Studio for
-owned profiles; unowned profiles require the staff ownership procedure below
+owned profiles; unowned profiles can be claimed by connecting their YouTube channel
 before editing. `status` lists review/failure items, deferred error codes and
 creation IDs, newest first. It reports the total and whether more rows exist; use
 `status --status review --page 2` to filter and page through 100 rows at a time.
@@ -651,6 +655,8 @@ and scrubs consent-derived metadata. It preserves independently fetched public d
 `creator_video_job` stores processing state, metadata and classification evidence;
 `creator_video_spend` tracks requests and reservations independently of profile
 lifetime; `creator_imported_deck` preserves import identities and deletion tombstones.
+`creator_claimed_deck` records which original deck IDs were transferred, independently
+of the owner/source mapping, and cascades when a deck is deleted.
 
 The original creator-hub schema, taxonomy seeds and generic backfills are in the single
 `drizzle/0085_creator_hub.sql` migration, with one generated final snapshot and
@@ -676,7 +682,7 @@ The creator-hub worktree was reconciled separately; normal new deployments apply
 the single migration after the existing main-branch history.
 
 Contributor sanitization removes all creator profiles, creations, revisions,
-memberships, integration credentials, pending OAuth state, worker jobs, usage, channel identities/associations, channel-resolution cache and import mappings. Curated
+memberships, integration credentials, pending OAuth state, worker jobs, usage, channel identities/associations, channel-resolution cache, import mappings and deck claim records. Curated
 taxonomy rows remain. Creator API and admin-import request logging and error telemetry exclude sensitive
 payloads and OAuth query parameters. Unexpected errors emit only a fixed category,
 method, route pattern, allowlisted error type and database SQLSTATE to server logs. Subject resolution is batched per response;
@@ -691,11 +697,50 @@ deployments start with an empty creator directory; migrations never populate it.
 
 ### Staff maintenance of unowned profiles
 
-Until there is a claim workflow, access and correction requests go through
-[SWUBASE Discord](https://discord.gg/Stg45hRrZq). Staff can use the following SQL
-with `psql` variables against the explicitly selected instance. Confirm the
-profile ID from its canonical channel link first. These operations are limited
-to unowned profiles and return the affected record; they create no users.
+Signed-in users can claim an ownerless directory profile from its page or connect
+YouTube in the creator studio. Google OAuth uses PKCE and a single-use state bound
+to the current SWUBASE session. Only Google's authenticated `channels?mine=true`
+identity can select a profile. Known channel IDs take precedence; a current
+handle cannot claim a profile if an existing handle resolution names another
+channel. Explicit profile selections are never silently replaced by a match. A profile already owned by another user cannot be
+claimed, even by another manager of the same YouTube channel. Disconnecting Google
+does not release ownership. Owned profiles display a **Claimed** badge.
+
+If no profile matches, a user with one owned profile connects that channel to it.
+Users without a profile see an explicit create/cancel choice; users with multiple
+profiles choose one. The pending connection is encrypted, bound to the same
+session, and expires after ten minutes. Cancelling removes it; expired pending
+states are removed by existing OAuth-state maintenance and contributor sanitization.
+
+Claiming runs in one transaction with transferring the original normal decks
+referenced by that profile's imported YouTube videos (published or draft).
+Only decks owned by the `swubase` system user and public/unlisted are moved.
+Untouched, unlisted decks already staged for unfinished video jobs are also
+transferred, using supported deck links from their cached metadata. They
+retain their IDs, cards and video links, become unlisted, and move into a private
+root folder named **Youtube Connection Decklists** (reused if already present).
+A shared original is transferred too; it is not copied. Any import already
+running for the creator is fenced and requeued to use the new owner, retaining
+its cached metadata and analysis. Decks owned by other users
+are untouched. Import mappings move to the claimant; a separate `creator_claimed_deck` record
+keeps each original’s provenance even if the claimant already has that source. Retries reuse
+those unlisted decks without making them public. An existing mapping for the
+claimant takes precedence on a source-key conflict. Other completed imports
+unlisted by their owner remain excluded from future automatic references. Unlisted decks remain visible through their
+explicit video links and stay out of public deck discovery. Creator-authorized studio
+lookups resolve those links, and profile owners can choose their own unlisted
+decks. Personal articles continue to require public deck connections.
+
+MCP installations must apply the main-app migrations and reapply
+`mcp/deploy/grants.sql` before deploying the updated MCP service. Its restricted
+article publisher needs read access to the claim table's `deck_id` column; it
+receives no claim or ownership mutation permissions.
+
+Staff correction and removal requests still go through
+[SWUBASE Discord](https://discord.gg/Stg45hRrZq). The following SQL accepts `psql`
+variables against an explicitly selected instance and is limited to ownerless
+profiles. Use the YouTube claim flow for ownership changes so decks and channel
+associations move consistently.
 
 For an avatar/banner correction, supply `creator_id`, `avatar_url`, and
 `banner_url` (`''` for no banner). Use HTTPS URLs accepted by the profile contract:
@@ -709,33 +754,8 @@ WHERE id = :'creator_id'::uuid AND owner_id IS NULL
 RETURNING id, slug, revision;
 ```
 
-To assign the existing profile after independently confirming channel ownership,
-supply the verified creator's existing SWUBASE `existing_user_id` and `creator_id`.
-First check their existing profiles and the public YouTube `channel_id`:
-
-```sql
-SELECT id, slug FROM creator_profile WHERE owner_id = :'existing_user_id';
-SELECT creator_id, origin FROM creator_channel WHERE channel_id = :'channel_id';
-```
-
-A channel can connect to only one profile. If it is already connected elsewhere,
-staff must resolve the existing association before transferring it. Disconnecting
-Google access alone keeps the public import association and does not transfer
-ownership. Alternatively, keep their existing profile and remove the unowned
-directory duplicate using the removal statement below. For assignment:
-
-```sql
-UPDATE creator_profile
-SET owner_id = :'existing_user_id', revision = revision + 1, updated_at = now()
-WHERE id = :'creator_id'::uuid AND owner_id IS NULL
-  AND EXISTS (SELECT 1 FROM "user" WHERE id = :'existing_user_id')
-RETURNING id, slug, owner_id;
-```
-
-The assigned owner can then manage the same profile in the studio and connect
-YouTube through the normal OAuth flow. Assigning a user does not create a verified
-provider connection. For a removal request, the following deletes only the chosen
-unowned profile (and any dependent creator records through existing cascades):
+For a removal request, delete only the chosen unowned profile (and dependent
+creator records through existing cascades):
 
 ```sql
 DELETE FROM creator_profile
@@ -752,6 +772,7 @@ bun --env-file=.env --env-file=.env.worktree run db-migrate
 bunx drizzle-kit check --config=drizzle.config.ts
 CREATOR_HUB_DB_TEST=1 CREATOR_WORKER_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test server/lib/creators
 CREATOR_HUB_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/creator-hub.browser.ts
+CREATOR_HUB_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/creator-claims.browser.ts
 CREATOR_VIDEO_BROWSER_ORIGIN=https://your-worktree-origin bun frontend/tests/creator-video.browser.ts
 # After building, without account/database writes:
 CREATOR_BROWSING_BROWSER_TEST=1 bun frontend/tests/creator-browsing.browser.ts
@@ -782,7 +803,7 @@ required independent read-only Claude review.
 Skills: swubase-worktree-dev, swubase-database-migrations,
 swubase-development-data, swubase-auth-permissions, swubase-backend-endpoints,
 swubase-frontend-api, swubase-frontend-components, swubase-frontend-routing,
-swubase-decks, swubase-documentation, swubase-validation, swubase-change-review.
+swubase-decks, swubase-cron-jobs, swubase-documentation, swubase-validation, swubase-change-review.
 
 The broader product backlog retains follows/bookmarks/digests, comment moderation,
 AI-assisted tagging and timestamps, historical deck snapshots, analytics and

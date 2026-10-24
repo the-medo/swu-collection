@@ -10,6 +10,7 @@ export function useConnectionChoices(
   type: EntityReference['type'],
   search: string,
   enabled = true,
+  creatorId?: string,
 ) {
   const user = useUser();
   const [query, setQuery] = useState(search.trim());
@@ -18,10 +19,10 @@ export function useConnectionChoices(
     return () => window.clearTimeout(timer);
   }, [search]);
   const result = useInfiniteQuery({
-    queryKey: creatorKeys.subjectChoices(type, query, user?.id),
+    queryKey: creatorKeys.subjectChoices(type, query, user?.id, creatorId),
     enabled: enabled && !!user && ['deck', 'tournament', 'set'].includes(type),
     initialPageParam: 1,
-    queryFn: ({ pageParam }) => hubApi.subjects(type, query, 'authoring', pageParam),
+    queryFn: ({ pageParam }) => hubApi.subjects(type, query, 'authoring', pageParam, creatorId),
     getNextPageParam: (last, pages) =>
       type !== 'set' &&
       last.length === (type === 'tournament' ? CONNECTION_TOURNAMENT_PAGE_SIZE : 50)
@@ -34,18 +35,19 @@ export function useConnectionChoices(
   return { ...result, typing: search.trim() !== query };
 }
 
-export function useResolvedSubjects(references: EntityReference[]) {
+export function useResolvedSubjects(references: EntityReference[], creatorId?: string) {
   // Timestamps affect playback, not subject metadata.
   const subjects = references.map(ref => ({ ...ref, startSeconds: null }));
   const user = useUser();
   const result = useQuery({
-    queryKey: [...creatorKeys.resolvedSubjects(subjects), user?.id],
-    queryFn: () => hubApi.resolveSubjects(subjects),
+    queryKey: [...creatorKeys.resolvedSubjects(subjects), creatorId, user?.id],
+    queryFn: () => hubApi.resolveSubjects(subjects, creatorId),
     enabled: !!user && !!subjects.length,
     // Keep existing boxes stable while resolving an addition. Never carry data
     // across accounts or include subjects removed from the current document.
     placeholderData: (previous, previousQuery) =>
-      previousQuery?.queryKey[previousQuery.queryKey.length - 1] === user?.id
+      previousQuery?.queryKey[previousQuery.queryKey.length - 1] === user?.id &&
+      previousQuery?.queryKey[previousQuery.queryKey.length - 2] === creatorId
         ? previous?.filter(item =>
             subjects.some(ref => ref.type === item.type && ref.id === item.id),
           )

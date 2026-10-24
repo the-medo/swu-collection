@@ -19,11 +19,13 @@ import { connectionTypes } from './connectionTypes.ts';
 import { creatorDescription, creatorPanel, creatorSubheading } from './creatorStyles.ts';
 
 export function SubjectPicker({
+  creatorId,
   references,
   resolved,
   timestamps = false,
   onChange,
 }: {
+  creatorId?: string;
   references: EntityReference[];
   resolved: ReturnType<typeof useResolvedSubjects>;
   timestamps?: boolean;
@@ -34,7 +36,7 @@ export function SubjectPicker({
   const [type, setType] = useState<EntityReference['type']>('card');
   const [search, setSearch] = useState('');
   const [notice, setNotice] = useState('');
-  const choices = useConnectionChoices(type, search, type !== 'tournament');
+  const choices = useConnectionChoices(type, search, type !== 'tournament', creatorId);
   const full = references.length >= 50;
   const selected = (subject: Pick<EntityReference, 'type' | 'id'>) =>
     references.some(ref => ref.type === subject.type && ref.id === subject.id);
@@ -139,7 +141,7 @@ export function SubjectPicker({
           <>
             <div className="space-y-2">
               <label htmlFor={`${id}-search`} className="text-xs font-medium">
-                {type === 'deck' ? 'Your public decks' : 'Find a set'}
+                {type === 'deck' ? 'Your available decks' : 'Find a set'}
               </label>
               <Input
                 id={`${id}-search`}
@@ -152,7 +154,9 @@ export function SubjectPicker({
               />
               <p className="text-[11px] text-muted-foreground">
                 {type === 'deck'
-                  ? 'Only decks you own. Make a deck public so readers can open it.'
+                  ? creatorId
+                    ? 'Public decks you own, plus your unlisted decks when you own this creator profile.'
+                    : 'Only decks you own. Make a deck public so readers can open it.'
                   : 'Connect the sets featured in your content.'}
               </p>
             </div>
@@ -192,7 +196,7 @@ export function SubjectPicker({
                   {!choices.isError && !choices.data?.pages.flat().length && (
                     <p role="status" className="p-4 text-sm text-muted-foreground">
                       {type === 'deck'
-                        ? 'No public decks found in your account.'
+                        ? 'No available decks found in your account.'
                         : 'No matches found. Try another name.'}
                     </p>
                   )}

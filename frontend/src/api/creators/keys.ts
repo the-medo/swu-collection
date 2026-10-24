@@ -25,6 +25,7 @@ export const creatorKeys = {
   sectionCounts: (id?: string) => [...publicRoot, 'collections', 'counts', id] as const,
   collections: (id?: string) => [...publicRoot, 'collections', id] as const,
   personalCounts: [...privateRoot, 'personal-counts'] as const,
+  youtubeClaim: (claimId: string) => [...privateRoot, 'youtube-claim', claimId] as const,
   mine: [...privateRoot, 'mine'] as const,
   studios: [...privateRoot, 'studio'] as const,
   studio: (id?: string | null, page?: number) =>
@@ -35,8 +36,8 @@ export const creatorKeys = {
   members: (id: string) => [...privateRoot, 'members', id] as const,
   resolvedSubjects: (refs: EntityReference[]) =>
     [...privateRoot, 'resolved-subjects', refs] as const,
-  subjectChoices: (type: EntityReference['type'], q: string, userId?: string) =>
-    [...privateRoot, 'subject-choices', { type, q, userId }] as const,
+  subjectChoices: (type: EntityReference['type'], q: string, userId?: string, creatorId?: string) =>
+    [...privateRoot, 'subject-choices', { type, q, userId, creatorId }] as const,
   subjects: (type: EntityReference['type'], q: string, scope: 'discovery' | 'authoring') =>
     [...root, 'subjects', { type, q, scope }] as const,
 };

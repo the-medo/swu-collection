@@ -34,7 +34,10 @@ export default function CreationEditor({
 }) {
   const draft = useCreationDraft({ creatorId, initial, medium, onClose });
   const { document, id, error, busy, update, resolveConflict, restore, retry } = draft;
-  const resolvedSubjects = useResolvedSubjects(document.references);
+  const resolvedSubjects = useResolvedSubjects(
+    document.references,
+    draft.activeCreatorId ?? undefined,
+  );
   const isArticle = document.medium === 'article';
   const isVideo = document.medium === 'video';
   const [preview, setPreview] = useState(false);
@@ -166,6 +169,7 @@ export default function CreationEditor({
             </section>
           )}
           <SubjectPicker
+            creatorId={draft.activeCreatorId ?? undefined}
             resolved={resolvedSubjects}
             references={document.references}
             timestamps={isVideo}

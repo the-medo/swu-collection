@@ -24,6 +24,7 @@ import type {
 import { creationListSelection, publicCreation } from './list.ts';
 import { resolveReference, resolveReferences, type ResolvedReference } from './references.ts';
 import { CreatorError } from './errors.ts';
+import { requireCreator } from './permissions.ts';
 import { escapedSearch, groupDiscoveryTags, availableLanguages } from './filters.ts';
 
 export function createDiscoveryService(database: Database = db) {
@@ -247,18 +248,33 @@ export function createDiscoveryService(database: Database = db) {
         hasMore: seriesRows.length > 200 || deckRows.length > 200,
       };
     },
-    resolveSubjects: (refs: EntityReference[]) => resolveReferences(refs, database),
+    async resolveSubjects(
+      refs: EntityReference[],
+      options: { creatorId?: string; userId?: string } = {},
+    ) {
+      if (!options.creatorId) return resolveReferences(refs, database);
+      if (!options.userId) throw new CreatorError('Sign in to resolve creator connections.', 401);
+      const profile = await requireCreator(database, options.creatorId, options.userId);
+      return resolveReferences(refs, database, undefined, {
+        creatorId: profile.id,
+        ownerId: profile.ownerId,
+      });
+    },
     async subjects(
       type: EntityReference['type'],
       q: string,
       scope: 'discovery' | 'authoring' = 'discovery',
-      options: { userId?: string; page?: number } = {},
+      options: { userId?: string; page?: number; creatorId?: string } = {},
     ): Promise<ConnectionSubject[]> {
       const pageSize =
         type === 'tournament' && scope === 'authoring' ? CONNECTION_TOURNAMENT_PAGE_SIZE : 50;
       const offset = ((options.page ?? 1) - 1) * pageSize;
       if (type === 'deck' && scope === 'authoring' && !options.userId)
         throw new CreatorError('Sign in to choose your decks.', 401);
+      const profile =
+        scope === 'authoring' && options.creatorId && type === 'deck'
+          ? await requireCreator(database, options.creatorId, options.userId!)
+          : undefined;
       if (type === 'deck')
         return (
           await database
@@ -272,7 +288,7 @@ export function createDiscoveryService(database: Database = db) {
             .from(deck)
             .where(
               and(
-                eq(deck.public, 1),
+                inArray(deck.public, profile?.ownerId === options.userId && profile ? [1, 2] : [1]),
                 scope === 'authoring' ? eq(deck.userId, options.userId!) : undefined,
                 sql`${deck.name} ILIKE ${escapedSearch(q)}`,
               ),
