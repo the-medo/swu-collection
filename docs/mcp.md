@@ -297,7 +297,10 @@ describe the underlying authorization and transport.
    Drizzle includes defaulted ledger fields in its insert statement, so the script
    grants INSERT permission for each current usage column. SELECT and UPDATE stay
    limited to the columns needed by MCP. If the MCP role already exists, reapply
-   `mcp/deploy/grants.sql` before deploying this version.
+   `mcp/deploy/grants.sql` before deploying this version. Creator claim support
+   additionally requires the main-app claim migrations first; the role receives
+   SELECT on `creator_claimed_deck.deck_id` so creator article publication and
+   validation can preserve explicit links to unlisted decks.
 
 ## Coolify application
 

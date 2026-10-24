@@ -1,3 +1,5 @@
+import { useUser } from '@/hooks/useUser.ts';
+import { ClaimedBadge, YoutubeClaimButton } from './YoutubeClaim.tsx';
 import { lazy, Suspense } from 'react';
 import { Link } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
@@ -44,6 +46,7 @@ export function CreatorPage({
   search: CreatorPageSearch;
   onChange: (patch: Partial<CreatorPageSearch>) => void;
 }) {
+  const user = useUser();
   const query = useHubQuery(creatorKeys.profile(slug), () => hubApi.profile(slug));
   const profile = query.data;
   const counts = useHubQuery(
@@ -125,7 +128,10 @@ export function CreatorPage({
                   src={profile.avatarUrl}
                   className="-mt-12 size-20 rounded-[20px] text-2xl sm:-mt-16 sm:size-24 sm:rounded-[24px] sm:text-3xl"
                 />
-                <h1 className={`${creatorTitle} min-w-0 flex-1`}>{profile.name}</h1>
+                <div className="grid min-w-0 flex-1 gap-2">
+                  <h1 className={creatorTitle}>{profile.name}</h1>
+                  {profile.ownerId && <ClaimedBadge />}
+                </div>
               </div>
               {profile.tagline && (
                 <p className={`${creatorDescription} max-w-2xl`}>{profile.tagline}</p>
@@ -166,6 +172,18 @@ export function CreatorPage({
           </div>
         </div>
       </header>
+      {user && !profile.ownerId && (
+        <section className={`${creatorPanel} flex flex-wrap items-center justify-between gap-4`}>
+          <div className="max-w-2xl space-y-2">
+            <h2 className={creatorHeading}>Is this your channel?</h2>
+            <p className={creatorDescription}>
+              Connect YouTube to claim this profile and manage your content. Decklists imported for
+              your videos will move to your account as unlisted decks.
+            </p>
+          </div>
+          <YoutubeClaimButton creatorId={profile.id}>Claim this profile</YoutubeClaimButton>
+        </section>
+      )}
       {profile.introduction && (
         <section className="grid gap-3 rounded-[20px] border border-[var(--creator-border)] bg-[var(--creator-soft)] p-5 sm:p-6">
           <h2 className={creatorHeading}>Start here</h2>

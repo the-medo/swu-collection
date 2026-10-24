@@ -1,3 +1,4 @@
+import { invalidateDeckFolderCaches } from '@/api/deck-folders/deckFolderCache.ts';
 import { useMutation, useQueryClient, type QueryKey } from '@tanstack/react-query';
 import { useUser } from '@/hooks/useUser.ts';
 import { hubApi } from './client.ts';
@@ -115,4 +116,22 @@ export function useReloadCreationDraft() {
       return query.invalidateQueries({ queryKey: keys.studios });
     },
   });
+}
+
+export function useClaimYoutube() {
+  return useMutation({ mutationFn: hubApi.claimYoutube });
+}
+export function useConfirmYoutubeClaim() {
+  const query = useQueryClient();
+  return useMutation({
+    mutationFn: hubApi.confirmYoutubeClaim,
+    onSuccess: () =>
+      Promise.all([
+        query.invalidateQueries({ queryKey: keys.all }),
+        invalidateDeckFolderCaches(query),
+      ]),
+  });
+}
+export function useCancelYoutubeClaim() {
+  return useMutation({ mutationFn: hubApi.cancelYoutubeClaim });
 }

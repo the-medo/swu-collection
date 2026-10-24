@@ -1,5 +1,9 @@
-import { and, eq, or, sql } from 'drizzle-orm';
-import { creatorImportedDeck, creatorVideoJob } from '../../../db/schema/creator_video_job.ts';
+import { and, eq, exists, or, sql } from 'drizzle-orm';
+import {
+  creatorClaimedDeck,
+  creatorImportedDeck,
+  creatorVideoJob,
+} from '../../../db/schema/creator_video_job.ts';
 import { creatorProfile } from '../../../db/schema/creator_hub.ts';
 import { deck } from '../../../db/schema/deck.ts';
 import { deckImportSource } from '../../../db/schema/deck_import_source.ts';
@@ -104,7 +108,15 @@ export async function importVideoDeck(args: {
                   eq(deck.public, 1),
                   mapping.pendingPublication
                     ? and(eq(deck.public, 2), sql`${deck.updatedAt} = ${deck.createdAt}`)
-                    : undefined,
+                    : and(
+                        eq(deck.public, 2),
+                        exists(
+                          tx
+                            .select({ id: creatorClaimedDeck.deckId })
+                            .from(creatorClaimedDeck)
+                            .where(eq(creatorClaimedDeck.deckId, deck.id)),
+                        ),
+                      ),
                 ),
               ),
             )

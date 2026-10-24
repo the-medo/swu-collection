@@ -101,6 +101,9 @@ CREATE INDEX development_tournament_match_p2_deck_id_idx ON tournament_match (p2
 -- Creator identities, unpublished prose and provider credentials never enter public dumps.
 DO $creator_hub$
 BEGIN
+  IF to_regclass('public.creator_claimed_deck') IS NOT NULL THEN
+    TRUNCATE TABLE creator_claimed_deck;
+  END IF;
   IF to_regclass('public.creator_channel_resolution') IS NOT NULL THEN
     TRUNCATE TABLE creator_channel_resolution;
   END IF;

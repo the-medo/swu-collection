@@ -33,6 +33,8 @@ GRANT UPDATE (draft, revision, updated_at, manually_edited_fields, published,
   creator_id, owner_user_id, ownership_revision) ON creation TO swubase_mcp;
 GRANT SELECT, INSERT, DELETE ON creation_revision, creation_tag, creation_reference TO swubase_mcp;
 GRANT SELECT ON creator_profile, creator_member TO swubase_mcp;
+-- Scoped publication checks preserve explicit links to claimed, unlisted decks.
+GRANT SELECT (deck_id) ON creator_claimed_deck TO swubase_mcp;
 GRANT UPDATE (updated_at) ON creator_profile TO swubase_mcp;
 GRANT SELECT, INSERT ON creator_publishing_request, mcp_mutation TO swubase_mcp;
 GRANT SELECT ON preview_card, meta, tournament, tournament_type, tournament_deck,

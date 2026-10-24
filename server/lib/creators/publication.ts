@@ -1,7 +1,12 @@
 import type { CardCatalogReader } from '../cards/cardListProvider.ts';
 import { METADATA_RETENTION_MS } from './youtube-lifecycle-policy.ts';
 import { eq } from 'drizzle-orm';
-import { creation, creationReference, creationTag } from '../../db/schema/creator_hub.ts';
+import {
+  creation,
+  creationReference,
+  creationTag,
+  creatorProfile,
+} from '../../db/schema/creator_hub.ts';
 import { isPostEmpty } from '../../../shared/posts/content.ts';
 import type { Transaction as Tx } from './types.ts';
 import { now } from './types.ts';
@@ -40,12 +45,22 @@ export async function writeCreatorPublication(
   assertCreationTextAllowed(document);
   if (document.medium === 'article' && isPostEmpty(document.body))
     throw new CreatorError('Write your article before publishing.');
+  const [profile] = row.creatorId
+    ? await tx
+        .select({ ownerId: creatorProfile.ownerId })
+        .from(creatorProfile)
+        .where(eq(creatorProfile.id, row.creatorId))
+    : [];
   if (
-    (await resolveReferences(document.references, tx, catalog)).length !==
-    document.references.length
+    (
+      await resolveReferences(document.references, tx, catalog, {
+        creatorId: row.creatorId ?? undefined,
+        ownerId: profile?.ownerId,
+      })
+    ).length !== document.references.length
   )
     throw new CreatorError(
-      'A linked subject is unavailable. Decks must be public before they can be associated with a publication.',
+      'A linked subject is unavailable. Use a public deck or an unlisted deck owned by this creator.',
     );
   await tx.delete(creationTag).where(eq(creationTag.creationId, row.id));
   await tx.insert(creationTag).values(

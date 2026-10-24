@@ -127,7 +127,7 @@ test.skipIf(process.env.CREATOR_HUB_DB_TEST !== '1')(
       expect((await creatorService.mine(owner)).some(p => p.id === directoryId)).toBe(false);
       const duplicateDirectory = await request(owner, 'POST', '/creators', directoryInput);
       expect(duplicateDirectory.status).toBe(409);
-      expect((await duplicateDirectory.json()).message).toContain('Contact SWUBASE on Discord');
+      expect((await duplicateDirectory.json()).message).toContain('Connect YouTube');
       expect((await creatorService.profile(directoryInput.slug)).ownerId).toBeNull();
       for (const viewer of [null, owner, stranger]) {
         const status = viewer ? 403 : 401;
@@ -482,7 +482,7 @@ test.skipIf(process.env.CREATOR_HUB_DB_TEST !== '1')(
       const callback = await request(owner, 'GET', `/youtube/callback?state=${state}&code=code`);
       expect(callback.status).toBe(302);
       expect(callback.headers.get('location')).toBe(
-        `/creator-studio?creatorId=${profile.id}&youtube=connected&youtubeChannelId=${channelId}`,
+        `/creator-studio?creatorId=${profile.id}&youtube=connected&youtubeChannelId=${channelId}&transferredDecks=0`,
       );
       await expect(
         youtubeService.callback(owner, 'fixture-session', state, 'code'),

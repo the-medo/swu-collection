@@ -14,6 +14,7 @@ import {
   creatorVideoJob as jobs,
   creatorVideoSpend as spend,
   creatorImportedDeck,
+  creatorClaimedDeck,
   creatorChannelResolution,
 } from '../../../db/schema/creator_video_job.ts';
 import { deck } from '../../../db/schema/deck.ts';
@@ -544,6 +545,33 @@ test.skipIf(process.env.CREATOR_WORKER_DB_TEST !== '1')(
             ),
           ),
       ).toHaveLength(2);
+      // Owner-unlisting still suppresses reuse until a claim explicitly marks the mapping.
+      await db
+        .update(deck)
+        .set({ public: 2, updatedAt: new Date() })
+        .where(eq(deck.id, alreadyImported.deckId!));
+      const hiddenVideo = await add(1, good, `https://swudb.com/deck/${sourceIds[0]}`);
+      expect(await deckWorker.run(1, hiddenVideo)).toMatchObject({ published: 1 });
+      expect(
+        (await creationFor(hiddenVideo)).published!.references.filter(ref => ref.type === 'deck'),
+      ).toHaveLength(0);
+      await db.insert(creatorClaimedDeck).values({ deckId: alreadyImported.deckId! });
+      // A claimed/transferred import has a durable mapping and stays unlisted on reuse.
+      await db
+        .update(deck)
+        .set({ public: 2, updatedAt: new Date() })
+        .where(eq(deck.id, alreadyImported.deckId!));
+      const unlistedVideo = await add(1, good, `https://swudb.com/deck/${sourceIds[0]}`);
+      expect(await deckWorker.run(1, unlistedVideo)).toMatchObject({ published: 1 });
+      expect((await creationFor(unlistedVideo)).published!.references).toContainEqual({
+        type: 'deck',
+        id: alreadyImported.deckId!,
+        startSeconds: null,
+      });
+      expect(
+        (await db.select().from(deck).where(eq(deck.id, alreadyImported.deckId!)))[0].public,
+      ).toBe(2);
+      expect(await db.select().from(deck).where(eq(deck.userId, ownerId))).toHaveLength(2);
       const ownedJob = (await store.claim(await add(1)))!;
       const analysis: Analysis = {
         ...good,

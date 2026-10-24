@@ -95,6 +95,12 @@ export function createProfilesService(database: Database = db) {
                 'A creator address stays fixed after creation. You can change the display name.',
               );
           }
+          if (!id)
+            await tx
+              .select({ id: user.id })
+              .from(user)
+              .where(eq(user.id, viewerId))
+              .for('no key update');
           assertCreatorProfileAllowed(input);
           const [row] = id
             ? await tx
@@ -126,7 +132,7 @@ export function createProfilesService(database: Database = db) {
             .where(eq(creatorProfile.slug, input.slug));
           if (existing?.ownerId === null)
             throw new CreatorError(
-              'This creator already has a directory profile. Contact SWUBASE on Discord to request access.',
+              'This creator already has a directory profile. Connect YouTube in the creator studio to claim it.',
               409,
             );
           throw new CreatorError('That creator address is already in use.', 409);

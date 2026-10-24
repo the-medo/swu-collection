@@ -1,10 +1,7 @@
-import { createHash, randomBytes } from 'node:crypto';
-import { and, eq, gt, lt, inArray, sql, or, isNull } from 'drizzle-orm';
-import { z } from 'zod';
+import { and, eq, inArray, sql } from 'drizzle-orm';
 import { db } from '../../db/index.ts';
 import {
   creation,
-  creatorOauthState,
   creatorYoutube,
   creatorYoutubeChannel,
   creatorChannel,
@@ -16,49 +13,17 @@ import { youtubeVideoId } from '../../../shared/creators/youtube.ts';
 import { documentFromVideo } from './video.ts';
 import type { CreatorYoutubeStatus } from '../../../shared/creators/contracts.ts';
 import { channelFetchingConfigured } from './channel-imports.ts';
-import {
-  youtubeConfig,
-  youtubeScope,
-  seal,
-  unseal,
-  exchangeYoutubeToken,
-} from './youtube-credentials.ts';
+import { youtubeConfig } from './youtube-credentials.ts';
+import { createYoutubeOwnershipService } from './youtube-ownership.ts';
+export { stateHash } from './youtube-ownership.ts';
 export { youtubeConfig, seal, unseal } from './youtube-credentials.ts';
 import { disconnectYoutubeInTransaction } from './metadata-lifecycle.ts';
 import { youtubeClient } from './worker/providers.ts';
 import { refreshYoutubeAccess } from './youtube-access.ts';
 
 const creatorService = createCreationsService(db);
-const scope = youtubeScope;
-export const stateHash = (value: string) => createHash('sha256').update(value).digest('hex');
-const channelsSchema = z.object({
-  items: z.array(
-    z.object({
-      id: z.string().regex(/^UC[\w-]{22}$/),
-      snippet: z.object({
-        title: z.string(),
-        thumbnails: z.record(z.string(), z.object({ url: z.string() })).optional(),
-      }),
-    }),
-  ),
-});
-async function request(url: string, init?: RequestInit) {
-  try {
-    const response = await fetch(url, {
-      ...init,
-      signal: AbortSignal.timeout(15_000),
-      redirect: 'error',
-    });
-    if (!response.ok) throw new Error('Provider request failed');
-    return await response.json();
-  } catch {
-    throw new CreatorError(
-      'YouTube could not complete this request. Check the connection and try again.',
-      503,
-    );
-  }
-}
 export const youtubeService = {
+  ...createYoutubeOwnershipService(),
   async status(creatorId: string, viewerId: string): Promise<CreatorYoutubeStatus> {
     await requireCreator(db, creatorId, viewerId, true);
     let configured = true;
@@ -98,147 +63,6 @@ export const youtubeService = {
         ),
       );
     return { configured, fetchingConfigured: channelFetchingConfigured(), channels };
-  },
-  async connect(creatorId: string, viewerId: string, sessionId: string) {
-    const config = youtubeConfig(),
-      state = randomBytes(32).toString('base64url'),
-      verifier = randomBytes(48).toString('base64url');
-    await db.transaction(async tx => {
-      await requireCreator(tx, creatorId, viewerId, true, true);
-      await tx
-        .delete(creatorOauthState)
-        .where(lt(creatorOauthState.expiresAt, new Date().toISOString()));
-      await tx
-        .delete(creatorOauthState)
-        .where(
-          and(eq(creatorOauthState.userId, viewerId), eq(creatorOauthState.creatorId, creatorId)),
-        );
-      await tx.insert(creatorOauthState).values({
-        hash: stateHash(state),
-        creatorId,
-        userId: viewerId,
-        sessionId,
-        verifier: seal(verifier),
-        expiresAt: new Date(Date.now() + 10 * 60_000).toISOString(),
-      });
-    });
-    const params = new URLSearchParams({
-      client_id: config.clientId,
-      redirect_uri: config.redirectUri,
-      response_type: 'code',
-      scope,
-      state,
-      access_type: 'offline',
-      prompt: 'consent',
-      code_challenge: createHash('sha256').update(verifier).digest('base64url'),
-      code_challenge_method: 'S256',
-    });
-    return { url: `https://accounts.google.com/o/oauth2/v2/auth?${params}` };
-  },
-  async callback(viewerId: string, sessionId: string, state: string, code: string) {
-    // Consume only a state bound to this exact signed-in session. A replay cannot exchange a code.
-    const [pending] = await db
-      .delete(creatorOauthState)
-      .where(
-        and(
-          eq(creatorOauthState.hash, stateHash(state)),
-          eq(creatorOauthState.userId, viewerId),
-          eq(creatorOauthState.sessionId, sessionId),
-          gt(creatorOauthState.expiresAt, new Date().toISOString()),
-        ),
-      )
-      .returning();
-    if (!pending) throw new CreatorError('This YouTube connection expired. Start again.', 400);
-    await requireCreator(db, pending.creatorId, viewerId, true);
-    const token = await exchangeYoutubeToken({
-      grant_type: 'authorization_code',
-      code,
-      code_verifier: unseal(pending.verifier),
-      redirect_uri: youtubeConfig().redirectUri,
-    });
-    const channels = channelsSchema.safeParse(
-      await request('https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true', {
-        headers: { Authorization: `Bearer ${token.access_token}` },
-      }),
-    );
-    if (!channels.success || channels.data.items.length !== 1)
-      throw new CreatorError('Choose a YouTube channel account and connect again.');
-    const channel = channels.data.items[0];
-    await db.transaction(async tx => {
-      await requireCreator(tx, pending.creatorId, viewerId, true, true);
-      // Lock the channel identity across creator profiles as well as within one profile.
-      await tx.execute(sqlChannelLock(channel.id));
-      const [existing] = await tx
-        .select()
-        .from(creatorYoutube)
-        .where(eq(creatorYoutube.channelId, channel.id));
-      if (existing && existing.creatorId !== pending.creatorId)
-        throw new CreatorError('This channel is already linked to another creator.', 409);
-      const [association] = await tx
-        .select()
-        .from(creatorChannel)
-        .where(
-          and(
-            eq(creatorChannel.channelId, channel.id),
-            inArray(creatorChannel.origin, ['oauth', 'public']),
-          ),
-        );
-      if (association && association.creatorId !== pending.creatorId)
-        throw new CreatorError('This channel is already linked to another creator.', 409);
-      const values = {
-        creatorId: pending.creatorId,
-        connectedAt: new Date().toISOString(),
-        checkedAt: new Date().toISOString(),
-        lastCheckAttemptAt: new Date().toISOString(),
-        accessToken: seal(token.access_token),
-        refreshToken: token.refresh_token
-          ? seal(token.refresh_token)
-          : (existing?.refreshToken ?? null),
-        expiresAt: new Date(Date.now() + token.expires_in * 1000).toISOString(),
-      };
-      const metadata = {
-        title: channel.snippet.title,
-        avatarUrl:
-          channel.snippet.thumbnails?.high?.url ?? channel.snippet.thumbnails?.default?.url ?? '',
-        metadataUpdatedAt: new Date().toISOString(),
-        metadataCheckedAt: null,
-        metadataOrigin: 'oauth' as const,
-      };
-      await tx
-        .insert(creatorYoutubeChannel)
-        .values({ channelId: channel.id, ...metadata })
-        .onConflictDoUpdate({ target: creatorYoutubeChannel.channelId, set: metadata });
-      await tx
-        .insert(creatorChannel)
-        .values({ creatorId: pending.creatorId, channelId: channel.id, origin: 'oauth' })
-        .onConflictDoUpdate({
-          target: [creatorChannel.creatorId, creatorChannel.channelId],
-          set: {
-            origin: 'oauth',
-            sourceUrl: null,
-            resolvedAt: null,
-            disconnectedAt: null,
-            disconnectReason: null,
-          },
-        });
-      await tx
-        .insert(creatorYoutube)
-        .values({ channelId: channel.id, ...values })
-        .onConflictDoUpdate({ target: creatorYoutube.channelId, set: values });
-      // Explicitly reconnecting permits fresh public metadata to restore removed drafts.
-      // Maintenance never republishes them automatically.
-      await tx
-        .update(creation)
-        .set({ sourceStatus: 'expired', sourceCheckedAt: null })
-        .where(
-          and(
-            eq(creation.creatorId, pending.creatorId),
-            eq(creation.sourceStatus, 'authorization_removed'),
-            or(eq(creation.sourceChannelId, channel.id), isNull(creation.sourceChannelId)),
-          ),
-        );
-    });
-    return { creatorId: pending.creatorId, channelId: channel.id };
   },
   async disconnect(creatorId: string, viewerId: string, channelId: string) {
     await db.transaction(async tx => {
@@ -305,6 +129,3 @@ export const youtubeService = {
     }
   },
 };
-function sqlChannelLock(id: string) {
-  return sql`SELECT pg_advisory_xact_lock(hashtextextended(${`creator-youtube:${id}`}, 0))`;
-}

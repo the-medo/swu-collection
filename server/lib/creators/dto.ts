@@ -20,7 +20,10 @@ export function createCreatorDtos(database: Database, catalog?: CardCatalogReade
     author: Pick<typeof user.$inferSelect, 'id' | 'displayName' | 'image'> | null = null,
   ): Promise<Creation> => {
     const document = edit ? row.draft : row.published!;
-    const references = await resolveReferences(document.references, database, catalog);
+    const references = await resolveReferences(document.references, database, catalog, {
+      creatorId: profile?.id,
+      ownerId: profile?.ownerId,
+    });
     return {
       id: row.id,
       creatorId: row.creatorId,

@@ -19,6 +19,12 @@ import {
 } from '../../shared/creators/contracts.ts';
 import { CreatorError, creatorService } from '../lib/creators/service.ts';
 import { youtubeService } from '../lib/creators/youtube.ts';
+import { YoutubeOwnershipError } from '../lib/creators/youtube-ownership.ts';
+import {
+  youtubeClaimStartSchema,
+  youtubeClaimIdSchema,
+  youtubeClaimChoiceSchema,
+} from '../../shared/creators/claims.ts';
 import { channelImportsService } from '../lib/creators/channel-imports.ts';
 import { requireAdmin } from '../auth/requireAdmin.ts';
 import { creationReportsService } from '../lib/creators/reports.ts';
@@ -255,6 +261,7 @@ export function createCreatorHubRoute(
           type: z.enum(entityTypes),
           q: z.string().trim().max(100).default(''),
           scope: z.enum(['discovery', 'authoring']).default('discovery'),
+          creatorId: z.uuid().optional(),
           page: z.coerce.number().int().min(1).max(1000).default(1),
         }),
       ),
@@ -264,14 +271,30 @@ export function createCreatorHubRoute(
             c.req.valid('query').type,
             c.req.valid('query').q,
             c.req.valid('query').scope,
-            { userId: c.get('user')?.id, page: c.req.valid('query').page },
+            {
+              userId: c.get('user')?.id,
+              page: c.req.valid('query').page,
+              creatorId: c.req.valid('query').creatorId,
+            },
           ),
         }),
     )
     .post(
       '/subjects/resolve',
-      zValidator('json', z.object({ references: z.array(entityReferenceSchema).max(50) })),
-      async c => c.json({ data: await service.resolveSubjects(c.req.valid('json').references) }),
+      zValidator(
+        'json',
+        z.object({
+          references: z.array(entityReferenceSchema).max(50),
+          creatorId: z.uuid().optional(),
+        }),
+      ),
+      async c =>
+        c.json({
+          data: await service.resolveSubjects(c.req.valid('json').references, {
+            creatorId: c.req.valid('json').creatorId,
+            userId: c.get('user')?.id,
+          }),
+        }),
     )
     .get('/creations', zValidator('query', discoverySchema), async c =>
       c.json({ data: await service.discover(c.req.valid('query')) }),
@@ -423,6 +446,48 @@ export function createCreatorHubRoute(
           ),
         }),
     )
+    .post('/youtube/claim', zValidator('json', youtubeClaimStartSchema), async c =>
+      c.json({
+        data: await youtube.claim(
+          c.get('user')!.id,
+          c.get('session')!.id,
+          c.req.valid('json').creatorId,
+        ),
+      }),
+    )
+    .get('/youtube/claims/:claimId', zValidator('param', youtubeClaimIdSchema), async c => {
+      if (!c.get('user') || !c.get('session'))
+        return c.json({ message: 'Sign in to continue.' }, 401);
+      return c.json({
+        data: await youtube.pendingClaim(
+          c.get('user')!.id,
+          c.get('session')!.id,
+          c.req.valid('param').claimId,
+        ),
+      });
+    })
+    .post(
+      '/youtube/claims/:claimId',
+      zValidator('param', youtubeClaimIdSchema),
+      zValidator('json', youtubeClaimChoiceSchema),
+      async c =>
+        c.json({
+          data: await youtube.confirmClaim(
+            c.get('user')!.id,
+            c.get('session')!.id,
+            c.req.valid('param').claimId,
+            c.req.valid('json'),
+          ),
+        }),
+    )
+    .delete('/youtube/claims/:claimId', zValidator('param', youtubeClaimIdSchema), async c => {
+      await youtube.cancelClaim(
+        c.get('user')!.id,
+        c.get('session')!.id,
+        c.req.valid('param').claimId,
+      );
+      return c.json({ data: true });
+    })
     .get('/youtube/callback', async c => {
       const query = z
         .object({ state: z.string().min(30).max(200), code: z.string().min(1).max(4000) })
@@ -430,20 +495,29 @@ export function createCreatorHubRoute(
       if (!query.success || !c.get('user') || !c.get('session'))
         return c.redirect('/creator-studio?youtube=failed');
       try {
-        const { creatorId, channelId } = await youtube.callback(
+        const result = await youtube.callback(
           c.get('user')!.id,
           c.get('session')!.id,
           query.data.state,
           query.data.code,
         );
-        return c.redirect(
-          `/creator-studio?creatorId=${creatorId}&youtube=connected&youtubeChannelId=${channelId}`,
-        );
+        const params =
+          'claimId' in result
+            ? new URLSearchParams({ youtube: 'confirm', youtubeClaimId: result.claimId })
+            : new URLSearchParams({
+                creatorId: result.creatorId,
+                youtube: result.claimed ? 'claimed' : 'connected',
+                youtubeChannelId: result.channelId,
+                transferredDecks: String(result.transferredDecks),
+              });
+        return c.redirect(`/creator-studio?${params}`);
       } catch (error) {
         console.warn('YouTube connection callback failed', {
           kind: error instanceof CreatorError ? error.status : 'unexpected',
         });
-        return c.redirect('/creator-studio?youtube=failed');
+        return c.redirect(
+          `/creator-studio?youtube=failed${error instanceof YoutubeOwnershipError ? `&youtubeError=${error.reason}` : ''}`,
+        );
       }
     });
 }

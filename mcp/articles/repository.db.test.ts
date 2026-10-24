@@ -317,6 +317,32 @@ test.skipIf(!enabled)(
       // Exercise all data-filled templates under the actual restricted grants.
       // Stored rounds keep this test independent of the external Melee service.
       await db.update(deck).set({ public: 1 }).where(eq(deck.id, deckId));
+      const creatorArticle = await articles.create(actor, {
+        requestId: crypto.randomUUID(),
+        creatorId,
+        fields: {
+          ...request.fields,
+          references: [{ type: 'deck', id: deckId, startSeconds: null }],
+        },
+      });
+      for (const visibility of [1, 2] as const) {
+        await db.update(deck).set({ public: visibility }).where(eq(deck.id, deckId));
+        expect((await articles.validate(actor, { articleId: creatorArticle.id })).canPublish).toBe(
+          true,
+        );
+        await articles.publish(actor, {
+          articleId: creatorArticle.id,
+          expectedRevision: creatorArticle.revision,
+          expectedOwnershipRevision: creatorArticle.ownershipRevision,
+          requestId: crypto.randomUUID(),
+          unpublish: false,
+        });
+      }
+      await db.update(deck).set({ public: 0 }).where(eq(deck.id, deckId));
+      expect((await articles.validate(actor, { articleId: creatorArticle.id })).canPublish).toBe(
+        false,
+      );
+      await db.update(deck).set({ public: 1 }).where(eq(deck.id, deckId));
       const meleeId = Math.floor(1_800_000_000 + Math.random() * 100_000_000);
       await db.insert(tournament).values({
         id: eventId,

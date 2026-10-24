@@ -84,3 +84,12 @@ export const creatorImportedDeck = pgTable(
     index('creator_imported_deck_deck').on(t.deckId),
   ],
 );
+
+// Provenance belongs to the original deck, even when a claimant already has a
+// different import mapping for the same external source.
+export const creatorClaimedDeck = pgTable('creator_claimed_deck', {
+  deckId: uuid('deck_id')
+    .primaryKey()
+    .references(() => deck.id, { onDelete: 'cascade' }),
+  claimedAt: date('claimed_at').notNull().defaultNow(),
+});

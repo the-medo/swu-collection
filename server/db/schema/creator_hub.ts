@@ -226,12 +226,14 @@ export const creatorYoutube = pgTable(
 export const creatorOauthState = pgTable('creator_oauth_state', {
   hash: text('hash').primaryKey(),
   creatorId: uuid('creator_id')
-    .notNull()
     .references(() => creatorProfile.id, { onDelete: 'cascade' }),
   userId: text('user_id')
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
   sessionId: text('session_id').notNull(),
   verifier: text('verifier').notNull(),
+  purpose: text('purpose').$type<'connect' | 'claim' | 'confirm'>().notNull().default('connect'),
+  // A verified connection awaiting an explicit profile choice; encrypted and session-bound.
+  pendingConnection: text('pending_connection'),
   expiresAt: date('expires_at').notNull(),
 });
