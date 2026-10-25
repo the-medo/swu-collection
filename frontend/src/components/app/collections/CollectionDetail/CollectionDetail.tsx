@@ -1,8 +1,14 @@
+import { browseStyles } from '@/components/app/global/BrowsePage/browseStyles';
 import { useGetCollection } from '@/api/collections/useGetCollection.ts';
 import { getRouteApi } from '@tanstack/react-router';
 import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
 import { useUser } from '@/hooks/useUser';
-import LoadingTitle from '../../global/LoadingTitle';
+import { BrowseHeader, BrowsePage } from '@/components/app/global/BrowsePage/BrowsePage.tsx';
+import {
+  CollectionIcon,
+  WantlistIcon,
+  CardListIcon,
+} from '@/components/app/global/icons/CardLibraryIcons.tsx';
 import CollectionInputSection from '@/components/app/collections/CollectionInput/CollectionInputSection.tsx';
 import CollectionContents from '@/components/app/collections/CollectionContents/CollectionContents.tsx';
 import { useCallback, useEffect } from 'react';
@@ -23,10 +29,12 @@ import { usePutCollection } from '@/api/collections/usePutCollection.ts';
 import CollectionCardSelection from '@/components/app/collections/CollectionCardSelection/CollectionCardSelection.tsx';
 import CollectionSources from '@/components/app/collections/CollectionSources/CollectionSources.tsx';
 import CollectionPricing from '@/components/app/collections/CollectionPricing/CollectionPricing.tsx';
+import { useSidebar } from '@/components/ui/sidebar.tsx';
 
 const routeApi = getRouteApi('/collections/$collectionId/');
 
 const CollectionDetail: React.FC = () => {
+  const { isMobile } = useSidebar();
   const user = useUser();
   const { collectionId } = routeApi.useParams();
   const { data, isFetching, error } = useGetCollection(collectionId);
@@ -89,49 +97,70 @@ const CollectionDetail: React.FC = () => {
             : `Loading ${cardListString} | SWUBase`
         }
       />
-      <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-        <LoadingTitle
-          mainTitle={data?.collection.title}
-          subTitle={
-            <span className="inline-flex max-w-full items-center gap-1">
-              <span className="shrink-0">{cardListString.toLowerCase()} by</span>
+      <BrowsePage>
+        <BrowseHeader
+          eyebrow={cardListString}
+          icon={
+            collectionType === CollectionType.WANTLIST
+              ? WantlistIcon
+              : collectionType === CollectionType.OTHER
+                ? CardListIcon
+                : CollectionIcon
+          }
+          title={data?.collection.title ?? `Loading ${cardListString.toLowerCase()}…`}
+          description={
+            <span className="inline-flex max-w-full flex-wrap items-center gap-2">
+              <span>Curated by</span>
               {data?.user && <UserDisplay user={data.user} size="md" />}
             </span>
           }
-          loading={loading}
-        />
-        {owned && data?.collection && (
-          <div className="flex flex-row gap-2 items-center">
-            {publicRenderer(data?.collection.public, owned ? togglePublic : undefined)}
-            {type === CollectionType.COLLECTION
-              ? forSaleRenderer(data?.collection.forSale, owned ? toggleForSale : undefined)
-              : null}
-            {type === CollectionType.COLLECTION
-              ? forDecksRenderer(data?.collection.forDecks, owned ? toggleForDecks : undefined)
-              : null}
-            <EditCollectionDialog
-              collection={data?.collection}
-              trigger={<Button>Edit {cardListString}</Button>}
-            />
-            <DeleteCollectionDialog
-              collection={data?.collection}
-              trigger={<Button variant="destructive">Delete {cardListString}</Button>}
-            />
-          </div>
+        >
+          {owned && data?.collection && (
+            <div className="flex flex-wrap gap-2 items-center">
+              {publicRenderer(data?.collection.public, owned ? togglePublic : undefined)}
+              {type === CollectionType.COLLECTION
+                ? forSaleRenderer(data?.collection.forSale, owned ? toggleForSale : undefined)
+                : null}
+              {type === CollectionType.COLLECTION
+                ? forDecksRenderer(data?.collection.forDecks, owned ? toggleForDecks : undefined)
+                : null}
+              <EditCollectionDialog
+                collection={data?.collection}
+                trigger={<Button>Edit {cardListString}</Button>}
+              />
+              <DeleteCollectionDialog
+                collection={data?.collection}
+                trigger={
+                  <Button variant="outline" className="text-destructive">
+                    Delete {cardListString}
+                  </Button>
+                }
+              />
+            </div>
+          )}
+        </BrowseHeader>
+        {data?.collection.description && (
+          <p className="m-0 max-w-3xl text-sm leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">
+            {data.collection.description}
+          </p>
         )}
-      </div>
-      <div className="flex flex-row gap-4 text-sm italic mb-2">{data?.collection.description}</div>
-      <div className="flex flex-col-reverse lg:flex-row gap-4">
-        <CollectionContents collectionId={collectionId} />
-        <div className="flex flex-col gap-4 w-full lg:w-[400px]">
-          <CollectionActions collectionId={collectionId} />
-          <CollectionPricing collectionId={collectionId} showReloadButtonWhenNoPrices={true} />
-          <CollectionStats collectionId={collectionId} />
-          {user && <CollectionSources collectionId={collectionId} owned={owned} />}
-          {!owned && <CollectionCardSelection collectionId={collectionId} />}
-          {owned && <CollectionInputSection collectionId={collectionId} />}
+        <CollectionActions collectionId={collectionId} />
+        <div className={browseStyles.collectionDetailLayout} aria-busy={loading}>
+          <CollectionContents collectionId={collectionId} />
+          <details open={!isMobile} className={browseStyles.collectionToolsDisclosure}>
+            <summary className="cursor-pointer rounded-2xl border border-[var(--browse-border)] bg-[var(--browse-soft)] px-5 py-4 text-sm font-medium text-[var(--browse-accent)] lg:hidden">
+              {owned ? 'Add cards & collection tools' : 'Summary, card selection & tools'}
+            </summary>
+            <div className={browseStyles.collectionDetailTools}>
+              <CollectionPricing collectionId={collectionId} showReloadButtonWhenNoPrices={true} />
+              <CollectionStats collectionId={collectionId} />
+              {user && <CollectionSources collectionId={collectionId} owned={owned} />}
+              {!owned && <CollectionCardSelection collectionId={collectionId} />}
+              {owned && <CollectionInputSection collectionId={collectionId} />}
+            </div>
+          </details>
         </div>
-      </div>
+      </BrowsePage>
     </>
   );
 };

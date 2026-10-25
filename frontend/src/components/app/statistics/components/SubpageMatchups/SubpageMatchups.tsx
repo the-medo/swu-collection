@@ -90,8 +90,7 @@ const SubpageMatchups: React.FC<SubpageMatchupsProps> = ({ matches, matrixKey })
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="border-b text-muted-foreground text-xs uppercase tracking-wider">
-            <th className="py-3 px-4 font-semibold w-[200px]">Opponent</th>
-            <th className="py-3 px-4 font-semibold"></th>
+            <th className="py-3 px-4 font-semibold w-32">Opponent</th>
             <th className="py-3 px-4 font-semibold">
               <div className=" flex flex-col gap-2">
                 <div className=" flex gap-2 items-center">
@@ -147,7 +146,7 @@ const SubpageMatchups: React.FC<SubpageMatchupsProps> = ({ matches, matrixKey })
             ))
           ) : (
             <tr>
-              <td colSpan={4} className="py-8 text-center text-muted-foreground">
+              <td colSpan={3} className="py-8 text-center text-muted-foreground">
                 No matchup data available
               </td>
             </tr>

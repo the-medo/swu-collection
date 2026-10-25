@@ -1,3 +1,6 @@
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles';
+import { inboxStyles } from '@/components/app/inbox/inboxStyles';
+import { cn } from '@/lib/utils';
 import { Link } from '@tanstack/react-router';
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Bell, CheckCheck } from 'lucide-react';
@@ -72,7 +75,11 @@ function BellPopover() {
         align="end"
         sideOffset={12}
         collisionPadding={8}
-        className="flex max-h-[min(36rem,var(--radix-popover-content-available-height))] w-96 max-w-[calc(100vw-1rem)] flex-col p-0"
+        className={cn(
+          'overflow-hidden rounded-xl flex max-h-[min(36rem,var(--radix-popover-content-available-height))] w-96 max-w-[calc(100vw-1rem)] flex-col p-0',
+          workspaceStyles.theme,
+          inboxStyles.preview,
+        )}
       >
         <NotificationPreview
           onNavigate={() => {
@@ -131,8 +138,10 @@ function NotificationPreview({ onNavigate }: { onNavigate: () => void }) {
 
   return (
     <>
-      <h3 className="m-0 shrink-0 border-b px-4 py-3 text-base">Notifications</h3>
-      <div ref={listRef} className="min-h-0 overflow-y-auto p-2">
+      <h3 className={cn(workspaceStyles.heading, 'shrink-0 border-b! px-4! py-3!')}>
+        Notifications
+      </h3>
+      <div ref={listRef} className="min-h-0 overflow-y-auto">
         {query.isPending && (
           <p role="status" className="p-4 text-sm">
             Loading notifications…

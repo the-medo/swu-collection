@@ -18,6 +18,7 @@ import { UploadedImagePicker } from '@/components/app/global/UploadedImagePicker
 import type { CardVariant } from '../../../../../../lib/swu-resources/types.ts';
 import type { AvatarCrop } from '../../../../../../types/UserAvatar.ts';
 import type { UserFile } from '../../../../../../types/UserFile.ts';
+import { settingsStyles } from './settingsStyles.ts';
 
 export default function AvatarSettings() {
   const user = useUser();
@@ -118,7 +119,7 @@ export default function AvatarSettings() {
           reset();
         }}
       >
-        <TabsList aria-label="Avatar image source">
+        <TabsList aria-label="Avatar image source" className={settingsStyles.tabs}>
           <TabsTrigger value="cards" disabled={busy}>
             Cards
           </TabsTrigger>

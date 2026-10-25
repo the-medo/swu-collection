@@ -6,6 +6,9 @@ import { CollectionCard } from '../../../../../../types/CollectionCard';
 import ItemTypeBadge from './ItemTypeBadge';
 import CollectionLayoutTableSmallObjects from '@/components/app/collections/CollectionContents/CollectionCards/CollectionLayoutTableSmall/CollectionLayoutTableSmallObjects.tsx';
 
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles.ts';
+import { cn } from '@/lib/utils.ts';
+
 interface ComparerResultProps {
   mainCardsMap: Map<string, CollectionCard>;
   entry: ReturnType<typeof useComparerStore>['entries'][number];
@@ -47,20 +50,25 @@ const ComparerResult: React.FC<ComparerResultProps> = ({ mainCardsMap, entry }) 
   }, [otherCollection, mainCardsMap]);
 
   return (
-    <div className="p-4">
-      <h3 className="flex gap-4 text-lg font-semibold mb-4">
-        Comparison with {entry.additionalData?.title ?? '- Unknown -'}
-        <ItemTypeBadge entry={entry} />
-      </h3>
+    <section className={cn(workspaceStyles.panel, 'overflow-hidden')}>
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-3 py-2">
+        <h2 className={cn(workspaceStyles.heading, 'flex flex-wrap items-center gap-2')}>
+          Comparison with {entry.additionalData?.title ?? '- Unknown -'}
+          <ItemTypeBadge entry={entry} />
+        </h2>
 
-      <div className="mb-2">
-        <span className="text-sm font-medium">{intersectionCards.length} cards in common</span>
+        <div>
+          <span className="text-sm font-medium">
+            {intersectionCards.length} {intersectionCards.length === 1 ? 'card' : 'cards'} in common
+          </span>
+        </div>
       </div>
-
-      {intersectionCards.length ? (
-        <CollectionLayoutTableSmallObjects collectionId={entry.id} cards={intersectionCards} />
-      ) : null}
-    </div>
+      <div className="overflow-x-auto p-2">
+        {intersectionCards.length ? (
+          <CollectionLayoutTableSmallObjects collectionId={entry.id} cards={intersectionCards} />
+        ) : null}
+      </div>
+    </section>
   );
 };
 

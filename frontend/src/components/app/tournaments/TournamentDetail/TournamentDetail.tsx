@@ -1,3 +1,5 @@
+import { competitionStyles } from '@/components/app/tournaments/competitionStyles';
+import { cn } from '@/lib/utils';
 import { RelatedCreations } from '@/components/app/creators/CreationCards.tsx';
 import * as React from 'react';
 import { useGetTournament } from '@/api/tournaments/useGetTournament.ts';
@@ -188,7 +190,7 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
   return (
     <>
       <Helmet titleTemplate={`%s - ${pageTitle}`} />
-      <div className="space-y-2 w-full">
+      <div className={cn('space-y-2 w-full', competitionStyles.page)}>
         {/* Tournament header */}
         {displayHeader && (
           <div className="flex flex-col md:flex-row justify-between items-start gap-4">
@@ -428,7 +430,9 @@ const TournamentDetail: React.FC<TournamentDetailProps> = ({
         )}
         <TournamentDataLoader tournamentId={tournamentId} />
         <TournamentTabs tournamentId={tournamentId} activeTab={activeTab} mode={mode} />
-        {activeTab === 'details' || activeTab === 'photos' || tournament?.imported ? children : null}
+        {activeTab === 'details' || activeTab === 'photos' || tournament?.imported
+          ? children
+          : null}
         {showDataNotice && <NoTournamentData tournamentId={tournamentId} />}
         {displayHeader && tournament && <RelatedCreations type="tournament" id={tournamentId} />}
       </div>

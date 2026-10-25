@@ -1,5 +1,7 @@
+import { areGameAndMatchRecordsEqual } from '@/components/app/statistics/lib/resultStatistics';
+import { statisticsStyles } from '@/components/app/statistics/statisticsStyles';
+import { cn } from '@/lib/utils';
 import * as React from 'react';
-import { Card, CardContent } from '@/components/ui/card.tsx';
 import { DeckStatistics } from '@/components/app/statistics/lib/deckLib.ts';
 import { StatSectionCompact } from '@/components/app/statistics/common/StatSectionCompact.tsx';
 import { Link } from '@tanstack/react-router';
@@ -29,39 +31,39 @@ const DeckInfoThumbnailCompact: React.FC<DeckInfoThumbnailCompactProps> = ({
   } = statistics;
 
   return (
-    <Link
-      to={`${getTeamUrlPrefix(teamId)}/statistics/decks`}
-      params={{
-        teamId,
-      }}
-      search={prev => ({ ...prev, sDeckId: deckId })}
-      className="w-full"
-    >
-      <Card className="overflow-hidden relative w-full hover:bg-muted/50 transition-colors">
-        <CardContent className="p-2 flex justify-between">
-          <div className="p-2 flex flex-col items-start gap-2">
-            <h6 className="truncate text-xs font-bold mb-0! flex-1 max-w-[250px]">{deckName}</h6>
-            <div className="flex gap-4 shrink-0">
-              <StatSectionCompact
-                label="G"
-                wins={gameWins}
-                losses={gameLosses}
-                winrate={gameWinrate}
-              />
-              <StatSectionCompact
-                label="M"
-                wins={matchWins}
-                losses={matchLosses}
-                winrate={matchWinrate}
-              />
-            </div>
-          </div>
-          <div className="flex gap-4">
-            <CopyLinkButton deckId={deckId} isPublic={true} compact={true} />
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
+    <div className={cn(statisticsStyles.deckRow, statisticsStyles.relatedDeck)}>
+      <div className="min-w-0 flex-1">
+        <Link
+          className={cn('block truncate text-xs font-semibold', statisticsStyles.deckLink)}
+          to={`${getTeamUrlPrefix(teamId)}/statistics/decks`}
+          params={{ teamId }}
+          search={prev => ({ ...prev, sDeckId: deckId })}
+        >
+          {deckName || 'Untitled deck'}
+        </Link>
+        <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+          <StatSectionCompact
+            label="Games"
+            wins={gameWins}
+            losses={gameLosses}
+            draws={statistics.gameDraws}
+            winrate={gameWinrate}
+          />
+          {!areGameAndMatchRecordsEqual(statistics) && (
+            <StatSectionCompact
+              label="Matches"
+              wins={matchWins}
+              losses={matchLosses}
+              draws={statistics.matchDraws}
+              winrate={matchWinrate}
+            />
+          )}
+        </div>
+      </div>
+      <div className="relative z-2">
+        <CopyLinkButton deckId={deckId} isPublic compact />
+      </div>
+    </div>
   );
 };
 

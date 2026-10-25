@@ -1,3 +1,14 @@
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles';
+import {
+  LayoutDashboard,
+  History,
+  Layers3,
+  Swords,
+  ChartPie,
+  Users,
+  GalleryHorizontalEnd,
+  type LucideIcon,
+} from 'lucide-react';
 import * as React from 'react';
 import { Link } from '@tanstack/react-router';
 import { cn } from '@/lib/utils.ts';
@@ -13,6 +24,7 @@ interface TabConfig {
   key: string;
   label: string;
   segment: string;
+  icon: LucideIcon;
 }
 
 interface TabLinkProps {
@@ -22,12 +34,7 @@ interface TabLinkProps {
 }
 
 const TabLink: React.FC<TabLinkProps> = ({ tab, isActive, basePath }) => {
-  const commonClass = cn(
-    'flex min-w-0 items-center justify-center rounded-md text-center px-3 py-1.5 text-sm font-medium transition-all',
-    isActive
-      ? 'bg-background text-foreground shadow-xs'
-      : 'text-muted-foreground hover:text-foreground',
-  );
+  const commonClass = workspaceStyles.tab;
 
   return (
     <Link
@@ -44,21 +51,27 @@ const TabLink: React.FC<TabLinkProps> = ({ tab, isActive, basePath }) => {
       aria-current={isActive ? 'page' : undefined}
       className={commonClass}
     >
+      <tab.icon size={15} aria-hidden="true" />
       {tab.label}
     </Link>
   );
 };
 
 const baseTabs: TabConfig[] = [
-  { key: 'dashboard', label: 'Dashboard', segment: 'dashboard' },
-  { key: 'history', label: 'Match History', segment: 'history' },
-  { key: 'decks', label: 'Decks', segment: 'decks' },
-  { key: 'leader-and-base', label: 'Leader & Bases', segment: 'leader-and-base' },
-  { key: 'matchups', label: 'Matchups', segment: 'matchups' },
-  { key: 'meta', label: 'Opponent Meta', segment: 'meta' },
+  { key: 'dashboard', label: 'Dashboard', segment: 'dashboard', icon: LayoutDashboard },
+  { key: 'history', label: 'Match History', segment: 'history', icon: History },
+  { key: 'decks', label: 'Decks', segment: 'decks', icon: Layers3 },
+  {
+    key: 'leader-and-base',
+    label: 'Leaders & bases',
+    segment: 'leader-and-base',
+    icon: GalleryHorizontalEnd,
+  },
+  { key: 'matchups', label: 'Matchups', segment: 'matchups', icon: Swords },
+  { key: 'meta', label: 'Opponent Meta', segment: 'meta', icon: ChartPie },
 ];
 
-const membersTab: TabConfig = { key: 'members', label: 'Members', segment: 'members' };
+const membersTab: TabConfig = { key: 'members', label: 'Members', segment: 'members', icon: Users };
 
 const StatisticsTabs: React.FC<StatisticsTabsProps> = ({
   className,
@@ -67,16 +80,13 @@ const StatisticsTabs: React.FC<StatisticsTabsProps> = ({
   teamId,
 }) => {
   const tabs = teamId ? [...baseTabs, membersTab] : baseTabs;
-  const gridCols = teamId
-    ? 'grid-cols-2 @[480px]/statistics-tabs:grid-cols-4 @[840px]/statistics-tabs:grid-cols-7'
-    : 'grid-cols-2 @[480px]/statistics-tabs:grid-cols-3 @[720px]/statistics-tabs:grid-cols-6';
 
   return (
     <nav
       aria-label="Statistics sections"
       className={cn('@container/statistics-tabs w-full min-w-0', className)}
     >
-      <div className={cn('grid mb-2 rounded-lg bg-muted p-1', gridCols)}>
+      <div className={workspaceStyles.tabs}>
         {tabs.map(tab => (
           <TabLink key={tab.key} tab={tab} isActive={activeTab === tab.key} basePath={basePath} />
         ))}

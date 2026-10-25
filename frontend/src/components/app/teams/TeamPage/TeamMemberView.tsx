@@ -1,4 +1,7 @@
 import * as React from 'react';
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles';
+import { cn } from '@/lib/utils';
+
 import { getRouteApi } from '@tanstack/react-router';
 import TeamDecksTab from './TeamDecksTab/TeamDecksTab.tsx';
 import TeamMembersTab from './TeamMembersTab/TeamMembersTab.tsx';
@@ -31,7 +34,12 @@ const TeamMemberView: React.FC<TeamMemberViewProps> = ({ team, isOwner }) => {
   }, [teamTab, isOwner, navigate]);
 
   return (
-    <div className="@container/team-decks min-w-0 overflow-x-auto">
+    <div
+      className={cn(
+        workspaceStyles.theme,
+        '@container/team-decks min-w-0 space-y-4 overflow-x-auto',
+      )}
+    >
       {teamTab === 'members' ? (
         <>
           <TeamMembersTab teamId={team.id} isOwner={isOwner} />

@@ -21,7 +21,7 @@ export function TournamentAlbums({
   return (
     <section
       aria-label="Event photos"
-      className={`${albumTheme} flex min-w-0 flex-col gap-3 rounded-md border bg-card p-3 shadow-xs`}
+      className={`${albumTheme} flex min-w-0 flex-col gap-3 rounded-xl border border-[color:var(--album-border)] bg-card p-3`}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="m-0! flex items-center gap-2 border-0! p-0! text-sm! font-semibold!">

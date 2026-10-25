@@ -147,8 +147,8 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
         {isLoadingTeamDecks ? (
           <div className="flex flex-col gap-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="flex items-center gap-3">
-                <Skeleton className="h-12 w-24 rounded" />
+              <div key={i} className="flex items-center gap-3 rounded-lg border bg-card p-2.5">
+                <Skeleton className="h-12 w-17 shrink-0 rounded-lg" />
                 <Skeleton className="h-4 w-[150px]" />
               </div>
             ))}
@@ -223,8 +223,8 @@ const TeamDecksTab: React.FC<TeamDecksTabProps> = ({ teamId }) => {
             {isLoadingRecent ? (
               <div className="flex flex-col gap-2">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="flex items-center gap-3">
-                    <Skeleton className="h-10 w-20 rounded" />
+                  <div key={i} className="flex items-center gap-3 p-2">
+                    <Skeleton className="h-12 w-17 shrink-0 rounded-lg" />
                     <Skeleton className="h-4 w-[120px]" />
                   </div>
                 ))}

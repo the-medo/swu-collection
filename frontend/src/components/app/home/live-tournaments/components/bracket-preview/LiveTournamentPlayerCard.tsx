@@ -1,8 +1,5 @@
-import { type CardListResponse, useCardList } from '@/api/lists/useCardList.ts';
-import DeckBackgroundDecoration from '@/components/app/global/DeckBackgroundDecoration.tsx';
-import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
+import { LeaderBaseArtwork } from '@/components/app/global/LeaderBaseArtwork.tsx';
 import { cn } from '@/lib/utils.ts';
-import { basicBaseForAspect } from '../../../../../../../../shared/lib/basicBases.ts';
 import type {
   LiveTournamentBracketDeckSummary,
   LiveTournamentMatchEntry,
@@ -11,11 +8,6 @@ import type {
 type MatchTournamentPlayer =
   | LiveTournamentMatchEntry['tournamentPlayer1']
   | LiveTournamentMatchEntry['tournamentPlayer2'];
-
-function getCardIdFromKey(key: string | undefined, cards: CardListResponse['cards'] | undefined) {
-  if (!key || !cards) return undefined;
-  return key in cards ? key : basicBaseForAspect[key];
-}
 
 type LiveTournamentPlayerCardProps = {
   playerDisplayName: string | null | undefined;
@@ -46,13 +38,8 @@ export function LiveTournamentPlayerCard({
   onMouseEnter,
   onMouseLeave,
 }: LiveTournamentPlayerCardProps) {
-  const { data: cardListData } = useCardList();
   const leaderCardId = deck?.leaderCardId1 ?? tournamentPlayer?.leaderCardId ?? undefined;
-  const baseCardId =
-    deck?.baseCardId ??
-    getCardIdFromKey(tournamentPlayer?.baseCardKey ?? undefined, cardListData?.cards);
-  const leaderCard = leaderCardId ? cardListData?.cards[leaderCardId] : undefined;
-  const baseCard = baseCardId ? cardListData?.cards[baseCardId] : undefined;
+  const baseKey = deck?.baseCardId ?? tournamentPlayer?.baseCardKey;
   const isClickable = !!onClick;
   const isStanding = variant === 'standing';
   const Component = isClickable ? 'button' : 'div';
@@ -86,19 +73,14 @@ export function LiveTournamentPlayerCard({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {leaderCard && (
-        <DeckBackgroundDecoration leaderCard={leaderCard} baseCard={baseCard} position="top-left">
-          <BaseAvatar cardId={baseCard?.cardId} bordered={false} size="30" shape="circle" />
-        </DeckBackgroundDecoration>
-      )}
-
-      <div
-        className={cn('relative z-20 flex h-full items-center gap-2 pl-9', isStanding && 'pr-3')}
-      >
-        <div className="min-w-0 flex-1 text-right">
+      <div className="flex h-full items-center gap-2 pl-2 pr-1">
+        {(leaderCardId || baseKey) && (
+          <LeaderBaseArtwork leaderId={leaderCardId} baseKey={baseKey} size="compact" />
+        )}
+        <div className="min-w-0 flex-1 text-left">
           <h6
             className={cn(
-              'mb-0! truncate leading-tight',
+              'mb-0! truncate text-xs leading-tight',
               isHighlighted && 'text-amber-700 dark:text-amber-300',
             )}
           >
@@ -108,7 +90,7 @@ export function LiveTournamentPlayerCard({
         {gameWins !== undefined && (
           <div
             className={cn(
-              'flex h-full min-w-6 items-center justify-center rounded-sm px-4 text-[11px] font-bold',
+              'flex h-full min-w-8 shrink-0 items-center justify-center rounded-sm px-2 text-[11px] font-bold',
               isWinner
                 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
                 : 'bg-muted/70 text-muted-foreground',

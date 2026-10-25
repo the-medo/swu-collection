@@ -1,6 +1,11 @@
+import {
+  areGameAndMatchRecordsEqual,
+  calculateResultStatistics,
+} from '@/components/app/statistics/lib/resultStatistics';
+import { statisticsStyles } from '@/components/app/statistics/statisticsStyles';
 import * as React from 'react';
 import { useGameResultsContext } from '@/components/app/statistics/GameResultsContext.tsx';
-import { Card } from '@/components/ui/card.tsx';
+import { Activity, ArrowUpRight, Swords, Trophy } from 'lucide-react';
 import DashboardCalendar from '@/components/app/statistics/StatisticsDashboard/DashboardCalendar/DashboardCalendar.tsx';
 import DashboardLeaderBase from '@/components/app/statistics/StatisticsDashboard/DashboardLeaderBase/DashboardLeaderBase.tsx';
 import DashboardOverview from '@/components/app/statistics/StatisticsDashboard/DashboardOverview/DashboardOverview.tsx';
@@ -44,60 +49,160 @@ const StatisticsDashboard: React.FC<StatisticsDashboardProps> = ({ teamId }) => 
   }, [gameResultData]);
 
   const showWinLose = !sInTeam;
+  const periodStats = useMemo(
+    () => ({
+      today: calculateResultStatistics(todayMatches),
+      last7Days: calculateResultStatistics(last7DaysMatches),
+      all: calculateResultStatistics(allMatches),
+    }),
+    [todayMatches, last7DaysMatches, allMatches],
+  );
+  const showMatches = Object.values(periodStats).some(stats => !areGameAndMatchRecordsEqual(stats));
 
   return (
     <div className="@container/statistics-dashboard min-w-0">
-      <div className="grid min-w-0 grid-cols-1 gap-4 @[1100px]/statistics-dashboard:grid-cols-[minmax(0,2fr)_minmax(350px,1fr)]">
-        <div className="flex min-w-0 flex-col gap-2">
-          <Card className="@container/activity min-w-0 h-fit p-4">
-            <h3 className="text-lg font-semibold mb-4">Activity</h3>
-            <DashboardCalendar matchesByDate={gameResultData?.matches.byDate} />
-            <div className="grid grid-cols-1 @[720px]/activity:grid-cols-3">
-              <div className="min-w-0 p-2">
-                <h3 className="text-lg font-semibold">Today</h3>
-                <DashboardOverview matches={todayMatches} showWinLose={showWinLose} />
-              </div>
-              <div className="min-w-0 p-2">
-                <h3 className="text-lg font-semibold mb-4">Last 7 days</h3>
-                <DashboardOverview matches={last7DaysMatches} showWinLose={showWinLose} />
-              </div>
-              {/*{allMatches.length !== last7DaysMatches.length && (*/}
-              <div className="min-w-0 p-2">
-                <h3 className="text-lg font-semibold mb-4">All</h3>
-                <DashboardOverview matches={allMatches} showWinLose={showWinLose} />
-              </div>
-              {/*)}*/}
-            </div>
-          </Card>
-          {visibleMatches.map(match => (
-            <MatchResultBox
-              key={match.id}
-              match={match}
-              className="w-full min-w-0"
-              cardClassName="w-full min-w-0"
-            />
-          ))}
-          <Link
-            to={`${getTeamUrlPrefix(teamId)}/statistics/history`}
-            params={{
-              teamId,
-            }}
-            search={prev => prev}
-          >
-            <Button variant="outline">View full match history</Button>
-          </Link>
+      {gameResultData?.isLoading && (
+        <p className="mb-3 text-sm text-muted-foreground" role="status">
+          Loading statistics…
+        </p>
+      )}
+      {gameResultData?.isError && (
+        <div className="mb-3 flex items-center gap-2 text-sm" role="alert">
+          Could not refresh statistics.{' '}
+          <Button variant="outline" size="sm" onClick={gameResultData.refetch}>
+            Retry
+          </Button>
         </div>
-        <section
-          aria-label="Recent leaders and bases"
-          className="flex min-w-0 flex-wrap items-start gap-4"
-        >
-          {gameResultData && (
-            <DashboardLeaderBase
-              teamId={teamId}
-              byLeaderBase={gameResultData.matches.byLeaderBase}
-              byDeckId={gameResultData.matches.byDeckId}
-            />
+      )}
+      <div className={statisticsStyles.overviewGrid}>
+        <section className={statisticsStyles.activity} aria-labelledby="statistics-activity-title">
+          <div className={statisticsStyles.sectionHeader}>
+            <h2 id="statistics-activity-title" className={statisticsStyles.sectionTitle}>
+              <Activity size={16} className={statisticsStyles.activityIcon} aria-hidden="true" />
+              Activity
+            </h2>
+            <span className="text-xs text-muted-foreground">Last 90 days</span>
+          </div>
+          <DashboardCalendar matchesByDate={gameResultData?.matches.byDate} />
+          {showWinLose && (
+            <div className={statisticsStyles.calendarLegend}>
+              <span className="mr-auto inline-flex items-center gap-3">
+                <span className="inline-flex items-center gap-1.5">
+                  <span
+                    className="size-2 rounded-[2px] bg-[var(--statistics-activity-empty)]"
+                    aria-hidden="true"
+                  />
+                  No games
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span
+                    className="size-2 rounded-[2px] bg-[var(--statistics-activity-unrated)]"
+                    aria-hidden="true"
+                  />
+                  No result
+                </span>
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <span>Win rate: 0%</span>
+                <span className={statisticsStyles.calendarScale} aria-hidden="true" />
+                <span>100%</span>
+              </span>
+            </div>
           )}
+        </section>
+        <section className={statisticsStyles.overview} aria-labelledby="statistics-overview-title">
+          <h2 id="statistics-overview-title" className={statisticsStyles.sectionTitle}>
+            <Trophy size={16} className={statisticsStyles.resultsIcon} aria-hidden="true" />
+            Results overview
+          </h2>
+          <table className={statisticsStyles.periods} aria-label="Results by period">
+            <thead>
+              <tr>
+                <th scope="col">Period</th>
+                {showMatches && <th scope="col">Matches</th>}
+                <th scope="col">Games</th>
+              </tr>
+            </thead>
+            <tbody>
+              <DashboardOverview
+                label="Today"
+                stats={periodStats.today}
+                showWinLose={showWinLose}
+                showMatches={showMatches}
+              />
+              <DashboardOverview
+                label="Last 7 days"
+                stats={periodStats.last7Days}
+                showWinLose={showWinLose}
+                showMatches={showMatches}
+              />
+              <DashboardOverview
+                label="Selected period"
+                stats={periodStats.all}
+                showWinLose={showWinLose}
+                showMatches={showMatches}
+              />
+            </tbody>
+          </table>
+        </section>
+      </div>
+      <div className={statisticsStyles.dashboardLists}>
+        <section className="min-w-0" aria-labelledby="statistics-recent-title">
+          <div className={statisticsStyles.sectionHeader}>
+            <h2 id="statistics-recent-title" className={statisticsStyles.sectionTitle}>
+              <Swords size={16} className={statisticsStyles.resultsIcon} aria-hidden="true" />
+              Recent matches
+            </h2>
+            <Link
+              className={statisticsStyles.textLink}
+              to={`${getTeamUrlPrefix(teamId)}/statistics/history`}
+              params={{ teamId }}
+              search={prev => prev}
+            >
+              Full history <ArrowUpRight size={14} aria-hidden="true" />
+            </Link>
+          </div>
+          <div className={statisticsStyles.ledger}>
+            {!gameResultData?.isLoading && !gameResultData?.isError && !visibleMatches.length && (
+              <div className="p-5 text-center text-sm text-muted-foreground">
+                No matches in this period. Try a different date range.
+              </div>
+            )}
+            {visibleMatches.map(match => (
+              <MatchResultBox key={match.id} match={match} artworkVariant="portrait" />
+            ))}
+          </div>
+        </section>
+        <section className="min-w-0" aria-labelledby="statistics-leaders-title">
+          <div className={statisticsStyles.sectionHeader}>
+            <h2 id="statistics-leaders-title" className={statisticsStyles.sectionTitle}>
+              Recent leaders &amp; bases
+            </h2>
+            <Link
+              className={statisticsStyles.textLink}
+              to={`${getTeamUrlPrefix(teamId)}/statistics/leader-and-base`}
+              params={{ teamId }}
+              search={prev => prev}
+            >
+              View all <ArrowUpRight size={14} aria-hidden="true" />
+            </Link>
+          </div>
+          <div className={statisticsStyles.ledger}>
+            {gameResultData && (
+              <DashboardLeaderBase
+                teamId={teamId}
+                byLeaderBase={gameResultData.matches.byLeaderBase}
+                byDeckId={gameResultData.matches.byDeckId}
+              />
+            )}
+            {!gameResultData?.isLoading &&
+              !gameResultData?.isError &&
+              !Object.keys(gameResultData?.matches.byLeaderBase.matches ?? {}).length && (
+                <div className="p-5 text-sm text-muted-foreground">
+                  Your leader and base results will appear here.
+                </div>
+              )}
+          </div>
         </section>
       </div>
     </div>

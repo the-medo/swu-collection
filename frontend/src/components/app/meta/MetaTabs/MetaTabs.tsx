@@ -1,3 +1,4 @@
+import { competitionStyles } from '@/components/app/tournaments/competitionStyles';
 import * as React from 'react';
 import { Link, useSearch } from '@tanstack/react-router';
 import { cn } from '@/lib/utils';
@@ -52,6 +53,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
       <Link
         to={route.fullPath}
         search={prev => ({ ...prev, page: 'card-stats' })}
+        aria-current={page === 'card-stats' ? 'page' : undefined}
         className={cn(
           'flex gap-2 items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
           page === 'card-stats'
@@ -63,15 +65,23 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
         {displayCardStatisticsWarning && <CircleAlert className="size-4" />}
       </Link>
     ),
-    [page, displayCardStatisticsWarning],
+    [page, displayCardStatisticsWarning, route.fullPath],
   );
 
   return (
     <div className={cn('w-full', className)}>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 mb-2 rounded-lg bg-muted p-1">
+      <div
+        className={cn(
+          'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 mb-2 rounded-lg bg-muted p-1',
+          competitionStyles.tabs,
+        )}
+        role="navigation"
+        aria-label="Analysis views"
+      >
         <Link
           to={route.fullPath}
           search={prev => ({ ...prev, page: 'tournaments' })}
+          aria-current={page === 'tournaments' ? 'page' : undefined}
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
             page === 'tournaments'
@@ -87,6 +97,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
         <Link
           to={route.fullPath}
           search={prev => ({ ...prev, page: 'meta' })}
+          aria-current={page === 'meta' ? 'page' : undefined}
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
             page === 'meta'
@@ -99,6 +110,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
         <Link
           to={route.fullPath}
           search={prev => ({ ...prev, page: 'matchups' })}
+          aria-current={page === 'matchups' ? 'page' : undefined}
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
             page === 'matchups'
@@ -111,6 +123,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
         <Link
           to={route.fullPath}
           search={prev => ({ ...prev, page: 'decks' })}
+          aria-current={page === 'decks' ? 'page' : undefined}
           className={cn(
             'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
             page === 'decks'

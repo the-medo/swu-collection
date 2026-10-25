@@ -1,3 +1,5 @@
+import { cn } from '@/lib/utils';
+import { limitedStyles } from '@/components/app/limited/limitedStyles';
 import React from 'react';
 import { ExpandedCardData } from '@/components/app/limited/CardPoolDeckDetail/CPContent/cpDeckContentLib.ts';
 import CPCardContentStack from '@/components/app/limited/CardPoolDeckDetail/CPContent/CPCardContentStack.tsx';
@@ -26,25 +28,25 @@ const CPDeckAndTrashCard: React.FC<CPDeckAndTrashCardProps> = ({
 }) => {
   return (
     <div
-      className={`h-full w-[300px] rounded-lg border border-border bg-card p-3 text-xs opacity-80 ${className ?? ''}`}
+      className={cn(limitedStyles.panel, 'min-h-full w-full p-2 text-xs', className)}
       style={{ display: 'flex', flexDirection: 'column' }}
     >
       <Accordion type="single" defaultValue="resulting-deck" collapsible>
         <AccordionItem value="resulting-deck">
-          <AccordionTrigger className="font-semibold">
-            <div className="flex flex-1 items-center justify-between gap-2">
-              <h4 className="text-base mb-0! md:text-lg">Final Deck ({deck?.length ?? 0})</h4>
-              {deck && deck.length > 0 ? (
-                <CPMultiCardSelectActions
-                  cards={deck}
-                  section="deck"
-                  poolId={poolId}
-                  deckId={deckId}
-                  hideInlineSelectDeselect
-                />
-              ) : null}
-            </div>
-          </AccordionTrigger>
+          <div className="flex items-center justify-between gap-2">
+            <AccordionTrigger className="font-semibold gap-2">
+              <span className={limitedStyles.heading}>Final Deck ({deck?.length ?? 0})</span>
+            </AccordionTrigger>
+            {deck && deck.length > 0 ? (
+              <CPMultiCardSelectActions
+                cards={deck}
+                section="deck"
+                poolId={poolId}
+                deckId={deckId}
+                hideInlineSelectDeselect
+              />
+            ) : null}
+          </div>
           <AccordionContent className="max-h-[calc(100vh-320px)] overflow-y-auto flex justify-center">
             {deck && deck.length > 0 ? (
               <CPCardContentStack
@@ -62,20 +64,20 @@ const CPDeckAndTrashCard: React.FC<CPDeckAndTrashCardProps> = ({
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="trash">
-          <AccordionTrigger className="font-semibold">
-            <div className="flex flex-1 items-center justify-between gap-2">
-              <h4 className="text-base mb-0! md:text-lg">Trash ({trash?.length ?? 0})</h4>
-              {trash && trash.length > 0 ? (
-                <CPMultiCardSelectActions
-                  cards={trash}
-                  section="trash"
-                  poolId={poolId}
-                  deckId={deckId}
-                  hideInlineSelectDeselect
-                />
-              ) : null}
-            </div>
-          </AccordionTrigger>
+          <div className="flex items-center justify-between gap-2">
+            <AccordionTrigger className="font-semibold gap-2">
+              <span className={limitedStyles.heading}>Trash ({trash?.length ?? 0})</span>
+            </AccordionTrigger>
+            {trash && trash.length > 0 ? (
+              <CPMultiCardSelectActions
+                cards={trash}
+                section="trash"
+                poolId={poolId}
+                deckId={deckId}
+                hideInlineSelectDeselect
+              />
+            ) : null}
+          </div>
           <AccordionContent className="max-h-[calc(100vh-320px)] overflow-y-auto rounded-md border p-3 bg-red-50/70 border-red-300 dark:bg-red-950/30 dark:border-red-800 flex justify-center">
             {trash && trash.length > 0 ? (
               <CPCardContentStack

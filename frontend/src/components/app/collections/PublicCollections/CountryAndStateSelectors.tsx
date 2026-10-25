@@ -1,51 +1,76 @@
-import * as React from 'react';
+import { browseStyles } from '@/components/app/global/BrowsePage/browseStyles';
+import { useState } from 'react';
+import { MapPin, X } from 'lucide-react';
 import CountrySelector from '@/components/app/global/CountrySelector.tsx';
 import CountryStateSelector from '@/components/app/global/CountryStateSelector.tsx';
-import { useCallback, useState } from 'react';
 import { CountryCode } from '../../../../../../server/db/lists.ts';
-import { usePublicCollectionsStoreActions } from '@/components/app/collections/PublicCollections/usePublicCollectionsStore.ts';
-import { Card, CardHeader } from '@/components/ui/card.tsx';
+import {
+  usePublicCollectionsStore,
+  usePublicCollectionsStoreActions,
+} from './usePublicCollectionsStore.ts';
 import { Button } from '@/components/ui/button.tsx';
 
-interface CountryAndStateSelectorsProps {}
-
-const CountryAndStateSelectors: React.FC<CountryAndStateSelectorsProps> = () => {
-  const [country, setCountry] = useState<CountryCode | null>();
-  const [state, setState] = useState<string | null>();
-  const { setCountry: setStoreCountry, setState: setStoreState } =
-    usePublicCollectionsStoreActions();
-
-  const onChangeCountry = useCallback((c: CountryCode | null) => {
-    setCountry(c);
-    setState(null);
-  }, []);
-
-  const onChangeState = useCallback((s: string | null) => setState(s), []);
-
-  const onSubmit = useCallback(() => {
-    setTimeout(() => {
-      setStoreCountry(country ?? null);
-      setStoreState(state ?? null);
-    }, 100);
-  }, [country, state]);
-
+export default function CountryAndStateSelectors() {
+  const applied = usePublicCollectionsStore();
+  const { setCountry: applyCountry, setState: applyState } = usePublicCollectionsStoreActions();
+  const [country, setCountry] = useState<CountryCode | null>(applied.country);
+  const [state, setState] = useState<string | null>(applied.state);
   return (
-    <Card className="fixed bottom-4 right-4">
-      <CardHeader className="p-2">
-        <CountrySelector value={country} onChangeCountry={onChangeCountry} />
-        {country && (
+    <form
+      className={browseStyles.toolbar}
+      aria-label="Filter by location"
+      onSubmit={event => {
+        event.preventDefault();
+        applyCountry(country);
+        applyState(state);
+      }}
+    >
+      <span className="inline-flex items-center gap-2 text-sm font-medium text-[var(--browse-accent)]">
+        <MapPin className="size-4" />
+        Location
+      </span>
+      <div className="min-w-0 flex-1 basis-52" role="group" aria-label="Country">
+        <CountrySelector
+          value={country}
+          fullWidth
+          allowClear={false}
+          onChangeCountry={value => {
+            setCountry(value);
+            setState(null);
+          }}
+        />
+      </div>
+      {country && (
+        <div
+          className="min-w-0 flex-1 basis-52 [&_button[role=combobox]]:w-full"
+          role="group"
+          aria-label="State or region"
+        >
           <CountryStateSelector
             countryCode={country}
             value={state}
-            onChangeCountryState={onChangeState}
+            onChangeCountryState={setState}
+            allowClear={false}
           />
-        )}
-        <Button onClick={onSubmit} className="btn btn-primary">
-          Submit
+        </div>
+      )}
+      <Button type="submit" variant="secondary">
+        Apply filters
+      </Button>
+      {(country || applied.country) && (
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => {
+            setCountry(null);
+            setState(null);
+            applyCountry(null);
+          }}
+        >
+          <X className="size-4" />
+          Clear
         </Button>
-      </CardHeader>
-    </Card>
+      )}
+    </form>
   );
-};
-
-export default CountryAndStateSelectors;
+}

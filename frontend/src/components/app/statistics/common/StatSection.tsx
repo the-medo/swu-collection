@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { getWRColor, getWRHexColor } from './statsUtils';
+import { statisticsStyles } from '@/components/app/statistics/statisticsStyles';
 import { cn } from '@/lib/utils.ts';
 
 export interface StatSectionProps {
@@ -7,67 +6,71 @@ export interface StatSectionProps {
   total?: number;
   wins?: number;
   losses?: number;
+  draws?: number;
   winrate?: number;
   showWinLose?: boolean;
   variant?: 'vertical' | 'horizontal';
   percentageVariant?: 'vertical' | 'horizontal';
 }
 
-export const StatSection: React.FC<StatSectionProps> = ({
+export function StatSection({
   label,
   total,
   wins = 0,
   losses = 0,
+  draws = 0,
   winrate = 0,
   showWinLose = true,
   variant = 'vertical',
-  percentageVariant = 'vertical',
-}) => {
-  const color = getWRHexColor(winrate);
-  const percentage = winrate;
-
+}: StatSectionProps) {
+  const count = total ?? wins + losses + draws;
   return (
     <div
-      className={cn('flex gap-2 items-center', variant === 'horizontal' ? 'flex-row' : 'flex-col')}
-    >
-      {label && (
-        <span className="text-[10px] font-bold uppercase text-muted-foreground mb-1 min-w-[50px]">
-          {label}
-        </span>
+      className={cn(
+        statisticsStyles.metric,
+        variant === 'horizontal' && statisticsStyles.metricHorizontal,
       )}
-      <div
-        className={cn('bg-muted/50 rounded-lg p-1 flex flex-1 items-center w-full justify-center', {
-          'min-w-[40px] h-full': variant === 'horizontal',
-          'max-w-[80px]': percentageVariant === 'horizontal',
-        })}
-      >
-        <h5 className="mb-0!">{total ?? wins + losses}</h5>
-      </div>
-      {showWinLose && (
-        <div
-          className="rounded-lg p-[5px] flex items-center justify-center min-w-[90px]"
-          style={{
-            background: `conic-gradient(${color} 0deg ${percentage}%, ${color}44 ${percentage}% 360deg)`,
-          }}
-        >
-          <div
+    >
+      {label && <span className={statisticsStyles.metricLabel}>{label}</span>}
+      <div className={statisticsStyles.metricMain}>
+        {showWinLose ? (
+          <strong
             className={cn(
-              'bg-background rounded-lg p-2 flex items-center min-w-[100px] w-full h-full',
-              {
-                'flex-col': percentageVariant === 'vertical',
-                'flex-row gap-4 min-w-[160px]': percentageVariant === 'horizontal',
-              },
+              statisticsStyles.metricValue,
+              'flex flex-wrap items-baseline gap-x-2 gap-y-0.5 max-[639.01px]:gap-x-1',
             )}
           >
-            <h5 className="text-lg font-black leading-none mb-0!">
-              {wins}W-{losses}L
-            </h5>
-            <span className={`text-sm font-bold ${getWRColor(winrate)}`}>
-              {winrate.toFixed(1)}%
+            <span className={statisticsStyles.recordWins}>
+              <span className={statisticsStyles.recordNumber}>{wins}</span>
+              <span className={statisticsStyles.recordSuffix}>W</span>
             </span>
-          </div>
-        </div>
-      )}
+            <span className={statisticsStyles.recordLosses}>
+              <span className={statisticsStyles.recordNumber}>{losses}</span>
+              <span className={statisticsStyles.recordSuffix}>L</span>
+            </span>
+            {draws > 0 && (
+              <span className={statisticsStyles.recordDraws}>
+                <span className={statisticsStyles.recordNumber}>{draws}</span>
+                <span className={statisticsStyles.recordSuffix}>D</span>
+              </span>
+            )}
+          </strong>
+        ) : (
+          <strong className={statisticsStyles.metricValue}>{count}</strong>
+        )}
+        {showWinLose && (
+          <span
+            className={statisticsStyles.rate}
+            data-tone={
+              count ? (winrate > 50 ? 'positive' : winrate < 50 ? 'negative' : 'draw') : undefined
+            }
+            aria-label={count ? `${winrate.toFixed(1)}% win rate` : 'No results'}
+          >
+            {count ? `${winrate.toFixed(1)}%` : '—'}
+          </span>
+        )}
+      </div>
+      {showWinLose && <span className={statisticsStyles.metricRecord}>{count} total</span>}
     </div>
   );
-};
+}

@@ -4,7 +4,7 @@ import {
   encodeStateToUrl,
   decodeStateFromUrl,
 } from '@/components/app/comparer/useComparerStore';
-import { Scale, SquareArrowOutUpRight, X, Crown, Info } from 'lucide-react';
+import { Scale, SquareArrowOutUpRight, X, Crown, Info, Loader2 } from 'lucide-react';
 import { useGetCollectionCards } from '@/api/collections/useGetCollectionCards';
 import { useGetBulkDecks } from '@/api/decks/useGetBulkDecks';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -27,31 +27,28 @@ import {
 } from '@/components/ui/accordion.tsx';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
 import ComparerEntryLoader from './ComparerEntryLoader/ComparerEntryLoader.tsx';
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles.ts';
+import { cn } from '@/lib/utils.ts';
 
 const ComparerPage: React.FC = () => {
   const { entries, mainId, mode } = useComparerStore();
   const { setMainId, removeComparerEntry, addComparerEntry, setMode, clearComparerEntries } =
     useComparerStoreActions();
-  const navigate = useNavigate();
-  const search = useSearch({ strict: false });
+  const navigate = useNavigate({ from: '/comparer' });
+  const search = useSearch({ from: '/comparer/' });
 
   // Update URL when comparer state changes
   useEffect(() => {
     if (entries.length > 0) {
       const encodedState = encodeStateToUrl({ entries, mainId, mode, settings: {} });
       navigate({
-        // @ts-ignore
         search: prev => ({ ...prev, state: encodedState }),
         replace: true,
       });
     } else {
       // Remove state parameter if comparer is empty
       navigate({
-        // @ts-ignore
-        search: prev => {
-          const { state, ...rest } = prev;
-          return rest;
-        },
+        search: prev => ({ ...prev, state: undefined }),
         replace: true,
       });
     }
@@ -130,150 +127,209 @@ const ComparerPage: React.FC = () => {
     return map;
   }, [mainCollection]);
 
-  if (allEntries.length === 0) {
-    return (
-      <div className="flex max-lg:flex-col gap-2 p-2">
-        <Alert className="">
-          <Scale className="h-4 w-4" />
-          <AlertTitle>No items in comparer</AlertTitle>
-          <AlertDescription>
-            Add collections or decks to the comparer from their pages to start comparing them.
-          </AlertDescription>
-        </Alert>
-        <ComparerInstructions />
-      </div>
-    );
-  }
-
-  if (!mainEntry) {
-    return (
-      <div className="p-6">
-        <Alert className="max-w-3xl mx-auto">
-          <Scale className="h-4 w-4" />
-          <AlertTitle>No main item selected</AlertTitle>
-          <AlertDescription>Please select a main item to compare against.</AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
-
   const hasMultipleEntryTypes = collectionsEntries.length > 0 && deckEntries.length > 0;
 
   return (
-    <div className="w-full flex flex-col gap-2">
-      <div className="flex items-start gap-4">
-        <Accordion type="single" collapsible defaultValue="" className="w-full">
-          <AccordionItem value="items" className="border rounded-md">
-            <AccordionTrigger className="px-4 pt-2 pb-0 hover:no-underline">
-              <div className="flex items-center gap-2">
-                <span className="font-semibold">
-                  Items in Comparer
-                  {collectionsEntries.length > 0 && ` ( Collections: ${collectionsEntries.length}`}
-                  {deckEntries.length > 0 &&
-                    `${collectionsEntries.length > 0 ? ',' : ' ('} Decks: ${deckEntries.length}`}
-                  {(collectionsEntries.length > 0 || deckEntries.length > 0) && ' )'}
-                </span>
-                {hasMultipleEntryTypes && (
-                  <span className="text-red-500 text-sm font-medium">
-                    Comparing decks with collections/wantlists is not supported yet.
-                  </span>
-                )}
-              </div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="flex grow flex-col gap-2 p-4">
-                {allEntries.map(entry => (
-                  <div
-                    key={entry.id}
-                    className={`flex max-lg:flex-col gap-2 items-center justify-between border rounded-md p-2 ${entry.id === mainId ? 'border-primary bg-primary/10' : 'border-muted'}`}
-                  >
-                    <ComparerEntryLoader entry={entry} />
-                    <div className="flex gap-2 items-center">
-                      <span className="font-medium">
-                        {entry.additionalData?.title ?? '- Unknown -'}
-                      </span>
-                    </div>
-                    <div className="ml-4 flex gap-2">
-                      <ItemTypeBadge entry={entry} />
-                      {entry.id === mainId && (
-                        <Badge variant="default">
-                          Main <Crown size={16} className="ml-2" />
-                        </Badge>
-                      )}
-                      {entry.id !== mainId && (
-                        <Button
-                          size="iconSmall"
-                          variant="outline"
-                          onClick={() => setMainId(entry.id)}
-                        >
-                          <Crown />
-                        </Button>
-                      )}
+    <div className={cn(workspaceStyles.theme, 'flex w-full flex-col gap-2 p-2')}>
+      <header className="flex items-center justify-between gap-3 pb-1">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <Scale className="size-5 shrink-0 text-[var(--workspace-accent)]" />
+          <h1 className={workspaceStyles.title}>Comparer</h1>
+          {allEntries.length > 0 && (
+            <span className="rounded-md bg-[var(--workspace-soft)] px-2 py-0.5 text-xs font-medium tabular-nums text-[var(--workspace-accent)]">
+              {allEntries.length} items
+            </span>
+          )}
+        </div>
+        {allEntries.length > 0 && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <Info className="size-4" /> How it works
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              align="end"
+              className={cn(workspaceStyles.theme, 'w-80 max-w-[calc(100vw-2rem)]')}
+            >
+              <ComparerInstructions />
+            </PopoverContent>
+          </Popover>
+        )}
+      </header>
 
-                      <Button size="iconSmall" variant="outline" asChild>
-                        <Link to={'/collections/' + entry.id}>
-                          <SquareArrowOutUpRight />
-                        </Link>
-                      </Button>
-
-                      <Button
-                        size="iconSmall"
-                        variant="destructive"
-                        onClick={() => removeComparerEntry(entry.id)}
-                      >
-                        <X />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-        <Popover>
-          <PopoverTrigger>
-            <Info className="h-5 w-5 text-muted-foreground hover:text-primary cursor-pointer" />
-          </PopoverTrigger>
-          <PopoverContent className="w-[400px]">
-            <ComparerInstructions />
-          </PopoverContent>
-        </Popover>
-      </div>
-
-      {/* Show settings when we have a deck as main entry */}
-      {mainEntry?.dataType === 'deck' && <DeckComparerSettings />}
-      {mainEntry?.dataType === 'deck' ? (
-        isLoadingDecks ? (
-          <div className="p-4 border rounded-md">
-            <h3 className="text-lg font-semibold mb-4">Deck Contents</h3>
-            <p>Loading deck data...</p>
+      {allEntries.length === 0 ? (
+        <div className={cn(workspaceStyles.panel, 'grid gap-6 p-4 md:grid-cols-2 md:p-5')}>
+          <div className="flex flex-col items-start justify-center gap-3">
+            <h2 className={workspaceStyles.heading}>Start a comparison</h2>
+            <p className="max-w-md text-sm text-muted-foreground">
+              Compare decklists side by side, or find cards your collections and wantlists have in
+              common. Open an item and choose “Add to comparer”.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" asChild>
+                <Link to="/decks/public">Browse decks</Link>
+              </Button>
+              <Button size="sm" variant="outline" asChild>
+                <Link to="/collections/your">Your collections</Link>
+              </Button>
+            </div>
           </div>
-        ) : otherDeckEntries.length > 0 ? (
-          <DeckComparerResult mainDeckId={mainEntry.id} otherDeckEntries={otherDeckEntries} />
-        ) : (
-          <div className="p-4 border rounded-md">
-            <h3 className="text-lg font-semibold mb-4">Deck Contents</h3>
-            <Alert>
-              <AlertTitle>No deck comparisons available</AlertTitle>
-              <AlertDescription>
-                Add more decks to the comparer to see comparisons.
-              </AlertDescription>
-            </Alert>
-          </div>
-        )
-      ) : otherCollectionEntries.length > 0 ? (
-        <div className="space-y-4">
-          {otherCollectionEntries.map(entry => (
-            <ComparerResult key={entry.id} mainCardsMap={mainCardsMap} entry={entry} />
-          ))}
+          <ComparerInstructions />
         </div>
       ) : (
-        <Alert>
-          <AlertTitle>No comparisons available</AlertTitle>
-          <AlertDescription>
-            Add more collections or decks to the comparer to see comparisons.
-          </AlertDescription>
-        </Alert>
+        <>
+          <Accordion type="single" collapsible defaultValue={mainEntry ? '' : 'items'}>
+            <AccordionItem
+              value="items"
+              className={cn(workspaceStyles.panel, 'overflow-hidden rounded-lg')}
+            >
+              <AccordionTrigger className="gap-3 bg-[var(--workspace-soft)] px-3 py-2.5 hover:no-underline">
+                <span className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-left text-sm">
+                  <span className="font-semibold">Selected items</span>
+                  <span className="text-xs font-normal text-muted-foreground">
+                    {[
+                      collectionsEntries.length > 0 && `${collectionsEntries.length} lists`,
+                      deckEntries.length > 0 && `${deckEntries.length} decks`,
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </span>
+                  {mainEntry && (
+                    <span className="inline-flex min-w-0 items-center gap-1 text-xs font-normal text-[var(--workspace-accent)]">
+                      <Crown className="size-3.5 shrink-0" />
+                      <span className="truncate">
+                        Main: {mainEntry.additionalData?.title ?? 'Selected item'}
+                      </span>
+                    </span>
+                  )}
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="pb-0">
+                <div className="divide-y divide-[var(--workspace-border)]">
+                  {allEntries.map(entry => {
+                    const title = entry.additionalData?.title ?? 'Untitled item';
+                    return (
+                      <div
+                        key={entry.id}
+                        className={cn(
+                          'flex flex-wrap items-center justify-between gap-2 px-3 py-2',
+                          entry.id === mainId && 'bg-[var(--workspace-soft)]/50',
+                        )}
+                      >
+                        <ComparerEntryLoader entry={entry} />
+                        <span className="min-w-0 flex-1 basis-40 break-words text-sm font-medium">
+                          {title}
+                        </span>
+                        <div className="flex shrink-0 items-center gap-1.5">
+                          <ItemTypeBadge entry={entry} />
+                          {entry.id === mainId ? (
+                            <Badge
+                              variant="secondary"
+                              className="gap-1 bg-[var(--workspace-soft)] text-[var(--workspace-accent)]"
+                            >
+                              <Crown className="size-3" /> Main
+                            </Badge>
+                          ) : (
+                            <Button
+                              size="iconSmall"
+                              variant="ghost"
+                              aria-label={`Use ${title} as main item`}
+                              title="Use as main item"
+                              onClick={() => setMainId(entry.id)}
+                            >
+                              <Crown />
+                            </Button>
+                          )}
+                          <Button size="iconSmall" variant="ghost" asChild>
+                            <Link
+                              to={
+                                entry.dataType === 'deck'
+                                  ? '/decks/$deckId'
+                                  : '/collections/$collectionId'
+                              }
+                              params={{ deckId: entry.id, collectionId: entry.id }}
+                              aria-label={`Open ${title}`}
+                              title="Open item"
+                            >
+                              <SquareArrowOutUpRight />
+                            </Link>
+                          </Button>
+                          <Button
+                            size="iconSmall"
+                            variant="ghost"
+                            className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                            aria-label={`Remove ${title} from comparer`}
+                            title="Remove from comparer"
+                            onClick={() => removeComparerEntry(entry.id)}
+                          >
+                            <X />
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+
+          {hasMultipleEntryTypes && (
+            <Alert variant="warning" size="xs">
+              <Info className="size-4" />
+              <AlertDescription>
+                Decks and collections/wantlists cannot be compared with each other yet. Only items
+                of the same type as your main item are compared.
+              </AlertDescription>
+            </Alert>
+          )}
+          {!mainEntry ? (
+            <Alert>
+              <AlertTitle>Choose a main item</AlertTitle>
+              <AlertDescription>
+                Open Selected items and use the crown button to choose what to compare against.
+              </AlertDescription>
+            </Alert>
+          ) : mainEntry.dataType === 'deck' ? (
+            <>
+              <DeckComparerSettings />
+              {isLoadingDecks ? (
+                <div
+                  role="status"
+                  className={cn(
+                    workspaceStyles.panel,
+                    'flex items-center gap-2 p-4 text-sm text-muted-foreground',
+                  )}
+                >
+                  <Loader2 className="size-4 animate-spin" />
+                  Loading deck data…
+                </div>
+              ) : otherDeckEntries.length > 0 ? (
+                <div className="min-w-0 overflow-x-auto">
+                  <DeckComparerResult
+                    mainDeckId={mainEntry.id}
+                    otherDeckEntries={otherDeckEntries}
+                  />
+                </div>
+              ) : (
+                <div className={cn(workspaceStyles.panel, 'p-4 text-sm text-muted-foreground')}>
+                  Add another deck using “Add to comparer” on its page to see the differences.
+                </div>
+              )}
+            </>
+          ) : otherCollectionEntries.length > 0 ? (
+            <div className="space-y-3">
+              {otherCollectionEntries.map(entry => (
+                <ComparerResult key={entry.id} mainCardsMap={mainCardsMap} entry={entry} />
+              ))}
+            </div>
+          ) : (
+            <div className={cn(workspaceStyles.panel, 'p-4 text-sm text-muted-foreground')}>
+              Add another collection or list using “Add to comparer” on its page to find cards in
+              common.
+            </div>
+          )}
+        </>
       )}
     </div>
   );

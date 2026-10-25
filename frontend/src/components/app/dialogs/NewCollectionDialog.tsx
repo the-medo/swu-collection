@@ -31,7 +31,8 @@ const NewCollectionDialog: React.FC<NewCollectionDialogProps> = ({
     <Dialog
       trigger={trigger}
       triggerDisabled={triggerDisabled}
-      header={`New ${cardListString}`}
+      header={`New ${cardListString.toLowerCase()}`}
+      headerDescription={`Give your ${cardListString.toLowerCase()} a name and choose how you’ll use it.`}
       open={open}
       onOpenChange={setOpen}
     >
@@ -39,6 +40,7 @@ const NewCollectionDialog: React.FC<NewCollectionDialogProps> = ({
         <NewCollectionForm
           collectionType={collectionType}
           onCollectionCreated={onCollectionCreated}
+          onCancel={() => setOpen(false)}
         />
       ) : (
         <div className="flex flex-col gap-4">

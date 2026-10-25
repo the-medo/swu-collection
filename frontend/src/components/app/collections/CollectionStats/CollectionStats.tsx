@@ -48,9 +48,9 @@ const CollectionStats: React.FC<CollectionStatsProps> = ({ collectionId }) => {
   }, [cardList, collectionCards]);
 
   return (
-    <Card className={cn({ 'opacity-50': loading })}>
-      <CardHeader>
-        <CardTitle className="flex justify-between items-start">
+    <Card className={cn('rounded-2xl shadow-none', { 'opacity-50': loading })}>
+      <CardHeader className="p-5">
+        <CardTitle className="flex flex-wrap gap-3 justify-between items-start text-lg">
           <span>{cardListString} stats</span>{' '}
           <div className="flex flex-col gap-0">
             <span className="font-normal text-sm text-gray-500">
@@ -62,7 +62,7 @@ const CollectionStats: React.FC<CollectionStatsProps> = ({ collectionId }) => {
           </div>
         </CardTitle>
         <CardDescription className="flex flex-col gap-2">
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
             {Object.keys(stats.countByRarity).map(r => (
               <div className="flex gap-2 items-center" key={r}>
                 <RarityIcon rarity={r} size="xSmall" />
@@ -70,7 +70,7 @@ const CollectionStats: React.FC<CollectionStatsProps> = ({ collectionId }) => {
               </div>
             ))}
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
             {Object.keys(stats.countBySet).map(s => (
               <div className="flex gap-2 items-center" key={s}>
                 <span className="text-sm font-medium">{s.toUpperCase()}:</span>

@@ -1,4 +1,7 @@
+import { dialogStyles } from '@/components/ui/dialogStyles';
 import * as React from 'react';
+import { useId } from 'react';
+import DialogOption from '@/components/app/global/DialogOption.tsx';
 import { useUser } from '@/hooks/useUser.ts';
 import { useToast } from '@/hooks/use-toast.ts';
 import { useForm } from '@tanstack/react-form';
@@ -18,6 +21,7 @@ export interface NewCollectionFormProps {
   collectionType: CollectionType;
   navigateAfterCreation?: boolean; // default true
   onCollectionCreated?: (newCollectionId: string) => void;
+  onCancel?: () => void;
   defaultTitle?: string;
   defaultDescription?: string;
   disabled?: boolean;
@@ -30,6 +34,7 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
   collectionType,
   navigateAfterCreation = true,
   onCollectionCreated,
+  onCancel,
   defaultTitle,
   defaultDescription,
   disabled = false,
@@ -37,6 +42,7 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
   defaultForSale = false,
   defaultForDecks = false,
 }) => {
+  const inputId = useId();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const user = useUser();
@@ -53,7 +59,7 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
       forDecks: defaultForDecks,
     },
     onSubmit: async ({ value }) => {
-      if (disabled) return;
+      if (disabled || postCollectionMutation.isPending) return;
       postCollectionMutation.mutate(
         {
           title: value.title,
@@ -92,7 +98,7 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
 
   return (
     <form
-      className="flex flex-col gap-4"
+      className={dialogStyles.form}
       onSubmit={e => {
         e.preventDefault();
         e.stopPropagation();
@@ -103,10 +109,10 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
         name="title"
         children={field => (
           <div className="flex flex-col gap-2">
+            <Label htmlFor={`${inputId}-${field.name}`}>Title</Label>
             <Input
               type="text"
-              className=""
-              id={field.name}
+              id={`${inputId}-${field.name}`}
               placeholder="Title"
               value={field.state.value}
               onBlur={field.handleBlur}
@@ -120,9 +126,11 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
         name="description"
         children={field => (
           <div className="flex flex-col gap-2">
+            <Label htmlFor={`${inputId}-${field.name}`}>
+              Description <span className="font-normal text-muted-foreground">(optional)</span>
+            </Label>
             <Textarea
-              className=""
-              id={field.name}
+              id={`${inputId}-${field.name}`}
               placeholder="Description"
               value={field.state.value}
               onBlur={field.handleBlur}
@@ -135,16 +143,19 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
       <form.Field
         name="public"
         children={field => (
-          <div className="flex gap-2">
+          <DialogOption
+            htmlFor={`${inputId}-public`}
+            title="Public"
+            description={`Let other players view this ${cardListString.toLowerCase()}.`}
+          >
             <Checkbox
-              id={field.name}
+              id={`${inputId}-${field.name}`}
               checked={field.state.value}
               onBlur={field.handleBlur}
               onCheckedChange={e => field.handleChange(!!e)}
               disabled={disabled}
             />
-            <Label htmlFor={field.name}>Public</Label>
-          </div>
+          </DialogOption>
         )}
       />
       {collectionType === CollectionType.COLLECTION && (
@@ -152,38 +163,58 @@ const NewCollectionForm: React.FC<NewCollectionFormProps> = ({
           <form.Field
             name="forSale"
             children={field => (
-              <div className="flex gap-2">
+              <DialogOption
+                htmlFor={`${inputId}-forSale`}
+                title="Available for sale"
+                description="Show that cards in this collection are available for sale."
+              >
                 <Checkbox
-                  id={field.name}
+                  id={`${inputId}-${field.name}`}
                   checked={field.state.value}
                   onBlur={field.handleBlur}
                   onCheckedChange={e => field.handleChange(!!e)}
                   disabled={disabled}
                 />
-                <Label htmlFor={field.name}>For sale</Label>
-              </div>
+              </DialogOption>
             )}
           />
           <form.Field
             name="forDecks"
             children={field => (
-              <div className="flex gap-2">
+              <DialogOption
+                htmlFor={`${inputId}-forDecks`}
+                title="Use for deck building"
+                description="Include these cards when checking what you own for your decks."
+              >
                 <Checkbox
-                  id={field.name}
+                  id={`${inputId}-${field.name}`}
                   checked={field.state.value}
                   onBlur={field.handleBlur}
                   onCheckedChange={e => field.handleChange(!!e)}
                   disabled={disabled}
                 />
-                <Label htmlFor={field.name}>For decks</Label>
-              </div>
+              </DialogOption>
             )}
           />
         </>
       )}
-      <Button type="submit" disabled={form.state.isSubmitting || disabled}>
-        {form.state.isSubmitting ? '...' : 'Create'}
-      </Button>
+      <div className={dialogStyles.formActions}>
+        {onCancel && (
+          <Button
+            type="button"
+            variant="outline"
+            disabled={postCollectionMutation.isPending}
+            onClick={onCancel}
+          >
+            Cancel
+          </Button>
+        )}
+        <Button type="submit" disabled={postCollectionMutation.isPending || disabled}>
+          {postCollectionMutation.isPending
+            ? 'Creating...'
+            : `Create ${cardListString.toLowerCase()}`}
+        </Button>
+      </div>
     </form>
   );
 };

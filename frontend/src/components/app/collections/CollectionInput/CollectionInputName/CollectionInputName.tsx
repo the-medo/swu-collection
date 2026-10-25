@@ -103,10 +103,10 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
     <div className="flex flex-col gap-2">
       <CollectionInputNameInsertingDefaults />
       <Popover open={open}>
-        <Command className="border w-[350px]" shouldFilter={false}>
+        <Command className="border w-full" shouldFilter={false}>
           <PopoverTrigger asChild>
             {isFetching ? (
-              <Skeleton className={`h-11 w-[350px]`} />
+              <Skeleton className="h-11 w-full" />
             ) : (
               <CommandInput
                 placeholder="Card name..."
@@ -226,7 +226,7 @@ const CollectionInputName: React.FC<CollectionInputNameProps> = ({ collectionId 
         )}
       </div>
 
-      <div className={cn('flex gap-4')}>
+      <div className="flex flex-wrap gap-4">
         <div className="h-[279px] w-[200px] min-h-[279px] min-w-[200px] flex items-center justify-center">
           <CardImage card={card} cardVariantId={variant?.variantId} foil={foil} />
         </div>

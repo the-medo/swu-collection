@@ -1,5 +1,7 @@
 'use client';
 
+import { dialogStyles } from '@/components/ui/dialogStyles';
+
 import {
   Dialog as DialogRoot,
   DialogContent,
@@ -16,12 +18,12 @@ import { cn } from '@/lib/utils.ts';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
-const dialogVariants = cva('max-w-[100vw] lg:max-w-[90vw] max-h-[calc(100vh-120px)] ', {
+const dialogVariants = cva('max-h-[calc(100dvh-2rem)]', {
   variants: {
     size: {
-      default: 'lg:max-w-[425px]',
-      medium: 'lg:max-w-[800px]',
-      large: 'lg:max-w-[95%] md:min-h-[80vh]',
+      default: 'max-w-[480px]',
+      medium: 'max-w-[800px]',
+      large: 'max-w-[95vw] md:min-h-[80dvh]',
     },
   },
   defaultVariants: {
@@ -59,20 +61,20 @@ const Dialog: React.FC<DialogProps> = ({
     let h = null;
     if (typeof header === 'string') {
       h = (
-        <DialogHeader className="bg-background">
+        <DialogHeader className={dialogStyles.header}>
           <DialogTitle>{header}</DialogTitle>
           {headerDescription && <DialogDescription>{headerDescription}</DialogDescription>}
         </DialogHeader>
       );
     } else {
-      h = <DialogHeader className="bg-background">{header}</DialogHeader>;
+      h = <DialogHeader className={dialogStyles.header}>{header}</DialogHeader>;
     }
     return headerHidden ? <VisuallyHidden>{h}</VisuallyHidden> : h;
   }, [header, headerHidden, headerDescription]);
 
   const footerComponent = useMemo(() => {
     if (!footer) return undefined;
-    return <DialogFooter className="bg-background mt-auto">{footer}</DialogFooter>;
+    return <DialogFooter className={dialogStyles.footer}>{footer}</DialogFooter>;
   }, [footer]);
 
   return (
@@ -81,11 +83,18 @@ const Dialog: React.FC<DialogProps> = ({
         {trigger}
       </DialogTrigger>
       <DialogContent
-        className={cn('flex flex-col p-2 md:p-4', contentClassName, dialogVariants({ size }))}
-        aria-describedby={typeof headerDescription === 'string' ? headerDescription : undefined}
+        className={cn(
+          'flex flex-col gap-0 overflow-hidden p-0',
+          dialogStyles.root,
+          dialogVariants({ size }),
+          contentClassName,
+        )}
+        {...(!headerDescription && { 'aria-describedby': undefined })}
       >
         {headerComponent}
-        <div className="overflow-y-auto grow">{children}</div>
+        <div className={cn('min-h-0 min-w-0 grow overflow-y-auto', dialogStyles.body)}>
+          {children}
+        </div>
         {footerComponent}
       </DialogContent>
     </DialogRoot>

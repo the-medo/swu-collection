@@ -1,3 +1,4 @@
+import { competitionStyles } from '@/components/app/tournaments/competitionStyles';
 import { createContext, useContext, useState } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import {
@@ -73,7 +74,7 @@ export default function TournamentCalendar() {
   const monthHasEvents = agendaEvents.length > 0;
 
   return (
-    <div className="min-w-0 p-2">
+    <div className={cn('min-w-0 p-2', competitionStyles.page)}>
       <TournamentNavigation />
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h3 className="mb-0">My tournament calendar</h3>

@@ -1,13 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import {
-  ArrowRight,
-  CheckCircle2,
-  ExternalLink,
-  Loader2,
-  ShieldCheck,
-  Youtube,
-} from 'lucide-react';
+import { CheckCircle2, ExternalLink, Loader2, ShieldCheck, Youtube } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
@@ -19,10 +12,10 @@ import {
   useHubQuery,
   useImportVideo,
 } from '@/api/creators';
-import logo from '@/assets/logo-light-theme.svg';
 import { cn } from '@/lib/utils.ts';
 import { Field, selectClass, Status } from './CreatorControls.tsx';
-import { creatorDescription, creatorHeading, creatorLink, creatorPanel } from './creatorStyles.ts';
+import { creatorDescription, creatorLink, creatorSubheading } from './creatorStyles.ts';
+import { workspaceStyles } from '../global/WorkspacePage/workspaceStyles.ts';
 import YoutubeChannelControls from './YoutubeChannelControls.tsx';
 
 export default function YoutubeConnection({
@@ -73,18 +66,16 @@ export default function YoutubeConnection({
   }
 
   return (
-    <section className={`${creatorPanel} grid gap-5`} aria-label="YouTube connection">
-      <div className="flex items-center gap-3" aria-hidden="true">
-        <div className="flex size-12 items-center justify-center rounded-xl border bg-white p-2">
-          <img src={logo} alt="" className="size-8 object-contain" />
-        </div>
-        <ArrowRight className="size-4 text-muted-foreground" />
-        <div className="flex size-12 items-center justify-center rounded-xl bg-[#ff0000]/10 text-[#e62117] dark:text-red-400">
-          <Youtube className="size-7" />
-        </div>
-      </div>
-      <div className="space-y-2">
-        <h2 className={creatorHeading}>YouTube connection</h2>
+    <section className={`${workspaceStyles.panel} grid gap-3 p-4`} aria-label="YouTube connection">
+      <div className="grid gap-1.5">
+        <h2 className={`${creatorSubheading} flex items-center gap-2`}>
+          <Youtube
+            size={18}
+            className="shrink-0 text-[#c62828] dark:text-red-400"
+            aria-hidden="true"
+          />
+          YouTube connection
+        </h2>
         <p className={creatorDescription}>
           {channels.length
             ? 'Manage the YouTube channels connected to your creator profile.'
@@ -92,6 +83,7 @@ export default function YoutubeConnection({
         </p>
       </div>
       <Status
+        compact
         loading={youtube.isPending}
         error={youtube.error ?? connect.error ?? disconnect.error ?? importVideo.error}
       />
@@ -104,15 +96,17 @@ export default function YoutubeConnection({
       {connectedChannel && (
         <div
           role="status"
-          className="flex items-start gap-3 rounded-xl border border-emerald-600/30 bg-emerald-500/10 p-4"
+          className="flex items-start gap-2 rounded-lg border border-[var(--creator-border)] bg-[var(--creator-soft)] p-3"
         >
           <CheckCircle2
-            className="mt-0.5 size-5 shrink-0 text-emerald-700 dark:text-emerald-400"
+            className="mt-0.5 size-4 shrink-0 text-[var(--creator-accent)]"
             aria-hidden="true"
           />
           <div className="min-w-0 space-y-1">
-            <p className="font-semibold">YouTube connected</p>
-            <p className="break-words text-sm">
+            <p className="text-[13px]! font-semibold text-[var(--creator-accent)]">
+              YouTube connected
+            </p>
+            <p className="break-words text-[13px]!">
               {connectedChannel.title} is ready. Import a public video below, or connect another
               channel.
             </p>
@@ -130,10 +124,10 @@ export default function YoutubeConnection({
           key={channel.channelId}
           className={cn(
             'flex flex-wrap items-center gap-3 rounded-xl border p-3',
-            channel.channelId === connectedChannel?.channelId && 'border-emerald-600/30',
+            channel.channelId === connectedChannel?.channelId && 'border-[var(--creator-accent)]',
           )}
         >
-          <Avatar className="size-12">
+          <Avatar className="size-9">
             <AvatarImage
               src={channel.avatarUrl}
               alt={`${channel.title} channel avatar`}
@@ -145,7 +139,7 @@ export default function YoutubeConnection({
           </Avatar>
           <div className="min-w-0 flex-1 basis-32">
             <a
-              className="inline-flex max-w-full items-center gap-1 font-semibold hover:underline"
+              className="inline-flex max-w-full items-center gap-1 text-sm font-semibold hover:underline"
               href={`https://www.youtube.com/channel/${channel.channelId}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -198,12 +192,12 @@ export default function YoutubeConnection({
           />
         </div>
       ))}
-      <div className="flex items-start gap-3 rounded-xl bg-muted/50 p-4">
+      <div className="flex items-start gap-2 rounded-lg bg-muted/50 p-3">
         <ShieldCheck
-          className="mt-0.5 size-5 shrink-0 text-emerald-700 dark:text-emerald-400"
+          className="mt-0.5 size-4 shrink-0 text-[var(--creator-accent)]"
           aria-hidden="true"
         />
-        <div className="space-y-1 text-sm">
+        <div className="space-y-1 text-[13px]">
           <p className="font-semibold">Read-only YouTube access</p>
           <p className="text-muted-foreground">
             We use your channel name, avatar and public video details. SWUBASE cannot upload, edit
@@ -211,7 +205,7 @@ export default function YoutubeConnection({
           </p>
         </div>
       </div>
-      <p className="text-sm leading-relaxed text-muted-foreground">
+      <p className="text-[13px]! leading-relaxed text-muted-foreground">
         Public videos can be added automatically even when their SWU relevance is uncertain; clearly
         unrelated uploads are skipped. Public titles and descriptions may be sent to Google Gemini
         to suggest tags, sets and leaders. You can also import a video yourself as a draft.
@@ -229,14 +223,16 @@ export default function YoutubeConnection({
           . Google will ask you to choose your Google account, then your YouTube or Brand Account.
         </p>
         <Button
-          className="h-auto min-h-10 w-full whitespace-normal bg-[#cc0000] text-white hover:bg-[#a80000] sm:w-auto"
+          variant="outline"
+          size="sm"
+          className="h-auto min-h-9 w-full whitespace-normal sm:w-auto"
           disabled={!youtube.data?.configured || connecting || disconnect.isPending}
           onClick={() => void startConnection()}
         >
           {connecting ? (
             <Loader2 className="size-4 animate-spin" aria-hidden="true" />
           ) : (
-            <Youtube className="size-4" aria-hidden="true" />
+            <Youtube className="size-4 text-[#c62828] dark:text-red-400" aria-hidden="true" />
           )}
           {connecting
             ? 'Opening Google…'
@@ -247,7 +243,7 @@ export default function YoutubeConnection({
       </div>
       {!!activeChannels.length && (
         <form
-          className="space-y-3 border-t pt-5"
+          className="space-y-3 border-t pt-3"
           onSubmit={event => {
             event.preventDefault();
             void importVideo
@@ -281,6 +277,7 @@ export default function YoutubeConnection({
             />
           </Field>
           <Button
+            size="sm"
             disabled={importVideo.isPending || !url || !selectedChannel || disconnect.isPending}
           >
             {importVideo.isPending ? 'Importing…' : 'Import as draft'}

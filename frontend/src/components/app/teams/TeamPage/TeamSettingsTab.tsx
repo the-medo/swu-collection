@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input.tsx';
 import { Textarea } from '@/components/ui/textarea.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Label } from '@/components/ui/label.tsx';
-import { Trash2, Users, Upload } from 'lucide-react';
+import { Trash2, Users, Upload, Save, Settings2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch.tsx';
 import type { Team } from '../../../../../../server/db/schema/team.ts';
 import { useNavigate } from '@tanstack/react-router';
@@ -95,130 +95,162 @@ const TeamSettingsTab: React.FC<TeamSettingsTabProps> = ({ team }) => {
   };
 
   return (
-    <div className="flex flex-col gap-6 py-4 max-w-3xl">
-      <div className="flex max-w-lg flex-col gap-3">
-        <Label>Team Logo</Label>
-        <div className="flex items-center gap-4">
-          {team.logoUrl ? (
-            <img
-              src={team.logoUrl}
-              alt={`${team.name} logo`}
-              className="w-16 h-16 rounded-lg object-cover"
-            />
-          ) : (
-            <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center">
-              <Users className="w-8 h-8 text-muted-foreground" />
+    <div className="@container/team-settings max-w-4xl space-y-4">
+      <section
+        aria-labelledby="team-profile-heading"
+        className="space-y-4 rounded-xl border border-[color:var(--workspace-border)] bg-card p-4 sm:p-5"
+      >
+        <header className="space-y-1">
+          <h2
+            id="team-profile-heading"
+            className="m-0! border-0! p-0! flex items-center gap-2 text-base! font-semibold!"
+          >
+            <Users className="size-4 text-primary" aria-hidden="true" /> Team profile
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Your team’s name, logo and public description.
+          </p>
+        </header>
+        <div className="flex flex-col gap-3">
+          <p className="text-xs font-medium text-muted-foreground">Team logo</p>
+          <div className="flex items-center gap-4">
+            {team.logoUrl ? (
+              <img
+                src={team.logoUrl}
+                alt={`${team.name} logo`}
+                className="w-16 h-16 rounded-lg object-cover"
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center">
+                <Users className="w-8 h-8 text-muted-foreground" />
+              </div>
+            )}
+            <div className="flex flex-col gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleLogoUpload}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadLogo.isPending}
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                {uploadLogo.isPending ? 'Uploading...' : 'Upload Logo'}
+              </Button>
             </div>
-          )}
-          <div className="flex flex-col gap-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleLogoUpload}
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploadLogo.isPending}
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              {uploadLogo.isPending ? 'Uploading...' : 'Upload Logo'}
-            </Button>
           </div>
         </div>
-      </div>
+
+        <form
+          className="grid grid-cols-1 gap-4 @[560px]/team-settings:grid-cols-2"
+          onSubmit={e => {
+            e.preventDefault();
+            e.stopPropagation();
+            void form.handleSubmit();
+          }}
+        >
+          <form.Field
+            name="name"
+            children={field => (
+              <div className="flex flex-col gap-2">
+                <Label htmlFor={field.name}>Team name</Label>
+                <Input
+                  type="text"
+                  id={field.name}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={e => field.handleChange(e.target.value)}
+                />
+              </div>
+            )}
+          />
+          <form.Field
+            name="shortcut"
+            children={field => (
+              <div className="flex flex-col gap-2">
+                <Label htmlFor={field.name}>Shortcut (URL-friendly)</Label>
+                <Input
+                  type="text"
+                  id={field.name}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={e => field.handleChange(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Only lowercase letters, numbers and hyphens. Used in the team URL.
+                </p>
+              </div>
+            )}
+          />
+          <form.Field
+            name="description"
+            children={field => (
+              <div className="flex flex-col gap-2 @[560px]/team-settings:col-span-2">
+                <Label htmlFor={field.name}>Description</Label>
+                <Textarea
+                  id={field.name}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={e => field.handleChange(e.target.value)}
+                />
+              </div>
+            )}
+          />
+          <div className="flex justify-end border-t pt-3 @[560px]/team-settings:col-span-2">
+            <Button type="submit" size="sm" disabled={updateTeam.isPending}>
+              <Save className="size-4" aria-hidden="true" />
+              {updateTeam.isPending ? 'Saving...' : 'Save profile'}
+            </Button>
+          </div>
+        </form>
+      </section>
 
       <TeamHeaderSettings teamId={team.id} />
 
-      <form
-        className="flex max-w-lg flex-col gap-4"
-        onSubmit={e => {
-          e.preventDefault();
-          e.stopPropagation();
-          void form.handleSubmit();
-        }}
+      <section
+        aria-labelledby="team-deck-default-heading"
+        className="flex items-start gap-4 rounded-xl border border-[color:var(--workspace-border)] bg-card p-4 sm:p-5"
       >
-        <form.Field
-          name="name"
-          children={field => (
-            <div className="flex flex-col gap-2">
-              <Label htmlFor={field.name}>Team name</Label>
-              <Input
-                type="text"
-                id={field.name}
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={e => field.handleChange(e.target.value)}
-              />
-            </div>
-          )}
-        />
-        <form.Field
-          name="shortcut"
-          children={field => (
-            <div className="flex flex-col gap-2">
-              <Label htmlFor={field.name}>Shortcut (URL-friendly)</Label>
-              <Input
-                type="text"
-                id={field.name}
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={e => field.handleChange(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                Only lowercase letters, numbers and hyphens. Used in the team URL.
-              </p>
-            </div>
-          )}
-        />
-        <form.Field
-          name="description"
-          children={field => (
-            <div className="flex flex-col gap-2">
-              <Label htmlFor={field.name}>Description</Label>
-              <Textarea
-                id={field.name}
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={e => field.handleChange(e.target.value)}
-              />
-            </div>
-          )}
-        />
-        <Button type="submit" disabled={updateTeam.isPending}>
-          {updateTeam.isPending ? 'Saving...' : 'Save Settings'}
-        </Button>
-      </form>
-
-      <div className="flex max-w-lg flex-col gap-3">
-        <Label>Default "Auto-add deck" value for new members:</Label>
-        <div className="flex items-center gap-3">
-          <Switch
-            checked={team.autoAddDeck}
-            onCheckedChange={checked =>
-              updateTeam.mutate(
-                { autoAddDeck: checked },
-                {
-                  onSuccess: () => {
-                    toast({ title: 'Auto-add deck setting updated!' });
-                  },
-                },
-              )
-            }
-          />
-          <span className="text-sm text-muted-foreground">
-            When enabled, `Auto-add deck` will be turned on by default for new members. You can
-            still turn it on/off for individual member.
-          </span>
+        <div className="min-w-0 flex-1 space-y-1">
+          <h2
+            id="team-deck-default-heading"
+            className="m-0! border-0! p-0! flex items-center gap-2 text-base! font-semibold!"
+          >
+            <Settings2 className="size-4 text-primary" aria-hidden="true" /> Auto-add played decks
+          </h2>
+          <p id="team-deck-default-description" className="text-sm text-muted-foreground">
+            Enable by default for new members. Each member’s preference can still be changed in
+            Members.
+          </p>
         </div>
-      </div>
+        <Switch
+          aria-labelledby="team-deck-default-heading"
+          aria-describedby="team-deck-default-description"
+          disabled={updateTeam.isPending}
+          checked={team.autoAddDeck}
+          onCheckedChange={checked =>
+            updateTeam.mutate(
+              { autoAddDeck: checked },
+              {
+                onSuccess: () => {
+                  toast({ title: 'Auto-add deck setting updated!' });
+                },
+              },
+            )
+          }
+        />
+      </section>
 
-      <div className="flex max-w-lg flex-col gap-3 rounded-lg border border-destructive/40 bg-destructive/5 p-4">
-        <div className="flex flex-col gap-1">
-          <h3 className="text-sm font-semibold text-destructive">Danger zone</h3>
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-destructive/25 p-4 sm:p-5">
+        <div className="min-w-0 flex-1 basis-64 space-y-1">
+          <h2 className="m-0! border-0! p-0! text-base! font-semibold! text-destructive">
+            Delete team
+          </h2>
           {isCheckingDeleteEligibility ? (
             <p className="text-sm text-muted-foreground">Checking team members...</p>
           ) : canDeleteTeam ? (

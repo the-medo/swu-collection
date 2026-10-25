@@ -15,14 +15,14 @@ export function TournamentTravelLinks({
   if (!googleMapsUrl(tournament)) return null;
   return (
     <div
-      className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm"
+      className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs"
       role="group"
       aria-label="Travel and accommodation"
     >
       <Button
         type="button"
         variant="link"
-        className="h-auto justify-start gap-1.5 p-0 text-sm leading-snug"
+        className="h-6 justify-start gap-1.5 p-0 text-xs leading-snug"
         onClick={() => {
           // Build the private origin only on click; keep it out of DOM/link analytics.
           const url = googleMapsUrl(tournament, home.data?.coordinates);
@@ -40,7 +40,7 @@ export function TournamentTravelLinks({
             target="_blank"
             rel="noopener noreferrer"
             title={`Find stays: ${stays.checkin} to ${stays.checkout}`}
-            className="text-primary hover:underline"
+            className="rounded-sm text-primary hover:underline focus-visible:outline-2 focus-visible:outline-ring"
           >
             Airbnb
           </a>
@@ -52,7 +52,7 @@ export function TournamentTravelLinks({
             target="_blank"
             rel="noopener noreferrer"
             title={`Find stays: ${stays.checkin} to ${stays.checkout}`}
-            className="text-primary hover:underline"
+            className="rounded-sm text-primary hover:underline focus-visible:outline-2 focus-visible:outline-ring"
           >
             Booking.com
           </a>

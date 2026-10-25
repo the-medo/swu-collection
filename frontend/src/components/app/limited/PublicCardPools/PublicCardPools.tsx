@@ -1,3 +1,5 @@
+import { limitedStyles } from '@/components/app/limited/limitedStyles';
+import { cn } from '@/lib/utils';
 import React, { useMemo } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { Loader2 } from 'lucide-react';
@@ -13,16 +15,15 @@ const PublicCardPools: React.FC = () => {
   const initialized = useInitializeCardPoolFilterFromUrlParams();
   const { toRequestParams } = useCardPoolFilterStore();
 
-  const { data, isFetching, hasNextPage, fetchNextPage, isFetchingNextPage } = useGetCardPools(
-    toRequestParams(),
-  );
+  const { data, isFetching, hasNextPage, fetchNextPage, isFetchingNextPage, isError, refetch } =
+    useGetCardPools(toRequestParams());
 
   const pools = useMemo(() => {
     if (!data) return [];
     return data.pages.flatMap(page => page.data || []);
   }, [data]);
 
-  const loading = isFetching && !isFetchingNextPage;
+  const loading = isFetching && !data;
 
   if (!initialized) {
     return (
@@ -35,7 +36,18 @@ const PublicCardPools: React.FC = () => {
   return (
     <>
       <CardPoolFilters initialized={initialized} />
-      <CardPoolTable pools={pools} loading={loading} />
+      {isError && !data ? (
+        <div role="alert" className={cn('p-3 text-sm', limitedStyles.panel)}>
+          Could not load card pools.{' '}
+          <Button variant="outline" size="sm" onClick={() => void refetch()}>
+            Retry
+          </Button>
+        </div>
+      ) : (
+        <div className={cn('overflow-hidden', limitedStyles.panel)}>
+          <CardPoolTable pools={pools} loading={loading} />
+        </div>
+      )}
 
       {hasNextPage && (
         <div className="flex justify-center mt-4">

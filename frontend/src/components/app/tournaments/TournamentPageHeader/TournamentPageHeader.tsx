@@ -1,3 +1,5 @@
+import { competitionStyles } from '@/components/app/tournaments/competitionStyles';
+import { cn } from '@/lib/utils';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { usePermissions } from '@/hooks/usePermissions.ts';
@@ -82,13 +84,13 @@ const TournamentPageHeader: React.FC<TournamentPageHeaderProps> = ({
       to: '.',
       search: prev => ({ ...prev, metaId: selectedMetaId }),
     });
-  }, [metaId, selectedMetaId]);
+  }, [metaId, selectedMetaId, navigate]);
 
   if (isLoadingMetas) {
     return (
       <div className="flex flex-row gap-4 items-center justify-between mb-4">
         {!isMobile && <h3>{title}</h3>}
-        <span className="text-gray-600">Format</span>
+        <span className="text-muted-foreground">Format</span>
         <Skeleton className="h-12 w-full rounded-lg" />
         <Skeleton className="h-12 w-full rounded-lg" />
       </div>
@@ -102,7 +104,7 @@ const TournamentPageHeader: React.FC<TournamentPageHeaderProps> = ({
         type="single"
         collapsible
         defaultValue={undefined}
-        className={`w-full mb-4 ${className}`}
+        className={cn(competitionStyles.mobileHeader, 'w-full mb-4', className)}
       >
         <AccordionItem value="header" className="border rounded-md">
           <div className="flex flex-col items-start">
@@ -121,7 +123,7 @@ const TournamentPageHeader: React.FC<TournamentPageHeaderProps> = ({
           <AccordionContent className="p-4">
             <div className="flex flex-col gap-4">
               <div className="space-y-2">
-                <span className="text-gray-600">Format</span>
+                <span className="text-muted-foreground">Format</span>
                 <FormatSelect
                   value={formatId}
                   onChange={setFormat}
@@ -133,7 +135,7 @@ const TournamentPageHeader: React.FC<TournamentPageHeaderProps> = ({
               </div>
 
               <div className="space-y-2">
-                <span className="text-gray-600">Meta</span>
+                <span className="text-muted-foreground">Meta</span>
                 {selectedMetaId && (
                   <MetaSelector
                     formatId={formatId}
@@ -160,10 +162,16 @@ const TournamentPageHeader: React.FC<TournamentPageHeaderProps> = ({
 
   // Desktop view
   return (
-    <div className={`flex flex-row flex-wrap gap-4 items-center justify-between mb-4 ${className}`}>
+    <div
+      className={cn(
+        competitionStyles.header,
+        'flex flex-row flex-wrap gap-4 items-center justify-between mb-4',
+        className,
+      )}
+    >
       <h3 className="mb-0">{title}</h3>
       <div className="flex flex-row flex-1 gap-2 items-center min-w-[200px]">
-        <span className="text-gray-600">Format</span>
+        <span className="text-muted-foreground">Format</span>
         <FormatSelect
           value={formatId}
           onChange={setFormat}

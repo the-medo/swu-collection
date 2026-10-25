@@ -1,3 +1,4 @@
+import { dialogStyles } from '@/components/ui/dialogStyles';
 import { useId, useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import Dialog from '@/components/app/global/Dialog.tsx';
@@ -57,7 +58,7 @@ export default function DeckFolderDialog({ folders, folder, parentId, trigger, o
       }}
     >
       <form
-        className="flex flex-col gap-4"
+        className={dialogStyles.form}
         onSubmit={event => {
           event.preventDefault();
           event.stopPropagation();
@@ -114,7 +115,7 @@ export default function DeckFolderDialog({ folders, folder, parentId, trigger, o
             )
           }
         </form.Field>
-        <div className="flex justify-end gap-2">
+        <div className={dialogStyles.formActions}>
           <Button
             type="button"
             variant="outline"

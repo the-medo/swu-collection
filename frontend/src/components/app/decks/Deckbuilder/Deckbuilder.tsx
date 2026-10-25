@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
 import { SearchFrom } from '@/components/app/cards/AdvancedCardSearch/useAdvancedCardSearchStore.ts';
 import { Link } from '@tanstack/react-router';
-import DeckGradientButton from '@/components/app/decks/DeckContents/DeckImage/DeckGradientButton.tsx';
+import { Button } from '@/components/ui/button.tsx';
 import { X } from 'lucide-react';
 import * as React from 'react';
 import {
@@ -43,12 +43,16 @@ const Deckbuilder: React.FC<DeckbuilderProps> = ({ deckId }) => {
 
   const filtersFooterElement = useMemo(() => {
     return (
-      <Link to="/decks/$deckId" params={{ deckId }} className="flex mt-2 w-full">
-        <DeckGradientButton deckId={deckId} variant="outline" size="lg" className="w-full">
-          <X />
-          <h5 className="mb-0!">Close deckbuilder</h5>
-        </DeckGradientButton>
-      </Link>
+      <Button
+        variant="outline"
+        size="sm"
+        className="mt-2 w-full border-[var(--workspace-border)]"
+        asChild
+      >
+        <Link to="/decks/$deckId" params={{ deckId }}>
+          <X className="size-3.5" /> Close deckbuilder
+        </Link>
+      </Button>
     );
   }, [deckId]);
 
@@ -114,7 +118,7 @@ const Deckbuilder: React.FC<DeckbuilderProps> = ({ deckId }) => {
           : undefined
       }
     >
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         <DeckDetail adminEdit={true} deckId={deckId} deckbuilder={true} />
       </div>
     </AdvancedCardSearch>

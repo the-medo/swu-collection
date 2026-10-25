@@ -1,3 +1,4 @@
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles';
 import * as React from 'react';
 import { Link, useSearch } from '@tanstack/react-router';
 import { cn } from '@/lib/utils.ts';
@@ -34,11 +35,10 @@ const tabs: Record<StatisticsSubpageTabsProps['type'], TabConfig[]> = {
 };
 const StatisticsSubpageTabs: React.FC<StatisticsSubpageTabsProps> = ({ className, type }) => {
   const { sSubpage = 'matches' } = useSearch({ strict: false });
-  const gridColumns = type === 'deck' ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3';
 
   return (
     <div className={cn('w-full', className)}>
-      <div className={cn('grid mb-2 rounded-lg bg-muted p-1', gridColumns)}>
+      <div className={cn('mb-2 flex-wrap', workspaceStyles.tabs)}>
         {tabs[type].map(tab => {
           const isActive = sSubpage === tab.key;
           return (
@@ -49,12 +49,8 @@ const StatisticsSubpageTabs: React.FC<StatisticsSubpageTabsProps> = ({ className
                 ...prev,
                 sSubpage: tab.key,
               })}
-              className={cn(
-                'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
-                isActive
-                  ? 'bg-background text-foreground shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground',
-              )}
+              aria-current={isActive ? 'page' : undefined}
+              className={cn('flex-1', workspaceStyles.tab)}
             >
               {tab.label}
             </Link>

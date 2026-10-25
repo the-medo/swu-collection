@@ -1,58 +1,64 @@
-import React, { useMemo } from 'react';
-import GridSection from '@/components/app/global/GridSection/GridSection.tsx';
-import SectionHeader from '@/components/app/daily-snapshots/sections/components/SectionHeader.tsx';
-import CardPoolBox from './CardPoolBox.tsx';
+import { limitedStyles } from '@/components/app/limited/limitedStyles';
+import { cn } from '@/lib/utils';
+import { useState } from 'react';
 import { useGetCardPools } from '@/api/card-pools/useGetCardPools.ts';
 import { useUser } from '@/hooks/useUser.ts';
-import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button.tsx';
+import CardPoolBox from './CardPoolBox.tsx';
 
-const gridSizing = {
-  4: { row: { from: 1, to: 1 }, col: { from: 2, to: 4 } },
-  3: { row: { from: 1, to: 1 }, col: { from: 2, to: 3 } },
-  2: { row: { from: 1, to: 1 }, col: { from: 2, to: 2 } },
-  1: { row: { from: 1, to: 1 }, col: { from: 1, to: 1 } },
-};
-
-const YourLatestPools: React.FC = () => {
+export default function YourLatestPools() {
   const user = useUser();
+  return user ? <RecentPools userId={user.id} /> : null;
+}
 
-  const { data, isFetching } = useGetCardPools({
-    userId: user?.id,
+function RecentPools({ userId }: { userId: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const { data, isPending, isError, refetch } = useGetCardPools({
+    userId,
     sort: 'updated_at',
     order: 'desc',
   });
-
-  const pools = useMemo(() => {
-    if (!data) return [] as any[];
-    return data.pages.flatMap(page => page.data || []);
-  }, [data]);
-
-  const latestPools = pools.slice(0, 10);
-
+  const pools = data?.pages.flatMap(page => page.data ?? []).slice(0, 10) ?? [];
   return (
-    <GridSection sizing={gridSizing}>
-      <SectionHeader
-        headerAndTooltips={
-          <>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h4>Your latest pools</h4>
-            </div>
-          </>
-        }
-      />
-      <div className="flex gap-2 mt-2 overflow-x-auto">
-        {isFetching && (
-          <div className="flex items-center text-sm text-muted-foreground">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading
-          </div>
+    <section aria-labelledby="your-pools-heading">
+      <header className="mb-3 flex items-center justify-between gap-2">
+        <h2 id="your-pools-heading" className={limitedStyles.heading}>
+          Your latest pools
+        </h2>
+        {pools.length > 4 && (
+          <Button
+            size="xs"
+            variant="ghost"
+            aria-expanded={expanded}
+            aria-controls="your-recent-pools"
+            onClick={() => setExpanded(value => !value)}
+          >
+            {expanded ? 'Show fewer' : `Show ${pools.length - 4} more`}
+          </Button>
         )}
-        {!isFetching && latestPools.length === 0 && (
-          <div className="text-sm text-muted-foreground">You don't have any pools yet.</div>
-        )}
-        {!isFetching && latestPools.map(pool => <CardPoolBox key={pool.id} cardPool={pool} />)}
-      </div>
-    </GridSection>
+      </header>
+      {isPending ? (
+        <p role="status" className="m-0! text-sm text-muted-foreground">
+          Loading your pools…
+        </p>
+      ) : isError && !data ? (
+        <div role="alert" className={cn('p-3 text-sm', limitedStyles.panel)}>
+          Could not load your pools.{' '}
+          <Button size="sm" variant="outline" onClick={() => void refetch()}>
+            Retry
+          </Button>
+        </div>
+      ) : pools.length ? (
+        <div id="your-recent-pools" className={limitedStyles.recentGrid}>
+          {pools.slice(0, expanded ? 10 : 4).map(pool => (
+            <CardPoolBox key={pool.id} cardPool={pool} compact />
+          ))}
+        </div>
+      ) : (
+        <p className={cn('m-0! p-3 text-sm text-muted-foreground', limitedStyles.panel)}>
+          Create your first pool and pick up where you left off here.
+        </p>
+      )}
+    </section>
   );
-};
-
-export default YourLatestPools;
+}

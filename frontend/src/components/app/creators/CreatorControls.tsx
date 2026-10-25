@@ -1,4 +1,5 @@
 import { cloneElement, isValidElement, useId, type ReactElement, type ReactNode } from 'react';
+import { cn } from '@/lib/utils.ts';
 import {
   creationTags,
   dimensionLabels,
@@ -30,7 +31,7 @@ export function Field({
           })
         : children}
       {hint && (
-        <span id={`${id}-hint`} className="text-xs font-normal text-muted-foreground">
+        <span id={`${id}-hint`} className="break-words text-xs font-normal text-muted-foreground">
           {hint}
         </span>
       )}
@@ -41,16 +42,21 @@ export function Status({
   error,
   loading,
   children,
+  compact = false,
 }: {
   error?: Error | null;
   loading?: boolean;
   children?: ReactNode;
+  compact?: boolean;
 }) {
   if (error)
     return (
       <p
         role="alert"
-        className="break-words rounded-[20px] border border-destructive/30 bg-card p-5 text-[13px]! leading-relaxed! text-red-700 dark:text-red-300"
+        className={cn(
+          'break-words rounded-[20px] border border-destructive/30 bg-card p-5 text-[13px]! leading-relaxed! text-red-700 dark:text-red-300',
+          compact && 'rounded-lg px-3 py-2',
+        )}
       >
         {error.message}
       </p>
@@ -59,7 +65,10 @@ export function Status({
     return (
       <p
         role="status"
-        className="rounded-[20px] border border-border bg-card p-5 text-[13px]! text-muted-foreground"
+        className={cn(
+          'rounded-[20px] border border-border bg-card p-5 text-[13px]! text-muted-foreground',
+          compact && 'rounded-lg px-3 py-2',
+        )}
       >
         Loading…
       </p>

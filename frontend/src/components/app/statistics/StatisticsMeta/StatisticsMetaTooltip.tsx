@@ -1,10 +1,12 @@
+import { areGameAndMatchRecordsEqual } from '@/components/app/statistics/lib/resultStatistics';
 import * as React from 'react';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 import { StatisticsMetaDataItem } from '@/components/app/statistics/StatisticsMeta/statisticsMetaLib.ts';
 import { StatSection } from '@/components/app/statistics/common/StatSection.tsx';
+import { cn } from '@/lib/utils';
 
 const groupingDescriptionByMetaInfo: Record<MetaInfo, string> = {
-  leaders: "opponent leader",
+  leaders: 'opponent leader',
   leadersAndBase: 'opponent leader/base combination',
   bases: 'opponent base',
   aspects: 'opponent aspect',
@@ -31,7 +33,14 @@ const StatisticsMetaTooltip: React.FC<StatisticsMetaTooltipProps> = ({
   labelRenderer,
 }) => {
   const percentage = totalMatches > 0 ? ((item.count / totalMatches) * 100).toFixed(1) : '0.0';
-  const totalGames = item.gameWins + item.gameLosses;
+  const totalGames = item.gameWins + item.gameLosses + item.gameDraws;
+  const showMatches = !areGameAndMatchRecordsEqual({
+    ...item,
+    totalGames,
+    totalMatches: item.wins + item.losses + item.draws,
+    matchWins: item.wins,
+    matchLosses: item.losses,
+  });
   const matchWinRate = item.count > 0 ? (item.wins / item.count) * 100 : 0;
   const gameWinRate = totalGames > 0 ? (item.gameWins / totalGames) * 100 : 0;
 
@@ -48,25 +57,26 @@ const StatisticsMetaTooltip: React.FC<StatisticsMetaTooltipProps> = ({
         <div className="text-lg italic">({percentage}%)</div>
       </div>
 
-      <div className="grid w-full max-w-2xl gap-3 md:grid-cols-2">
-        <div className="flex flex-col items-center gap-2">
-          <StatSection
-            label="Matches"
-            total={item.count}
-            wins={item.wins}
-            losses={item.losses}
-            winrate={matchWinRate}
-          />
-          {item.draws > 0 && (
-            <span className="text-xs text-muted-foreground">Draws: {item.draws}</span>
-          )}
-        </div>
+      <div className={cn('grid w-full max-w-2xl gap-3', showMatches && 'md:grid-cols-2')}>
+        {showMatches && (
+          <div className="flex flex-col items-center gap-2">
+            <StatSection
+              label="Matches"
+              total={item.count}
+              wins={item.wins}
+              losses={item.losses}
+              draws={item.draws}
+              winrate={matchWinRate}
+            />
+          </div>
+        )}
         <div className="flex flex-col items-center gap-2">
           <StatSection
             label="Games"
             total={totalGames}
             wins={item.gameWins}
             losses={item.gameLosses}
+            draws={item.gameDraws}
             winrate={gameWinRate}
           />
         </div>
@@ -74,8 +84,8 @@ const StatisticsMetaTooltip: React.FC<StatisticsMetaTooltipProps> = ({
 
       <div className="w-full max-w-2xl rounded-lg border bg-muted/30 p-3 text-left text-sm text-muted-foreground">
         Count shows how many filtered matches were played against this{' '}
-        {groupingDescriptionByMetaInfo[metaInfo]}. Match and game records are shown from the
-        grouped opponent&apos;s point of view.
+        {groupingDescriptionByMetaInfo[metaInfo]}. Match and game records are shown from the grouped
+        opponent&apos;s point of view.
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { statisticsStyles } from '@/components/app/statistics/statisticsStyles';
 import * as React from 'react';
 import { StatisticsHistoryData } from '@/components/app/statistics/useGameResults.ts';
 import { useMemo, useState } from 'react';
@@ -72,7 +73,7 @@ const StatisticsDeckLists: React.FC<StatisticsDeckListsProps> = ({ teamId, byDec
           {hasQuickFilter ? 'No decks match this quick filter.' : 'No decks to show.'}
         </p>
       ) : (
-        <>
+        <div className={statisticsStyles.ledger}>
           {visibleDecks.map(deck => (
             <DeckInfoThumbnail
               key={deck.deckId}
@@ -81,8 +82,8 @@ const StatisticsDeckLists: React.FC<StatisticsDeckListsProps> = ({ teamId, byDec
               statSectionVariant="horizontal"
             />
           ))}
-          <div ref={observerTarget} className="h-4" />
-        </>
+          <div ref={observerTarget} className="h-1" />
+        </div>
       )}
     </div>
   );

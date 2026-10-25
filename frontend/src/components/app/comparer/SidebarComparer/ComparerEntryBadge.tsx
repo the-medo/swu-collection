@@ -1,13 +1,11 @@
 import { ComparerEntry } from '@/components/app/comparer/useComparerStore.ts';
+import { ExternalLink, Star, Trash2 } from 'lucide-react';
 import {
-  Book,
-  BookOpenCheck,
-  ExternalLink,
-  NotebookTabs,
-  ScrollText,
-  Star,
-  Trash2,
-} from 'lucide-react';
+  CardListIcon,
+  CollectionIcon,
+  DeckIcon,
+  WantlistIcon,
+} from '@/components/app/global/icons/CardLibraryIcons.tsx';
 import { CollectionType } from '../../../../../../types/enums.ts';
 import {
   DropdownMenu,
@@ -35,16 +33,16 @@ const ComparerEntryBadge: React.FC<ComparerEntryBadgeProps> = ({
 }) => {
   const getIcon = () => {
     if (entry.dataType === 'deck') {
-      return <Book size={16} />;
+      return <DeckIcon size={16} />;
     }
 
     switch (entry.collectionType) {
       case CollectionType.COLLECTION:
-        return <BookOpenCheck size={16} />;
+        return <CollectionIcon size={16} />;
       case CollectionType.WANTLIST:
-        return <ScrollText size={16} />;
+        return <WantlistIcon size={16} />;
       case CollectionType.OTHER:
-        return <NotebookTabs size={16} />;
+        return <CardListIcon size={16} />;
     }
   };
 
@@ -63,6 +61,7 @@ const ComparerEntryBadge: React.FC<ComparerEntryBadgeProps> = ({
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
+              aria-label={entry.additionalData?.title ?? 'Comparison entry'}
               className={cn(
                 'flex items-center justify-center h-8 w-8 rounded-md transition-colors',
                 'hover:bg-accent hover:text-accent-foreground',

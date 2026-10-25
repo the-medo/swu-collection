@@ -1,4 +1,7 @@
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles';
+import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
+import { Link } from '@tanstack/react-router';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { ProfileHeaderPreview } from '@/components/app/users/UserDetail/ProfileHeader.tsx';
@@ -21,14 +24,47 @@ export function TeamProfileLayout({
   sidebar,
   actions,
   children,
+  compact = false,
 }: {
   team: Pick<Team, 'id' | 'name' | 'logoUrl'>;
   sidebar: ReactNode;
   actions?: ReactNode;
   children: ReactNode;
+  compact?: boolean;
 }) {
+  if (compact)
+    return (
+      <div className={cn('min-w-0 p-2 sm:p-3', workspaceStyles.theme)}>
+        <header className="mb-3 flex min-w-0 flex-wrap items-center gap-3 border-b pb-3">
+          <Link
+            to="/teams/$teamId"
+            params={{ teamId: team.id }}
+            className="flex min-w-0 flex-1 items-center gap-2 rounded-md focus-visible:outline-2 focus-visible:outline-primary"
+            aria-label={`Back to ${team.name}`}
+          >
+            <Avatar className="size-9 rounded-lg">
+              <AvatarImage src={team.logoUrl ?? undefined} alt="" />
+              <AvatarFallback className="rounded-lg bg-accent text-xs">
+                {team.name.trim().slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-semibold">{team.name}</span>
+              <span className="block text-xs text-muted-foreground">Back to team</span>
+            </span>
+          </Link>
+          {actions}
+        </header>
+        <div className="grid min-w-0 gap-4 @[1001px]/main-body:grid-cols-[200px_minmax(0,1fr)]">
+          <aside className="hidden min-w-0 @[1001px]/main-body:block" aria-label="Team sidebar">
+            {sidebar}
+          </aside>
+          <div className="min-w-0">{children}</div>
+        </div>
+      </div>
+    );
   return (
-    <div className="flex min-h-dvh min-w-0 flex-col">
+    <div className={cn(workspaceStyles.theme, 'flex min-h-dvh min-w-0 flex-col')}>
       <TeamProfileHeader teamId={team.id} />
       <div className={columnsClassName}>
         <div className={avatarColumnClassName}>

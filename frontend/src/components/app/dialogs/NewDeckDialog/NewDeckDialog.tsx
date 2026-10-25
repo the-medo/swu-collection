@@ -1,3 +1,5 @@
+import { dialogStyles } from '@/components/ui/dialogStyles';
+import { cn } from '@/lib/utils';
 import Dialog, { DialogProps } from '@/components/app/global/Dialog.tsx';
 import * as React from 'react';
 import { useUser } from '@/hooks/useUser.ts';
@@ -23,6 +25,10 @@ import { ImportNewDeck } from '@/components/app/dialogs/NewDeckDialog/ImportNewD
 import { useDeckFolders } from '@/api/deck-folders/useDeckFolders.ts';
 import DeckFolderSelect from '@/components/app/decks/DeckFolders/DeckFolderSelect.tsx';
 import { Label } from '@/components/ui/label.tsx';
+import { Castle, Crown, Plus, Download, type LucideIcon } from 'lucide-react';
+import { useCardList } from '@/api/lists/useCardList.ts';
+import CardImage from '@/components/app/global/CardImage.tsx';
+import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 
 type NewDeckDialogProps = Pick<DialogProps, 'trigger' | 'triggerDisabled'> & {
   initialFolderId?: string | null;
@@ -33,6 +39,8 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({
   triggerDisabled,
   initialFolderId = null,
 }) => {
+  const { data: cardList } = useCardList();
+  const inputId = useId();
   const navigate = useNavigate();
   const user = useUser();
   const [open, setOpen] = useState(false);
@@ -88,27 +96,53 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({
     },
   });
 
+  const cardChoice = (label: string, cardId: string | undefined, Icon: LucideIcon) => {
+    const card = cardId ? cardList?.cards[cardId] : undefined;
+    return (
+      <Button type="button" variant="outline" aria-label={`Choose ${label.toLowerCase()}`}>
+        {card ? (
+          <CardImage
+            card={card}
+            cardVariantId={selectDefaultVariant(card)}
+            size="w50"
+            forceHorizontal
+            backSideButton={false}
+          />
+        ) : (
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[var(--dialog-soft)] text-[var(--dialog-accent)]">
+            <Icon />
+          </span>
+        )}
+        <span className="flex min-w-0 flex-col gap-1">
+          <span className="text-xs font-normal text-muted-foreground">{label}</span>
+          <span className="text-sm [overflow-wrap:anywhere]">{card?.title ?? 'Choose a card'}</span>
+        </span>
+      </Button>
+    );
+  };
+
   return (
     <Dialog
       trigger={trigger}
       triggerDisabled={triggerDisabled}
-      header={`New deck`}
+      header="New deck"
+      headerDescription="Start a new build or bring in a deck you already play."
       open={open}
       onOpenChange={next => {
         if (busy) return;
         setOpen(next);
         if (next) setFolderId(initialFolderId);
       }}
-      contentClassName="md:min-w-[500px]"
+      contentClassName="max-w-[640px]"
     >
       {user ? (
         <Tabs defaultValue="new" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className={cn('grid w-full grid-cols-2', dialogStyles.choiceTabs)}>
             <TabsTrigger value="new" disabled={busy}>
-              New
+              <Plus className="mr-2 size-4" /> Build a deck
             </TabsTrigger>
             <TabsTrigger value="import" disabled={busy}>
-              Import
+              <Download className="mr-2 size-4" /> Import deck
             </TabsTrigger>
           </TabsList>
           {foldersQuery.isPending && (
@@ -147,7 +181,7 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({
           )}
           <TabsContent value="new">
             <form
-              className="flex flex-col gap-4"
+              className={dialogStyles.form}
               onSubmit={e => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -158,10 +192,10 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({
                 name="name"
                 children={field => (
                   <div className="flex flex-col gap-2">
+                    <Label htmlFor={`${inputId}-name`}>Deck name</Label>
                     <Input
                       type="text"
-                      className=""
-                      id={field.name}
+                      id={`${inputId}-name`}
                       placeholder="Deck name"
                       value={field.state.value}
                       onBlur={field.handleBlur}
@@ -176,34 +210,44 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({
                   const selectedFormatFilter = cardFilterByFormatId[Number(field.state.value)];
 
                   return (
-                    <div className="flex flex-col gap-2">
-                      <FormatSelect
-                        value={field.state.value}
-                        allowEmpty={false}
-                        onChange={e => field.handleChange(e ?? 1)}
-                      />
-                      <div className="flex flex-wrap gap-2 w-full justify-center items-center">
-                        <LeaderSelector
-                          trigger={null}
-                          leaderCardId={selectedLeader1}
-                          onLeaderSelected={setSelectedLeader1}
-                          filterByFormat={selectedFormatFilter}
-                        />
-                        {formatDataById[Number(field.state.value)]?.leaderCount === 2 && (
-                          <LeaderSelector
-                            trigger={null}
-                            leaderCardId={selectedLeader2}
-                            onLeaderSelected={setSelectedLeader2}
-                            filterByFormat={selectedFormatFilter}
-                          />
-                        )}
-                        <BaseSelector
-                          trigger={null}
-                          baseCardId={selectedBase}
-                          onBaseSelected={setSelectedBase}
-                          filterByFormat={selectedFormatFilter}
+                    <div className="flex flex-col gap-4">
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor={`${inputId}-format`}>Format</Label>
+                        <FormatSelect
+                          id={`${inputId}-format`}
+                          value={field.state.value}
+                          allowEmpty={false}
+                          onChange={e => field.handleChange(e ?? 1)}
                         />
                       </div>
+                      <fieldset className="min-w-0">
+                        <legend className="mb-3 text-sm font-medium">
+                          Leader &amp; base{' '}
+                          <span className="font-normal text-muted-foreground">(optional)</span>
+                        </legend>
+                        <div className={dialogStyles.cardChoices}>
+                          <LeaderSelector
+                            trigger={cardChoice('Leader', selectedLeader1, Crown)}
+                            leaderCardId={selectedLeader1}
+                            onLeaderSelected={setSelectedLeader1}
+                            filterByFormat={selectedFormatFilter}
+                          />
+                          {formatDataById[Number(field.state.value)]?.leaderCount === 2 && (
+                            <LeaderSelector
+                              trigger={cardChoice('Second leader', selectedLeader2, Crown)}
+                              leaderCardId={selectedLeader2}
+                              onLeaderSelected={setSelectedLeader2}
+                              filterByFormat={selectedFormatFilter}
+                            />
+                          )}
+                          <BaseSelector
+                            trigger={cardChoice('Base', selectedBase, Castle)}
+                            baseCardId={selectedBase}
+                            onBaseSelected={setSelectedBase}
+                            filterByFormat={selectedFormatFilter}
+                          />
+                        </div>
+                      </fieldset>
                     </div>
                   );
                 }}
@@ -212,9 +256,12 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({
                 name="description"
                 children={field => (
                   <div className="flex flex-col gap-2">
+                    <Label htmlFor={`${inputId}-description`}>
+                      Description{' '}
+                      <span className="font-normal text-muted-foreground">(optional)</span>
+                    </Label>
                     <Textarea
-                      className=""
-                      id={field.name}
+                      id={`${inputId}-description`}
                       placeholder="Description"
                       value={field.state.value}
                       onBlur={field.handleBlur}
@@ -226,10 +273,21 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({
               <form.Field
                 name="public"
                 children={field => (
-                  <DeckPrivacySelector
-                    value={field.state.value as DeckPrivacy}
-                    onChange={v => field.handleChange(v)}
-                  />
+                  <fieldset className="flex min-w-0 flex-col gap-2">
+                    <legend className="mb-2 text-sm font-medium">Visibility</legend>
+                    <DeckPrivacySelector
+                      className={dialogStyles.visibility}
+                      value={field.state.value as DeckPrivacy}
+                      onChange={v => field.handleChange(v)}
+                    />
+                    <p className="m-0 text-xs leading-relaxed text-muted-foreground">
+                      {field.state.value === 0
+                        ? 'Only you can view this deck.'
+                        : field.state.value === 1
+                          ? 'Anyone can find this deck in public browsing.'
+                          : 'Anyone with the link can view it. It stays out of public browsing.'}
+                    </p>
+                  </fieldset>
                 )}
               />
               {folders.length > 0 && (
@@ -245,14 +303,25 @@ const NewDeckDialog: React.FC<NewDeckDialogProps> = ({
                   />
                 </div>
               )}
-              <Button type="submit" disabled={busy || folderBlocked}>
-                {postDeckMutation.isPending ? 'Creating...' : 'Create'}
-              </Button>
+              <div className={dialogStyles.formActions}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={busy}
+                  onClick={() => setOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={busy || folderBlocked}>
+                  {postDeckMutation.isPending ? 'Creating...' : 'Create deck'}
+                </Button>
+              </div>
             </form>
           </TabsContent>
           <TabsContent value="import">
             <ImportNewDeck
               onSuccess={() => setOpen(false)}
+              onCancel={() => setOpen(false)}
               folders={folders}
               folderId={folderId}
               onFolderChange={setFolderId}

@@ -1,3 +1,5 @@
+import { competitionStyles } from '@/components/app/tournaments/competitionStyles';
+import { cn } from '@/lib/utils';
 import { useNavigate } from '@tanstack/react-router';
 import { useGetMetas } from '@/api/meta';
 import { useCallback, useMemo } from 'react';
@@ -105,10 +107,10 @@ function MetaPage() {
 
   if (isLoading || isLoadingTournamentGroup) {
     return (
-      <div className="p-2 h-full">
+      <div className={cn('p-2 h-full', competitionStyles.page)}>
         <div className="flex flex-row gap-4 items-center justify-between mb-4">
           {!isMobile && <h3>Meta</h3>}
-          <span className="text-gray-600">Format</span>
+          <span className="text-muted-foreground">Format</span>
           <Skeleton className="h-12 w-full rounded-lg" />
           <Skeleton className="h-12 w-full rounded-lg" />
           <Skeleton className="h-12 w-full rounded-lg" />
@@ -126,9 +128,14 @@ function MetaPage() {
     <>
       <Helmet titleTemplate={`%s - ${selectedMeta?.meta?.name}`} defaultTitle={`Meta - SWU Base`} />
 
-      <div className="p-2">
+      <div className={cn('p-2', competitionStyles.page)}>
         {tournamentGroup && tournamentGroup.data?.group ? (
-          <div className="flex flex-row flex-wrap gap-4 items-center justify-between mb-4">
+          <div
+            className={cn(
+              'flex flex-row flex-wrap gap-4 items-center justify-between mb-4',
+              competitionStyles.header,
+            )}
+          >
             <h3 className="mb-0">
               {isPQWeekMeta ? 'PQ Meta Analysis' : `Meta - ${tournamentGroup.data?.group.name}`}
             </h3>
@@ -138,7 +145,12 @@ function MetaPage() {
           </div>
         ) : isMobile ? (
           // Mobile view with accordion
-          <Accordion type="single" collapsible defaultValue={undefined} className="w-full mb-2">
+          <Accordion
+            type="single"
+            collapsible
+            defaultValue={undefined}
+            className={cn('w-full mb-2', competitionStyles.mobileHeader)}
+          >
             <AccordionItem value="header" className="border rounded-md">
               <div className="flex flex-col items-start">
                 <AccordionTrigger className="px-4 pt-3 pb-1 hover:no-underline" right>
@@ -157,7 +169,7 @@ function MetaPage() {
               <AccordionContent className="p-4">
                 <div className="flex flex-col gap-4">
                   <div className="space-y-2">
-                    <span className="text-gray-600">Format</span>
+                    <span className="text-muted-foreground">Format</span>
                     <FormatSelect
                       value={formatId}
                       onChange={setFormat}
@@ -169,7 +181,7 @@ function MetaPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <span className="text-gray-600">Meta</span>
+                    <span className="text-muted-foreground">Meta</span>
                     {selectedMetaId && (
                       <MetaSelector
                         formatId={formatId}
@@ -181,7 +193,7 @@ function MetaPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <span className="text-gray-600">Min. tournament type</span>
+                    <span className="text-muted-foreground">Min. tournament type</span>
                     <TournamentTypeSelect
                       value={minTournamentType}
                       onChange={setMinTournamentType}
@@ -195,10 +207,15 @@ function MetaPage() {
           </Accordion>
         ) : (
           // Desktop view (unchanged)
-          <div className="flex flex-row flex-wrap gap-4 items-center justify-between mb-4">
+          <div
+            className={cn(
+              'flex flex-row flex-wrap gap-4 items-center justify-between mb-4',
+              competitionStyles.header,
+            )}
+          >
             <h3 className="mb-0">Meta</h3>
             <div className="flex flex-row flex-1 gap-2 items-center min-w-[200px]">
-              <span className="text-gray-600">Format:</span>
+              <span className="text-muted-foreground">Format:</span>
               <FormatSelect
                 value={formatId}
                 onChange={setFormat}
@@ -220,7 +237,7 @@ function MetaPage() {
               )}
             </div>
             <div className="flex flex-1 gap-2 items-center min-w-[200px]">
-              <div className="flex flex-1 text-nowrap text-gray-600">Min. type:</div>
+              <div className="flex flex-1 text-nowrap text-muted-foreground">Min. type:</div>
               <TournamentTypeSelect
                 value={minTournamentType}
                 onChange={setMinTournamentType}

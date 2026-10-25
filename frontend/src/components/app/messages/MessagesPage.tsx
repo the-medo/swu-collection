@@ -1,3 +1,5 @@
+import { inboxStyles } from '@/components/app/inbox/inboxStyles';
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { getRouteApi, Link } from '@tanstack/react-router';
 import { useForm } from '@tanstack/react-form';
@@ -19,6 +21,8 @@ import { MessageBody } from './MessageBody.tsx';
 import { ReportUserButton } from '@/components/app/users/ReportUserButton.tsx';
 import { messageMaxLength, type MessagePeer } from '../../../../../shared/types/messages.ts';
 
+import { InboxHeader } from '@/components/app/inbox/InboxHeader.tsx';
+
 const route = getRouteApi('/_authenticated/messages');
 type Draft = { body: string; clientMessageId: string };
 const emptyDraft = (): Draft => ({ body: '', clientMessageId: crypto.randomUUID() });
@@ -31,7 +35,9 @@ function PeerAvatar({ peer, className }: { peer: MessagePeer; className?: string
   return (
     <Avatar className={cn('h-9 w-9 shrink-0 rounded-lg', className)}>
       <AvatarImage src={peer.image ?? undefined} alt="" />
-      <AvatarFallback className="rounded-lg">{peer.displayName?.[0] ?? '?'}</AvatarFallback>
+      <AvatarFallback className={cn('rounded-lg', inboxStyles.messageAvatar)}>
+        {peer.displayName?.[0] ?? '?'}
+      </AvatarFallback>
     </Avatar>
   );
 }
@@ -48,14 +54,29 @@ function Messenger({ userId }: { userId: string }) {
   return (
     <>
       <Helmet title="Messages | SWUBase" />
-      <div className="flex h-full min-h-0 flex-col">
-        <h2 className="sr-only">Messages</h2>
-        <div className="grid min-h-0 flex-1 overflow-hidden rounded-lg border md:grid-cols-[18rem_minmax(0,1fr)]">
+      <div
+        className={cn(
+          'flex h-full min-h-0 flex-col p-2 sm:p-3',
+          workspaceStyles.theme,
+          inboxStyles.page,
+        )}
+      >
+        <InboxHeader page="messages" />
+        <div
+          className={cn(
+            'grid min-h-0 flex-1 overflow-hidden md:grid-cols-[17rem_minmax(0,1fr)] xl:grid-cols-[19rem_minmax(0,1fr)]',
+            workspaceStyles.panel,
+          )}
+        >
           <aside
             aria-label="Conversations"
-            className={cn('min-h-0 overflow-y-auto md:border-r', peerId && 'hidden md:block')}
+            className={cn(
+              'min-h-0 overflow-y-auto md:border-r',
+              inboxStyles.conversationList,
+              peerId && 'hidden md:block',
+            )}
           >
-            <h3 className="border-b px-4 py-3 text-sm font-semibold">Conversations</h3>
+            <h2 className={cn(workspaceStyles.heading, 'border-b! px-3! py-3!')}>Conversations</h2>
             {query.isPending && (
               <p role="status" className="p-4 text-sm text-muted-foreground">
                 Loading conversations…
@@ -89,10 +110,7 @@ function Messenger({ userId }: { userId: string }) {
                     search={{ with: conversation.peer.id }}
                     resetScroll={false}
                     aria-current={conversation.peer.id === peerId ? 'page' : undefined}
-                    className={cn(
-                      'flex min-w-0 gap-3 border-b p-4 transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
-                      conversation.peer.id === peerId && 'bg-accent',
-                    )}
+                    className={inboxStyles.conversationLink}
                   >
                     <PeerAvatar peer={conversation.peer} />
                     <div className="min-w-0 flex-1">
@@ -111,7 +129,7 @@ function Messenger({ userId }: { userId: string }) {
                       </div>
                       <p
                         className={cn(
-                          'truncate text-sm text-muted-foreground',
+                          'mt-0.5! truncate text-xs text-muted-foreground',
                           conversation.unreadCount > 0 && 'font-medium text-foreground',
                         )}
                       >
@@ -121,7 +139,7 @@ function Messenger({ userId }: { userId: string }) {
                       <time
                         dateTime={conversation.updatedAt}
                         title={new Date(conversation.updatedAt).toLocaleString()}
-                        className="mt-1 block text-xs text-muted-foreground"
+                        className="mt-1.5 block text-[10px] text-muted-foreground"
                       >
                         {formatDistanceToNow(new Date(conversation.updatedAt), { addSuffix: true })}
                       </time>
@@ -152,10 +170,17 @@ function Messenger({ userId }: { userId: string }) {
               onDraft={next => setDrafts(previous => ({ ...previous, [peerId]: next }))}
             />
           ) : (
-            <div className="hidden items-center justify-center p-8 text-center text-muted-foreground md:flex">
+            <div className="hidden items-center justify-center bg-muted/15 p-8 text-center text-muted-foreground md:flex">
               <div>
-                <Mail className="mx-auto mb-3 h-10 w-10" aria-hidden="true" />
-                <p>Select a conversation to read and send messages.</p>
+                <div className="mx-auto mb-4 grid size-14 place-items-center rounded-2xl bg-accent text-primary">
+                  <Mail className="size-6" aria-hidden="true" />
+                </div>
+                <h2 className={cn(workspaceStyles.heading, 'mb-1! text-foreground')}>
+                  Your conversations
+                </h2>
+                <p className="max-w-64 text-sm">
+                  Select a conversation, or message a player from their profile.
+                </p>
               </div>
             </div>
           )}
@@ -295,7 +320,7 @@ function Conversation({
   };
   return (
     <section aria-label="Conversation" className="flex min-h-0 min-w-0 flex-col">
-      <div className="flex shrink-0 items-center gap-3 border-b p-3">
+      <div className="flex shrink-0 items-center gap-3 border-b bg-card px-3 py-2.5">
         <Button
           asChild
           variant="ghost"
@@ -332,7 +357,10 @@ function Conversation({
       <div className="relative flex min-h-0 flex-1 flex-col">
         <div
           ref={scroll}
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4"
+          className={cn(
+            'min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 sm:p-4',
+            inboxStyles.messageScroll,
+          )}
           onScroll={() => {
             const element = scroll.current;
             if (!element) return;
@@ -379,7 +407,11 @@ function Conversation({
                 <li
                   key={item.id}
                   data-message-id={item.id}
-                  className={cn('flex items-start gap-2', mine && 'flex-row-reverse')}
+                  className={cn(
+                    'flex items-start gap-2',
+                    mine && 'flex-row-reverse',
+                    startsGroup && index > 0 && 'mt-3',
+                  )}
                 >
                   <div className="flex w-11 shrink-0 flex-col items-center gap-1">
                     {startsGroup && (
@@ -409,8 +441,9 @@ function Conversation({
                   </div>
                   <div
                     className={cn(
-                      'min-w-0 max-w-[calc(100%_-_3.25rem)] rounded-xl px-3 py-2 text-foreground sm:max-w-[75%]',
-                      mine ? 'bg-muted' : 'bg-muted/50',
+                      'min-w-0 max-w-[calc(100%_-_3.25rem)] px-3 py-2 text-foreground sm:max-w-[75%]',
+                      inboxStyles.messageBubble,
+                      mine && inboxStyles.messageBubbleOwn,
                     )}
                   >
                     <span className="sr-only">{mine ? 'You' : data?.peer.displayName}: </span>
@@ -503,7 +536,7 @@ function MessageComposer({
   });
   return (
     <form
-      className="shrink-0 space-y-2 border-t p-3 pb-12 md:pb-3"
+      className={cn('shrink-0 space-y-2 border-t p-3 pb-12 md:pb-3', inboxStyles.messageComposer)}
       onSubmit={event => {
         event.preventDefault();
         event.stopPropagation();
@@ -524,9 +557,9 @@ function MessageComposer({
             <Textarea
               id="message-body"
               placeholder="Write a message…"
-              rows={3}
+              rows={2}
               maxLength={messageMaxLength}
-              className="max-h-40 min-h-20 resize-y"
+              className="max-h-40 min-h-16 resize-y"
               value={field.state.value}
               readOnly={send.isPending}
               aria-busy={send.isPending}
@@ -548,7 +581,7 @@ function MessageComposer({
               }}
             />
             <div className="flex items-center justify-between gap-2">
-              <span className="text-xs text-muted-foreground">
+              <span className="text-[10px] text-muted-foreground sm:text-xs">
                 Enter to send · Shift+Enter for a new line
               </span>
               <Button

@@ -12,6 +12,7 @@ import AdvancedSearchLayoutSelectors from '@/components/app/cards/AdvancedCardSe
 
 interface AdvancedSearchResultsProps {
   hasActiveFilters: boolean;
+  compact?: boolean;
   fillAvailableHeight?: boolean;
   classNames?: {
     title?: string;
@@ -23,6 +24,7 @@ interface AdvancedSearchResultsProps {
 
 const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
   hasActiveFilters,
+  compact = false,
   fillAvailableHeight = false,
   classNames,
   cardSubcomponent,
@@ -52,11 +54,18 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
       <div
         className={cn(
           'flex flex-1 flex-wrap w-full justify-between items-start p-2',
+          compact &&
+            'items-center gap-1 px-0 py-1 [&_nav_button]:h-8 [&_nav_button]:px-2 [&_nav_button]:text-xs',
           fillAvailableHeight && '@[1080px]/main-body:flex-none',
           classNames?.title,
         )}
       >
-        <h3 className="text-2xl font-semibold tracking-tight">
+        <h3
+          className={cn(
+            'font-semibold tracking-tight',
+            compact ? 'm-0! text-sm! leading-8!' : 'text-2xl',
+          )}
+        >
           Search Results
           {searchResults.length > 0 && (
             <span className="text-sm text-muted-foreground ml-2">

@@ -3,9 +3,7 @@ import { Link } from '@tanstack/react-router';
 import { Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { getFormatName } from '@/components/app/decks/DeckTable/deckTableLib.tsx';
-import DeckBackgroundDecoration from '@/components/app/global/DeckBackgroundDecoration.tsx';
-import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
-import { useCardList } from '@/api/lists/useCardList.ts';
+import { LeaderBaseArtwork } from '@/components/app/global/LeaderBaseArtwork.tsx';
 import type { TeamDeckExpanded } from '../../../../../../../server/routes/teams/_id/decks/get.ts';
 import CopyLinkButton from '@/components/app/decks/DeckContents/DeckActionsMenu/components/CopyLinkButton.tsx';
 import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
@@ -36,27 +34,16 @@ type DeckListItemProps = TeamDeckVariantProps | AddDeckVariantProps;
 const DeckListItem: React.FC<DeckListItemProps> = props => {
   const { variant, teamId } = props;
   const deck = variant === 'team-deck' ? props.teamDeck.deck : props.deck;
-  const { data: cardList } = useCardList();
-
-  const leader = deck.leaderCardId1 ? cardList?.cards[deck.leaderCardId1] : undefined;
-  const base = deck.baseCardId ? cardList?.cards[deck.baseCardId] : undefined;
 
   if (variant === 'team-deck') {
     const { teamDeck, onRemove, removeDisabled } = props;
     return (
-      <div className="flex items-center gap-3 p-3 rounded-lg border relative overflow-hidden min-h-14">
-        {leader && (
-          <DeckBackgroundDecoration leaderCard={leader} baseCard={base} position="top-left">
-            <BaseAvatar
-              cardId={deck.baseCardId ?? undefined}
-              bordered={false}
-              size="40"
-              shape="circle"
-            />
-          </DeckBackgroundDecoration>
-        )}
-        <div className="flex flex-col flex-1 min-w-0 pl-40 relative z-10">
+      <div className="@container/team-deck-row flex items-center gap-3 rounded-lg border bg-card p-2.5">
+        <LeaderBaseArtwork leaderId={deck.leaderCardId1} baseKey={deck.baseCardId} size="compact" />
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
           <Link
+            className="truncate text-sm font-semibold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            title={deck.name}
             to={'/teams/$teamId/statistics/decks'}
             params={{
               teamId,
@@ -65,54 +52,49 @@ const DeckListItem: React.FC<DeckListItemProps> = props => {
               sDeckId: deck.id,
             }}
           >
-            <Button variant="link" className="p-0 h-auto font-bold justify-start max-w-full">
-              <span className="truncate">{deck.name}</span>
-            </Button>
+            {deck.name}
           </Link>
           <span className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
             {getFormatName(deck.format)} · by <UserDisplay user={teamDeck.user} />
           </span>
         </div>
-        <CopyLinkButton deckId={deck.id} isPublic={true} compact={true} size="iconMedium" />
-        <Button
-          variant="ghost"
-          size="iconMedium"
-          className="relative z-10"
-          onClick={onRemove}
-          disabled={removeDisabled}
-        >
-          <Trash2 className="h-4 w-4 text-destructive" />
-        </Button>
+        <div className="flex shrink-0 items-center gap-1 @max-[300px]/team-deck-row:flex-col">
+          <CopyLinkButton deckId={deck.id} isPublic={true} compact={true} size="iconMedium" />
+          <Button
+            variant="ghost"
+            size="iconMedium"
+            aria-label={`Remove ${deck.name} from team`}
+            onClick={onRemove}
+            disabled={removeDisabled}
+          >
+            <Trash2 className="h-4 w-4 text-destructive" />
+          </Button>
+        </div>
       </div>
     );
   }
 
   const { onAdd, addDisabled } = props;
   return (
-    <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors relative overflow-hidden min-h-14">
-      {leader && (
-        <DeckBackgroundDecoration leaderCard={leader} baseCard={base} position="top-left">
-          <BaseAvatar
-            cardId={deck.baseCardId ?? undefined}
-            bordered={false}
-            size="40"
-            shape="circle"
-          />
-        </DeckBackgroundDecoration>
-      )}
-      <div className="flex flex-col flex-1 min-w-0 pl-42 relative z-10">
-        <span className="text-sm font-medium truncate">{deck.name}</span>
+    <div className="@container/team-deck-row flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent">
+      <LeaderBaseArtwork leaderId={deck.leaderCardId1} baseKey={deck.baseCardId} size="compact" />
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <span className="truncate text-sm font-medium" title={deck.name}>
+          {deck.name}
+        </span>
         <span className="text-xs text-muted-foreground">{getFormatName(deck.format)}</span>
       </div>
       <Button
         variant="outline"
         size="sm"
-        className="relative z-10"
+        className="size-8 shrink-0 gap-1 p-0 @min-[300px]/team-deck-row:w-auto @min-[300px]/team-deck-row:px-3"
+        aria-label={`Add ${deck.name} to team`}
+        title={`Add ${deck.name} to team`}
         onClick={onAdd}
         disabled={addDisabled}
       >
-        <Plus className="h-3 w-3 mr-1" />
-        Add
+        <Plus className="h-3 w-3" />
+        <span className="hidden @min-[300px]/team-deck-row:inline">Add</span>
       </Button>
     </div>
   );

@@ -44,12 +44,12 @@ export default function CommentCard({
       tabIndex={-1}
       className={`flex min-w-0 items-start gap-3 py-3 outline-none ${focused ? '-mx-1 rounded-lg bg-primary/5 px-1 ring-1 ring-primary/30' : ''}`}
     >
-      <Avatar data-comment-avatar className="size-8 shrink-0">
+      <Avatar data-comment-avatar className="size-8 shrink-0 ring-1 ring-border">
         <AvatarImage
           src={comment.author?.image ?? undefined}
           alt={comment.author?.displayName ?? 'Deleted comment'}
         />
-        <AvatarFallback className="text-xs">
+        <AvatarFallback className="bg-primary/10 text-xs font-medium text-primary">
           {comment.author?.displayName.slice(0, 2).toUpperCase() ?? '?'}
         </AvatarFallback>
       </Avatar>
@@ -128,7 +128,7 @@ export default function CommentCard({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 px-1 text-xs text-muted-foreground"
+                className="h-7 rounded-md px-2 text-xs text-muted-foreground hover:bg-primary/10 hover:text-primary"
                 disabled={editing}
                 onClick={onReply}
               >

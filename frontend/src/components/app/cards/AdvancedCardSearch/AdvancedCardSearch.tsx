@@ -21,6 +21,8 @@ import * as React from 'react';
 import { SearchCardLayoutProps } from '@/components/app/cards/AdvancedCardSearch/AdvancedSearchResults/SearchCardLayout.tsx';
 import { AdvancedCardSearchContextConfig } from '@/components/app/cards/AdvancedCardSearch/advancedSearchContext.ts';
 
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles.ts';
+
 interface AdvancedCardSearchProps {
   children?: React.ReactNode;
   showCardHome?: boolean;
@@ -44,6 +46,7 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
   resultsHeader,
   alternativeResults,
 }) => {
+  const compact = searchFrom === SearchFrom.DECKBUILDER;
   const urlSearch = useSearch({ strict: false });
   const hasRequestedSearch = hasCardSearchRequest(cardSearchParams.parse(urlSearch));
   const displayHome = showCardHome && !hasRequestedSearch;
@@ -145,34 +148,50 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
       <Helmet title="Card Search | SWUBase" />
       <div
         className={cn(
-          'flex',
+          'flex min-w-0',
+          compact && workspaceStyles.theme,
           'flex-col @[580px]/main-body:flex-row',
           'min-h-[500px] @[580px]/main-body:min-h-screen',
         )}
       >
         <AdvancedSearchFilters
           onSearch={onSearch}
+          compact={compact}
           footerElement={filtersFooterElement}
           availableCardTypes={searchContext?.availableCardTypes}
           disabled={!!alternativeResults}
         />
-        <div className="flex flex-col @[1080px]/main-body:flex-row flex-1">
-          <div className="flex flex-row gap-4 items-start flex-wrap p-2 @[1080px]/main-body:hidden">
+        <div className="flex min-w-0 flex-col @[1080px]/main-body:flex-row flex-1">
+          <div
+            className={cn(
+              'flex flex-row gap-2 items-center flex-wrap p-2 @[1080px]/main-body:hidden',
+              compact &&
+                'border-b border-[var(--workspace-border)] bg-[var(--workspace-soft)] [&_button]:h-8',
+            )}
+          >
             <Button
               onClick={() => setResultsOrChildren('results')}
               variant={resultsOrChildren === 'results' ? 'default' : 'outline'}
             >
-              <h3 className="text-2xl font-semibold tracking-tight mb-0">
+              <span
+                className={
+                  compact ? 'text-sm font-semibold' : 'text-2xl font-semibold tracking-tight'
+                }
+              >
                 {alternativeResults?.title ?? 'Search Results'}
-              </h3>
+              </span>
             </Button>
             <Button
               onClick={() => setResultsOrChildren('children')}
               variant={resultsOrChildren === 'children' ? 'default' : 'outline'}
             >
-              <h3 className="text-2xl font-semibold tracking-tight mb-0">
+              <span
+                className={
+                  compact ? 'text-sm font-semibold' : 'text-2xl font-semibold tracking-tight'
+                }
+              >
                 {childrenTitleButtonText}
-              </h3>
+              </span>
             </Button>
             {resultsOrChildren === 'results' && (
               <AdvancedSearchLayoutSelectors showSort={!alternativeResults} />
@@ -184,6 +203,7 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
                 hidden: resultsOrChildren === 'children',
               },
               '@[1080px]/main-body:flex flex-col flex-1 min-w-0 border-r',
+              compact && 'border-[var(--workspace-border)]',
               resultsHeader && '@[1080px]/main-body:h-[calc(100dvh-1rem)]',
             )}
           >
@@ -191,6 +211,7 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
             {alternativeResults?.content ?? (
               <AdvancedSearchResults
                 hasActiveFilters={hasActiveFilters}
+                compact={compact}
                 showArtistShowcaseLink={searchFrom === SearchFrom.CARD_SEARCH}
                 classNames={{
                   title: 'hidden @[1080px]/main-body:flex',
@@ -206,7 +227,7 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
               {
                 hidden: resultsOrChildren === 'results',
               },
-              '@[1080px]/main-body:flex flex-1 p-2',
+              '@[1080px]/main-body:flex min-w-0 flex-1 p-2',
             )}
           >
             {children}

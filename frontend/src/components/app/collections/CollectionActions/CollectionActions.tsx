@@ -30,10 +30,11 @@ const CollectionActions: React.FC<CollectionActionsProps> = ({ collectionId }) =
   );
 
   return (
-    <Card>
-      <CardContent className="flex gap-2 items-center p-2 flex-wrap">
+    <Card className="rounded-2xl shadow-none">
+      <CardContent className="flex gap-2 items-center p-3 flex-wrap">
         <Button
           size="sm"
+          variant="outline"
           className={cn({
             'opacity-80': !data?.collection.public,
           })}
@@ -51,7 +52,7 @@ const CollectionActions: React.FC<CollectionActionsProps> = ({ collectionId }) =
           <DuplicateCollectionDialog
             collection={data.collection}
             trigger={
-              <Button size="sm" disabled={!user}>
+              <Button size="sm" variant="outline" disabled={!user}>
                 <Copy className="h-4 w-4 mr-1" />
                 Duplicate
               </Button>

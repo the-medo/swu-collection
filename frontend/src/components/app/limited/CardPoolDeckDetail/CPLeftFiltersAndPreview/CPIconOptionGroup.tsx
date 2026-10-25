@@ -40,6 +40,7 @@ const CPIconOptionGroup: React.FC<CPIconOptionGroupProps> = ({
               <Button
                 size="sm"
                 aria-label={opt.ariaLabel ?? opt.tooltip}
+                aria-pressed={selected === opt.value}
                 variant={selected === opt.value ? 'default' : 'outline'}
                 onClick={() => onChange(opt.value)}
               >

@@ -1,3 +1,5 @@
+import { limitedStyles } from '@/components/app/limited/limitedStyles';
+import { cn } from '@/lib/utils';
 import React, { useMemo } from 'react';
 import { CardPool } from '../../../../../../server/db/schema/card_pool.ts';
 import { useGetCardPoolCards } from '@/api/card-pools/useGetCardPoolCards.ts';
@@ -31,7 +33,7 @@ const CardPoolSection: React.FC<CardPoolSectionProps> = ({ pool }) => {
   const columns = groupToCardPoolColumns(items);
 
   return (
-    <div className="rounded-lg border border-border bg-card p-3 h-full">
+    <div className={cn('p-2', limitedStyles.panel)}>
       {isFetching && <div className="text-xs opacity-60">Loading pool cards...</div>}
       {error && <div className="text-xs text-red-400">Failed to load pool cards.</div>}
       {!isFetching && !error && items.length === 0 && (
@@ -68,7 +70,6 @@ const CardPoolSection: React.FC<CardPoolSectionProps> = ({ pool }) => {
           <CardPoolStack items={columns['no-aspect']} />
         </div>
       </div>
-      {pool?.description && <div className="mt-3 text-xs opacity-60">{pool.description}</div>}
     </div>
   );
 };

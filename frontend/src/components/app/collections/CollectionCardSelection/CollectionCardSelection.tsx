@@ -75,9 +75,9 @@ const CollectionCardSelection: React.FC<CollectionCardSelectionProps> = ({ colle
   }, [collectionId, postCollectionSource]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex justify-between items-start">
+    <Card className="rounded-2xl shadow-none">
+      <CardHeader className="p-5">
+        <CardTitle className="flex flex-wrap gap-3 justify-between items-start text-lg">
           <span>Card selection</span>{' '}
           <div className="flex flex-col gap-0">
             <span className="font-normal text-sm text-gray-500">

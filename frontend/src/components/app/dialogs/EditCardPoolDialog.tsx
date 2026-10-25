@@ -1,3 +1,4 @@
+import { dialogStyles } from '@/components/ui/dialogStyles';
 import Dialog, { DialogProps } from '@/components/app/global/Dialog.tsx';
 import * as React from 'react';
 import { useUser } from '@/hooks/useUser.ts';
@@ -67,10 +68,16 @@ const EditCardPoolDialog: React.FC<EditCardPoolDialogProps> = ({ trigger, pool }
   );
 
   return (
-    <Dialog trigger={trigger} header={`Edit Card Pool`} open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      trigger={trigger}
+      header="Edit card pool"
+      headerDescription="Update the pool’s name, description and visibility."
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       {user ? (
         <form
-          className="flex flex-col gap-4"
+          className={dialogStyles.form}
           onSubmit={e => {
             e.preventDefault();
             e.stopPropagation();
@@ -113,16 +120,35 @@ const EditCardPoolDialog: React.FC<EditCardPoolDialogProps> = ({ trigger, pool }
           <form.Field
             name="visibility"
             children={field => (
-              <VisibilitySelector
-                value={field.state.value as Visibility}
-                onChange={v => field.handleChange(v)}
-              />
+              <fieldset className="min-w-0">
+                <legend className="mb-2 text-sm font-medium">Visibility</legend>
+                <VisibilitySelector
+                  className={dialogStyles.visibility}
+                  value={field.state.value as Visibility}
+                  onChange={v => {
+                    if (v) field.handleChange(v);
+                  }}
+                />
+              </fieldset>
             )}
           />
 
-          <Button type="submit" disabled={form.state.isSubmitting || updatePoolMutation.isPending}>
-            {form.state.isSubmitting || updatePoolMutation.isPending ? '...' : 'Update'}
-          </Button>
+          <div className={dialogStyles.formActions}>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={updatePoolMutation.isPending}
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={form.state.isSubmitting || updatePoolMutation.isPending}
+            >
+              {updatePoolMutation.isPending ? 'Saving…' : 'Save changes'}
+            </Button>
+          </div>
         </form>
       ) : (
         <div className="flex flex-col gap-4">

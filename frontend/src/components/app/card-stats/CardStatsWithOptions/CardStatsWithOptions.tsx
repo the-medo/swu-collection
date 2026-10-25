@@ -36,10 +36,8 @@ const CardStatsWithOptions: React.FC<CardStatsWithOptionsProps> = ({ data, cardS
   }, [data, minDeckCount, cardSearch, sortBy, groupBy]);
 
   return (
-    <div className={cn('space-y-6')}>
-      <MobileCard>
-        <CardStatsFilters />
-      </MobileCard>
+    <div className={cn('space-y-3')}>
+      <CardStatsFilters />
       {groupBy === 'set' && (
         <MobileCard>
           <CardStatsSetShare data={data} />

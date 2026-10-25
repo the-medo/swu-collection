@@ -7,11 +7,10 @@ import { useSidebarSettings } from '@/api/user/useSidebarSettings.ts';
 import { useSavedTournaments } from '@/api/tournaments/useSavedTournaments.ts';
 import { Button } from '@/components/ui/button.tsx';
 import {
+  SidebarMenu,
   SidebarGroup,
-  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
@@ -49,33 +48,21 @@ export function SidebarYourTournaments() {
 }
 
 function SidebarTournamentSection({ children }: PropsWithChildren) {
-  const { state, isMobile, setOpenMobile } = useSidebar();
-  const expanded = isMobile || state === 'expanded';
+  const { setOpenMobile } = useSidebar();
   return (
     <SidebarGroup role="group" aria-label="Your tournaments in sidebar" className="py-0">
-      <SidebarGroupLabel>Your tournaments</SidebarGroupLabel>
-      <SidebarGroupAction asChild title="Your calendar" className="top-1.5">
-        <Link to="/tournaments/calendar" onClick={() => setOpenMobile(false)}>
-          <CalendarDays />
+      <SidebarGroupLabel className="flex items-center justify-between">
+        <span>Your tournaments</span>
+        <Link
+          to="/tournaments/calendar"
+          onClick={() => setOpenMobile(false)}
+          className="rounded p-1 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+        >
+          <CalendarDays className="size-3.5" />
           <span className="sr-only">Your calendar</span>
         </Link>
-      </SidebarGroupAction>
-      <SidebarGroupContent>
-        {!expanded ? (
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Your tournaments">
-                <Link to="/tournaments/calendar">
-                  <CalendarDays />
-                  <span>Your tournaments</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        ) : (
-          children
-        )}
-      </SidebarGroupContent>
+      </SidebarGroupLabel>
+      <SidebarGroupContent>{children}</SidebarGroupContent>
     </SidebarGroup>
   );
 }

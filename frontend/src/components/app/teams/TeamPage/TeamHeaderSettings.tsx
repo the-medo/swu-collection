@@ -16,9 +16,12 @@ export function TeamHeaderSettings({ teamId }: { teamId: string }) {
   const user = useUser();
   const query = useTeamHeaderSettings(teamId, user?.id);
   return (
-    <section className="@container space-y-4 border-y py-5" aria-labelledby="team-header-heading">
-      <div className="space-y-2">
-        <h3 id="team-header-heading" className="text-xl! font-medium">
+    <section
+      className="@container space-y-4 rounded-xl border border-[color:var(--workspace-border)] bg-card p-4 sm:p-5"
+      aria-labelledby="team-header-heading"
+    >
+      <div className="space-y-1">
+        <h3 id="team-header-heading" className="m-0! border-0! p-0! text-base! font-semibold!">
           Team header
         </h3>
         <p className="text-sm text-muted-foreground">
@@ -127,7 +130,10 @@ function TeamHeaderEditor({
           }
         }}
       >
-        <TabsList aria-label="Team header source">
+        <TabsList
+          aria-label="Team header source"
+          className="bg-primary/10 [&_button[data-state=active]]:text-primary"
+        >
           <TabsTrigger value="upload" disabled={busy}>
             My images
           </TabsTrigger>

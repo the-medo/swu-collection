@@ -1,6 +1,15 @@
 import * as React from 'react';
 import { useGetTournament } from '@/api/tournaments/useGetTournament.ts';
-import { CalendarIcon, MapPinIcon, Users, Trophy } from 'lucide-react';
+import {
+  CalendarIcon,
+  MapPinIcon,
+  Users,
+  Trophy,
+  Layers,
+  CalendarRange,
+  ChartPie,
+  List,
+} from 'lucide-react';
 import { formatDate } from '@/lib/locale.ts';
 import { formatDataById } from '../../../../../../types/Format.ts';
 import TournamentTopBracket from '../TournamentTopBracket/TournamentTopBracket.tsx';
@@ -10,6 +19,12 @@ import { TournamentEventInfo } from '../TournamentEventInfo.tsx';
 import { TournamentAttachments } from '../attachments/TournamentAttachments.tsx';
 import NoTournamentData from '../components/NoTournamentData.tsx';
 import { TournamentAlbums } from '../TournamentAlbums.tsx';
+import {
+  workspaceStyles,
+  workspaceTheme,
+} from '@/components/app/global/WorkspacePage/workspaceStyles.ts';
+import { PortalThemeProvider } from '@/components/ui/portal-theme';
+import { cn } from '@/lib/utils.ts';
 
 interface DetailAndBracketTabProps {
   tournamentId: string;
@@ -30,9 +45,9 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({
   const meta = data?.meta;
 
   return (
-    <>
+    <PortalThemeProvider value={workspaceTheme}>
       <Helmet title="Details" />
-      <div className="space-y-6">
+      <div className={cn(workspaceStyles.theme, 'space-y-4')}>
         {/* Tournament info */}
         {!loading && tournament && (
           <div className="grid grid-cols-1 gap-4">
@@ -42,121 +57,110 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({
                 <div className="grid items-stretch gap-4 @3xl:grid-cols-2 @6xl:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)_minmax(14rem,0.85fr)]">
                   <section
                     aria-label="Tournament attributes"
-                    className="flex min-w-0 flex-col rounded-md border bg-card p-3 shadow-xs @3xl:col-span-2 @6xl:col-span-1"
+                    className={cn(
+                      workspaceStyles.panel,
+                      'flex flex-col gap-3 p-3 @3xl:col-span-2 @6xl:col-span-1',
+                    )}
                   >
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <tbody>
-                          <tr>
-                            <td className="py-1.5 pr-2 w-32">
-                              <div className="flex items-center gap-2">
-                                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                                <span className="font-medium">Date:</span>
-                              </div>
-                            </td>
-                            <td className="py-1.5">
+                    <h2 className={cn(workspaceStyles.heading, 'flex items-center gap-2')}>
+                      <List className="size-4 text-primary" aria-hidden="true" />
+                      Overview
+                    </h2>
+                    <dl className="grid min-w-0 grid-cols-2 gap-x-5 gap-y-2">
+                      {[
+                        {
+                          label: 'Date',
+                          icon: CalendarIcon,
+                          value: (
+                            <>
                               {formatDate(tournament.date)}
                               {tournament.days > 1 && (
-                                <span className="ml-2 text-muted-foreground">
-                                  ({tournament.days} days)
+                                <span className="ml-1.5 text-xs text-muted-foreground">
+                                  · {tournament.days} days
                                 </span>
                               )}
-                            </td>
-                            <td className="py-1.5 pr-2 w-32">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium">Format:</span>
-                              </div>
-                            </td>
-                            <td className="py-1.5">
-                              {formatDataById[tournament.format]?.name || 'Unknown'}
-                            </td>
-                          </tr>
-
-                          <tr>
-                            <td className="py-1.5 pr-2">
-                              <div className="flex items-center gap-2">
-                                <MapPinIcon className="h-4 w-4 text-muted-foreground" />
-                                <span className="font-medium">Location:</span>
-                              </div>
-                            </td>
-                            <td className="py-1.5">
+                            </>
+                          ),
+                        },
+                        {
+                          label: 'Format',
+                          icon: Layers,
+                          value: formatDataById[tournament.format]?.name || 'Unknown',
+                        },
+                        {
+                          label: 'Location',
+                          icon: MapPinIcon,
+                          value: (
+                            <>
                               {tournament.location}
-                              <span className="ml-2 text-muted-foreground">
+                              <span className="ml-1.5 text-xs text-muted-foreground">
                                 ({tournament.continent})
                               </span>
-                            </td>
-                            <td className="py-1.5 pr-2">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium">Set:</span>
-                              </div>
-                            </td>
-                            <td className="py-1.5">
-                              {meta ? (
-                                <>
-                                  {meta.set.toUpperCase()}
-                                  <span className="ml-2 text-muted-foreground">
-                                    Season {meta.season}
-                                  </span>
-                                </>
-                              ) : (
-                                <span className="text-muted-foreground">No meta data available</span>
-                              )}
-                            </td>
-                          </tr>
-
-                          <tr>
-                            <td className="py-1.5 pr-2">
-                              <div className="flex items-center gap-2">
-                                <Users className="h-4 w-4 text-muted-foreground" />
-                                <span className="font-medium">Attendance:</span>
-                              </div>
-                            </td>
-                            <td className="py-1.5">
+                            </>
+                          ),
+                        },
+                        {
+                          label: 'Set / season',
+                          icon: CalendarRange,
+                          value: meta ? (
+                            <>
+                              {meta.set.toUpperCase()}
+                              <span className="ml-1.5 text-xs text-muted-foreground">
+                                Season {meta.season}
+                              </span>
+                            </>
+                          ) : (
+                            'No meta data available'
+                          ),
+                        },
+                        {
+                          label: 'Attendance',
+                          icon: Users,
+                          value: (
+                            <>
                               {tournament.attendance} players
                               {tournament.days > 1 && (
-                                <span className="ml-2 text-muted-foreground">
+                                <span className="ml-1.5 text-xs text-muted-foreground">
                                   ({tournament.dayTwoPlayerCount} day two)
                                 </span>
                               )}
-                            </td>
-                            <td className="py-1.5 pr-2">
-                              {meta && (
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">Meta Name:</span>
-                                </div>
-                              )}
-                            </td>
-                            <td className="py-1.5">{meta?.name}</td>
-                          </tr>
-
-                          <tr>
-                            <td className="py-1.5 pr-2">
-                              <div className="flex items-center gap-2">
-                                <Trophy className={`h-4 w-4 text-muted-foreground`} />
-                                <span className="font-medium">Type:</span>
-                              </div>
-                            </td>
-                            <td className="py-1.5">
+                            </>
+                          ),
+                        },
+                        { label: 'Meta', icon: ChartPie, value: meta?.name ?? '—' },
+                        {
+                          label: 'Type',
+                          icon: Trophy,
+                          value: (
+                            <>
                               {tournamentType?.name || tournament.type}
                               {tournamentType?.major === 1 && (
-                                <span className="ml-2 text-xs px-1.5 py-0.5 bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-200 rounded-full">
+                                <span className="ml-1.5 rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
                                   Major
                                 </span>
                               )}
-                            </td>
-                            <td className="py-1.5 pr-2"></td>
-                            <td className="py-1.5"></td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    <div className="mt-auto pt-3 empty:hidden">
-                      <NoTournamentData tournamentId={tournamentId} />
+                            </>
+                          ),
+                        },
+                      ].map(({ label, icon: Icon, value }) => (
+                        <div key={label} className="min-w-0 space-y-0.5">
+                          <dt className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                            <Icon className="size-3.5" aria-hidden="true" />
+                            {label}
+                          </dt>
+                          <dd className="text-[13px] font-medium leading-snug [overflow-wrap:anywhere]">
+                            {value}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                    <div className="mt-auto empty:hidden">
+                      <NoTournamentData tournamentId={tournamentId} compact />
                     </div>
                   </section>
                   <section
                     aria-label="Event information"
-                    className="min-w-0 rounded-md border bg-card p-3 shadow-xs"
+                    className={cn(workspaceStyles.panel, 'p-3')}
                   >
                     <TournamentEventInfo tournament={tournament} linkTitle={false} />
                   </section>
@@ -175,7 +179,7 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({
           </div>
         )}
       </div>
-    </>
+    </PortalThemeProvider>
   );
 };
 

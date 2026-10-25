@@ -1,3 +1,4 @@
+import { dialogStyles } from '@/components/ui/dialogStyles';
 import Dialog, { DialogProps } from '@/components/app/global/Dialog.tsx';
 import * as React from 'react';
 import { useUser } from '@/hooks/useUser.ts';
@@ -94,10 +95,16 @@ const EditDeckDialog: React.FC<EditDeckDialogProps> = ({ trigger, deck }) => {
   );
 
   return (
-    <Dialog trigger={trigger} header={`Edit Deck`} open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      trigger={trigger}
+      header="Edit deck"
+      headerDescription="Update your deck’s details and visibility."
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       {user ? (
         <form
-          className="flex flex-col gap-4"
+          className={dialogStyles.form}
           onSubmit={e => {
             e.preventDefault();
             e.stopPropagation();
@@ -127,6 +134,7 @@ const EditDeckDialog: React.FC<EditDeckDialogProps> = ({ trigger, deck }) => {
                 <Label htmlFor={field.name}>Format</Label>
                 <div>
                   <FormatSelect
+                    id={field.name}
                     value={field.state.value}
                     onChange={value => (value ? field.handleChange(value) : undefined)}
                     allowEmpty={false}
@@ -153,15 +161,29 @@ const EditDeckDialog: React.FC<EditDeckDialogProps> = ({ trigger, deck }) => {
           <form.Field
             name="public"
             children={field => (
-              <DeckPrivacySelector
-                value={field.state.value as DeckPrivacy}
-                onChange={v => field.handleChange(v)}
-              />
+              <fieldset className="min-w-0">
+                <legend className="mb-2 text-sm font-medium">Visibility</legend>
+                <DeckPrivacySelector
+                  className={dialogStyles.visibility}
+                  value={field.state.value as DeckPrivacy}
+                  onChange={v => field.handleChange(v)}
+                />
+              </fieldset>
             )}
           />
-          <Button type="submit" disabled={pending}>
-            {pending ? '...' : 'Update'}
-          </Button>
+          <div className={dialogStyles.formActions}>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={pending}
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={pending}>
+              {pending ? 'Saving...' : 'Save changes'}
+            </Button>
+          </div>
         </form>
       ) : (
         <div className="flex flex-col gap-4">

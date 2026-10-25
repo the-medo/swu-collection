@@ -28,7 +28,11 @@ const DeckComparerSettings: React.FC = () => {
   };
 
   return (
-    <div className="flex gap-4 items-center">
+    <div
+      role="group"
+      aria-label="Comparison settings"
+      className="flex flex-wrap items-center gap-2 rounded-lg border border-[var(--workspace-border)] bg-card p-2 [&>button]:h-8 [&>button]:max-w-full [&>button]:border-[var(--workspace-border)]"
+    >
       <GroupBySelector value={settings.groupBy} onChange={handleGroupByChange} />
       <ViewModeSelector value={settings.viewMode} onChange={handleViewModeChange} />
       <DiffDisplaySelector

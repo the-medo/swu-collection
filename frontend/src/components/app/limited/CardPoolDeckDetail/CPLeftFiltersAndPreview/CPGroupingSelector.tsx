@@ -44,6 +44,7 @@ const CPGroupingSelector: React.FC<CPGroupingSelectorProps> = ({
             <Button
               key={opt.value}
               size="sm"
+              aria-pressed={value === opt.value}
               variant={value === opt.value ? 'default' : 'outline'}
               onClick={() => onChange(opt.value)}
             >
@@ -54,6 +55,7 @@ const CPGroupingSelector: React.FC<CPGroupingSelectorProps> = ({
           <Button
             key={opt.value}
             size="sm"
+            aria-pressed={value === opt.value}
             variant={value === opt.value ? 'default' : 'outline'}
             onClick={() => onChange(opt.value)}
           >

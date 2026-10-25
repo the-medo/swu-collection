@@ -38,8 +38,8 @@ const DiffDisplaySelector: React.FC<DiffDisplaySelectorProps> = ({
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="text-xs w-[240px] justify-between">
-          <span className="text-[1.2em] font-semibold">Diff mode:</span>{' '}
+        <Button variant="outline" className="h-8 max-w-full gap-2 text-xs justify-between">
+          <span className="text-xs text-muted-foreground">Diff mode:</span>{' '}
           {diffDisplayModeObj[value]?.title}
           <BarChart2 className="h-4 w-4 ml-2" />
         </Button>

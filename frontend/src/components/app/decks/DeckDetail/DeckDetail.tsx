@@ -103,7 +103,7 @@ const DeckDetail: React.FC<DeckDetailProps> = ({
 
   if (deckbuilder && owned) {
     return (
-      <div className="flex flex-1 flex-col gap-0 h-screen max-h-screen overflow-y-auto">
+      <div className="flex min-w-0 flex-1 flex-col gap-0 h-[calc(100dvh-1rem)] max-h-[calc(100dvh-1rem)] overflow-y-auto">
         <DeckContents deckId={deckId} deckbuilder />
       </div>
     );

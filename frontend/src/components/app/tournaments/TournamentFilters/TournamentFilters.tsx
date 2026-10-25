@@ -1,3 +1,5 @@
+import { competitionStyles } from '@/components/app/tournaments/competitionStyles';
+import { cn } from '@/lib/utils';
 import * as React from 'react';
 import { useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button.tsx';
@@ -106,24 +108,26 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({}) => {
       type="single"
       collapsible
       defaultValue={activeFilters > 0 ? 'filters' : undefined}
-      className="w-full mb-4 sticky"
+      className={cn('w-full mb-4', competitionStyles.filterDisclosure)}
     >
       <AccordionItem value="filters" className="border rounded-md">
-        <AccordionTrigger className="px-4 pt-3 pb-1 hover:no-underline" right={isMobile}>
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2">
-              <SlidersHorizontal className="h-4 w-4" />
-              <span className="font-medium">Filters & Sort</span>
-              {activeFilters > 0 && (
-                <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium">
-                  {activeFilters} active
-                </span>
-              )}
+        <div className="flex items-center justify-between gap-3 pr-4">
+          <AccordionTrigger className="px-4 pt-3 pb-1 hover:no-underline" right={isMobile}>
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal className="h-4 w-4" />
+                <span className="font-medium">Filters & Sort</span>
+                {activeFilters > 0 && (
+                  <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium">
+                    {activeFilters} active
+                  </span>
+                )}
+              </div>
             </div>
-            {!isMobile && includeFutureTournaments}
-          </div>
-        </AccordionTrigger>
-        {isMobile && <div className="p-2 px-4">{includeFutureTournaments}</div>}
+          </AccordionTrigger>
+          {!isMobile && includeFutureTournaments}
+        </div>
+        {isMobile && <div className="px-4 pb-2">{includeFutureTournaments}</div>}
         <AccordionContent className="p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Tournament Type */}
@@ -180,6 +184,7 @@ const TournamentFilters: React.FC<TournamentFiltersProps> = ({}) => {
                 <Button
                   variant="outline"
                   size="icon"
+                  aria-label={tfOrder === 'asc' ? 'Sort descending' : 'Sort ascending'}
                   onClick={() => handleFilterChange('tfOrder', tfOrder === 'asc' ? 'desc' : 'asc')}
                 >
                   {tfOrder === 'asc' ? '↑' : '↓'}

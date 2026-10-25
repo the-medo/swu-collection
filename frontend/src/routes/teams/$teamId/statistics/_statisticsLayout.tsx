@@ -1,3 +1,7 @@
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles';
+import { statisticsStyles } from '@/components/app/statistics/statisticsStyles';
+import { cn } from '@/lib/utils';
+import { ChartNoAxesCombined } from 'lucide-react';
 import { createFileRoute, Outlet, useLocation } from '@tanstack/react-router';
 import StatisticsTabs from '@/components/app/statistics/StatisticsTabs/StatisticsTabs.tsx';
 import { useGetGameResults } from '@/api/game-results/useGetGameResults.ts';
@@ -61,16 +65,29 @@ function RouteComponent() {
   });
 
   return (
-    <div className="@container/full-stats-page min-w-0">
-      <div className="flex flex-col items-start justify-between gap-2 mb-2 @[720px]/full-stats-page:flex-row @[720px]/full-stats-page:items-end">
-        <h2 className="mb-0!">Team statistics</h2>
-        <div className="flex w-full min-w-0 gap-4 @[720px]/full-stats-page:w-auto">
+    <div
+      className={cn(
+        '@container/full-stats-page min-w-0',
+        workspaceStyles.theme,
+        statisticsStyles.page,
+      )}
+    >
+      <div className={statisticsStyles.header}>
+        <h1 className={cn('flex items-center gap-2', workspaceStyles.title)}>
+          <ChartNoAxesCombined
+            size={20}
+            className="text-[var(--workspace-accent)]"
+            aria-hidden="true"
+          />
+          Team statistics
+        </h1>
+        <div className="min-w-0">
           <StatisticsFilters teamId={team?.id} />
         </div>
       </div>
       <StatisticsTabs
         activeTab={activeTab}
-        className="mb-4"
+        className={statisticsStyles.nav}
         basePath={`/teams/${teamId}/statistics`}
         teamId={team?.id}
       />

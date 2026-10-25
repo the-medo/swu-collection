@@ -1,10 +1,14 @@
+import { limitedStyles } from '@/components/app/limited/limitedStyles';
+import { cn } from '@/lib/utils';
 import React from 'react';
 import { useGetCardPool } from '@/api/card-pools/useGetCardPool.ts';
 import LeadersSection from '@/components/app/limited/CardPoolDetail/LeadersSection.tsx';
 import CardPoolSection from '@/components/app/limited/CardPoolDetail/CardPoolSection.tsx';
 import DecksColumn from '@/components/app/limited/CardPoolDetail/DecksColumn.tsx';
 import { Helmet } from 'react-helmet-async';
-import LoadingTitle from '../../global/LoadingTitle';
+import { Link } from '@tanstack/react-router';
+import { ArrowLeft, Pencil } from 'lucide-react';
+import { cardPoolTypeRenderer } from '../components/cardPoolTypeRenderer.tsx';
 import { useUser } from '@/hooks/useUser.ts';
 import { Button } from '@/components/ui/button.tsx';
 import EditCardPoolDialog from '@/components/app/dialogs/EditCardPoolDialog.tsx';
@@ -38,29 +42,51 @@ const CardPoolDetail: React.FC<CardPoolDetailProps> = ({ poolId, initialDeckVisi
   return (
     <>
       <Helmet title={`${pool?.name || 'Loading card pool'} | SWUBase`} />
-      <div className="flex max-lg:flex-col gap-4 items-center md:justify-between">
-        <div className="flex items-center gap-2">
-          <CPExplainerTooltip />
-          <LoadingTitle mainTitle={pool?.name} loading={isFetching} />
-        </div>
-        {user && pool && (
-          <div className="flex flex-row gap-4 items-center">
-            {pool.visibility ? cardPoolVisibilityRenderer(pool.visibility) : null}
-            {user.id === pool.userId && (
-              <EditCardPoolDialog pool={pool} trigger={<Button>Edit card pool</Button>} />
+      <div className={cn('space-y-3 p-2 sm:p-3', limitedStyles.page)}>
+        <header className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex min-w-0 flex-1 items-center gap-2 max-sm:basis-full">
+            <Button asChild variant="ghost" size="iconMedium">
+              <Link to="/limited" aria-label="Back to sealed deck">
+                <ArrowLeft className="size-4" />
+              </Link>
+            </Button>
+            <h1 className={limitedStyles.title}>{pool?.name || 'Card pool'}</h1>
+            <CPExplainerTooltip />
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {pool?.set && (
+              <span className="text-xs font-medium uppercase text-muted-foreground">
+                {pool.set}
+              </span>
+            )}
+            {pool?.type && cardPoolTypeRenderer(pool.type)}
+            {pool?.visibility && cardPoolVisibilityRenderer(pool.visibility)}
+            {user && pool && user.id === pool.userId && (
+              <EditCardPoolDialog
+                pool={pool}
+                trigger={
+                  <Button size="sm" variant="outline">
+                    <Pencil className="size-3.5" /> Edit pool
+                  </Button>
+                }
+              />
             )}
           </div>
+        </header>
+        {pool?.description && (
+          <p className="m-0! text-sm text-muted-foreground [overflow-wrap:anywhere]">
+            {pool.description}
+          </p>
         )}
-      </div>
-      <div className="flex flex-row gap-4 text-sm italic mb-2">{pool?.description}</div>
 
-      <div className="grid gap-4 grid-cols-1 md:[grid-template-columns:300px_minmax(0,1fr)] lg:[grid-template-columns:300px_minmax(0,1fr)_minmax(0,1fr)] xl:[grid-template-columns:300px_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]">
-        <div className="col-span-1">
-          <DecksColumn pool={pool} initialDeckVisibility={initialDeckVisibility} />
-        </div>
-        <div className="col-span-1 md:col-span-1 lg:col-span-2 xl:col-span-3 flex flex-col gap-4">
-          <LeadersSection pool={pool} />
-          <CardPoolSection pool={pool} />
+        <div className="grid items-start gap-3 grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)]">
+          <div className="col-span-1">
+            <DecksColumn pool={pool} initialDeckVisibility={initialDeckVisibility} />
+          </div>
+          <div className="min-w-0 flex flex-col gap-3">
+            <LeadersSection pool={pool} />
+            <CardPoolSection pool={pool} />
+          </div>
         </div>
       </div>
     </>

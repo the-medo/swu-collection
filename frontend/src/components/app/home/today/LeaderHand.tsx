@@ -18,10 +18,12 @@ export function LeaderHand({
   pool,
   date,
   cardLinks = 'home',
+  layout = 'overlap',
 }: {
   pool: Pick<DailySealedPool, 'leaders'> & { set: string | null };
   date?: string;
-  cardLinks?: 'home' | 'detail';
+  cardLinks?: 'home' | 'detail' | 'modal';
+  layout?: 'overlap' | 'inline';
 }) {
   const cards = useCardList();
   if (cards.isError) {
@@ -38,8 +40,11 @@ export function LeaderHand({
   return (
     <div
       className={cn(
-        'today-leader-hand [--fan-curve:30px] relative h-[clamp(156px,_40cqi,_220px)] -mt-14 isolate',
-        'max-phone:[--fan-curve:18px] max-phone:-mt-10.5',
+        'today-leader-hand [--fan-curve:30px] relative isolate',
+        'max-phone:[--fan-curve:18px]',
+        layout === 'overlap'
+          ? 'h-[clamp(156px,_40cqi,_220px)] -mt-14 max-phone:-mt-10.5'
+          : 'h-[clamp(156px,_46cqi,_260px)]',
       )}
       role="group"
       aria-label="Leaders in this pool"
@@ -85,12 +90,21 @@ export function LeaderHand({
                     modalCardId: cardId,
                   }),
                 }
-              : {
-                  to: '/cards/detail/$cardId' as const,
-                  params: { cardId },
-                  target: '_blank',
-                  rel: 'noopener noreferrer',
-                })}
+              : cardLinks === 'modal'
+                ? {
+                    to: '.' as const,
+                    search: (previous: Record<string, unknown>) => ({
+                      ...previous,
+                      modalCardId: cardId,
+                    }),
+                    resetScroll: false,
+                  }
+                : {
+                    to: '/cards/detail/$cardId' as const,
+                    params: { cardId },
+                    target: '_blank',
+                    rel: 'noopener noreferrer',
+                  })}
             className={cn(
               leaderPositionClassName,
               '[&:hover]:z-20',

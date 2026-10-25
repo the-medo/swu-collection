@@ -1,14 +1,20 @@
 import { z } from 'zod';
 
-export const crossfireDeckBrowserQuery = z.strictObject({
-  source: z.enum(['recent', 'mine', 'public']),
-  search: z.string().trim().max(120).default(''),
-  cursor: z
-    .string()
-    .regex(/^[A-Za-z0-9_-]+$/)
-    .max(256)
-    .optional(),
-});
+export const crossfireDeckBrowserQuery = z
+  .strictObject({
+    source: z.enum(['recent', 'mine', 'public']),
+    search: z.string().trim().max(120).default(''),
+    folderId: z.union([z.guid(), z.literal('unfiled')]).optional(),
+    cursor: z
+      .string()
+      .regex(/^[A-Za-z0-9_-]+$/)
+      .max(256)
+      .optional(),
+  })
+  .refine(query => !query.folderId || query.source === 'mine', {
+    message: 'Folders are only available for your decks',
+    path: ['folderId'],
+  });
 export type CrossfireDeckSource = z.infer<typeof crossfireDeckBrowserQuery>['source'];
 export type CrossfireDeckBrowserQuery = z.infer<typeof crossfireDeckBrowserQuery>;
 

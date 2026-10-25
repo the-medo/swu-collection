@@ -1,3 +1,5 @@
+import { limitedStyles } from '@/components/app/limited/limitedStyles';
+import { cn } from '@/lib/utils';
 import React from 'react';
 import CPCostFilters from './CPCostFilters.tsx';
 import CPAspectFilters from './CPAspectFilters.tsx';
@@ -9,7 +11,13 @@ interface CPTopFiltersProps {
 
 const CPTopFilters: React.FC<CPTopFiltersProps> = ({ deckId }) => {
   return (
-    <div className="flex flex-row justify-between flex-wrap gap-4" id="card-pool-cat-filters">
+    <div
+      className={cn(
+        'flex shrink-0 flex-row justify-between flex-wrap gap-2',
+        limitedStyles.categoryFilters,
+      )}
+      id="card-pool-cat-filters"
+    >
       <CPTypeFilters />
       <CPCostFilters />
       <CPAspectFilters deckId={deckId} />

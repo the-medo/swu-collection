@@ -50,6 +50,7 @@ const TeamPage: React.FC<TeamPageProps> = ({ idOrShortcut }) => {
       <Helmet title={`${team.name}${isStatistics ? ' · Statistics' : ''} | SWUBase`} />
       {team.membership ? (
         <TeamProfileLayout
+          compact={isStatistics}
           team={team}
           actions={<TeamBookmarks key={team.id} teamId={team.id} />}
           sidebar={
