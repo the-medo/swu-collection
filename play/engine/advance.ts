@@ -1,3 +1,4 @@
+import { supportsHandReveal } from './release.ts';
 import { assertCompatibleVersions } from '../cards/catalog.ts';
 import { captureUpgradeDeparture } from './state.ts';
 import type { DefeatPreparation } from './model.ts';
@@ -5218,6 +5219,18 @@ export function advance(previous: GameState, rawInput: unknown): Transition {
   )
     throw new IllegalInput();
   const state = structuredClone(previous);
+  if (input.type === 'set-hand-reveal') {
+    if (!state.seats.includes(input.playerId) || !supportsHandReveal(state.versions.engine))
+      throw new IllegalInput();
+    state.disclosure.revealedHands = {
+      ...state.disclosure.revealedHands,
+      [input.playerId]: input.revealed,
+    };
+    state.revision++;
+    // Consent changes do not consume an action or advance a pending rules decision.
+    assertState(state);
+    return { state, facts: [] };
+  }
   if (input.type === 'concede') {
     if (!state.seats.includes(input.playerId)) throw new IllegalInput();
     endGame(state, opponent(state, input.playerId), 'concession');

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MatchupCard } from '@/components/app/global/MatchupCard.tsx';
+import { LeaderBaseArtwork } from '@/components/app/global/LeaderBaseArtwork.tsx';
 import { getResultBorderColor } from '@/components/app/statistics/lib/lib.ts';
 import { cn } from '@/lib/utils.ts';
 import { ReplayButton } from './ReplayButton.tsx';
@@ -55,20 +55,30 @@ export function GameHistory({
               history.
             </p>
           )}
-          <div className="cf-game-list" aria-label="Recent Crossfire games">
+          <div className="cf-game-list grid gap-3" aria-label="Recent Crossfire games">
             {games.slice(0, visibleCount).map(game => (
-              <article key={game.gameId}>
-                <MatchupCard
-                  leaderCardId={game.leaders?.[0]}
-                  baseCardKey={game.bases?.[0]}
-                  opponentLeaderCardId={game.leaders?.[1]}
-                  opponentBaseCardKey={game.bases?.[1]}
-                  className="cf-recent-game-card"
-                  contentClassName="cf-recent-game-content"
-                >
-                  <div className="min-w-0 flex-1">
+              <article
+                key={game.gameId}
+                className="cf-recent-game-card @container rounded-xl border bg-card p-3"
+              >
+                <div className="cf-recent-game-content flex min-w-0 flex-wrap items-center gap-3">
+                  <div className="flex shrink-0 items-center gap-1" aria-label="Matchup">
+                    <LeaderBaseArtwork
+                      leaderId={game.leaders?.[0]}
+                      baseKey={game.bases?.[0]}
+                      size="compact"
+                    />
+                    <span className="text-[10px] text-muted-foreground">vs</span>
+                    <LeaderBaseArtwork
+                      leaderId={game.leaders?.[1]}
+                      baseKey={game.bases?.[1]}
+                      size="compact"
+                      side="right"
+                    />
+                  </div>
+                  <div className="min-w-36 flex-1">
                     <p
-                      className="flex min-w-0 items-baseline gap-1 text-sm font-medium"
+                      className="flex min-w-0 flex-wrap items-baseline gap-1 text-xs font-medium"
                       title={`vs. ${game.opponent}`}
                     >
                       <span
@@ -97,7 +107,7 @@ export function GameHistory({
                       </span>
                       <span className="truncate">vs. {game.opponent}</span>
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="mt-1 text-[11px] text-muted-foreground">
                       {game.practice ? 'Practice from bookmark · ' : 'Crossfire · '}
                       {new Date(game.startedAt).toLocaleString()} ·{' '}
                       {game.status === 'abandoned'
@@ -114,7 +124,7 @@ export function GameHistory({
                         ' · Older version'}
                     </p>
                   </div>
-                  <div className="flex shrink-0 flex-wrap justify-end gap-1 cf-recent-game-actions">
+                  <div className="cf-recent-game-actions ml-auto flex shrink-0 flex-wrap justify-end gap-1">
                     {game.status === 'running' && (
                       <Button
                         size="xs"
@@ -140,7 +150,7 @@ export function GameHistory({
                       </span>
                     )}
                   </div>
-                </MatchupCard>
+                </div>
               </article>
             ))}
           </div>

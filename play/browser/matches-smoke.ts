@@ -37,6 +37,35 @@ const people = [0, 1].map(n => ({
   token: randomUUID(),
   deckId: randomUUID(),
 }));
+const mainboard = [
+  ids.marine,
+  'blue-leader--scarif-air-support',
+  'green-leader--crynyd-s-sacrifice',
+  'black-one--straight-at-them',
+  'red-five--running-the-trench',
+  'chewbacca--faithful-first-mate',
+  'jedi-starfighter',
+  'trench-run',
+  'hotshot-maneuver',
+  'sudden-ferocity',
+  'admiral-ackbar--assume-attack-coordinates',
+  'air-superiority',
+  'b-wing-skirmisher',
+  'danger-squadron-wingmen',
+  'phoenix-squadron-a-wing',
+  'red-squadron-y-wing',
+  'resistance-blue-squadron',
+  'sabine-s-masterpiece--crazy-colorful',
+  'captain-typho--all-necessary-precautions',
+  'outland-protector',
+].map(cardId => ({ cardId, quantity: 3 }));
+const sideboard = [
+  'open-fire',
+  'outer-rim-constable',
+  'collateral-damage',
+  'double-cross',
+  'haymaker',
+].map(cardId => ({ cardId, quantity: 2 }));
 const principal = (n: number) => ({ userId: people[n]!.userId, sessionId: people[n]!.sessionId });
 const browser = await chromium.launch(),
   errors: string[] = [],
@@ -49,6 +78,9 @@ const assert = (ok: unknown, message: string) => {
 const shots: string[] = [];
 async function shot(page: Page, name: string) {
   await page.waitForTimeout(600);
+  await page.locator('.cf-sideboard-dialog img').evaluateAll(async images => {
+    await Promise.all(images.map(image => (image as HTMLImageElement).decode().catch(() => {})));
+  });
   await page.screenshot({ path: `${folder}/${name}.png` });
   await copyFile(`${folder}/${name}.png`, `${served}/${name}.png`);
   shots.push(name);
@@ -76,7 +108,13 @@ try {
     await sql`INSERT INTO "user"(id,name,email,email_verified,created_at,updated_at,display_name,currency, role) VALUES (${p.userId},'Match fixture',${p.userId + '@invalid.local'},false,now(),now(),${p.userId},'USD', 'crossfire')`;
     await sql`INSERT INTO session(id,token,expires_at,user_id,created_at,updated_at) VALUES (${p.sessionId},${p.token},now()+interval '1 hour',${p.userId},now(),now())`;
     await sql`INSERT INTO deck(id,user_id,name,format,leader_card_id_1,base_card_id) VALUES (${p.deckId},${p.userId},'Crossfire browser match',1,${ids.leader},${ids.base})`;
-    await sql`INSERT INTO deck_card(deck_id,card_id,board,quantity) VALUES (${p.deckId},${ids.marine},1,12),(${p.deckId},'open-fire',2,2)`;
+    for (const [board, rows] of [
+      [1, mainboard],
+      [2, sideboard],
+    ] as const) {
+      for (const row of rows)
+        await sql`INSERT INTO deck_card(deck_id,card_id,board,quantity) VALUES (${p.deckId},${row.cardId},${board},${row.quantity})`;
+    }
   }
   const roots: string[] = [];
   for (const bestOf of [3, 1, 3] as const) {
@@ -93,7 +131,7 @@ try {
   const ready = {
     kind: 'next' as const,
     ready: true,
-    mainboard: [{ cardId: ids.marine, quantity: 12 }],
+    mainboard,
   };
   await matches.ready(principal(0), roots[2]!, ready);
   const finalGame = (await matches.ready(principal(1), roots[2]!, ready)).currentLobbyId;
@@ -122,15 +160,26 @@ try {
     page.on('pageerror', e => errors.push(e.message));
     pages.push(page);
     await page.goto(`${origin}/crossfire`);
-    if (await page.getByRole('button', { name: 'Dismiss', exact: true }).count())
-      await page.getByRole('button', { name: 'Dismiss', exact: true }).click();
+    const dismiss = page.getByRole('button', { name: 'Dismiss', exact: true });
+    await dismiss
+      .waitFor({ timeout: 5000 })
+      .then(() => dismiss.click())
+      .catch(() => {});
   }
   const [a, b] = pages as [Page, Page];
-  await a.getByRole('checkbox', { name: 'Best of three with sideboarding' }).check();
+  await a.getByRole('radio', { name: /Best of 3/ }).check();
   await shot(a, 'matches-create');
+  const moveMarine = (page: Page) =>
+    page.getByRole('button', { name: /^Move Battlefield Marine to sideboard,/ });
+  const moveFire = (page: Page) =>
+    page.getByRole('button', { name: /^Move Open Fire to main deck,/ });
+  const moveFireBack = (page: Page) =>
+    page.getByRole('button', { name: /^Move Open Fire to sideboard,/ });
+  const sideboarding = (page: Page) =>
+    page.getByRole('button', { name: 'Go to sideboarding', exact: true });
   for (const page of pages) {
     await page.goto(`${origin}/crossfire/${roots[0]}`);
-    await page.getByRole('button', { name: 'Ready for next game', exact: true }).waitFor();
+    await sideboarding(page).waitFor();
     assert(
       !(await page.getByRole('button', { name: 'Rematch with these decks', exact: true }).count()),
       'Rematch offered before two wins',
@@ -138,35 +187,130 @@ try {
   }
   await a.getByRole('heading', { name: 'Your opponent won this game', exact: true }).waitFor();
   await b.getByRole('heading', { name: 'You won this game', exact: true }).waitFor();
+  await shot(a, 'matches-result');
   await a.getByRole('button', { name: 'View board', exact: true }).click();
-  await a.waitForTimeout(3500); // One match poll must not reopen a dismissed result.
+  await a.waitForTimeout(3500);
   assert(!(await a.locator('.cf-match-dialog').count()), 'Polling reopened the result');
-  await a.getByRole('button', { name: /Match 0–1/ }).focus();
+  await shot(a, 'matches-postgame-button');
+  await a.getByRole('button', { name: 'Post-game', exact: true }).focus();
   await a.keyboard.press('Enter');
-  await a.getByRole('button', { name: 'Ready for next game', exact: true }).waitFor();
-  await a
-    .getByRole('spinbutton', { name: 'Deck quantity: Battlefield marine', exact: true })
-    .fill('10');
-  await a.getByRole('spinbutton', { name: 'Deck quantity: Open fire', exact: true }).fill('2');
+  await sideboarding(a).click();
+  await a.getByRole('heading', { name: 'Sideboarding Game 2', exact: true }).waitFor();
+  await moveMarine(a).click();
+  assert(
+    await a.getByRole('button', { name: 'Ready for next game', exact: true }).isDisabled(),
+    'An undersized deck was ready',
+  );
+  await shot(a, 'matches-sideboard-invalid');
+  await moveMarine(a).click();
+  await moveFire(a).focus();
+  await a.keyboard.press('Enter');
+  await a.keyboard.press('Space');
+  assert(
+    (await moveFireBack(a).getAttribute('data-quantity')) === '2',
+    'Keyboard card transfers failed',
+  );
+  assert(
+    await moveFireBack(a).evaluate(el => el === document.activeElement),
+    'Last-copy move lost keyboard focus',
+  );
   await shot(a, 'matches-sideboard');
+  // Navigation preserves the unsubmitted draft and does not ready either player.
+  await a.getByRole('button', { name: 'Match result', exact: true }).click();
+  await sideboarding(a).click();
+  assert(
+    (await moveFireBack(a).getAttribute('data-quantity')) === '2',
+    'Result navigation lost the draft',
+  );
+  await a.getByRole('button', { name: 'View board', exact: true }).click();
+  await a.waitForTimeout(3500);
+  assert(!(await a.locator('[role=dialog]').count()), 'Polling reopened sideboarding');
+  await a.getByRole('button', { name: 'Post-game', exact: true }).click();
+  await sideboarding(a).click();
+  assert(
+    (await moveFireBack(a).getAttribute('data-quantity')) === '2',
+    'Board navigation lost the draft',
+  );
+  await a.keyboard.press('Escape');
+  assert(
+    await a
+      .getByRole('button', { name: 'Post-game', exact: true })
+      .evaluate(el => el === document.activeElement),
+    'Escape did not restore toolbar focus',
+  );
+  await a.keyboard.press('Enter');
+  await sideboarding(a).click();
+  const beforeReady = (await matches.get(principal(0), roots[0]!))!;
+  assert(!beforeReady.ready.p1 && !beforeReady.ready.p2, 'Navigation submitted readiness');
   await a.getByRole('button', { name: 'Ready for next game', exact: true }).click();
+  await a.getByRole('button', { name: 'Change my deck', exact: true }).waitFor();
+  assert(await moveFireBack(a).isDisabled(), 'Ready deck is still editable');
+  await moveFireBack(a).focus();
+  await a.keyboard.press('Enter');
+  assert(
+    (await moveFireBack(a).getAttribute('data-quantity')) === '2',
+    'Ready deck changed through the keyboard',
+  );
+  assert(
+    (await moveFireBack(a).getAttribute('aria-label'))?.includes('2 copies in main deck'),
+    'Card copy count is not accessible',
+  );
+  await sideboarding(b).click();
   await b.getByText('Your opponent is ready.', { exact: true }).waitFor();
   assert(
-    (await b
-      .getByRole('spinbutton', { name: 'Deck quantity: Battlefield marine', exact: true })
-      .inputValue()) === '12',
+    (await moveMarine(b).getAttribute('data-quantity')) === '3' && !(await moveFireBack(b).count()),
     'Opponent sideboard leaked',
   );
+  console.log('Verified private readiness; reloading saved deck.');
   await a.reload();
+  await sideboarding(a).click();
   await a.getByRole('button', { name: 'Change my deck', exact: true }).waitFor();
   assert(
-    (await a
-      .getByRole('spinbutton', { name: 'Deck quantity: Open fire', exact: true })
-      .inputValue()) === '2',
+    (await moveFireBack(a).getAttribute('data-quantity')) === '2',
     'Submitted deck lost on reload',
   );
-  await b.setViewportSize({ width: 430, height: 900 });
+  console.log('Withdrawing readiness and editing.');
+  await a.getByRole('button', { name: 'Change my deck', exact: true }).click();
+  await a.getByRole('button', { name: 'Ready for next game', exact: true }).waitFor();
+  await moveFireBack(a).click();
+  await a.getByRole('button', { name: 'Reset changes', exact: true }).click();
+  assert(
+    (await moveFireBack(a).getAttribute('data-quantity')) === '2',
+    'Reset did not restore the submitted deck',
+  );
+  await a.getByRole('button', { name: 'Ready for next game', exact: true }).click();
+  await a.getByRole('button', { name: 'Change my deck', exact: true }).waitFor();
+  await shot(a, 'matches-sideboard-ready');
+  console.log('Checking mobile transfers.');
+  await b.setViewportSize({ width: 390, height: 844 });
   await shot(b, 'matches-mobile');
+  const overflow = await b
+    .locator('.cf-sideboard-dialog')
+    .evaluate(
+      el => el.scrollWidth > innerWidth || el.getBoundingClientRect().bottom > innerHeight + 1,
+    );
+  assert(!overflow, 'Sideboarding overflows the phone viewport');
+  // Both lists remain visible on phones, and tapping moves cards in either direction.
+  await moveFire(b).click();
+  await moveFireBack(b).click();
+  await b.getByRole('button', { name: 'View board', exact: true }).click();
+  await shot(b, 'matches-postgame-mobile');
+  const endedOverflow = await b
+    .locator('.cf-header-controls')
+    .evaluate(el =>
+      [...el.querySelectorAll('button,a')].some(
+        button => button.getBoundingClientRect().right > innerWidth,
+      ),
+    );
+  assert(!endedOverflow, 'Post-game toolbar overflows on mobile');
+  await b.getByRole('button', { name: 'Post-game', exact: true }).click();
+  await sideboarding(b).click();
+  await b.setViewportSize({ width: 844, height: 390 });
+  await shot(b, 'matches-sideboard-landscape');
+  assert(
+    await b.getByRole('button', { name: 'Ready for next game', exact: true }).isVisible(),
+    'Landscape ready control is hidden',
+  );
   await b.setViewportSize({ width: 1600, height: 1000 });
   await b.getByRole('button', { name: 'Ready for next game', exact: true }).click();
   for (const page of pages) {
@@ -275,6 +419,14 @@ try {
   console.log(
     'Match browser passed: automatic game/match results, two-win completion, dismissal and keyboard reopen, toolbar/mobile, sideboard privacy, reload, mutual readiness and rematch consent.',
   );
+} catch (error) {
+  for (let i = 0; i < pages.length; i++) {
+    await pages[i]!.screenshot({ path: `${folder}/matches-failure-${i}.png` }).catch(() => {});
+    console.log(
+      `Failure screen ${i}: ${(await pages[i]!.locator('body').innerText()).slice(-2500)}`,
+    );
+  }
+  throw error;
 } finally {
   await browser.close();
   const rows =

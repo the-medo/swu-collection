@@ -40,6 +40,7 @@ function Replay({
     >
       <ReplayBoard
         lobby={lobby}
+        sessionId={session.session.id}
         initialPosition={position}
         initialBranch={branch}
         practiceRequest={practice}

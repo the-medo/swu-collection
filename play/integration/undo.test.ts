@@ -3,6 +3,7 @@ import { gunzipSync } from 'node:zlib';
 import { deliverCrossfireReports } from '../../server/lib/discord/crossfireReports.ts';
 import { CrossfireChat } from '../../server/lib/crossfire/chat.ts';
 import { CrossfirePractice } from '../../server/lib/crossfire/practice.ts';
+import { defaultBattlefieldScene } from '../../shared/types/battlefield.ts';
 import { CrossfireBookmarks } from '../../server/lib/crossfire/bookmarks.ts';
 import { afterAll, expect, test } from 'bun:test';
 import postgres from 'postgres';
@@ -204,6 +205,8 @@ test('practice requires both original players and a sealed source; forks pending
   const f = await fixture(),
     bookmarks = new CrossfireBookmarks(sql),
     practice = new CrossfirePractice(sql);
+  const battlefield = defaultBattlefieldScene(randomUUID());
+  await sql`UPDATE play.participants SET battlefield = ${sql.json(battlefield)} WHERE lobby_id = ${f.grants[0]!.lobbyId} AND seat = 'p1'`;
   await f.submit('play');
   await f.submit('search', [f.initial.refs.found!]);
   const target = f.host.state;
@@ -269,6 +272,9 @@ test('practice requires both original players and a sealed source; forks pending
   ]);
   expect(new Set(results).size).toBe(1);
   expect((await practice.prepare(grants[1]!, requestId)).accepted).toBe(true);
+  const [forkSeat] =
+    await sql`SELECT battlefield FROM play.participants WHERE lobby_id = ${prepared.lobbyId} AND seat = 'p1'`;
+  expect(forkSeat!.battlefield).toEqual(battlefield);
   const stored = await store.load(prepared.gameId);
   expect(stored.sequence).toBe(0);
   const initial = decodeState(stored.checkpoint.checkpoint);

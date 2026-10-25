@@ -3,6 +3,7 @@ import { LayoutGroup } from 'motion/react';
 import { Link } from '@tanstack/react-router';
 import { ArrowRight, Coins, Flag, Layers, Mountain, Orbit, Swords, X } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
+import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from '@/components/ui/sheet.tsx';
 import {
   Dialog,
@@ -17,6 +18,8 @@ import { CardBack } from './CardBack.tsx';
 import { CrossfireLogo } from './CrossfireLogo.tsx';
 import { TokenGroup } from './TokenGroup.tsx';
 import { Hand } from './Hand.tsx';
+import { BoardBattlefields } from './BoardBattlefields.tsx';
+import type { CrossfireBattlefields } from '../../../../../shared/types/crossfire.ts';
 import { CardInspection } from './CardInspection.tsx';
 import { useCardInspection } from './useCardInspection.ts';
 import { GamePrompt } from './GamePrompt.tsx';
@@ -64,6 +67,8 @@ export function BoardPosition({
   readOnly = !connection,
   readOnlyLabel = 'Replay',
   bottomSeat,
+  battlefields,
+  playerNames,
 }: {
   view: GameView;
   seat?: string;
@@ -74,6 +79,8 @@ export function BoardPosition({
   readOnly?: boolean;
   readOnlyLabel?: string;
   bottomSeat?: string;
+  battlefields?: CrossfireBattlefields;
+  playerNames?: Partial<Record<string, string>>;
 }) {
   const [stored, setInteraction] = useState(() => freshInteraction(view));
   const interaction = currentInteraction(view, stored);
@@ -91,7 +98,7 @@ export function BoardPosition({
     !readOnly && view.decision && view.decision.kind !== 'action' && !allocating && !boardTarget;
   const lower = bottomSeat ?? seat ?? 'p1',
     upper = view.players.find(p => p.id !== lower)!.id;
-  const label = (id: string) => (seat && id !== seat ? 'Opponent' : playerName(id, seat));
+  const label = (id: string) => (id === seat ? 'You' : playerNames?.[id] || playerName(id));
   function cancel() {
     setInteraction(freshInteraction(view));
   }
@@ -292,6 +299,23 @@ export function BoardPosition({
         className={`cf-arena cf-${zone} ${player === upper ? 'cf-opponent' : 'cf-own'}`}
         aria-label={`${label(player)} ${zone}`}
       >
+        {zone === 'ground' && (
+          <div className="cf-initiative-slot" role="status" aria-live="polite" aria-atomic="true">
+            {view.initiative.holder === player && (
+              <div className="cf-initiative" data-claimed={view.initiative.claimed}>
+                <Flag aria-hidden="true" />
+                <span className="cf-initiative-label" aria-hidden="true">
+                  <strong>Initiative</strong>
+                  {view.initiative.claimed && <small>Claimed</small>}
+                </span>
+                <span className="sr-only">
+                  {label(player)}{' '}
+                  {view.initiative.claimed ? 'claimed initiative' : 'has initiative'}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
         <div className="cf-arena-cards">
           {cards.map(card => (
             <div key={card.id} className="cf-unit-stack">
@@ -426,18 +450,6 @@ export function BoardPosition({
         aria-label={`${label(player)} base area`}
       >
         {player === upper ? leaderSlot : baseSlot}
-        <span className="cf-player-label">
-          {label(player)}
-          {view.initiative.holder === player && (
-            <span
-              className="cf-initiative"
-              title={view.initiative.claimed ? 'Initiative claimed' : 'Initiative'}
-            >
-              <Flag size={12} />
-              {view.initiative.claimed ? 'Claimed' : 'Initiative'}
-            </span>
-          )}
-        </span>
         {player === upper ? baseSlot : leaderSlot}
       </section>
     );
@@ -519,10 +531,25 @@ export function BoardPosition({
           label={`${label(player)} hand`}
           renderCard={c => renderCard(c, true, true)}
         />
-        <span className="cf-rail-label">
-          {label(player)}
+        <div className="cf-rail-label">
+          <span className="cf-rail-name" title={label(player)}>
+            {label(player)}
+          </span>
           <small>{info.handCount} cards in hand</small>
-        </span>
+          {!readOnly && connection && player === seat && typeof info.handRevealed === 'boolean' && (
+            <label
+              className="cf-hand-reveal"
+              title="Let your opponent see your hand until you turn this off"
+            >
+              <Checkbox
+                checked={info.handRevealed}
+                disabled={pending || view.phase === 'ended'}
+                onCheckedChange={value => connection.revealHand(value === true)}
+              />
+              <span>Reveal my hand</span>
+            </label>
+          )}
+        </div>
       </section>
     );
   }
@@ -585,6 +612,7 @@ export function BoardPosition({
         <div className="cf-table">
           {rail(upper)}
           <div className="cf-battlefield">
+            <BoardBattlefields battlefields={battlefields} upper={upper} lower={lower} />
             {arena(upper, 'space')}
             {command(upper)}
             {arena(upper, 'ground')}

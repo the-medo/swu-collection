@@ -85,6 +85,10 @@ function fixture(
       },
     },
     lobbies: {
+      battlefields: async (...args: unknown[]) => {
+        invoke('battlefields', ...args);
+        return { p1: null, p2: null };
+      },
       invitations: async (...args: unknown[]) => {
         invoke('invitations', ...args);
         return [];
@@ -227,7 +231,7 @@ test('create, get, join and cancel use the authenticated context and typed lobby
   const created = await f.request('/lobbies', 'POST', { deckId, policy });
   expect(created.status).toBe(201);
   expect(await created.json()).toEqual({ data: lobby });
-  expect(f.calls[0]).toEqual(['create', identity, deckId, policy, 1, true, undefined]);
+  expect(f.calls[0]).toEqual(['create', identity, deckId, policy, 3, true, undefined, undefined]);
   expect((await f.request(`/lobbies/${lobbyId}`, 'GET', undefined, null)).status).toBe(200);
   expect(f.calls[1]).toEqual(['get', identity, lobbyId]);
   const joined = await f.request(`/lobbies/${lobbyId}/join`, 'POST', {
@@ -236,7 +240,7 @@ test('create, get, join and cancel use the authenticated context and typed lobby
   });
   expect(joined.status).toBe(200);
   expect(await joined.json()).toMatchObject({ data: { mySeat: 'p2' } });
-  expect(f.calls[2]).toEqual(['join', identity, lobbyId, deckId, policy, 1]);
+  expect(f.calls[2]).toEqual(['join', identity, lobbyId, deckId, policy, 1, undefined]);
   expect((await f.request(`/lobbies/${lobbyId}`, 'DELETE')).status).toBe(204);
   expect(f.calls[3]).toEqual(['cancel', identity, lobbyId]);
 });
@@ -461,9 +465,10 @@ test('invitation endpoints derive identity, validate recipient and require same-
     { userId: 'authenticated-user', sessionId: 'authenticated-session' },
     deckId,
     policy,
-    1,
+    3,
     false,
     'team-user',
+    undefined,
   ]);
   expect((await f.request('/lobbies', 'POST', { deckId, policy, recipientId: '' })).status).toBe(
     400,
@@ -519,4 +524,47 @@ test('every Crossfire API requires the explicit role, including administrators',
   }
   for (const role of ['crossfire', 'user,crossfire', 'admin,crossfire', 'moderator,crossfire'])
     expect((await fixture({ role }).request('/history')).status).toBe(200);
+});
+
+test('battlefield choices validate IDs and use authenticated ownership', async () => {
+  const f = fixture(),
+    battlefieldId = randomUUID();
+  expect((await f.request('/lobbies', 'POST', { deckId, policy, battlefieldId })).status).toBe(201);
+  expect(f.calls.at(-1)?.at(-1)).toBe(battlefieldId);
+  expect(
+    (
+      await f.request(`/lobbies/${lobbyId}/join`, 'POST', {
+        deckId,
+        acceptedPolicy: policy,
+        battlefieldId,
+      })
+    ).status,
+  ).toBe(200);
+  expect(f.calls.at(-1)?.at(-1)).toBe(battlefieldId);
+  expect(
+    (await f.request('/lobbies', 'POST', { deckId, policy, battlefieldId: 'invalid' })).status,
+  ).toBe(400);
+  expect(
+    (await f.request('/lobbies', 'POST', { deckId, policy, battlefield: { scene: {} } })).status,
+  ).toBe(400);
+  const response = await f.request(`/lobbies/${lobbyId}/battlefields`);
+  expect(response.status).toBe(200);
+  expect(response.headers.get('Cache-Control')).toBe('no-store');
+  expect(f.calls.at(-1)).toEqual([
+    'battlefields',
+    { userId: 'authenticated-user', sessionId: 'authenticated-session' },
+    lobbyId,
+  ]);
+  expect(
+    (await fixture({ signedIn: false }).request(`/lobbies/${lobbyId}/battlefields`)).status,
+  ).toBe(401);
+  expect(
+    (
+      await fixture({ fail: new AdmissionError('battlefield-unavailable') }).request(
+        '/lobbies',
+        'POST',
+        { deckId, policy, battlefieldId },
+      )
+    ).status,
+  ).toBe(404);
 });

@@ -176,8 +176,8 @@ the original source and controller even after that physical card leaves play.
 These are the mechanisms exercised by the current cards, not full timing-window
 coverage for every possible ability.
 
-Current version pins are state 109, runtime `1.2.0`, an immutable card
-version/checksum, and browser protocol 39. [Card releases](card-releases.md)
+Current version pins are state 109, runtime `1.3.0`, an immutable card
+version/checksum, and browser protocol 41. [Card releases](card-releases.md)
 describes dynamic installation and backwards-compatible minor versions. The
 pre-refactor engine/card tuple remains supported against its exact baseline data.
 Checkpoint decoding and advancement verify supported versions and preserve

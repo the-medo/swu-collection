@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { decodeState, encodeState } from '../engine/checkpoint.ts';
+import { disclosureSchema } from '../engine/model.ts';
 import type { EngineInput, GameState } from '../engine/model.ts';
 
 const sequence = z.number().int().min(0).max(2_147_483_647);
@@ -31,7 +32,7 @@ export const undoControlSchema = z.strictObject({
   targetHash: z.string().regex(/^[a-f0-9]{64}$/),
   approvedBy: z.string().min(1).max(128),
   nextId: sequence,
-  disclosure: z.strictObject({ handsToPlayers: z.boolean(), handsToSpectators: z.boolean() }),
+  disclosure: disclosureSchema,
 });
 export type UndoControl = z.infer<typeof undoControlSchema>;
 

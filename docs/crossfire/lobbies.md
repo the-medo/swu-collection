@@ -70,6 +70,9 @@ the same teammate and more than ten pending invitations per sender are rejected.
 The API projects the host's leader/base identities only when `show_leader` is
 true (the host can always see their own). Neither invitation summaries nor
 socket events contain deck lists, source deck IDs, or private game state.
+The lobby view includes public display names keyed by seat in `playerNames`,
+using Player for blank or missing display names; account names and emails are
+never used as a fallback.
 `GET /api/crossfire/invitations` returns the account's pending incoming/outgoing
 invitations; `/teammates` lists current teammates; deleting
 `/invitations/:lobbyId` declines an incoming invitation.
@@ -91,3 +94,27 @@ client cannot join during sweep delays. Started games never expire this way.
 No scheduled job, new database, port, or environment variable is required.
 The whole `play.*` schema remains excluded from contributor dump data, including
 invitation recipient IDs.
+
+## Battlefield admission
+
+Creation and joining accept an optional `battlefieldId`. Admission looks it up
+with the authenticated user's ownership predicate; it never accepts scene JSON
+from the browser. Without an explicit choice it uses the active saved layout,
+then the oldest saved layout, or no scene if the account has none.
+Unreadable saved scenes also fall back to the standard board so cosmetic data
+cannot prevent admission. Missing or unowned explicit IDs are still rejected.
+
+Migration `0092_crossfire_improvements` adds a nullable scene snapshot to
+`play.participants`. Only visible objects are published, with editor layer names
+and hidden objects removed through `publicBattlefieldScene`. Admission freezes
+that result in the same transaction as the player's deck. Source edits, deletion
+and profile activation cannot change an admitted scene. BO3 games, rematches and
+accepted practice forks retain the snapshots. Older participants have null scenes.
+This cosmetic metadata stays outside authoritative engine state and replay facts.
+
+The separate `GET /api/crossfire/lobbies/:lobbyId/battlefields` endpoint requires
+a current Crossfire session and a started game. Participants may read both scenes;
+other users need spectator permission. Responses contain only the two seat scenes,
+with no owner IDs, source IDs or editor names. The scenes are not attached to lobby
+polls or game WebSocket deltas. The existing whole-`play` contributor sanitizer
+also removes these participant snapshots.

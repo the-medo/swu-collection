@@ -98,6 +98,7 @@ function serve(
   options: Partial<Parameters<typeof createGameServer>[2]> = {},
   replayService = new ReplayService(url!),
   notifyReport?: Parameters<typeof createGameServer>[9],
+  chat = new CrossfireChat(sql),
 ): Service {
   const worker = new GameWorker(new PostgresGameStore(sql), { idleMs: 0 });
   const service = createGameServer(
@@ -109,7 +110,7 @@ function serve(
     new CrossfireUndo(sql),
     new CrossfireBookmarks(sql),
     undefined,
-    new CrossfireChat(sql),
+    chat,
     notifyReport,
     new CrossfireExits(sql),
   );
@@ -371,7 +372,9 @@ test('different games are isolated; reveal preference cannot override the agreed
     p2 = await connect(address, first, b);
   const other1 = await connect(address, second),
     other2 = await connect(address, second, b);
+  await other1.next('chat');
   const watcher = await connect(address, second, spectator);
+  await other1.next('chat'); // This game's own spectator notice precedes the isolation assertion.
   const count = other1.history.length,
     actor = p1.view!.decision ? p1 : p2;
   actor.send(command(actor));
@@ -866,6 +869,8 @@ test('player chat persists, deduplicates, catches up on reconnect and stays out 
   const before = (await new PostgresGameStore(sql).load(lobby.gameId!)).sequence;
   await p1.next('chat');
   await p2.next('chat');
+  expect((await p1.next('chat')).messages[0]?.seat).toBeNull();
+  expect((await p2.next('chat')).messages[0]?.text).toContain('joined as a spectator');
   const id = randomUUID();
   p1.send({ type: 'chat-send', id, text: '<b>Hello from a player</b>' });
   const first = await p2.next('chat');
@@ -876,8 +881,8 @@ test('player chat persists, deduplicates, catches up on reconnect and stays out 
   expect((await p2.next('chat')).messages[0]?.id).toBe(id);
   const reopened = await connect(s.address, lobby, a);
   const recoveredChat = (await reopened.next('chat')).messages;
-  expect(recoveredChat.map(m => m.id)).toEqual([id]);
-  expect(recoveredChat[0]?.afterEvent).toBe(first.messages[0]?.afterEvent);
+  expect(recoveredChat.filter(m => m.seat).map(m => m.id)).toEqual([id]);
+  expect(recoveredChat.find(m => m.id === id)?.afterEvent).toBe(first.messages[0]?.afterEvent);
   expect(watch.history.some(m => m.type === 'chat')).toBe(false);
   expect((await new PostgresGameStore(sql).load(lobby.gameId!)).sequence).toBe(before);
   const ticketForChecks = await connections.issue(b, lobby.id, 'player', origin, 'replay');
@@ -929,3 +934,198 @@ test('only a live player can concede the current game; retry has one journal rec
     0,
   );
 });
+
+test('hand consent is independent, private, durable across reconnect/recovery, and unavailable to spectators or replays', async () => {
+  const lobby = await start({ ...policy, handsToSpectators: false });
+  const first = serve();
+  const p1 = await connect(first.address, lobby, a);
+  const p2 = await connect(first.address, lobby, b);
+  const watch = await connect(first.address, lobby, spectator);
+  await reachResources([p1, p2]);
+  const hands = (p: Probe, seat: string) =>
+    p.view!.cards.filter(c => c.owner === seat && c.zone === 'hand');
+  expect(hands(p2, 'p1')).toHaveLength(0);
+  const decision = p1.view!.decision?.kind;
+  const beforeReveal = [p1, p2, watch].map(p => ({
+    epoch: p.view!.epoch,
+    decision: p.view!.decision,
+  }));
+  const on: ClientMessage = { type: 'set-hand-reveal', commandId: randomUUID(), revealed: true };
+  p1.send(on);
+  await p1.next('ack');
+  for (const [i, p] of [p1, p2, watch].entries()) {
+    while (!p.view!.players.find(player => player.id === 'p1')!.handRevealed) await p.next('delta');
+    expect(p.view!.epoch).toBe(beforeReveal[i]!.epoch);
+    expect(p.view!.decision).toEqual(beforeReveal[i]!.decision);
+  }
+  expect(hands(p2, 'p1')).toHaveLength(p1.view!.players.find(p => p.id === 'p1')!.handCount);
+  expect(hands(p1, 'p2')).toHaveLength(0);
+  expect(hands(watch, 'p1')).toHaveLength(0);
+  expect(p1.view!.decision?.kind).toBe(decision);
+  const sharedState = p2.view!.players;
+  await first.service.stop();
+  const second = serve();
+  const recovered1 = await connect(second.address, lobby, a);
+  const recovered2 = await connect(second.address, lobby, b);
+  expect(recovered2.view!.players).toEqual(sharedState);
+  expect(hands(recovered2, 'p1').length).toBeGreaterThan(0);
+  recovered1.send(on);
+  expect((await recovered1.next('ack')).duplicate).toBe(true);
+  const review = await connectReplay(second.address, lobby, b);
+  review.send({ type: 'replay-seek', requestId: randomUUID(), seek: { kind: 'end' } });
+  await review.next('replay');
+  expect(hands(review, 'p1').length).toBeGreaterThan(0);
+  const disclosedEpoch = recovered2.view!.epoch;
+  const ownerEpoch = recovered1.view!.epoch;
+  recovered1.send({ type: 'set-hand-reveal', commandId: randomUUID(), revealed: false });
+  await recovered2.next('snapshot');
+  await recovered1.next('ack');
+  expect(recovered2.view!.epoch).not.toBe(disclosedEpoch);
+  expect(recovered1.view!.epoch).toBe(ownerEpoch);
+  expect(hands(recovered2, 'p1')).toHaveLength(0);
+  expect(recovered1.view!.players.find(p => p.id === 'p1')!.handRevealed).toBe(false);
+  const forbidden = await connect(second.address, lobby, spectator);
+  forbidden.send({ type: 'set-hand-reveal', commandId: randomUUID(), revealed: true });
+  expect((await forbidden.closed).code).toBe(4403);
+  review.send({ type: 'set-hand-reveal', commandId: randomUUID(), revealed: true });
+  expect((await review.closed).code).toBe(4403);
+}, 15_000);
+
+test('spectator joins commit a named system notice; duplicate tabs and brief reconnects do not spam player chat', async () => {
+  await sql`UPDATE "user" SET display_name='Public Observer' WHERE id=${spectator.userId}`;
+  const lobby = await start(),
+    s = serve();
+  const p1 = await connect(s.address, lobby, a),
+    p2 = await connect(s.address, lobby, b);
+  await p1.next('chat');
+  await p2.next('chat');
+  const watch = await connect(s.address, lobby, spectator);
+  const notice = (await p1.next('chat')).messages[0]!;
+  expect(notice.seat).toBeNull();
+  expect(notice.text).toBe('Public Observer joined as a spectator.');
+  expect(notice.text).not.toContain('Synthetic socket fixture');
+  expect((await p2.next('chat')).messages[0]?.id).toBe(notice.id);
+  expect(watch.history.some(m => m.type === 'chat')).toBe(false);
+  const otherTab = await connect(s.address, lobby, spectator);
+  watch.socket.close();
+  otherTab.socket.close();
+  await Promise.all([watch.closed, otherTab.closed]);
+  const rejoined = await connect(s.address, lobby, spectator);
+  const count = async () =>
+    (
+      await sql`SELECT count(*)::int AS n FROM play.chat_messages WHERE game_id=${lobby.gameId!} AND seat IS NULL`
+    )[0]!.n;
+  expect(await count()).toBe(1);
+  rejoined.socket.close();
+  await rejoined.closed;
+  await sql`UPDATE play.chat_messages SET created_at=clock_timestamp()-interval '31 seconds' WHERE game_id=${lobby.gameId!}`;
+  await connect(s.address, lobby, spectator);
+  await p1.next('chat');
+  expect(await count()).toBe(2);
+  const refresh = await connect(s.address, lobby, a);
+  expect((await refresh.next('chat')).messages.filter(m => m.seat === null)).toHaveLength(2);
+  await sql`UPDATE "user" SET display_name=${spectator.userId} WHERE id=${spectator.userId}`;
+}, 15_000);
+
+test('reveal bursts are bounded across reconnects, conceal/retries remain available, and stale in-flight decisions resync safely', async () => {
+  const lobby = await start(),
+    s = serve();
+  let p1 = await connect(s.address, lobby, a);
+  const p2 = await connect(s.address, lobby, b);
+  await reachResources([p1, p2]);
+  const oldChoice = command(p2);
+  const firstReveal: ClientMessage = {
+    type: 'set-hand-reveal',
+    commandId: randomUUID(),
+    revealed: true,
+  };
+  for (let i = 0; i < 3; i++) {
+    p1.send(
+      i === 0 ? firstReveal : { type: 'set-hand-reveal', commandId: randomUUID(), revealed: true },
+    );
+    await p1.next('ack');
+    p1.send({ type: 'set-hand-reveal', commandId: randomUUID(), revealed: false });
+    await p1.next('ack');
+    await p2.next('snapshot');
+  }
+  p2.send(oldChoice);
+  expect((await p2.next('error')).code).toBe('resync-required');
+  p2.send(command(p2));
+  await p2.next('ack');
+  p1 = await connect(s.address, lobby, a);
+  p1.send({ type: 'set-hand-reveal', commandId: randomUUID(), revealed: true });
+  expect((await p1.next('error')).code).toBe('hand-reveal-rate-limited');
+  p1.send(firstReveal);
+  expect((await p1.next('ack')).duplicate).toBe(true);
+  expect(p1.view!.players.find(player => player.id === 'p1')!.handRevealed).toBe(false);
+  p2.send({ type: 'set-hand-reveal', commandId: randomUUID(), revealed: true });
+  await p2.next('ack');
+}, 15_000);
+
+test('spectator notices have separate bounded history and cannot consume player chat capacity', async () => {
+  const lobby = await start(),
+    s = serve();
+  const player = await connect(s.address, lobby, a);
+  await player.next('chat');
+  const watch = await connect(s.address, lobby, spectator);
+  await player.next('chat');
+  watch.socket.close();
+  await watch.closed;
+  await sql`UPDATE play.chat_messages SET created_at=now()-interval '1 minute' WHERE game_id=${lobby.gameId!}`;
+  await sql`INSERT INTO play.chat_messages(game_id,sequence,id,seat,text,created_at)
+    SELECT ${lobby.gameId!},n,gen_random_uuid()::text,'p2','Existing player message',now()-interval '1 minute'
+    FROM generate_series(2,500) AS n`;
+  await sql`INSERT INTO play.chat_messages(game_id,sequence,id,seat,spectator_user_id,text,created_at)
+    SELECT ${lobby.gameId!},n,gen_random_uuid()::text,NULL,${spectator.userId},'Earlier notice',now()-interval '1 minute'
+    FROM generate_series(501,520) AS n`;
+  await connect(s.address, lobby, spectator);
+  expect((await player.next('chat')).messages[0]!.sequence).toBe(521);
+  const id = randomUUID();
+  player.send({ type: 'chat-send', id, text: 'Player message 500 still fits' });
+  expect((await player.next('chat')).messages[0]!.id).toBe(id);
+  player.send({ type: 'chat-send', id: randomUUID(), text: 'Player message 501 does not fit' });
+  expect((await player.next('chat-error')).code).toBe('chat-full');
+  const refreshed = await connect(s.address, lobby, a);
+  const messages = (await refreshed.next('chat')).messages;
+  expect(messages.filter(message => message.seat !== null)).toHaveLength(100);
+  expect(messages.filter(message => message.seat === null)).toHaveLength(20);
+  const [stored] = await sql`SELECT count(*) FILTER (WHERE seat IS NULL)::int AS notices,
+    count(*) FILTER (WHERE seat IS NOT NULL)::int AS players FROM play.chat_messages WHERE game_id=${lobby.gameId!}`;
+  expect(stored).toEqual({ notices: 20, players: 500 });
+}, 15_000);
+
+test('a slow or failed spectator notice does not block admission or the game command queue', async () => {
+  let release!: () => void, entered!: () => void;
+  const pending = new Promise<void>(resolve => {
+    release = resolve;
+  });
+  const writing = new Promise<void>(resolve => {
+    entered = resolve;
+  });
+  class FailingNoticeChat extends CrossfireChat {
+    override async spectatorJoined(): Promise<null> {
+      entered();
+      await pending;
+      throw new Error('Synthetic chat storage outage');
+    }
+  }
+  const lobby = await start(),
+    s = serve({}, new ReplayService(url!), undefined, new FailingNoticeChat(sql));
+  try {
+    const p1 = await connect(s.address, lobby, a),
+      p2 = await connect(s.address, lobby, b);
+    const watch = await connect(s.address, lobby, spectator);
+    await writing;
+    expect(watch.view).not.toBeNull();
+    const actor = [p1, p2].find(p => p.view!.decision)!;
+    actor.send(command(actor));
+    await actor.next('ack');
+    release();
+    watch.send({ type: 'resync' });
+    await watch.next('snapshot');
+    expect(watch.socket.readyState).toBe(WebSocket.OPEN);
+    expect(faults.splice(0)).toEqual(['spectator-notice']);
+  } finally {
+    release();
+  }
+}, 15_000);

@@ -1,5 +1,5 @@
 // This identifies runtime behavior, independently of hot-loaded card releases.
-export const ENGINE_VERSION = '1.2.0';
+export const ENGINE_VERSION = '1.3.0';
 export function parseVersion(value: string): [number, number, number] {
   if (!/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(value))
     throw new Error('Invalid Crossfire version');
@@ -16,3 +16,6 @@ export function supportsEngine(required: string, runtime = ENGINE_VERSION): bool
     return false;
   }
 }
+
+/** New commands must not be recorded against a runtime pin that cannot replay them. */
+export const supportsHandReveal = (engine: string) => supportsEngine('1.3.0', engine);

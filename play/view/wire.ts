@@ -25,6 +25,11 @@ export const viewCommandSchema = z.strictObject({
 });
 export const clientMessageSchema = z.discriminatedUnion('type', [
   chatSendSchema,
+  z.strictObject({
+    type: z.literal('set-hand-reveal'),
+    commandId: z.uuid(),
+    revealed: z.boolean(),
+  }),
   undoMessageSchema,
   bookmarkMessageSchema,
   z.strictObject({ type: z.literal('practice-accept'), id: z.uuid() }),
@@ -84,6 +89,7 @@ export type ServerMessage =
         | 'invalid-command'
         | 'conflict'
         | 'busy'
+        | 'hand-reveal-rate-limited'
         | 'resync-required'
         | 'unavailable';
       commandId?: string;

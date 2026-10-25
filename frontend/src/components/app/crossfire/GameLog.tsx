@@ -87,7 +87,11 @@ export function GameLog({
                 key={`chat-${message.id}`}
                 className="cf-activity-entry cf-chat-message"
                 data-actor={actorColor(message.seat)}
-                aria-label={`${playerName(message.seat, seat)} chat message`}
+                aria-label={
+                  message.seat
+                    ? `${playerName(message.seat, seat)} chat message`
+                    : 'Spectator joined'
+                }
               >
                 <time dateTime={message.createdAt}>
                   {new Date(message.createdAt).toLocaleTimeString([], {

@@ -34,34 +34,38 @@ export function ProblemReports({
             bases={report.bases}
             className="cf-report-row"
           >
-            <div className="flex gap-3 justify-between">
-              <strong>{report.label || 'Game problem'}</strong>
-              <small>{report.status === 'resolved' ? 'Resolved' : 'Open'}</small>
-            </div>
-            <p className="whitespace-pre-wrap break-words text-sm">{report.description}</p>
-            <div className="flex gap-3 items-center">
-              <Link to="/crossfire/reports/$reportId" params={{ reportId: report.id }}>
-                Open report
-              </Link>
-              {report.available && (
-                <Link
-                  to="/crossfire/replay/$lobbyId"
-                  params={{ lobbyId: report.lobbyId }}
-                  search={{ cfPosition: report.position, cfBranch: report.branch }}
-                >
-                  Open reported position
+            <div className="grid w-full gap-3">
+              <div className="flex min-w-0 items-start justify-between gap-3">
+                <strong className="min-w-0 wrap-anywhere">{report.label || 'Game problem'}</strong>
+                <small className="shrink-0">
+                  {report.status === 'resolved' ? 'Resolved' : 'Open'}
+                </small>
+              </div>
+              <p className="whitespace-pre-wrap break-words text-sm">{report.description}</p>
+              <div className="flex flex-wrap items-center gap-3">
+                <Link to="/crossfire/reports/$reportId" params={{ reportId: report.id }}>
+                  Open report
                 </Link>
-              )}
-              {report.status === 'open' && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  disabled={resolve.isPending}
-                  onClick={() => resolve.mutate(report.id)}
-                >
-                  Mark resolved
-                </Button>
-              )}
+                {report.available && (
+                  <Link
+                    to="/crossfire/replay/$lobbyId"
+                    params={{ lobbyId: report.lobbyId }}
+                    search={{ cfPosition: report.position, cfBranch: report.branch }}
+                  >
+                    Open reported position
+                  </Link>
+                )}
+                {report.status === 'open' && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={resolve.isPending}
+                    onClick={() => resolve.mutate(report.id)}
+                  >
+                    Mark resolved
+                  </Button>
+                )}
+              </div>
             </div>
           </ActivityRow>
         ))

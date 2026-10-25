@@ -132,7 +132,7 @@ export type GameView = {
   activePlayer: string;
   initiative: { holder: string; claimed: boolean };
   result: { winner: string | null; reason: 'base-defeat' | 'concession' | 'card-effect' } | null;
-  players: { id: string; deckCount: number; handCount: number }[];
+  players: { id: string; deckCount: number; handCount: number; handRevealed?: boolean }[];
   cards: VisibleCard[];
   scheduled: {
     id: string;

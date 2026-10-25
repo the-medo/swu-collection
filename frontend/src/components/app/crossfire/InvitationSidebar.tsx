@@ -1,3 +1,4 @@
+import { crossfireHomeStyles as styles } from './crossfireHomeStyles.ts';
 import { Link } from '@tanstack/react-router';
 import { Check, UserRound, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
@@ -25,11 +26,14 @@ export function InvitationSidebar({
   const teammates = useTeammates(sessionId);
   const decline = useDeclineInvitation(sessionId);
   return (
-    <section className="cf-home-card space-y-4" aria-label="Invitations and teammates">
+    <section className={`${styles.panel} space-y-4`} aria-label="Invitations and teammates">
       {!!invitations.length && (
-        <div className="cf-invite-list">
+        <div className="grid gap-3">
           {invitations.map(invite => (
-            <article className="cf-invite-card" key={invite.lobbyId}>
+            <article
+              className="grid gap-3 rounded-xl border border-primary/30 bg-primary/5 p-3 text-xs"
+              key={invite.lobbyId}
+            >
               <div className="flex items-center justify-between gap-2">
                 <strong>
                   {invite.direction === 'incoming'
@@ -63,7 +67,7 @@ export function InvitationSidebar({
           {decline.isError && <p role="alert">Could not decline this invitation. Try again.</p>}
         </div>
       )}
-      <h2 className="flex items-center gap-2">
+      <h2 className={`${styles.heading} flex items-center gap-2`}>
         <Users size={16} />
         Teammates
         <InfoTooltip tooltip="Select a teammate, review your deck and settings, then send the invitation. Nothing is sent until you confirm. Sending locks in your deck and settings; your teammate has 3 minutes to choose their own deck and accept. Select the same teammate again to clear your selection." />
@@ -78,11 +82,18 @@ export function InvitationSidebar({
           </Button>
         </div>
       ) : !teammates.data?.length ? (
-        <p className="text-xs text-muted-foreground">
-          Join a team to invite teammates, or create an invitation link to share.
-        </p>
+        <div className={styles.empty}>
+          <Users className="size-5 text-primary" />
+          <p>Play with your team. Select a teammate here to send them an invitation.</p>
+          <Link to="/teams" className="font-medium text-primary underline underline-offset-4">
+            Find your team
+          </Link>
+          <p>
+            You can also create an invitation link to share with anyone who has Crossfire access.
+          </p>
+        </div>
       ) : (
-        <div className="cf-teammates">
+        <div className="cf-teammates grid max-h-64 gap-2 overflow-y-auto">
           {teammates.data.map(player => {
             const selected = controls.selectedPlayerId === player.id;
             const sent = invitations.some(
@@ -92,14 +103,19 @@ export function InvitationSidebar({
               <button
                 key={player.id}
                 type="button"
-                className="cf-teammate"
+                className={styles.teammate}
                 aria-pressed={selected}
                 disabled={!controls.canInvite || sent || controls.pending}
                 onClick={() => controls.invite(player)}
                 aria-label={`Select teammate ${player.name}${sent ? ' (invited)' : ''}`}
               >
                 {player.image ? (
-                  <img src={player.image} alt="" referrerPolicy="no-referrer" />
+                  <img
+                    className="size-8 shrink-0 rounded-full object-cover"
+                    src={player.image}
+                    alt=""
+                    referrerPolicy="no-referrer"
+                  />
                 ) : (
                   <UserRound
                     size={24}
@@ -107,9 +123,9 @@ export function InvitationSidebar({
                     aria-hidden="true"
                   />
                 )}
-                <span className="cf-teammate-name">{player.name}</span>
+                <span className="min-w-0 flex-1 wrap-anywhere">{player.name}</span>
                 {sent && <small className="text-muted-foreground">Invited</small>}
-                <span className="cf-deck-row-check" aria-hidden="true">
+                <span className={styles.teammateCheck} aria-hidden="true">
                   {selected && <Check size={13} />}
                 </span>
               </button>

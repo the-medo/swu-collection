@@ -1,3 +1,5 @@
+import { defaultBattlefieldScene } from '../../shared/types/battlefield.ts';
+import { publicBattlefieldScene } from '../../shared/battlefield/layers.ts';
 import { CrossfireInvitationRealtime } from '../../server/lib/crossfire/invitationRealtime.ts';
 import { CrossfireDecks } from '../../server/lib/crossfire/decks.ts';
 import { afterAll, beforeAll, expect, test } from 'bun:test';
@@ -129,12 +131,18 @@ test('both accepted decks and initial game persist atomically; metadata and seat
   expect(lobby.mySeat).toBe('p1');
   const before = await service.get(b, lobby.id);
   expect(before?.mySeat).toBeNull();
+  expect(before?.playerNames).toEqual({ p1: displayName(a) });
   for (const privateValue of [decks[0]!, a.userId, a.sessionId, ids.marine])
     expect(JSON.stringify(before)).not.toContain(privateValue);
   const joined = await service.join(b, lobby.id, decks[1]!, policy);
   expect(joined.status).toBe('started');
   expect(joined.mySeat).toBe('p2');
   expect(joined.seats).toBe(2);
+  expect(joined.playerNames).toEqual({ p1: displayName(a), p2: displayName(b) });
+  const spectator = await service.get(c, lobby.id);
+  expect(spectator?.playerNames).toEqual(joined.playerNames);
+  for (const privateValue of [a.userId, b.userId, a.sessionId, b.sessionId, 'Synthetic lobby fixture'])
+    expect(JSON.stringify(spectator)).not.toContain(privateValue);
   const lease = (await store.claim(joined.gameId!, 'lobby-test-worker', 60_000))!;
   const host = await DurableGame.restore(store, lease, { checkpointEvery: 10, leaseMs: 60_000 });
   expect(host.state.seats).toEqual(['p1', 'p2']);
@@ -247,7 +255,10 @@ test('contributor sanitization includes lobby snapshots and permits clearing aut
       await tx.unsafe(source.replace(/^BEGIN;$/m, '').replace(/^COMMIT;$/m, ''));
       const [row] = await tx`SELECT count(*)::integer AS count FROM play.participants`;
       expect(row!.count).toBe(0);
-      await tx.unsafe('TRUNCATE public.session');
+      // OAuth tokens now reference sessions; Crossfire must remain independent of all three.
+      await tx.unsafe(
+        'TRUNCATE public.oauth_access_token, public.oauth_refresh_token, public.session',
+      );
       throw rollback;
     });
   } catch (error) {
@@ -539,7 +550,9 @@ test('teammate invitations conceal identities, restrict admission and expire dur
     );
     await sql`UPDATE "user" SET display_name = '   ' WHERE id = ${a.userId}`;
     try {
-      expect((await service.get(b, lobby.id))?.host?.name).toBe('Player');
+      const anonymous = await service.get(b, lobby.id);
+      expect(anonymous?.host?.name).toBe('Player');
+      expect(anonymous?.playerNames).toEqual({ p1: 'Player' });
       expect((await service.invitations(b)).find(i => i.lobbyId === lobby.id)?.player.name).toBe(
         'Player',
       );
@@ -682,5 +695,62 @@ test('deck browser filters owned folders and unfiled decks without leaking other
     expect(() => browser.list(a, { source: 'public', search: '', folderId: parent })).toThrow();
   } finally {
     await sql`DELETE FROM deck_folder WHERE id = ANY(${[parent, child, other]})`;
+  }
+});
+
+test('battlefields freeze owned visible scenes, default automatically and respect spectator access', async () => {
+  const activeId = randomUUID(),
+    chosenId = randomUUID(),
+    opponentId = randomUUID();
+  const scene = defaultBattlefieldScene(randomUUID());
+  scene.backgroundId = 'background-nebula';
+  scene.layers[0]!.name = 'Private editor label';
+  scene.placements.push({ ...scene.placements[0]!, id: randomUUID(), visible: false });
+  const opponent = { ...defaultBattlefieldScene(), backgroundId: 'background-ember' };
+  try {
+    await sql`INSERT INTO battlefield (id,user_id,name,scene,active) VALUES (${activeId},${a.userId},'Default',${sql.json(defaultBattlefieldScene())},true), (${chosenId},${a.userId},'Private alternate name',${sql.json(scene)},false), (${opponentId},${b.userId},'Opponent',${sql.json(opponent)},true)`;
+    await expect(
+      service.create(a, decks[0]!, policy, 1, true, undefined, opponentId),
+    ).rejects.toThrow('battlefield-unavailable');
+    const lobby = await service.create(a, decks[0]!, policy, 1, true, undefined, chosenId);
+    lobbies.push(lobby.id);
+    await expect(service.battlefields(c, lobby.id)).rejects.toThrow('unavailable');
+    await expect(service.join(b, lobby.id, decks[1]!, policy, 1, chosenId)).rejects.toThrow(
+      'battlefield-unavailable',
+    );
+    // Saved matches retain the accepted scene after the source is edited or removed.
+    await sql`DELETE FROM battlefield WHERE id = ${chosenId}`;
+    await service.join(b, lobby.id, decks[1]!, policy);
+    const frozen = { p1: publicBattlefieldScene(scene), p2: publicBattlefieldScene(opponent) };
+    expect(await service.battlefields(a, lobby.id)).toEqual(frozen);
+    expect(await new CrossfireLobbies(sql, catalog).battlefields(c, lobby.id)).toEqual(frozen);
+    expect(JSON.stringify(frozen)).not.toContain('Private');
+    expect(frozen.p1.placements).toHaveLength(1);
+    await sql`UPDATE battlefield SET scene = ${sql.json(defaultBattlefieldScene())} WHERE id = ${opponentId}`;
+    await service.join(b, lobby.id, decks[1]!, policy);
+    expect(await service.battlefields(b, lobby.id)).toEqual(frozen);
+    await sql`UPDATE play.lobbies SET allow_spectators = false WHERE id = ${lobby.id}`;
+    await expect(service.battlefields(c, lobby.id)).rejects.toThrow('forbidden');
+    expect(await service.battlefields(a, lobby.id)).toEqual(frozen);
+    await expect(service.battlefields({ ...a, sessionId: b.sessionId }, lobby.id)).rejects.toThrow(
+      'unauthenticated',
+    );
+    const automatic = await service.create(a, decks[0]!, policy);
+    lobbies.push(automatic.id);
+    await service.join(c, automatic.id, decks[2]!, policy);
+    expect(await service.battlefields(a, automatic.id)).toEqual({
+      p1: defaultBattlefieldScene(),
+      p2: null,
+    });
+    // Invalid current and legacy data must not lock an account out of playing.
+    for (const invalid of [{ ...scene, width: 5 }, { width: 1600 }]) {
+      await sql`UPDATE battlefield SET scene = ${sql.json(invalid)} WHERE id = ${activeId}`;
+      const fallback = await service.create(a, decks[0]!, policy, 1, true, undefined, activeId);
+      lobbies.push(fallback.id);
+      await service.join(c, fallback.id, decks[2]!, policy);
+      expect(await service.battlefields(a, fallback.id)).toEqual({ p1: null, p2: null });
+    }
+  } finally {
+    await sql`DELETE FROM battlefield WHERE id = ANY(${[activeId, chosenId, opponentId]})`;
   }
 });

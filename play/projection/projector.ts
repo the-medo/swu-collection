@@ -1,3 +1,4 @@
+import { supportsHandReveal } from '../engine/release.ts';
 import { unitDefeatChoice } from '../engine/unit-defeat.ts';
 import { cardMarkers } from './card-markers.ts';
 import { effectPresentation } from './effect-presentation.ts';
@@ -81,7 +82,7 @@ export class Projector {
     return (
       this.#viewer.showRevealedHands !== false &&
       (this.#viewer.role === 'player'
-        ? state.disclosure.handsToPlayers
+        ? (state.disclosure.revealedHands?.[owner] ?? state.disclosure.handsToPlayers)
         : state.disclosure.handsToSpectators)
     );
   }
@@ -265,6 +266,11 @@ export class Projector {
         id,
         deckCount: state.players[id]!.deck.length,
         handCount: state.players[id]!.hand.length,
+        ...(supportsHandReveal(state.versions.engine)
+          ? {
+              handRevealed: state.disclosure.revealedHands?.[id] ?? state.disclosure.handsToPlayers,
+            }
+          : {}),
       })),
       cards,
       privateDeckTop:

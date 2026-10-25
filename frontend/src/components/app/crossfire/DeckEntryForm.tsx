@@ -23,7 +23,10 @@ export function PolicySummary({ policy }: { policy: CrossfirePolicy }) {
         Spectators: {policy.allowSpectators ? 'allowed with the invitation link' : 'disabled'}
       </li>
       <li>
-        Hands for players: {policy.handsToPlayers ? 'both hands revealed' : 'only your own hand'}
+        Hands for players:{' '}
+        {policy.handsToPlayers
+          ? 'both hands revealed'
+          : 'each player can reveal their own hand during the game'}
       </li>
       <li>Hands for spectators: {policy.handsToSpectators ? 'may view both hands' : 'hidden'}</li>
     </ul>
@@ -53,11 +56,10 @@ export function DeckEntryForm({
   const form = useForm({
     defaultValues: {
       deckInput: initialDeck ?? '',
-      bestOfThree: bestOf === 3,
+      bestOfThree: (bestOf ?? 3) === 3,
       consent: false,
       allowSpectators: true,
-      handsToPlayers: false,
-      handsToSpectators: false,
+      handsToSpectators: true,
     },
     onSubmit: async ({ value }) => {
       const deckId = linkedId(value.deckInput, 'decks');
@@ -68,7 +70,7 @@ export function DeckEntryForm({
           deckId,
           policy ?? {
             allowSpectators: value.allowSpectators,
-            handsToPlayers: value.handsToPlayers,
+            handsToPlayers: false,
             handsToSpectators: value.allowSpectators && value.handsToSpectators,
           },
           bestOf ?? (value.bestOfThree ? 3 : 1),
@@ -238,18 +240,6 @@ export function DeckEntryForm({
                     disabled={pending}
                   />
                   Allow spectators with the invitation link
-                </label>
-              )}
-            </form.Field>
-            <form.Field name="handsToPlayers">
-              {field => (
-                <label className="flex items-center gap-3 text-sm">
-                  <Checkbox
-                    checked={field.state.value}
-                    onCheckedChange={v => field.handleChange(v === true)}
-                    disabled={pending}
-                  />
-                  Reveal both hands to players
                 </label>
               )}
             </form.Field>

@@ -61,8 +61,14 @@ The worker must revalidate before handling queued input and sending projected
 output, periodically revalidate idle connections, and close revoked sockets.
 The listener now performs these checks, bounds connection/messages and replaces
 the projection when a viewer changes hand-display preferences. The game's agreed
-disclosure policy remains immutable. In-game policy changes with fresh consent
-remain later work; a display preference cannot alter that policy.
+spectator disclosure policy remains immutable. In runtime 1.3.0 games, each
+player can independently reveal or conceal their own hand through a durable
+`set-hand-reveal` command. The authenticated grant supplies the owner; clients
+cannot name another seat. This consent does not expand spectator permissions.
+Withdrawing consent replaces only the opponent’s projection epoch, clearing
+obsolete cards and handles. Revealing uses ordinary deltas and preserves both
+players’ selections. Enabling consent is bounded to three attempts per thirty seconds
+per seat in the loaded game; concealing and retrying committed commands stay available.
 
 `pruneExpired(limit)` materializes a bounded batch of expired ticket rows before
 deletion, skipping locked redemptions. The worker schedules it; issuance does not run

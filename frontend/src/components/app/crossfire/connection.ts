@@ -1,3 +1,4 @@
+import { retainChatMessages } from '../../../../../play/view/chat.ts';
 import type { ChatMessage } from '../../../../../play/view/chat.ts';
 import { chatTextSchema } from '../../../../../play/view/chat.ts';
 import type { Bookmark } from '../../../../../play/view/bookmarks.ts';
@@ -18,7 +19,7 @@ import type {
 } from '../../../../../play/view/types.ts';
 
 type Viewer = Extract<ServerMessage, { type: 'snapshot' }>['viewer'];
-type Command = Extract<ClientMessage, { type: 'command' | 'concede' }>;
+type Command = Extract<ClientMessage, { type: 'command' | 'concede' | 'set-hand-reveal' }>;
 export type CrossfireConnectionState = {
   chat: ChatMessage[];
   chatReady: boolean;
@@ -296,7 +297,7 @@ export class CrossfireConnection {
       }
       const messages = new Map((message.replace ? [] : this.store.state.chat).map(m => [m.id, m]));
       for (const entry of message.messages) messages.set(entry.id, entry);
-      const chat = [...messages.values()].sort((a, b) => a.sequence - b.sequence).slice(-100);
+      const chat = retainChatMessages([...messages.values()]);
       if (this.#chatPending && chat.some(m => m.id === this.#chatPending!.id)) {
         this.#chatPending = undefined;
         this.#cancelChat?.();
@@ -406,11 +407,13 @@ export class CrossfireConnection {
       this.resync();
       this.#patch({
         notice:
-          message.code === 'undo-pending'
-            ? 'Gameplay is paused for the undo request.'
-            : message.code === 'busy'
-              ? 'The game is busy. Choose your action again.'
-              : 'The position changed. Choose your action again.',
+          message.code === 'hand-reveal-rate-limited'
+            ? 'Wait a few seconds before revealing your hand again.'
+            : message.code === 'undo-pending'
+              ? 'Gameplay is paused for the undo request.'
+              : message.code === 'busy'
+                ? 'The game is busy. Choose your action again.'
+                : 'The position changed. Choose your action again.',
       });
     } else {
       this.#halt('The game update does not match this connection. Refresh this page.');
@@ -516,6 +519,28 @@ export class CrossfireConnection {
     this.#pending = {
       type: 'concede',
       commandId: this.dependencies.commandId?.() ?? crypto.randomUUID(),
+    };
+    this.#patch({ pending: true, notice: null });
+    if (this.#send(this.#pending)) this.#timeout();
+  }
+  revealHand(revealed: boolean) {
+    const { view, status, viewer, undo, controlPending } = this.store.state;
+    if (
+      status !== 'connected' ||
+      viewer?.role !== 'player' ||
+      this.options.replay ||
+      !view ||
+      view.result ||
+      this.#pending ||
+      undo ||
+      controlPending ||
+      typeof view.players.find(p => p.id === viewer.seat)?.handRevealed !== 'boolean'
+    )
+      return;
+    this.#pending = {
+      type: 'set-hand-reveal',
+      commandId: this.dependencies.commandId?.() ?? crypto.randomUUID(),
+      revealed,
     };
     this.#patch({ pending: true, notice: null });
     if (this.#send(this.#pending)) this.#timeout();

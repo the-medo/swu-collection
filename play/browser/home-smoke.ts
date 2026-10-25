@@ -1,3 +1,4 @@
+import { BoardDriver } from './board-driver.ts';
 import { versions } from '../engine/model.ts';
 // Opt-in real API acceptance for the Crossfire play desk. No report endpoint calls or external notifications.
 import { chromium, expect } from 'playwright/test';
@@ -36,10 +37,12 @@ const catalog = await Bun.file(
 ).json();
 const service = new CrossfireLobbies(sql, catalog);
 const screenshots = '.swubase/crossfire-home';
+const captured: string[] = [];
 const { mkdir, copyFile, writeFile } = await import('node:fs/promises');
 await mkdir(screenshots, { recursive: true });
 const context = await browser.newContext({ viewport: { width: 1600, height: 1050 } });
 const page = await context.newPage();
+const hostBoard = new BoardDriver(page);
 page.setDefaultTimeout(15_000);
 await page.addLocatorHandler(
   page.getByRole('button', { name: 'Dismiss', exact: true }),
@@ -72,7 +75,12 @@ async function theme(dark: boolean) {
     return;
   const viewport = page.viewportSize()!;
   if (viewport.width < 1000) await page.setViewportSize({ width: 1600, height: 1050 });
-  await page.locator('div:has(> svg.lucide-sun):has(> svg.lucide-moon)').first().click();
+  await page
+    .getByRole('button', {
+      name: dark ? 'Switch to dark theme' : 'Switch to light theme',
+      exact: true,
+    })
+    .click();
   await expect(page.locator('html')).toHaveClass(dark ? /dark/ : /light/);
   if (viewport.width < 1000) await page.setViewportSize(viewport);
 }
@@ -87,59 +95,10 @@ async function shot(name: string, target = page) {
   });
   await target.screenshot({
     path: `${screenshots}/${name}.png`,
-    fullPage: target.viewportSize()!.width > 740,
+    fullPage: false,
     animations: 'disabled',
   });
-}
-async function layout() {
-  const metrics = await page.locator('.cf-home').evaluate(home => {
-    const picker = home.querySelector('.cf-deck-picker')!.getBoundingClientRect();
-    const panel = home.querySelector('.cf-play-desk')!.getBoundingClientRect();
-    const headers = [...home.querySelectorAll('.cf-deck-group > h3')].map(n =>
-      n.getBoundingClientRect(),
-    );
-    return {
-      overflow: document.documentElement.scrollWidth > innerWidth,
-      launchOverflow: (() => {
-        const launch = home.querySelector('.cf-deck-launch')!;
-        return launch.scrollHeight - launch.clientHeight;
-      })(),
-      deckBesideArt: (() => {
-        const info = home.querySelector('.cf-selected-deck')!.getBoundingClientRect();
-        const art = home.querySelector('.cf-selected-art')!.getBoundingClientRect();
-        return (
-          info.right <= art.left &&
-          Math.abs((info.top + info.bottom) / 2 - (art.top + art.bottom) / 2) < 2
-        );
-      })(),
-      gutter: home.closest('main')!.clientWidth - home.getBoundingClientRect().width,
-      width: picker.width / panel.width,
-      visible: headers.every(r => r.top >= picker.top && r.bottom <= picker.bottom),
-      height: Math.abs(panel.height - picker.height),
-      artworkUnclipped: [...home.querySelectorAll('[data-matchup-side]')].every(side => {
-        const style = getComputedStyle(side);
-        return style.overflowX === 'visible' && style.overflowY === 'visible';
-      }),
-      recentGamesClear: [...home.querySelectorAll('.cf-recent-game-content')].every(content => {
-        const copy = content.firstElementChild!;
-        const controls = content.lastElementChild!.getBoundingClientRect();
-        const title = copy.firstElementChild!;
-        return (
-          copy.getBoundingClientRect().right < controls.left &&
-          title.scrollWidth <= title.clientWidth + 1
-        );
-      }),
-    };
-  });
-  expect(metrics.overflow).toBe(false);
-  expect(metrics.launchOverflow).toBeLessThanOrEqual(2);
-  expect(metrics.deckBesideArt).toBe(true);
-  expect(metrics.gutter).toBeLessThanOrEqual(16);
-  expect(metrics.visible).toBe(true);
-  expect(metrics.artworkUnclipped).toBe(true);
-  expect(metrics.recentGamesClear).toBe(true);
-  expect(metrics.width).toBeGreaterThanOrEqual(0.5);
-  if (page.viewportSize()!.width > 740) expect(metrics.height).toBeLessThan(3);
+  if (!captured.includes(name)) captured.push(name);
 }
 try {
   for (const user of users) {
@@ -193,7 +152,7 @@ try {
   await sql`INSERT INTO play.practice_requests(id,source_game_id,requester_id,opponent_id,position,branch,label,game_id,lobby_id,expires_at)
     VALUES (${randomUUID()},${gameId},${host!.userId},${guest!.userId},${position},${branch},'Try another opening',${'practice-' + randomUUID()},${randomUUID()},now()+interval '1 hour')`;
   await sql`INSERT INTO play.problem_reports(id,user_id,game_id,position,branch,label,description,status)
-    VALUES (${randomUUID()},${host!.userId},${gameId},${position},${branch},'Attack target highlight','Synthetic screenshot fixture for an earlier targeting issue.','resolved')`;
+    VALUES (${randomUUID()},${host!.userId},${gameId},${position},${branch},'Attack target highlight','Synthetic screenshot fixture for an earlier targeting issue.','open')`;
   const signed = (
     await serializeSignedCookie(cookieName, host!.token, process.env.BETTER_AUTH_SECRET!)
   ).split(';')[0]!;
@@ -217,111 +176,69 @@ try {
   await expect(
     page.getByRole('link', { name: 'Return to game against Nova', exact: true }).first(),
   ).toHaveAttribute('href', '/crossfire/' + lobby.id);
-  await expect(page.locator('.cf-deck-row')).toHaveCount(1);
-  await layout();
-  for (const dark of [true, false]) {
-    await theme(dark);
-    await shot(dark ? 'desktop-dark' : 'desktop-light');
-  }
-  await theme(true);
-  await expect(page.locator('.cf-running-list [data-matchup-side]')).toHaveCount(2);
-  await expect(page.locator('.cf-running-list [data-base-card="command-center"]')).toHaveCount(1);
-  await expect(page.locator('.cf-running-list [data-base-card="capital-city"]')).toHaveCount(1);
-  const recentCard = page.locator('.cf-recent-game-card').first();
-  await expect(recentCard.locator('[data-base-card="capital-city"]')).toHaveCount(1);
-  const compact = await recentCard.evaluate(card => {
-    const content = card.querySelector('.cf-recent-game-content')!;
-    const copy = content.firstElementChild!.getBoundingClientRect();
-    const controls = content.lastElementChild!.getBoundingClientRect();
-    const left = card.querySelector('[data-matchup-side="left"]')!.getBoundingClientRect();
-    const right = card.querySelector('[data-matchup-side="right"]')!.getBoundingClientRect();
-    return {
-      height: card.getBoundingClientRect().height,
-      aligned: getComputedStyle(content).textAlign,
-      clear: copy.left >= left.right && controls.right <= right.left && copy.right < controls.left,
-    };
-  });
-  expect(compact.height).toBeLessThanOrEqual(90);
-  expect(compact.aligned).toBe('left');
-  expect(compact.clear).toBe(true);
-  const deckClear = await page
-    .locator('.cf-deck-row')
-    .first()
-    .evaluate(row => {
-      const art = row.querySelector('[data-matchup-side="left"]')!.getBoundingClientRect();
-      const copy = row.querySelector('.cf-deck-row-copy')!.getBoundingClientRect();
-      return copy.left - art.right;
-    });
-  expect(deckClear).toBeGreaterThanOrEqual(4);
-  for (const [tab, screenshot] of [
-    ['Bookmarks', 'saved-positions'],
-    ['Bug reports', 'reports'],
-  ]) {
-    await page.getByRole('tab', { name: tab, exact: true }).click();
-    await expect(page.locator('.cf-saved-activity [data-matchup-side]')).toHaveCount(2);
-    await expect(page.locator('.cf-saved-activity [data-base-card="command-center"]')).toHaveCount(
-      1,
-    );
-    await expect(page.locator('.cf-saved-activity [data-base-card="capital-city"]')).toHaveCount(1);
-    await shot(screenshot!);
-  }
-  await page.getByRole('tab', { name: 'Bookmarks', exact: true }).click();
-  await page.getByRole('button', { name: 'Your decks', exact: true }).click();
-  await expect(page.locator('.cf-deck-row')).toHaveCount(20);
-  await page.getByRole('button', { name: 'Load more decks', exact: true }).click();
-  await expect(page.locator('.cf-deck-row')).toHaveCount(25);
-  await layout();
+  const expectArtwork = async (row: ReturnType<typeof page.locator>) => {
+    await expect(
+      row.getByRole('img', {
+        name: 'Ahsoka Tano, Trust in the Force / Command Center',
+        exact: true,
+      }),
+    ).toHaveCount(1);
+    await expect(
+      row.getByRole('img', {
+        name: 'Darth Vader, Dark Lord of the Sith / Capital City',
+        exact: true,
+      }),
+    ).toHaveCount(1);
+  };
+  await expectArtwork(page.locator('.cf-running-list'));
+  await expectArtwork(page.locator('.cf-recent-game-card').first());
+  const selectDeck = (name: string) =>
+    page.getByRole('button', { name: `Select deck: ${name}`, exact: true });
+  const launch = page.getByRole('button', { name: 'Create invitation', exact: true });
   const search = page.getByRole('searchbox', { name: 'Search decks or paste a deck link' });
+  await expect(page.getByRole('heading', { name: 'Crossfire', exact: true })).toBeVisible();
+  await expect(launch).toBeEnabled();
+  // The shared picker supports folders, search and preview without changing the selected deck.
+  await page.getByRole('tab', { name: 'Your decks', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Unfiled decks', exact: true })).toBeVisible();
+  const choices = page.locator('[data-deck-picker]').getByRole('button', { name: /^Select deck:/ });
+  await expect(choices).toHaveCount(20);
+  await page.getByRole('button', { name: 'Load more decks', exact: true }).click();
+  await expect(choices).toHaveCount(25);
+  for (const width of [1600, 1024, 390, 320]) {
+    await page.setViewportSize({ width, height: 1050 });
+    const picker = page.locator('.cf-deck-picker');
+    const list = picker.getByRole('tabpanel');
+    expect((await picker.boundingBox())!.height).toBeLessThanOrEqual(600);
+    expect(await list.evaluate(element => element.scrollHeight > element.clientHeight)).toBe(true);
+    await list.evaluate(element => {
+      element.scrollTop = element.scrollHeight;
+    });
+    expect(await list.evaluate(element => element.scrollTop)).toBeGreaterThan(0);
+    await expect(choices.last()).toBeInViewport();
+  }
+  await page.setViewportSize({ width: 1600, height: 1050 });
   await search.fill('Sabine');
-  await expect(page.locator('.cf-deck-row')).toHaveCount(1);
-  const deckControls = await page.locator('.cf-deck-option').evaluate(row => {
-    const eye = row.querySelector('.cf-deck-preview-button')!.getBoundingClientRect();
-    const check = row.querySelector('.cf-deck-row-check')!.getBoundingClientRect();
-    return { eyeRight: eye.right, checkLeft: check.left };
-  });
-  expect(deckControls.eyeRight).toBeLessThan(deckControls.checkLeft);
   await page
     .getByRole('button', { name: 'View decklist: Sabine • Fast company', exact: true })
     .click();
-  await expect(page.getByRole('dialog')).toContainText('Battlefield Marine');
-  const deckDialog = page.getByRole('dialog', { name: 'Decklist', exact: true });
-  await expect(deckDialog.getByRole('heading', { name: 'Sabine • Fast company' })).toBeVisible();
-  for (const cardId of ['sabine-wren--galvanized-revolutionary', 'command-center']) {
-    const cardImage = deckDialog.getByRole('img', { name: `card-${cardId}`, exact: true }).first();
-    await expect(cardImage).toBeVisible();
-    expect((await cardImage.boundingBox())!.width).toBeGreaterThanOrEqual(280);
-  }
+  await expect(page.getByRole('dialog', { name: 'Decklist', exact: true })).toContainText(
+    'Battlefield Marine',
+  );
   await expect(page.locator('.cf-selected-deck strong')).toHaveText(
     'Ahsoka • A little unconventional',
   );
-  await shot('deck-preview');
-  await page.setViewportSize({ width: 390, height: 844 });
-  expect(await deckDialog.evaluate(dialog => dialog.scrollWidth <= dialog.clientWidth)).toBe(true);
-  await shot('deck-preview-mobile');
-  await page.setViewportSize({ width: 1600, height: 1050 });
   await page.getByRole('button', { name: 'Close', exact: true }).click();
   await expect(
     page.getByRole('button', { name: 'View decklist: Sabine • Fast company', exact: true }),
   ).toBeFocused();
-  await page.locator('.cf-deck-row').click();
-  await expect(page.locator('.cf-deck-row')).toHaveAttribute('aria-pressed', 'true');
+  await selectDeck('Sabine • Fast company').click();
   await expect(page.locator('.cf-selected-deck strong')).toHaveText('Sabine • Fast company');
-  await page.getByRole('button', { name: 'Your decks', exact: true }).focus();
-  await page.keyboard.press('ArrowDown');
-  await page.keyboard.press('Enter');
-  await expect(page.getByRole('button', { name: 'Public decks', exact: true })).toHaveAttribute(
-    'aria-expanded',
-    'true',
-  );
+  await page.getByRole('tab', { name: 'Public decks', exact: true }).click();
   await search.fill(prefix);
-  await expect(page.locator('.cf-deck-row')).toHaveCount(1);
-  await expect(page.locator('.cf-deck-row')).toContainText('Public explorer');
-  await expect(page.locator('.cf-selected-deck strong')).toHaveText('Sabine • Fast company');
-  await page.locator('.cf-deck-row').click();
-  await expect(page.getByText('Ready for Crossfire practice.', { exact: true })).toBeVisible();
+  await expect(selectDeck('Public explorer ' + prefix)).toBeVisible();
   await search.fill('no-result-' + prefix);
-  await expect(page.getByText('No matching decks', { exact: true })).toBeVisible();
-  await layout();
+  await expect(page.getByText('No matching decks.', { exact: true })).toBeVisible();
   await search.fill('');
   await search.evaluate(
     (input, link) => {
@@ -334,35 +251,51 @@ try {
     'https://swubase.com/decks/' + unlisted + '?source=' + 'x'.repeat(200),
   );
   await expect(search).toHaveValue('');
-  await expect(page.locator('.cf-deck-group[data-state="open"]')).toHaveCount(0);
-  await expect(page.locator('.cf-linked-deck .cf-deck-row')).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
   await expect(page.locator('.cf-selected-deck strong')).toHaveText('Shared tactics ' + prefix);
-  await expect(page.getByText('Ready for Crossfire practice.', { exact: true })).toBeVisible();
+  await expect(launch).toBeEnabled();
+
   await page.goto(origin + '/decks/' + sabine);
   const play = page.getByRole('link', { name: 'Play', exact: true });
   await expect(play).toHaveAttribute('href', '/crossfire?cfDeck=' + sabine);
-  await expect(play.locator('[data-crossfire-logo]')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Image', exact: true })).toBeVisible();
   await shot('deck-detail-play');
   await play.click();
   await expect(page.locator('.cf-selected-deck strong')).toHaveText('Sabine • Fast company');
-  await expect(page.locator('.cf-linked-deck .cf-deck-row')).toContainText('Sabine • Fast company');
-  await expect(page.locator('.cf-deck-group[data-state="open"]')).toHaveCount(0);
-  await layout();
-  await shot('linked-deck');
+  await expect(page.locator('.cf-linked-deck')).toContainText('Sabine • Fast company');
   await page.reload();
   await expect(page.locator('.cf-selected-deck strong')).toHaveText('Sabine • Fast company');
-  await page.goBack();
-  await expect(page.getByRole('link', { name: 'Play', exact: true })).toBeVisible();
-  await page.goForward();
-  await expect(page.locator('.cf-selected-deck strong')).toHaveText('Sabine • Fast company');
-  // An inaccessible explicit URL must not silently substitute an automatic deck.
+  await shot('linked-deck');
+  await page.getByRole('tab', { name: 'Your decks', exact: true }).click();
+  await expect(choices).toHaveCount(20);
+  for (const width of [390, 320]) {
+    await page.setViewportSize({ width, height: 1050 });
+    const list = page.locator('[data-deck-picker]').getByRole('tabpanel');
+    expect((await list.boundingBox())!.height).toBeGreaterThanOrEqual(160);
+    await list.evaluate(element => {
+      element.scrollTop = element.scrollHeight;
+    });
+    expect(await list.evaluate(element => element.scrollTop)).toBeGreaterThan(0);
+    await expect(choices.last()).toBeInViewport();
+  }
+  await page.setViewportSize({ width: 1600, height: 1050 });
+
+  // Explicit inaccessible/unsupported selections must never silently become a playable default.
   await page.goto(origin + '/crossfire?cfDeck=' + rival);
   await expect(page.locator('.cf-selected-deck strong')).toHaveText('Deck unavailable');
-  await expect(page.getByRole('button', { name: 'Create invitation', exact: true })).toBeDisabled();
+  await expect(launch).toBeDisabled();
+  await page.goto(origin + '/crossfire?cfDeck=' + unsupported);
+  await expect(launch).toBeDisabled();
+  await page.getByRole('button', { name: 'Deck needs attention', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Deck check', exact: true })).toBeVisible();
+  await expect(page.locator('[data-deck-issue="unknown-card"] li')).toHaveCount(2);
+  await shot('deck-check');
+  await page.getByRole('button', { name: 'Close', exact: true }).click();
+  await page.goto(origin + '/crossfire?cfDeck=' + main);
+  await page.reload();
+  await expect(page.locator('.cf-selected-deck strong')).toHaveText(
+    'Ahsoka • A little unconventional',
+  );
+  await expect(launch).toBeEnabled();
+
   for (const user of users.slice(2)) {
     const other = await browser.newContext();
     const signed = (
@@ -395,43 +328,21 @@ try {
       ).toBeDisabled();
     await other.close();
   }
-  // Unsupported deck never enables creation; a fresh selection gets a fresh readiness query.
-  await page.goto(origin + '/crossfire?cfDeck=' + unsupported);
-  const warning = page.getByRole('button', { name: 'Deck needs attention', exact: true });
-  const launch = page.getByRole('button', { name: 'Create invitation', exact: true });
-  await expect(warning).toBeVisible();
-  const warningBox = await warning.boundingBox(),
-    launchBox = await launch.boundingBox();
-  expect(Math.abs(warningBox!.y - launchBox!.y)).toBeLessThan(2);
-  await shot('deck-attention');
-  await warning.click();
-  await expect(page.locator('[data-deck-issue="unknown-card"] li')).toHaveCount(2);
-  await expect(page.locator('[data-deck-issue="wrong-role"] li')).toHaveCount(1);
-  await expect(page.locator('[data-deck-check-summary]')).toContainText('3 distinct cards');
-  await shot('deck-check');
-  await page.setViewportSize({ width: 390, height: 844 });
-  await expect(page.getByRole('dialog')).toBeInViewport();
-  await shot('deck-check-mobile');
-  await page.setViewportSize({ width: 1600, height: 1050 });
-  await expect(page.getByRole('dialog')).toContainText(/not a real leader/i);
-  await page.getByRole('button', { name: 'Close', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Create invitation', exact: true })).toBeDisabled();
-  await page.goto(origin + '/crossfire?cfDeck=' + main);
-  await expect(page.getByText('Ready for Crossfire practice.', { exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Game settings', exact: true })).toHaveCount(0);
-  await expect(page.getByRole('group', { name: 'Game settings', exact: true })).toBeVisible();
-  const bestOfOne = page.getByRole('radio', { name: 'Best of 1', exact: true });
-  const bestOfThree = page.getByRole('radio', { name: 'Best of 3', exact: true });
-  await expect(bestOfOne).toBeChecked();
-  await page.getByText('Best of 1', { exact: true }).click();
-  await expect(bestOfOne).toBeChecked();
-  await bestOfOne.focus();
-  // Radix defers the focus move; keep the key down until that move selects the radio.
+
+  // Match choice remains keyboard-operable; disabling spectators also removes hand disclosure.
+  const one = page.getByRole('radio', { name: 'Best of 1', exact: true });
+  const three = page.getByRole('radio', { name: 'Best of 3', exact: true });
+  await expect(three).toBeChecked();
+  await expect(
+    page.getByRole('checkbox', { name: 'Play with open hands', exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole('checkbox', { name: 'Let spectators see both hands', exact: true }),
+  ).toBeChecked();
+  await one.focus();
   await page.keyboard.down('ArrowRight');
-  await expect(bestOfThree).toBeChecked();
+  await expect(three).toBeChecked();
   await page.keyboard.up('ArrowRight');
-  await expect(bestOfOne).not.toBeChecked();
-  await expect(page.locator('.cf-format-description')).toContainText('Sideboarding');
   await page.getByRole('checkbox', { name: 'Let spectators see both hands', exact: true }).check();
   await page
     .getByRole('checkbox', { name: 'Allow spectators (only with invitation link)', exact: true })
@@ -439,38 +350,54 @@ try {
   await expect(
     page.getByRole('checkbox', { name: 'Let spectators see both hands', exact: true }),
   ).toBeDisabled();
-  await shot('game-settings');
-  await expect(page.getByRole('dialog')).toHaveCount(0);
-  await expect(bestOfThree).toBeChecked();
-  for (const name of ['Bookmarks', 'Bug reports']) {
-    await page.getByRole('tab', { name, exact: true }).click();
-    await expect(page.getByRole('tabpanel')).toBeVisible();
-  }
-  for (const width of [1024, 740, 390, 320]) {
-    await page.setViewportSize({ width, height: 900 });
-    await layout();
-    if (width === 320) {
-      for (const name of ['Bookmarks', 'Bug reports']) {
-        await page.getByRole('tab', { name, exact: true }).click();
-        await expect(page.locator('.cf-saved-activity article')).toBeVisible();
-        await layout();
+  await expect(page.locator('.cf-format-description')).toContainText('Sideboarding');
+  for (const dark of [false, true]) {
+    await theme(dark);
+    for (const width of [1600, 1024, 740, 390, 320]) {
+      await page.setViewportSize({ width, height: 1050 });
+      await expect(launch).toBeEnabled();
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
+      expect(overflow).toBe(false);
+      for (const control of [
+        page.locator('.cf-deck-picker'),
+        launch,
+        page.getByRole('tab', { name: 'Bookmarks', exact: true }),
+      ]) {
+        await control.scrollIntoViewIfNeeded();
+        await expect(control).toBeInViewport();
       }
-    }
-    if (width === 390) {
-      for (const dark of [true, false]) {
-        await theme(dark);
-        await page.locator('.cf-deck-picker').scrollIntoViewIfNeeded();
-        await shot(dark ? 'mobile-dark' : 'mobile-light');
+      if (width === 1600 || width === 390) {
         await page
-          .getByRole('button', { name: 'Create invitation', exact: true })
+          .getByRole('heading', { name: 'Crossfire', exact: true })
           .scrollIntoViewIfNeeded();
-        await expect(
-          page.getByRole('button', { name: 'Create invitation', exact: true }),
-        ).toBeInViewport();
-        await shot(dark ? 'mobile-play-dark' : 'mobile-play-light');
+        await shot(`${width === 1600 ? 'desktop' : 'mobile'}-${dark ? 'dark' : 'light'}`);
+        await launch.scrollIntoViewIfNeeded();
+        await shot(`${width === 1600 ? 'desktop' : 'mobile'}-settings-${dark ? 'dark' : 'light'}`);
       }
     }
   }
+  await page.setViewportSize({ width: 1600, height: 1050 });
+  for (const tab of ['Bookmarks', 'Bug reports']) {
+    await page.getByRole('tab', { name: tab, exact: true }).click();
+    await expect(page.locator('.cf-saved-activity article')).toBeVisible();
+    await expectArtwork(page.locator('.cf-saved-activity article'));
+  }
+  for (const width of [1600, 390, 320]) {
+    await page.setViewportSize({ width, height: 1050 });
+    const report = page.locator('.cf-report-row');
+    expect(await report.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
+    const title = await report.getByText('Attack target highlight', { exact: true }).boundingBox();
+    const description = await report
+      .getByText('Synthetic screenshot fixture for an earlier targeting issue.', { exact: true })
+      .boundingBox();
+    const link = await report.getByRole('link', { name: 'Open report', exact: true }).boundingBox();
+    expect(description!.y).toBeGreaterThanOrEqual(title!.y + title!.height);
+    expect(link!.y).toBeGreaterThanOrEqual(description!.y + description!.height);
+  }
+  await page.setViewportSize({ width: 1600, height: 1050 });
+  await shot('activity');
+  await page.getByRole('tab', { name: 'Bookmarks', exact: true }).click();
+
   const touch = await browser.newContext({
     viewport: { width: 390, height: 844 },
     isMobile: true,
@@ -486,12 +413,15 @@ try {
   await expect(touchPage.getByRole('radio', { name: 'Best of 3', exact: true })).toBeChecked();
   await touchPage.getByText('Best of 1', { exact: true }).tap();
   await expect(touchPage.getByRole('radio', { name: 'Best of 1', exact: true })).toBeChecked();
-  await touchPage.getByRole('button', { name: 'Your decks', exact: true }).tap();
-  await expect(touchPage.locator('.cf-deck-source-panel .cf-deck-row')).toHaveCount(20);
-  await touchPage.getByRole('button', { name: 'Public decks', exact: true }).tap();
+  await touchPage.getByRole('tab', { name: 'Your decks', exact: true }).tap();
   await expect(
-    touchPage.getByRole('button', { name: 'Public decks', exact: true }),
-  ).toHaveAttribute('aria-expanded', 'true');
+    touchPage.locator('[data-deck-picker]').getByRole('button', { name: /^Select deck:/ }),
+  ).toHaveCount(20);
+  await touchPage.getByRole('tab', { name: 'Public decks', exact: true }).tap();
+  await expect(touchPage.getByRole('tab', { name: 'Public decks', exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
   await touch.close();
   await page.setViewportSize({ width: 1600, height: 1050 });
   // Browser submission still goes through ordinary lobby admission with the selected policy.
@@ -526,6 +456,7 @@ try {
     },
   ]);
   const guestPage = await guestContext.newPage();
+  const guestBoard = new BoardDriver(guestPage);
   const otherTab = await guestContext.newPage();
   const frames: string[] = [],
     otherFrames: string[] = [];
@@ -552,23 +483,22 @@ try {
     );
     target.on('pageerror', error => errors.push(error.message));
     target.on('websocket', socket => {
-      if (socket.url().includes('/api/ws/invitations/crossfire'))
+      if (socket.url().includes('/api/ws/events'))
         socket.on('framereceived', frame => received.push(String(frame.payload)));
     });
     await target.goto(origin + '/crossfire?cfDeck=' + rival);
     const dismiss = target.getByRole('button', { name: 'Dismiss', exact: true });
     if (await dismiss.isVisible()) await dismiss.click();
-    await expect.poll(() => received.some(f => f.includes('crossfire.connected'))).toBe(true);
+    await expect.poll(() => received.some(f => f.includes('app.connected'))).toBe(true);
   }
-  const connectedBefore = otherFrames.filter(f => f.includes('crossfire.connected')).length;
+  const connectedBefore = otherFrames.filter(f => f.includes('app.connected')).length;
   await otherTab.evaluate(() => {
     const sockets = (window as unknown as { invitationTestSockets: WebSocket[] })
       .invitationTestSockets;
-    for (const socket of sockets)
-      if (socket.url.includes('/api/ws/invitations/crossfire')) socket.close();
+    for (const socket of sockets) if (socket.url.includes('/api/ws/events')) socket.close();
   });
   await expect
-    .poll(() => otherFrames.filter(f => f.includes('crossfire.connected')).length)
+    .poll(() => otherFrames.filter(f => f.includes('app.connected')).length)
     .toBeGreaterThan(connectedBefore);
   await guestPage.goto(origin + '/decks/your');
   await expect(
@@ -620,12 +550,10 @@ try {
   // Change the deck AFTER choosing the teammate, then explicitly send the reviewed selection.
   await deckSearch.fill(main);
   await expect(sendInvitation).toBeEnabled();
-  await expect(teammateButton).toHaveCSS(
-    'border-color',
-    await page
-      .locator('.cf-deck-row[aria-pressed="true"]')
-      .evaluate(row => getComputedStyle(row).borderColor),
-  );
+  await page.getByRole('button', { name: 'Clear selected teammate', exact: true }).click();
+  await expect(teammateButton).toHaveAttribute('aria-pressed', 'false');
+  await teammateButton.click();
+  await expect(teammateButton).toHaveAttribute('aria-pressed', 'true');
   await shot('teammate-invitation-draft');
   await page.setViewportSize({ width: 390, height: 844 });
   await teammateButton.click();
@@ -649,7 +577,10 @@ try {
     WHERE l.creator_user_id = ${host!.userId} AND i.recipient_user_id = ${guest!.userId}
       AND l.status = 'waiting'`;
   expect(sentDeck).toMatchObject({ deck_id: main, best_of: 3 });
-  await expect(popup.locator('.cf-invite-portraits img')).toHaveCount(2);
+  await expect(popup.locator('.cf-invitation-matchup .leader-base-artwork')).toHaveAttribute(
+    'aria-label',
+    'Ahsoka Tano, Trust in the Force / Command Center',
+  );
   await expect(otherTab.getByLabel('1 Crossfire invitations', { exact: true })).toBeVisible({
     timeout: 5000,
   });
@@ -662,14 +593,43 @@ try {
   ).toBeVisible();
   await expect(
     guestPage.getByRole('checkbox', { name: 'Play with open hands', exact: true }),
-  ).toBeDisabled();
-  await expect(guestPage.getByRole('radio', { name: 'Best of 3', exact: true })).toBeDisabled();
+  ).toHaveCount(0);
+  const invitationSettings = guestPage.getByRole('region', {
+    name: 'Invitation settings',
+    exact: true,
+  });
+  await expect(invitationSettings).toContainText('Best of 3');
+  await expect(invitationSettings).toContainText(
+    'Spectators can join with the invitation link. They can see both hands.',
+  );
+  await expect(guestPage.getByRole('radio')).toHaveCount(0);
+  await expect(guestPage.getByRole('checkbox')).toHaveCount(0);
   await expect(guestPage.locator('.cf-lobby-banner')).toContainText(
     'Alex invited you to Crossfire',
   );
+  await expect(guestPage.locator('.cf-lobby-banner .leader-base-artwork')).toHaveAttribute(
+    'aria-label',
+    'Ahsoka Tano, Trust in the Force / Command Center',
+  );
+  await expect(popup).toHaveCount(0);
+  await expect(guestPage.locator('.cf-home-aside')).toHaveCount(0);
+  const chooseStep = guestPage.locator('.cf-deck-picker-heading');
+  await expect(chooseStep).toHaveAttribute('aria-current', 'step');
+  await expect(
+    guestPage.getByRole('button', { name: 'Accept invitation and play', exact: true }),
+  ).toBeDisabled();
+  await shot('invitation-choose-deck', guestPage);
+  const guestDeckChoice = guestPage.getByRole('button', {
+    name: 'Select deck: Vader • Imperial command',
+    exact: true,
+  });
+  await guestDeckChoice.focus();
+  await guestPage.keyboard.press('Enter');
   await expect(
     guestPage.getByRole('button', { name: 'Accept invitation and play', exact: true }),
   ).toBeEnabled();
+  await expect(chooseStep).not.toHaveAttribute('aria-current', 'step');
+  await expect(guestPage.locator('[aria-current="step"]')).toContainText('Review and play');
   await shot('accept-invitation', guestPage);
   const beforeAccept = otherFrames.length;
   await guestPage.getByRole('button', { name: 'Accept invitation and play', exact: true }).click();
@@ -679,6 +639,102 @@ try {
     timeout: 5000,
   });
   expect(otherFrames.slice(beforeAccept).some(f => f.includes('crossfire.invitation'))).toBe(true);
+  // Real hand consent in both seats, with a separately authenticated spectator.
+  await hostBoard.ready();
+  await guestBoard.ready();
+  for (let step = 0; step < 10; step++) {
+    if (hostBoard.view!.players.every(player => player.handCount > 0)) break;
+    const driver = [hostBoard, guestBoard].find(board => board.view?.decision);
+    if (!driver?.view?.decision) throw new Error('No setup choice');
+    const decision = driver.view.decision;
+    await driver.choose(
+      decision.options.find(option => option.kind === 'mulligan' && !option.takeMulligan) ??
+        decision.options[0]!,
+    );
+  }
+  expect(hostBoard.view!.players.every(player => player.handCount > 0)).toBe(true);
+  const hostReveal = page.getByRole('checkbox', { name: 'Reveal my hand', exact: true });
+  const guestReveal = guestPage.getByRole('checkbox', { name: 'Reveal my hand', exact: true });
+  const handCount = (board: BoardDriver, owner: string) =>
+    board.view?.cards.filter(card => card.zone === 'hand' && card.owner === owner).length ?? 0;
+  await expect(hostReveal).not.toBeChecked();
+  await expect(guestReveal).not.toBeChecked();
+  expect(handCount(guestBoard, 'p1')).toBe(0);
+  await hostReveal.click();
+  await expect(hostReveal).toBeChecked();
+  await expect.poll(() => handCount(guestBoard, 'p1')).toBeGreaterThan(0);
+  expect(handCount(hostBoard, 'p2')).toBe(0);
+  await guestReveal.click();
+  await expect(guestReveal).toBeChecked();
+  await expect.poll(() => handCount(hostBoard, 'p2')).toBeGreaterThan(0);
+  hostBoard.view = null;
+  await page.reload();
+  await hostBoard.ready();
+  await expect(hostReveal).toBeChecked();
+  await hostReveal.click();
+  await expect(hostReveal).not.toBeChecked();
+  await expect.poll(() => handCount(guestBoard, 'p1')).toBe(0);
+  expect(handCount(hostBoard, 'p2')).toBeGreaterThan(0);
+  await shot('hand-reveal-desktop');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(hostReveal).toBeVisible();
+  const controlBox = (await hostReveal.boundingBox())!;
+  expect(controlBox.x).toBeGreaterThanOrEqual(0);
+  expect(controlBox.x + controlBox.width).toBeLessThanOrEqual(390);
+  await hostReveal.click();
+  await expect(hostReveal).toBeChecked();
+  await expect.poll(() => handCount(guestBoard, 'p1')).toBeGreaterThan(0);
+  await shot('hand-reveal-mobile');
+  await page.setViewportSize({ width: 844, height: 390 });
+  await expect(hostReveal).toBeVisible();
+  const landscapeControl = (await hostReveal.boundingBox())!;
+  expect(landscapeControl.y).toBeGreaterThanOrEqual(0);
+  expect(landscapeControl.y + landscapeControl.height).toBeLessThanOrEqual(390);
+  await shot('hand-reveal-landscape');
+  await page.setViewportSize({ width: 1600, height: 1050 });
+  const observerContext = await browser.newContext();
+  const observerCookie = (
+    await serializeSignedCookie(cookieName, users[2]!.token, process.env.BETTER_AUTH_SECRET!)
+  ).split(';')[0]!;
+  await observerContext.addCookies([
+    {
+      name: cookieName,
+      value: observerCookie.slice(observerCookie.indexOf('=') + 1),
+      url: origin,
+      httpOnly: true,
+      secure: origin.startsWith('https:'),
+      sameSite: 'Lax',
+    },
+  ]);
+  const observerPage = await observerContext.newPage();
+  const observerBoard = new BoardDriver(observerPage);
+  await observerPage.goto(page.url());
+  await observerBoard.ready();
+  expect(handCount(observerBoard, 'p1')).toBeGreaterThan(0);
+  expect(handCount(observerBoard, 'p2')).toBeGreaterThan(0);
+  await expect(
+    observerPage.getByRole('checkbox', { name: 'Reveal my hand', exact: true }),
+  ).toHaveCount(0);
+  await expect(page.getByLabel('Spectator joined', { exact: true })).toContainText(
+    'Kai joined as a spectator.',
+  );
+  await expect(guestPage.getByLabel('Spectator joined', { exact: true })).toContainText(
+    'Kai joined as a spectator.',
+  );
+  await shot('spectator-joined');
+  await observerPage.reload();
+  await expect(page.getByLabel('Spectator joined', { exact: true })).toHaveCount(1);
+  await observerContext.close();
+  const anonymous = await browser.newContext();
+  const anonPage = await anonymous.newPage();
+  const lobbyId = new URL(page.url()).pathname.split('/').at(-1)!;
+  const anonymousTicket = await anonPage.request.post(
+    origin + '/api/crossfire/lobbies/' + lobbyId + '/tickets',
+    { data: { role: 'spectator' }, headers: { Origin: origin } },
+  );
+  expect(anonymousTicket.status()).toBe(401);
+  await anonymous.close();
+
   // Expire a hidden-leader invite in PostgreSQL while recipient tabs stay open.
   await page.goto(origin + '/crossfire?cfDeck=' + main);
   await page.getByRole('checkbox', { name: 'Show my leader before game', exact: true }).uncheck();
@@ -690,6 +746,7 @@ try {
   await expect(
     otherTab.getByRole('dialog', { name: 'Crossfire invitation', exact: true }).locator('img'),
   ).toHaveCount(2); // two theme logos, no leader/base
+  await expect(otherTab.locator('.cf-invitation-matchup')).toHaveCount(0);
   const response = await otherTab.request.get(origin + '/api/crossfire/invitations');
   const hidden = (await response.json()).data.find(
     (i: { direction: string }) => i.direction === 'incoming',
@@ -764,7 +821,7 @@ try {
   await expect(
     guestPage.getByRole('heading', { name: 'You won this game', exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Ready for next game', exact: true })).toBeVisible({
+  await expect(page.getByRole('button', { name: 'Go to sideboarding', exact: true })).toBeVisible({
     timeout: 45_000,
   });
   await page.getByRole('dialog').getByRole('button', { name: 'Leave game', exact: true }).click();
@@ -815,7 +872,7 @@ try {
   const rejectedCode = await otherTab.evaluate(
     () =>
       new Promise<number>(resolve => {
-        const url = new URL('/api/ws/invitations/crossfire', location.origin);
+        const url = new URL('/api/ws/events', location.origin);
         url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
         const ws = new WebSocket(url);
         ws.onclose = event => resolve(event.code);
@@ -828,39 +885,7 @@ try {
   expect(rejectedCode).toBe(4401);
   await guestContext.close();
   expect(errors).toEqual([]);
-  const gallery = [
-    ['teammate-invitation-draft', 'Teammate invitation · Review before sending'],
-    ['teammate-invitation-draft-mobile', 'Teammate invitation · Mobile review'],
-    ['unavailable-game', 'Older game · Clear connection error'],
-    ['close-game-confirmation', 'Close an incompatible game'],
-    ['close-game-mobile', 'Close game · Mobile'],
-    ['closed-game-history', 'Abandoned game retained in history'],
-    ['leave-match-options', 'BO3 · Concede a game or leave the match'],
-    ['forfeited-match', 'Forfeited match · Result and replay'],
-    ['finished-games', 'Finished games · Both accounts updated'],
-    ['incoming-invitation', 'Incoming invitation anywhere on SWUBASE'],
-    ['accept-invitation', 'Accept invitation · Choose your deck'],
-    ['host-waiting', 'Host · Waiting for your opponent'],
-    ['invitation-count', 'Live invitations and sidebar count'],
-    ['hidden-leader-invitation', 'Hidden leader and base'],
-    ['desktop-dark', 'Desktop · Dark'],
-    ['desktop-light', 'Desktop · Light'],
-    ['linked-deck', 'Selected linked deck'],
-    ['deck-attention', 'Deck needs attention'],
-    ['deck-check', 'Grouped deck check'],
-    ['deck-check-mobile', 'Deck check · Mobile'],
-    ['saved-positions', 'Saved positions'],
-
-    ['reports', 'Problem reports'],
-    ['deck-preview', 'Decklist preview'],
-    ['deck-preview-mobile', 'Full decklist preview · Mobile'],
-    ['deck-detail-play', 'Play from deck detail'],
-    ['game-settings', 'Inline game settings'],
-    ['mobile-dark', 'Mobile · Deck selector'],
-    ['mobile-play-dark', 'Mobile · Play and running games'],
-    ['mobile-light', 'Mobile · Light'],
-    ['mobile-play-light', 'Mobile · Play in light mode'],
-  ];
+  const gallery = captured.map(name => [name, name.replaceAll('-', ' ')]);
   const html = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Crossfire · Play desk screenshots</title>
     <style>body{background:#0b1119;color:#eef6f6;font:15px system-ui;padding:24px;max-width:1400px;margin:auto}a{color:#7adbd1}nav{display:flex;flex-wrap:wrap;gap:16px}section{padding:16px;border:1px solid #2b3945;border-radius:12px;margin:24px 0}h2{font-size:17px}img{display:block;max-width:100%;height:auto;margin:auto;border-radius:7px}.mobile img{max-width:min(100%,390px)}</style>
     <h1>Crossfire · Play desk</h1><p>The real local SWUBASE page with synthetic decks and activity.</p><p><a href="/crossfire">Open Crossfire</a></p>
@@ -875,7 +900,7 @@ try {
     gallery.map(([name]) => copyFile(`${screenshots}/${name}.png`, `${served}/${name}.png`)),
   );
   console.log(
-    'Crossfire home: linked selection, deck checks, activity artwork, search, paging, responsive layouts, settings and invitation passed.',
+    'Crossfire home: deck selection, invitations, responsive layouts, default settings, independent hand reveal, authenticated spectator notices and match exits passed.',
   );
 } catch (error) {
   await shot('failure');

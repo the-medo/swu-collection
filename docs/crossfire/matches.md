@@ -60,12 +60,23 @@ match at 0–0. Source deck edits in SWUBASE cannot change an accepted rematch.
 
 The live board automatically opens a result dialog when the game ends, including
 when a player reloads a finished game. Single games offer mutual rematch consent;
-best-of-three games show the score and private sideboard until a player reaches
-two wins, then offer a new match at 0–0. Opening the dialog never submits readiness
+best-of-three games show the score and a prominent **Go to sideboarding** action
+until a player reaches two wins, then offer a new match at 0–0. Opening the dialog never submits readiness
 or rematch consent. The player can dismiss it to inspect the board and reopen it
-from the toolbar; polling does not reopen a dismissed result. A later game's
+from the highlighted **Post-game** toolbar button; polling does not reopen a dismissed result. A later game's
 dialog starts independently. While a single game is active its rematch control is
 hidden; an active best-of-three game retains a compact score control.
+
+Sideboarding opens in a full-screen dialog with separate main-deck and sideboard
+card grids. Each card tile shows its quantity; a click or keyboard activation
+moves one copy to the other grid. The leader and base stay fixed. Deck-size and
+unsupported-card checks prevent an invalid ready submission. **Ready for next
+game** submits the private deck and locks editing; **Change my deck** withdraws
+readiness. The opponent sees only the ready status. Unsaved swaps survive trips
+to the match result or finished board while the page stays mounted; a reload
+restores the submitted deck while ready, otherwise the previous game’s deck.
+Both grids scroll independently, stacking on
+phones while the ready controls remain visible.
 
 The tables follow the existing schema-wide contributor sanitizer and `play.*`
 dump exclusion. Deleting a game/lobby cascades its coordination rows; ordinary
