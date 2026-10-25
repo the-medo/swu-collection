@@ -62,6 +62,7 @@ const StatisticsMetaPieChart: React.FC<StatisticsMetaPieChartProps> = ({
         draws: remainingItems.reduce((sum, item) => sum + item.draws, 0),
         gameWins: remainingItems.reduce((sum, item) => sum + item.gameWins, 0),
         gameLosses: remainingItems.reduce((sum, item) => sum + item.gameLosses, 0),
+        gameDraws: remainingItems.reduce((sum, item) => sum + item.gameDraws, 0),
         percentage: parseFloat(((othersCount / totalMatches) * 100).toFixed(1)),
       },
     });
@@ -77,7 +78,9 @@ const StatisticsMetaPieChart: React.FC<StatisticsMetaPieChartProps> = ({
   const hoveredItem = chartData.find(item => item.id === hoveredKey)?.item ?? null;
 
   if (analysisData.length === 0) {
-    return <p className="text-muted-foreground">No opponent meta available for the selected filters.</p>;
+    return (
+      <p className="text-muted-foreground">No opponent meta available for the selected filters.</p>
+    );
   }
 
   return (
@@ -115,7 +118,9 @@ const StatisticsMetaPieChart: React.FC<StatisticsMetaPieChartProps> = ({
               <div className="flex items-center gap-2 flex-wrap">
                 {labelRenderer(datum.id as string, metaInfo, 'compact')}
                 <span className="font-bold">{datum.value}</span>
-                <span className="text-xs">({((datum.value / totalMatches) * 100).toFixed(1)}%)</span>
+                <span className="text-xs">
+                  ({((datum.value / totalMatches) * 100).toFixed(1)}%)
+                </span>
               </div>
             </div>
           )}

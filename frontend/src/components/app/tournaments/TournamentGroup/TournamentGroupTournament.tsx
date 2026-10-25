@@ -1,3 +1,4 @@
+import { competitionStyles } from '@/components/app/tournaments/competitionStyles';
 import React from 'react';
 import { TournamentGroupTournament as TournamentGroupTournamentType } from '../../../../../../types/TournamentGroup';
 import { useCountryList } from '@/api/lists/useCountryList.ts';
@@ -31,6 +32,7 @@ const TournamentGroupTournament: React.FC<TournamentGroupTournamentProps> = ({
   formatBadge,
 }) => {
   const { tournament, deck } = tournamentItem;
+  const [failedThumbnail, setFailedThumbnail] = React.useState<string | null>(null);
   const { data: countryData } = useCountryList();
   const { data: cardList } = useCardList();
 
@@ -38,7 +40,7 @@ const TournamentGroupTournament: React.FC<TournamentGroupTournamentProps> = ({
   const thumbnailUrl = `https://images.swubase.com/tournament/${tournament.id}.webp`;
 
   // Get country data
-  const countryCode = tournament.continent as CountryCode;
+  const countryCode = tournament.location as CountryCode;
   const country = countryData?.countries[countryCode];
 
   // Should display deck
@@ -58,17 +60,20 @@ const TournamentGroupTournament: React.FC<TournamentGroupTournamentProps> = ({
       params={{ tournamentId: tournament.id }}
       className="block h-full"
     >
-      <Card className="overflow-hidden flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+      <Card className={cn('overflow-hidden flex flex-col h-full', competitionStyles.eventCard)}>
         <div className="relative overflow-hidden">
-          <img
-            src={thumbnailUrl}
-            alt={tournament.name}
-            className={`w-full h-full object-cover transition-transform duration-300 hover:scale-110 ${isUpcoming ? 'grayscale' : ''}`}
-            onError={e => {
-              // Fallback if image fails to load
-              e.currentTarget.src = 'https://placehold.co/600x400?text=No+Image';
-            }}
-          />
+          {failedThumbnail === thumbnailUrl ? (
+            <div className="aspect-video flex items-center justify-center bg-muted p-4 text-center text-sm text-muted-foreground">
+              {tournament.name}
+            </div>
+          ) : (
+            <img
+              src={thumbnailUrl}
+              alt={tournament.name}
+              className={`w-full h-full object-cover transition-transform duration-300 hover:scale-110 ${isUpcoming ? 'grayscale' : ''}`}
+              onError={() => setFailedThumbnail(thumbnailUrl)}
+            />
+          )}
 
           <UpcomingBadge
             date={tournament.date as unknown as string}
@@ -94,7 +99,7 @@ const TournamentGroupTournament: React.FC<TournamentGroupTournamentProps> = ({
           {!compact && (
             <h4 className="font-semibold text-lg mb-2 line-clamp-2">{tournament.name}</h4>
           )}
-          <div className="mt-auto flex flex-row justify-between items-center text-sm text-gray-600">
+          <div className="mt-auto flex flex-row justify-between items-center text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Users size={16} />
               <span>{tournament.attendance}</span>

@@ -61,6 +61,44 @@ test('one saved BO3 game stays in progress and does not lower deck match winrate
     matchWinrate: 100,
     gameWins: 2,
     gameLosses: 0,
+    totalGames: 2,
+    totalMatches: 1,
+    matchDraws: 0,
+  });
+});
+
+test('deck totals include draws and distinguish Bo1 from mixed match lengths', () => {
+  const matches = [[true], [false], [null]].map((outcomes, i) => {
+    const games = outcomes.map(outcome => game(outcome));
+    return { id: String(i), games, ...summarizeMatch(games) } as MatchResult;
+  });
+  expect(calculateDeckStatistics('deck', matches)).toMatchObject({
+    totalGames: 3,
+    totalMatches: 3,
+    matchWins: 1,
+    matchLosses: 1,
+    matchDraws: 1,
+    gameWins: 1,
+    gameLosses: 1,
+  });
+
+  const games = [game(true), game(false), game(true)];
+  matches.push({ id: 'bo3', games, ...summarizeMatch(games) } as MatchResult);
+  expect(calculateDeckStatistics('deck', matches)).toMatchObject({
+    totalGames: 6,
+    totalMatches: 4,
+    matchWins: 2,
+    matchLosses: 1,
+    matchDraws: 1,
+    gameWins: 3,
+    gameLosses: 2,
+  });
+  expect(calculateDeckStatistics('empty', [])).toMatchObject({
+    totalGames: 0,
+    totalMatches: 0,
+    matchDraws: 0,
+    matchWinrate: 0,
+    gameWinrate: 0,
   });
 });
 

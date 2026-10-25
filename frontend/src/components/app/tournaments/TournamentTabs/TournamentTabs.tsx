@@ -1,3 +1,4 @@
+import { competitionStyles } from '@/components/app/tournaments/competitionStyles';
 import * as React from 'react';
 import { Link } from '@tanstack/react-router';
 import { cn } from '@/lib/utils';
@@ -48,7 +49,12 @@ const TabLink: React.FC<TabLinkProps> = ({ tournamentId, tab, isActive, mode }) 
 
   // mode === 'search-params'
   return (
-    <Link to="." search={prev => ({ ...prev, page: tab.key })} className={commonClass}>
+    <Link
+      to="."
+      search={prev => ({ ...prev, page: tab.key })}
+      className={commonClass}
+      aria-current={isActive ? 'page' : undefined}
+    >
       {tab.label}
     </Link>
   );
@@ -71,7 +77,14 @@ const TournamentTabs: React.FC<TournamentTabsProps> = ({
 }) => {
   return (
     <div className={cn('w-full', className)}>
-      <div className="mb-2 grid grid-cols-3 rounded-lg bg-muted p-1 md:grid-cols-5">
+      <div
+        className={cn(
+          'mb-2 grid grid-cols-3 rounded-lg bg-muted p-1 md:grid-cols-5',
+          competitionStyles.tabs,
+        )}
+        role="navigation"
+        aria-label="Tournament details"
+      >
         {tabs.map(tab => (
           <TabLink
             key={tab.key}

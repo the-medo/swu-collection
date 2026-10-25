@@ -35,8 +35,9 @@ const ViewModeSelector: React.FC<ViewModeSelectorProps> = ({
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="text-xs w-[250px] justify-between">
-          <span className="text-[1.2em] font-semibold">View mode:</span> {viewModeObj[value]?.title}
+        <Button variant="outline" className="h-8 max-w-full gap-2 text-xs justify-between">
+          <span className="text-xs text-muted-foreground">View mode:</span>{' '}
+          {viewModeObj[value]?.title}
           <LayoutGrid className="h-4 w-4 ml-2" />
         </Button>
       </DropdownMenuTrigger>

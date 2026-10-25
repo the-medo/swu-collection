@@ -19,6 +19,8 @@ export interface CardPoolStackProps {
 }
 
 const CardPoolStack: React.FC<CardPoolStackProps> = ({ items, size = 'w200' }) => {
+  if (items.length === 0) return null;
+
   return (
     <div className="flex-none px-1">
       <ul className={cn('flex flex-col pt-[240px]', size === 'w200' ? 'pt-[220px]' : 'pt-[120px]')}>

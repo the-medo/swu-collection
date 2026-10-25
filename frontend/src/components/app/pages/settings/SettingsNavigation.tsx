@@ -26,7 +26,11 @@ export function SettingsNavigation({ page }: { page: SettingsPageId }) {
           </SelectTrigger>
           <SelectContent>
             {settingsItems.map(item => (
-              <SelectItem key={item.id} value={item.id}>
+              <SelectItem
+                key={item.id}
+                value={item.id}
+                className="data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary"
+              >
                 <span className="flex items-center gap-2">
                   <item.icon className="size-4 text-muted-foreground" aria-hidden="true" />
                   {item.label}

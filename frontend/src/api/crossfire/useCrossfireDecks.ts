@@ -9,14 +9,15 @@ export function useCrossfireDecks(
   source: CrossfireDeckSource,
   search: string,
   enabled = true,
+  folderId?: string,
 ) {
   return useInfiniteQuery({
-    queryKey: [...crossfireKeys.session(sessionId), 'decks', source, search],
+    queryKey: [...crossfireKeys.session(sessionId), 'decks', source, search, folderId],
     enabled,
     initialPageParam: undefined as string | undefined,
     queryFn: async ({ pageParam, signal }) => {
       const response = await api.crossfire.decks.$get(
-        { query: { source, search, cursor: pageParam } },
+        { query: { source, search, cursor: pageParam, folderId } },
         { init: { signal } },
       );
       if (!response.ok) throw await createApiError(response, 'Could not load decks');

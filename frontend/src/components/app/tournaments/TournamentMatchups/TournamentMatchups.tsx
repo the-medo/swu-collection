@@ -1,3 +1,5 @@
+import { competitionStyles } from '@/components/app/tournaments/competitionStyles';
+import { cn } from '@/lib/utils';
 import * as React from 'react';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useLabel } from '../TournamentMeta/useLabel.tsx';
@@ -117,7 +119,12 @@ const TournamentMatchups: React.FC<TournamentMatchupsProps> = ({ decks, tourname
 
   return (
     <div className="space-y-2">
-      <div className="flex flex-row gap-2 flex-wrap items-start justify-between">
+      <div
+        className={cn(
+          'flex flex-row gap-2 flex-wrap items-start justify-between',
+          competitionStyles.analysisControls,
+        )}
+      >
         <MobileCard>
           <DisplayModeSelector value={displayMode} onChange={setDisplayMode} />
         </MobileCard>

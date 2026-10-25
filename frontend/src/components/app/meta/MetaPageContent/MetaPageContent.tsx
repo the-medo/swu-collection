@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button.tsx';
 import { useGetTournaments } from '@/api/tournaments/useGetTournaments.ts';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { useMemo } from 'react';
@@ -29,7 +30,7 @@ const MetaPageContent: React.FC<MetaPageContentProps> = ({
   tournamentGroupId,
   route,
 }) => {
-  const { data, isFetching } = useGetTournaments(
+  const { data, isFetching, isError, refetch } = useGetTournaments(
     {
       format: formatId,
       meta: metaId,
@@ -46,7 +47,16 @@ const MetaPageContent: React.FC<MetaPageContentProps> = ({
     return data.pages.flatMap(page => page.data || []);
   }, [data, tournaments]);
 
-  if (isFetching) return <Skeleton className="h-full w-full rounded-md" />;
+  if (!tournaments && isFetching && !data) return <Skeleton className="h-80 w-full rounded-2xl" />;
+  if (!tournaments && isError && !data)
+    return (
+      <div className="rounded-lg border p-3 space-y-2" role="alert">
+        <p>Could not load tournaments for this meta.</p>
+        <Button variant="outline" onClick={() => void refetch()}>
+          Retry
+        </Button>
+      </div>
+    );
   return (
     <MetaTabs
       tournaments={tournamentsData}

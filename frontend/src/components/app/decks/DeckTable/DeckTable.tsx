@@ -1,3 +1,4 @@
+import { browseStyles } from '@/components/app/global/BrowsePage/browseStyles';
 import { DataTable } from '@/components/ui/data-table.tsx';
 import { useDeckTableColumns } from './useDeckTableColumns.tsx';
 import { UserDeckData } from './deckTableLib.tsx';
@@ -36,16 +37,18 @@ const DeckTable: React.FC<DeckTableProps> = ({
   });
 
   return (
-    <DataTable
-      columns={columns}
-      data={decks}
-      loading={loading}
-      view={view}
-      enableRowSelection={selectable}
-      rowSelection={rowSelection}
-      onRowSelectionChange={onRowSelectionChange}
-      getRowId={(row, index) => row.deck?.id ?? `skeleton-${index}`}
-    />
+    <div className={browseStyles.table}>
+      <DataTable
+        columns={columns}
+        data={decks}
+        loading={loading}
+        view={view}
+        enableRowSelection={selectable}
+        rowSelection={rowSelection}
+        onRowSelectionChange={onRowSelectionChange}
+        getRowId={(row, index) => row.deck?.id ?? `skeleton-${index}`}
+      />
+    </div>
   );
 };
 

@@ -1,3 +1,7 @@
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles';
+import { statisticsStyles } from '@/components/app/statistics/statisticsStyles';
+import { cn } from '@/lib/utils';
+import { ChartNoAxesCombined } from 'lucide-react';
 import { createFileRoute, Outlet, useLocation } from '@tanstack/react-router';
 import StatisticsTabs from '@/components/app/statistics/StatisticsTabs/StatisticsTabs.tsx';
 import StatisticsFilters from '@/components/app/statistics/components/StatisticsFilters/StatisticsFilters.tsx';
@@ -45,15 +49,28 @@ function RouteComponent() {
   const { pathname } = useLocation();
   const activeTab = pathname.split('/').pop() || 'dashboard';
   return (
-    <div className="p-2 @container/full-stats-page">
+    <div
+      className={cn(
+        'p-2 sm:p-3 @container/full-stats-page',
+        workspaceStyles.theme,
+        statisticsStyles.page,
+      )}
+    >
       <SignInWrapper text="Sign in to see your statistics">
-        <div className="flex flex-col items-start justify-between gap-2 mb-2 @[720px]/full-stats-page:flex-row @[720px]/full-stats-page:items-end">
-          <h3 className="mb-0!">Your statistics</h3>
-          <div className="flex w-full min-w-0 gap-4 @[720px]/full-stats-page:w-auto">
+        <div className={statisticsStyles.header}>
+          <h1 className={cn('flex items-center gap-2', workspaceStyles.title)}>
+            <ChartNoAxesCombined
+              size={20}
+              className="text-[var(--workspace-accent)]"
+              aria-hidden="true"
+            />
+            Your statistics
+          </h1>
+          <div className="min-w-0">
             <StatisticsFilters />
           </div>
         </div>
-        <StatisticsTabs activeTab={activeTab} className="mb-4" />
+        <StatisticsTabs activeTab={activeTab} className={statisticsStyles.nav} />
         <GameResultsProvider>
           <Outlet />
         </GameResultsProvider>

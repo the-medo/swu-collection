@@ -1,7 +1,8 @@
+import { calculateResultStatistics } from '@/components/app/statistics/lib/resultStatistics';
+import { statisticsStyles } from '@/components/app/statistics/statisticsStyles';
 import * as React from 'react';
 import { useMemo, useCallback } from 'react';
 import { ResponsiveTimeRange, CalendarDatum, TimeRangeSvgProps } from '@nivo/calendar';
-import { useTheme } from '@/components/theme-provider.tsx';
 import { format, subDays } from 'date-fns';
 import DashboardCalendarTooltip from './DashboardCalendarTooltip.tsx';
 import { MatchResult } from '@/components/app/statistics/lib/MatchResult.ts';
@@ -15,6 +16,7 @@ export type DashboardCalendarData = CalendarDatum & {
   gamesCount: number;
   gameWins: number;
   gameLosses: number;
+  gameDraws: number;
   containsInTeam: boolean;
   containsNotInTeam: boolean;
 };
@@ -24,7 +26,6 @@ interface DashboardCalendarProps {
 }
 
 const DashboardCalendar: React.FC<DashboardCalendarProps> = ({ matchesByDate }) => {
-  const { theme } = useTheme();
   const { sInTeam } = useSearch({
     strict: false,
   });
@@ -32,56 +33,26 @@ const DashboardCalendar: React.FC<DashboardCalendarProps> = ({ matchesByDate }) 
   const calendarData = useMemo<DashboardCalendarData[]>(() => {
     if (!matchesByDate) return [];
 
-    return Object.entries(matchesByDate).map(([date, matches]) => {
-      let totalMatches = 0;
-      let totalGames = 0;
-      let wins = 0;
-      let losses = 0;
-      let draws = 0;
-      let gWins = 0;
-      let gLosses = 0;
-      let containsInTeam = false;
-      let containsNotInTeam = false;
-
-      matches.forEach(match => {
-        if (match.inTeam) {
-          containsInTeam = true;
-          if (match.id.startsWith('inTeam-')) {
-            totalGames += match.games.length;
-            if (match.result !== undefined) totalMatches++;
-          }
-          return;
-        } else {
-          containsNotInTeam = true;
-        }
-
-        if (match.result === 3) wins++;
-        else if (match.result === 1) draws++;
-        else if (match.result === 0) losses++;
-
-        totalGames += match.games.length;
-        if (match.result !== undefined) totalMatches++;
-
-        match.games.forEach(game => {
-          if (game.isWinner === true) gWins++;
-          else if (game.isWinner === false) gLosses++;
-        });
-      });
-
-      return {
-        day: date,
-        value: totalMatches ? wins / totalMatches : 0,
-        matchWins: wins,
-        matchLosses: losses,
-        matchDraws: draws,
-        matchesCount: totalMatches,
-        gamesCount: totalGames,
-        gameWins: gWins,
-        gameLosses: gLosses,
-        containsInTeam,
-        containsNotInTeam,
-      };
-    });
+    return Object.entries(matchesByDate)
+      .map(([date, matches]) => {
+        const stats = calculateResultStatistics(matches);
+        const ratedMatches = stats.matchWins + stats.matchLosses + stats.matchDraws;
+        return {
+          day: date,
+          value: ratedMatches > 0 ? stats.matchWins / ratedMatches : -1,
+          matchWins: stats.matchWins,
+          matchLosses: stats.matchLosses,
+          matchDraws: stats.matchDraws,
+          matchesCount: stats.totalMatches,
+          gamesCount: stats.totalGames,
+          gameWins: stats.gameWins,
+          gameLosses: stats.gameLosses,
+          gameDraws: stats.gameDraws,
+          containsInTeam: stats.containsInTeam,
+          containsNotInTeam: stats.containsNotInTeam,
+        };
+      })
+      .filter(day => day.gamesCount > 0);
   }, [matchesByDate]);
 
   const { from, to } = useMemo(() => {
@@ -92,8 +63,6 @@ const DashboardCalendar: React.FC<DashboardCalendarProps> = ({ matchesByDate }) 
     };
   }, []);
 
-  const isDark = theme === 'dark';
-
   const tooltip = useCallback(
     (n: DashboardCalendarData) => {
       return <DashboardCalendarTooltip data={n} showWinLose={!sInTeam} />;
@@ -101,33 +70,47 @@ const DashboardCalendar: React.FC<DashboardCalendarProps> = ({ matchesByDate }) 
     [sInTeam],
   );
 
+  const colorScale = useMemo(
+    () =>
+      Object.assign(
+        (value: number | { valueOf(): number }) => {
+          if (sInTeam) return 'var(--workspace-accent)';
+          const winrate = Number(value);
+          // Played days without eligible match results have no win rate yet.
+          if (winrate < 0) return 'var(--statistics-activity-unrated)';
+          const step = Math.min(7, Math.floor(Math.max(0, winrate) * 8)) + 1;
+          return `var(--statistics-activity-${step})`;
+        },
+        { ticks: () => [0, 0.5, 1] },
+      ),
+    [sInTeam],
+  );
+
   return (
-    <div className="h-[200px] w-full min-w-0">
+    <div className={statisticsStyles.calendar}>
       <ResponsiveTimeRange
         data={calendarData}
         from={from}
         to={to}
-        emptyColor={isDark ? '#222222' : '#eeeeee'}
-        colors={['#f47560', '#e8c1a0', '#bcf497', '#61cdbb', '#61cdbb']}
+        minValue={0}
+        maxValue={1}
+        emptyColor="var(--statistics-activity-empty)"
+        colorScale={colorScale}
         margin={{ top: 20, right: 20, bottom: 20, left: 40 }}
         dayBorderWidth={2}
-        dayBorderColor={isDark ? '#111111' : '#ffffff'}
+        dayBorderColor="var(--statistics-activity-surface)"
         tooltip={tooltip as unknown as TimeRangeSvgProps['tooltip']}
         monthLegendOffset={10}
         firstWeekday="monday"
         theme={{
           text: {
-            fill: isDark ? '#ffffff' : '#333333',
+            fill: 'hsl(var(--muted-foreground))',
           },
-          ...(isDark
-            ? {
-                grid: {
-                  line: {
-                    stroke: '#333333',
-                  },
-                },
-              }
-            : {}),
+          grid: {
+            line: {
+              stroke: 'hsl(var(--border))',
+            },
+          },
         }}
       />
     </div>

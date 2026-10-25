@@ -1,3 +1,5 @@
+import { browseStyles } from '@/components/app/global/BrowsePage/browseStyles';
+import { cn } from '@/lib/utils';
 import { useCallback } from 'react';
 import LeaderSelector from '@/components/app/global/LeaderSelector/LeaderSelector.tsx';
 import BaseSelector from '@/components/app/global/BaseSelector/BaseSelector.tsx';
@@ -95,7 +97,7 @@ const DeckFilters: React.FC<DeckFiltersProps> = ({ initialized }) => {
   }
 
   return (
-    <div className="p-2 flex flex-wrap items-center gap-2">
+    <div className={cn('p-2 flex flex-wrap items-center gap-2', browseStyles.deckFilters)}>
       <LeaderSelector
         trigger={null}
         size="w100"
@@ -165,7 +167,7 @@ const DeckFilters: React.FC<DeckFiltersProps> = ({ initialized }) => {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <div className="flex justify-end pt-2">
+      <div className="flex justify-end">
         <Button
           variant="secondary"
           disabled={!hasActiveFilters}

@@ -4,7 +4,15 @@ import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Textarea } from '@/components/ui/textarea.tsx';
 import { Label } from '@/components/ui/label.tsx';
-import { ButtonGroup } from '@/components/ui/button-group.tsx';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select.tsx';
+import { FileUp, Link, Text } from 'lucide-react';
+import { cn } from '@/lib/utils.ts';
 import FormFieldError from '@/components/app/global/FormFieldError.tsx';
 import {
   attachmentCategories,
@@ -97,52 +105,64 @@ export function AttachmentForm({
       aria-label={attachment ? 'Edit attachment' : 'Add attachment'}
       data-amp-mask
       data-amp-mask-attributes="aria-label"
-      className="min-w-0 space-y-4"
+      className="min-w-0 space-y-3"
       onSubmit={event => {
         event.preventDefault();
         void form.handleSubmit();
       }}
     >
-      <fieldset disabled={pending} className="min-w-0 space-y-4">
-        <div className="flex flex-wrap gap-x-6 gap-y-3">
+      <fieldset disabled={pending} className="min-w-0 space-y-3">
+        <div className="space-y-3">
           <form.Field name="category">
             {field => (
               <div className="space-y-1">
-                <span id={`${id}-category`} className="text-sm font-medium">
+                <Label htmlFor={`${id}-category`} className="text-xs">
                   Category
-                </span>
-                <ButtonGroup aria-labelledby={`${id}-category`}>
-                  {attachmentCategories.map(category => (
-                    <Button
-                      key={category}
-                      type="button"
-                      size="sm"
-                      className="px-2 text-xs"
-                      variant={field.state.value === category ? 'default' : 'outline'}
-                      aria-pressed={field.state.value === category}
-                      onClick={() => field.handleChange(category)}
-                    >
-                      {attachmentCategoryLabels[category]}
-                    </Button>
-                  ))}
-                </ButtonGroup>
+                </Label>
+                <Select
+                  value={field.state.value}
+                  disabled={pending}
+                  onValueChange={value => {
+                    const category = attachmentCategories.find(category => category === value);
+                    if (category) field.handleChange(category);
+                  }}
+                >
+                  <SelectTrigger id={`${id}-category`} className="h-9 bg-card text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {attachmentCategories.map(category => (
+                      <SelectItem key={category} value={category}>
+                        {attachmentCategoryLabels[category]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             )}
           </form.Field>
           <form.Field name="kind">
             {field => (
               <div className="space-y-1">
-                <span id={`${id}-kind`} className="text-sm font-medium">
+                <span id={`${id}-kind`} className="text-xs font-medium">
                   Type
                 </span>
-                <ButtonGroup aria-labelledby={`${id}-kind`}>
+                <div
+                  role="group"
+                  aria-labelledby={`${id}-kind`}
+                  className="grid grid-cols-3 gap-1 rounded-lg border bg-card p-1"
+                >
                   {(['file', 'text', 'link'] as const).map(kind => (
                     <Button
                       key={kind}
                       type="button"
                       size="sm"
-                      className="min-w-14 px-2 text-xs"
-                      variant={field.state.value === kind ? 'default' : 'outline'}
+                      className={cn(
+                        'h-7 gap-1.5 rounded-md px-2 text-xs',
+                        field.state.value === kind &&
+                          'bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary',
+                      )}
+                      variant="ghost"
                       aria-pressed={field.state.value === kind}
                       disabled={!!attachment || (kind === 'file' && !uploadsEnabled)}
                       onClick={() => {
@@ -153,16 +173,23 @@ export function AttachmentForm({
                         setError('');
                       }}
                     >
+                      {kind === 'file' ? (
+                        <FileUp className="size-3.5" aria-hidden="true" />
+                      ) : kind === 'link' ? (
+                        <Link className="size-3.5" aria-hidden="true" />
+                      ) : (
+                        <Text className="size-3.5" aria-hidden="true" />
+                      )}
                       {{ file: 'File', text: 'Text', link: 'Link' }[kind]}
                     </Button>
                   ))}
-                </ButtonGroup>
+                </div>
               </div>
             )}
           </form.Field>
         </div>
         {!uploadsEnabled && !attachment && (
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs leading-snug! text-muted-foreground">
             File uploads are currently unavailable. You can still save text and links.
           </p>
         )}
@@ -172,9 +199,13 @@ export function AttachmentForm({
         >
           {field => (
             <div className="space-y-1">
-              <Label htmlFor={`${id}-title`}>Title</Label>
+              <Label htmlFor={`${id}-title`} className="text-xs">
+                Title
+              </Label>
               <Input
                 id={`${id}-title`}
+                className="h-9 bg-card text-sm"
+                placeholder="e.g. Train reservation"
                 value={field.state.value}
                 onChange={event => field.handleChange(event.target.value)}
                 onBlur={field.handleBlur}
@@ -204,7 +235,7 @@ export function AttachmentForm({
                         required
                         onChange={event => field.handleChange(event.target.files?.[0] ?? null)}
                       />
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs leading-snug! text-muted-foreground">
                         PNG, JPEG, WebP, GIF or PDF. Up to 10 MB.
                       </p>
                     </div>
@@ -215,11 +246,15 @@ export function AttachmentForm({
               <form.Field name="content">
                 {field => (
                   <div className="space-y-1">
-                    <Label htmlFor={`${id}-content`}>{kind === 'link' ? 'URL' : 'Text'}</Label>
+                    <Label htmlFor={`${id}-content`} className="text-xs">
+                      {kind === 'link' ? 'URL' : 'Text'}
+                    </Label>
                     {kind === 'link' ? (
                       <Input
                         id={`${id}-content`}
                         type="url"
+                        className="h-9 bg-card text-sm"
+                        placeholder="https://…"
                         value={field.state.value}
                         onChange={event => field.handleChange(event.target.value)}
                         required
@@ -229,7 +264,7 @@ export function AttachmentForm({
                     ) : (
                       <Textarea
                         id={`${id}-content`}
-                        className="min-h-28"
+                        className="min-h-24 bg-card text-sm"
                         value={field.state.value}
                         onChange={event => field.handleChange(event.target.value)}
                         required
@@ -254,7 +289,7 @@ export function AttachmentForm({
             Cancel
           </Button>
         )}
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" size="sm" disabled={pending}>
           {pending ? 'Saving…' : 'Save attachment'}
         </Button>
       </div>

@@ -1,15 +1,17 @@
 import * as React from 'react';
 import { useGetTournament } from '@/api/tournaments/useGetTournament.ts';
 import { AlertCircle } from 'lucide-react';
+import { cn } from '@/lib/utils.ts';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
 import UpcomingBadge from './UpcomingBadge';
 import { DISCORD_LINK } from '../../../../../../shared/consts/constants.ts';
 
 interface NoTournamentDataProps {
   tournamentId: string;
+  compact?: boolean;
 }
 
-const NoTournamentData: React.FC<NoTournamentDataProps> = ({ tournamentId }) => {
+const NoTournamentData: React.FC<NoTournamentDataProps> = ({ tournamentId, compact = false }) => {
   const { data, isFetching } = useGetTournament(tournamentId);
 
   if (isFetching) {
@@ -27,6 +29,60 @@ const NoTournamentData: React.FC<NoTournamentDataProps> = ({ tournamentId }) => 
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
   const isUpcoming = tournamentDate > today;
+
+  if (compact) {
+    if (tournament.imported && data.decks?.length) return null;
+    const upcoming = !tournament.imported && isUpcoming;
+    return (
+      <div
+        className={cn(
+          'rounded-lg border px-2.5 py-2 text-xs',
+          upcoming ? 'border-primary/15 bg-primary/5' : 'border-amber-500/25 bg-amber-500/5',
+        )}
+      >
+        <div className="flex flex-wrap items-center gap-2">
+          <AlertCircle
+            className={cn(
+              'size-3.5 shrink-0',
+              upcoming ? 'text-primary' : 'text-amber-700 dark:text-amber-400',
+            )}
+            aria-hidden="true"
+          />
+          <span className="mr-auto font-medium">
+            {upcoming
+              ? 'Upcoming tournament'
+              : tournament.imported
+                ? 'No data'
+                : 'Not imported yet'}
+          </span>
+          {upcoming && (
+            <UpcomingBadge
+              date={tournament.date}
+              showTooltip
+              className="bg-primary/10 text-primary dark:bg-primary/10 dark:text-primary"
+            />
+          )}
+        </div>
+        {!upcoming && (
+          <p className="mt-1 mb-0 text-xs leading-snug! text-muted-foreground">
+            {tournament.imported
+              ? 'No deck data is available for this tournament.'
+              : 'Results have not been imported yet.'}{' '}
+            If results are available on Melee, share the link on{' '}
+            <a
+              href={DISCORD_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-sm underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+            >
+              Discord
+            </a>
+            .
+          </p>
+        )}
+      </div>
+    );
+  }
 
   // If tournament is imported, don't show the alert
   if (tournament.imported) {

@@ -1,18 +1,23 @@
-import React from 'react';
+import { limitedStyles } from '@/components/app/limited/limitedStyles';
 import { toast } from '@/hooks/use-toast.ts';
 import type { Deck } from '../../../../../../types/Deck.ts';
 import { DeckArtwork } from '@/components/app/decks/DeckArtwork.tsx';
+import { DeckIcon } from '@/components/app/global/icons/CardLibraryIcons.tsx';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
-import { Link as LinkIcon } from 'lucide-react';
+import { ArrowRight, Globe, Link as LinkIcon, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils.ts';
 
 export interface DeckCardProps {
   deck: Deck;
   className?: string;
+  author?: string;
 }
 
-const DeckCard: React.FC<DeckCardProps> = ({ deck, className }) => {
+export default function DeckCard({ deck, className, author }: DeckCardProps) {
+  const hasArtwork = Boolean(deck.leaderCardId1 || deck.leaderCardId2 || deck.baseCardId);
+  const VisibilityIcon = deck.public === 0 ? Lock : deck.public === 2 ? LinkIcon : Globe;
+  const visibility = deck.public === 0 ? 'Private' : deck.public === 2 ? 'Unlisted' : 'Public';
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(`${window.location.origin}/limited/deck/${deck.id}`);
@@ -23,36 +28,58 @@ const DeckCard: React.FC<DeckCardProps> = ({ deck, className }) => {
   };
 
   return (
-    <div
-      className={cn(
-        'w-full overflow-hidden rounded-md border border-border bg-card/60 p-2 hover:bg-card transition-colors flex flex-col items-center',
-        className,
-      )}
-    >
-      <div className="flex w-full min-w-0 items-center justify-between gap-2 mb-2">
-        <Link to={`/limited/deck/$deckId`} params={{ deckId: deck.id }} className="flex-1 min-w-0">
-          <div className="text-sm font-semibold truncate">{deck.name || 'Untitled deck'}</div>
-        </Link>
-        <Button
-          variant="ghost"
-          size="iconMedium"
-          className="shrink-0"
-          onClick={handleCopy}
-          aria-label="Copy deck link"
+    <article className={cn('group/deck-row', limitedStyles.deckCard, className)}>
+      {hasArtwork ? (
+        <div className={limitedStyles.deckCardArt}>
+          <DeckArtwork
+            leaderId={deck.leaderCardId1}
+            leader2Id={deck.leaderCardId2}
+            baseId={deck.baseCardId}
+            size="compact"
+          />
+        </div>
+      ) : (
+        <div
+          className={cn('text-[var(--limited-accent)]', limitedStyles.deckCardArt)}
+          aria-hidden="true"
         >
-          <LinkIcon className="w-4 h-4" />
-        </Button>
+          <DeckIcon size={28} />
+        </div>
+      )}
+      <div className="min-w-0 px-2.5 pb-1.5 pt-2.5">
+        <Link
+          to="/limited/deck/$deckId"
+          params={{ deckId: deck.id }}
+          className={cn(
+            'line-clamp-2 text-sm font-semibold leading-snug [overflow-wrap:anywhere]',
+            limitedStyles.deckCardLink,
+          )}
+        >
+          {deck.name || 'Untitled deck'}
+        </Link>
+        {!hasArtwork && (
+          <div className="mt-1 text-[11px] text-muted-foreground">Choose a leader & base</div>
+        )}
+        {author && <div className="mt-1 truncate text-xs text-muted-foreground">{author}</div>}
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+            <VisibilityIcon size={11} aria-hidden="true" />
+            {visibility}
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="iconMedium"
+              className="relative z-2 size-8 text-muted-foreground"
+              onClick={handleCopy}
+              aria-label={`Copy link to ${deck.name || 'Untitled deck'}`}
+            >
+              <LinkIcon size={13} />
+            </Button>
+            <ArrowRight size={15} className="text-[var(--limited-accent)]" aria-hidden="true" />
+          </div>
+        </div>
       </div>
-
-      <div className="flex justify-center w-full py-4">
-        <DeckArtwork
-          leaderId={deck.leaderCardId1}
-          leader2Id={deck.leaderCardId2}
-          baseId={deck.baseCardId}
-        />
-      </div>
-    </div>
+    </article>
   );
-};
-
-export default DeckCard;
+}

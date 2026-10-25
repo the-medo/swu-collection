@@ -1,58 +1,29 @@
-import * as React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { BookOpenCheck, NotebookTabs, ScrollText } from 'lucide-react';
-import { useComparerStore } from '@/components/app/comparer/useComparerStore';
+import type { ComparerEntry } from '@/components/app/comparer/useComparerStore';
 import { CollectionType } from '../../../../../../types/enums';
+import {
+  CardListIcon,
+  CollectionIcon,
+  DeckIcon,
+  WantlistIcon,
+} from '@/components/app/global/icons/CardLibraryIcons.tsx';
 
-interface ItemTypeBadgeProps {
-  entry: ReturnType<typeof useComparerStore>['entries'][number];
+export default function ItemTypeBadge({ entry }: { entry: ComparerEntry }) {
+  const [Icon, label] =
+    entry.dataType === 'deck'
+      ? ([DeckIcon, 'Deck'] as const)
+      : entry.collectionType === CollectionType.WANTLIST
+        ? ([WantlistIcon, 'Wantlist'] as const)
+        : entry.collectionType === CollectionType.OTHER
+          ? ([CardListIcon, 'Card list'] as const)
+          : ([CollectionIcon, 'Collection'] as const);
+  return (
+    <Badge
+      variant="outline"
+      className="gap-1 border-border bg-muted/40 font-normal text-foreground"
+    >
+      <Icon className="size-3" />
+      {label}
+    </Badge>
+  );
 }
-
-/**
- * Renders a badge indicating the type of the comparer entry
- */
-const ItemTypeBadge: React.FC<ItemTypeBadgeProps> = ({ entry }) => {
-  // If it's a deck, return a deck badge
-  if (entry.dataType === 'deck') {
-    return (
-      <Badge className="bg-green-200">
-        <NotebookTabs className="mr-1 h-3 w-3" />
-        Deck
-      </Badge>
-    );
-  }
-
-  // Otherwise, render collection type badge
-  switch (entry.collectionType) {
-    case CollectionType.COLLECTION:
-      return (
-        <Badge className="bg-blue-200">
-          <BookOpenCheck className="mr-1 h-3 w-3" />
-          Collection
-        </Badge>
-      );
-    case CollectionType.WANTLIST:
-      return (
-        <Badge className="bg-amber-200">
-          <ScrollText className="mr-1 h-3 w-3" />
-          Wantlist
-        </Badge>
-      );
-    case CollectionType.OTHER:
-      return (
-        <Badge className="bg-gray-200">
-          <NotebookTabs className="mr-1 h-3 w-3" />
-          Other
-        </Badge>
-      );
-    default:
-      return (
-        <Badge className="bg-blue-200">
-          <BookOpenCheck className="mr-1 h-3 w-3" />
-          Collection
-        </Badge>
-      );
-  }
-};
-
-export default ItemTypeBadge;

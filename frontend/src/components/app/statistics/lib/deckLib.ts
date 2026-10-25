@@ -10,8 +10,12 @@ export interface DeckStatistics {
   gameWinrate: number;
   matchWins: number;
   matchLosses: number;
+  matchDraws: number;
+  totalMatches: number;
+  totalGames: number;
   gameWins: number;
   gameLosses: number;
+  gameDraws: number;
   matches: MatchResult[];
 }
 
@@ -23,18 +27,22 @@ export const calculateDeckStatistics = (deckId: string, matches: MatchResult[]):
   let wonGames = 0;
   let wonMatches = 0;
   let lostMatches = 0;
+  let drawnMatches = 0;
   let lostGames = 0;
+  let drawnGames = 0;
   let completedMatches = 0;
 
   matches.forEach(match => {
     if (match.result !== undefined) completedMatches++;
     if (match.result === 3) wonMatches++;
     if (match.result === 0) lostMatches++;
+    if (match.result === 1) drawnMatches++;
 
     match.games.forEach(game => {
       totalGames++;
       if (game.isWinner === true) wonGames++;
       if (game.isWinner === false) lostGames++;
+      if (game.isWinner == null) drawnGames++;
     });
   });
 
@@ -51,8 +59,12 @@ export const calculateDeckStatistics = (deckId: string, matches: MatchResult[]):
     gameWinrate,
     matchWins: wonMatches,
     matchLosses: lostMatches,
+    matchDraws: drawnMatches,
+    totalMatches: completedMatches,
+    totalGames,
     gameWins: wonGames,
     gameLosses: lostGames,
+    gameDraws: drawnGames,
     matches,
   };
 };
@@ -61,16 +73,12 @@ export const matchesDeckQuickFilter = (
   deck: Pick<DeckStatistics, 'deckName' | 'leaderCardId' | 'baseCardKey'>,
   quickFilter?: string,
 ) => {
-  const terms = quickFilter
-    ?.trim()
-    .toLowerCase()
-    .split(/\s+/)
-    .filter(Boolean);
+  const terms = quickFilter?.trim().toLowerCase().split(/\s+/).filter(Boolean);
 
   if (!terms || terms.length === 0) return true;
 
-  const searchableValues = [deck.deckName, deck.leaderCardId, deck.baseCardKey].map(value =>
-    value?.toLowerCase() ?? '',
+  const searchableValues = [deck.deckName, deck.leaderCardId, deck.baseCardKey].map(
+    value => value?.toLowerCase() ?? '',
   );
 
   return terms.every(term => searchableValues.some(value => value.includes(term)));

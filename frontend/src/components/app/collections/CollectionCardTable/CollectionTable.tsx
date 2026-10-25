@@ -1,3 +1,5 @@
+import { browseStyles } from '@/components/app/global/BrowsePage/browseStyles';
+import { cn } from '@/lib/utils';
 import { DataTable } from '@/components/ui/data-table.tsx';
 import { useCollectionTableColumns } from '@/components/app/collections/CollectionCardTable/useCollectionTableColumns.tsx';
 import { UserCollectionData } from '@/components/app/collections/CollectionCardTable/collectionTableLib.tsx';
@@ -33,7 +35,11 @@ const CollectionTable: React.FC<CollectionTableProps> = ({
     showCollectionPrice,
   });
 
-  return <DataTable columns={columns} data={collections} loading={loading} view={view} />;
+  return (
+    <div className={cn(browseStyles.table, browseStyles.collectionListTable)}>
+      <DataTable columns={columns} data={collections} loading={loading} view={view} />
+    </div>
+  );
 };
 
 export default CollectionTable;

@@ -87,20 +87,20 @@ export function useCollectionTableColumns({
         const collectionId = row.original.collection.id as string;
 
         return (
-          <Link to={'/collections/' + collectionId} className="font-bold">
-            <Button
-              variant="link"
-              className="flex flex-col gap-0 p-0 w-full items-start justify-center"
-            >
-              <span className="max-w-80 truncate ellipsis overflow-hidden whitespace-nowrap">
+          <Link
+            to={'/collections/' + collectionId}
+            className="flex w-full max-w-full items-center gap-3 text-left"
+          >
+            <span className="flex min-w-0 flex-col gap-1">
+              <span className="max-w-[min(18rem,60vw)] font-semibold [overflow-wrap:anywhere]">
                 {title}
               </span>
               {row.original.collection.description && (
-                <span className="text-xs font-normal italic max-w-80 truncate ellipsis overflow-hidden whitespace-nowrap">
+                <span className="line-clamp-2 max-w-[min(18rem,60vw)] text-xs font-normal text-muted-foreground [overflow-wrap:anywhere]">
                   {row.original.collection.description}
                 </span>
               )}
-            </Button>
+            </span>
           </Link>
         );
       },
@@ -124,7 +124,7 @@ export function useCollectionTableColumns({
       definitions.push({
         accessorKey: 'user.displayName',
         header: 'Owner',
-        size: 64,
+        size: 40,
         displayBoxHeader: false,
         meta: { view, showState, renderState: stateRenderer } satisfies CollectionOwnerMeta,
         cell: renderCollectionOwner,
@@ -232,9 +232,9 @@ export function useCollectionTableColumns({
     if (showState) {
       definitions.push({
         accessorKey: 'user.country',
-        size: 64,
+        size: 40,
         displayInBoxView: false,
-        header: () => <div className="text-right">Country and State / Region</div>,
+        header: () => <div className="text-right">Location</div>,
         cell: stateRenderer,
       });
     }
@@ -259,18 +259,9 @@ export function useCollectionTableColumns({
     }
 
     definitions.push({
-      accessorKey: 'collection.createdAt',
-      size: 24,
-      header: () => <div className="text-right">Created At</div>,
-      cell: ({ getValue }) => {
-        return dateRenderer(getValue() as string);
-      },
-    });
-
-    definitions.push({
       accessorKey: 'collection.updatedAt',
       size: 24,
-      header: () => <div className="text-right">Updated At</div>,
+      header: () => <div className="text-right">Updated</div>,
       cell: ({ getValue }) => {
         return dateRenderer(getValue() as string);
       },
@@ -289,6 +280,7 @@ export function useCollectionTableColumns({
           <div className="flex gap-1 justify-end">
             <Button
               size="iconMedium"
+              variant="ghost"
               className="p-0"
               onClick={() =>
                 navigator.clipboard.writeText(
@@ -304,7 +296,7 @@ export function useCollectionTableColumns({
                 <EditCollectionDialog
                   collection={row.original.collection}
                   trigger={
-                    <Button size="iconMedium" className="p-0">
+                    <Button variant="ghost" size="iconMedium" className="p-0">
                       <span className="sr-only">Edit collection</span>
                       <PencilIcon className="h-4 w-4" />
                     </Button>
@@ -313,7 +305,7 @@ export function useCollectionTableColumns({
                 <DeleteCollectionDialog
                   collection={row.original.collection}
                   trigger={
-                    <Button variant="destructive" size="iconMedium" className="p-0">
+                    <Button variant="ghost" size="iconMedium" className="p-0 text-destructive">
                       <span className="sr-only">Delete collection</span>
                       <TrashIcon className="h-4 w-4" />
                     </Button>

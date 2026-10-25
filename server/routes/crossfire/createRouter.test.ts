@@ -415,8 +415,19 @@ test('deck discovery validates bounded queries and keeps identity server-owned',
     'source=mine&userId=other',
     'source=mine&search=' + 'a'.repeat(121),
     'source=mine&cursor=!!',
+    'source=mine&folderId=invalid',
+    'source=public&folderId=unfiled',
+    'source=recent&folderId=unfiled',
   ])
     expect((await f.request('/decks?' + query)).status).toBe(400);
+  for (const folderId of ['unfiled', deckId]) {
+    expect((await f.request('/decks?source=mine&folderId=' + folderId)).status).toBe(200);
+    expect(f.calls.at(-1)).toEqual([
+      'decks',
+      { userId: 'authenticated-user', sessionId: 'authenticated-session' },
+      { source: 'mine', search: '', folderId },
+    ]);
+  }
   expect((await fixture({ signedIn: false }).request('/decks?source=mine')).status).toBe(401);
   expect((await fixture({ enabled: false }).request('/decks?source=mine')).status).toBe(503);
   expect((await f.request('/decks/not-a-uuid')).status).toBe(400);

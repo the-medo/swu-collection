@@ -1,5 +1,8 @@
+import { limitedStyles } from '@/components/app/limited/limitedStyles';
+import { cn } from '@/lib/utils';
 import { createFileRoute } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
+import { LimitedHeader } from '@/components/app/limited/LimitedHeader.tsx';
 import PublicCardPools from '@/components/app/limited/PublicCardPools/PublicCardPools.tsx';
 
 export const Route = createFileRoute('/limited/public/')({
@@ -10,10 +13,8 @@ function PagePublicCardPools() {
   return (
     <>
       <Helmet title="Public Card Pools | SWUBase" />
-      <div className="p-2">
-        <div className="flex flex-row gap-4 items-center justify-between mb-2">
-          <h3>Card Pools</h3>
-        </div>
+      <div className={cn('space-y-3 p-2 sm:p-3', limitedStyles.page)}>
+        <LimitedHeader publicPools />
         <PublicCardPools />
       </div>
     </>

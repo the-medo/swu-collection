@@ -127,7 +127,6 @@ export function CrossfirePlayDesk({
           sessionId={sessionId}
           selected={selectedId}
           disabled={pending}
-          catalog={catalog?.cards}
           onSelect={selectDeck}
           linked={linked}
           selectedDeck={selected.data}

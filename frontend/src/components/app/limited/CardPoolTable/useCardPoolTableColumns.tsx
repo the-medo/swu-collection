@@ -6,7 +6,6 @@ import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectD
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { cn } from '@/lib/utils.ts';
 import { Link } from '@tanstack/react-router';
-import { Button } from '@/components/ui/button.tsx';
 import { cardPoolTypeRenderer } from '@/components/app/limited/components/cardPoolTypeRenderer.tsx';
 import { cardPoolCustomRenderer } from '@/components/app/limited/components/cardPoolCustomRenderer.tsx';
 import { cardPoolVisibilityRenderer } from '@/components/app/limited/components/cardPoolVisibilityRenderer.tsx';
@@ -38,28 +37,18 @@ export const useCardPoolTableColumns = ({
         const name = (getValue() as string) || 'Untitled pool';
         const poolId = pool.id as string;
         return (
-          <Link to={`/limited/pool/$poolId/detail`} params={{ poolId }} className="font-bold">
-            <Button
-              variant="link"
-              className={cn('flex flex-col gap-1 p-0 w-full items-start justify-center', {
-                'items-center': view === 'box',
-              })}
-            >
-              <span className={cn({ 'truncate ellipsis max-w-[75vw]': view === 'box' })}>
-                {name}
+          <Link
+            to="/limited/pool/$poolId/detail"
+            params={{ poolId }}
+            className="block min-w-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <span className="block font-medium text-sm [overflow-wrap:anywhere]">{name}</span>
+            {pool.description && (
+              <span className="block max-w-80 truncate text-xs text-muted-foreground">
+                {pool.description}
               </span>
-              {row.original.description && (
-                <span
-                  className={cn(
-                    'text-xs font-normal italic max-w-80 truncate ellipsis overflow-hidden whitespace-nowrap',
-                    { 'truncate ellipsis max-w-[75vw]': view === 'box' },
-                  )}
-                >
-                  {row.original.description}
-                </span>
-              )}
-            </Button>
-            <div className="flex flex-row flex-wrap items-center gap-2">
+            )}
+            <div className="mt-1 flex flex-row flex-wrap items-center gap-1.5">
               {row.original.type ? cardPoolTypeRenderer(row.original.type) : null}
               {typeof pool.custom === 'boolean' ? cardPoolCustomRenderer(pool.custom) : null}
               {pool.visibility ? cardPoolVisibilityRenderer(pool.visibility) : null}
@@ -83,9 +72,9 @@ export const useCardPoolTableColumns = ({
         const leaderCards = leaders.map(cardId => cardListData?.cards[cardId]).filter(Boolean);
 
         return (
-          <div className={cn('flex gap-1', { 'justify-center': view === 'box' })}>
+          <div className={cn('flex max-w-full gap-1 overflow-hidden')}>
             {leaderCards.map((card, idx) => (
-              <div key={idx} className={idx > 0 ? '-ml-14' : ''}>
+              <div key={idx} className={idx > 0 ? '-ml-[72px] shrink-0' : 'shrink-0'}>
                 <CardImage
                   card={card}
                   cardVariantId={card ? selectDefaultVariant(card) : undefined}

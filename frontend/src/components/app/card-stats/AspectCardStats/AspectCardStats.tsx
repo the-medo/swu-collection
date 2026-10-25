@@ -9,6 +9,7 @@ import CardStatsWithOptions from '@/components/app/card-stats/CardStatsWithOptio
 import AspectIcon from '@/components/app/global/icons/AspectIcon.tsx';
 import CardStatistic from '@/components/app/card-stats/CardStatistic/CardStatistic.tsx';
 import { useMemo } from 'react';
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles';
 
 interface AspectCardStatsProps {
   metaId?: number;
@@ -138,17 +139,13 @@ const AspectCardStats: React.FC<AspectCardStatsProps> = ({
   return (
     <div className={cn('space-y-4', className)}>
       {/* Aspect selection tabs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 mb-2 rounded-lg bg-muted p-1">
+      <nav aria-label="Card statistics aspects" className={cn(workspaceStyles.tabs, 'flex-wrap')}>
         {aspectTabOptions.map(tab => (
           <Link
             key={tab}
             search={prev => ({ ...prev, csAspect: tab })}
-            className={cn(
-              'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
-              selectedAspect === tab
-                ? 'bg-background text-foreground shadow-xs'
-                : 'text-muted-foreground hover:text-foreground',
-            )}
+            aria-current={selectedAspect === tab ? 'page' : undefined}
+            className={cn(workspaceStyles.tab, 'flex-1')}
           >
             {tab === 'overview' ? (
               'Overview'
@@ -160,7 +157,7 @@ const AspectCardStats: React.FC<AspectCardStatsProps> = ({
             )}
           </Link>
         ))}
-      </div>
+      </nav>
 
       {/* Content based on selected aspect */}
       {selectedAspect === 'overview' ? (

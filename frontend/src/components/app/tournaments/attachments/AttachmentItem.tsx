@@ -32,7 +32,7 @@ export function AttachmentItem({
       );
   };
   return (
-    <li className="grid min-w-0 grid-cols-[2.5rem_minmax(0,1fr)_auto] items-start gap-x-2 gap-y-0.5 py-1.5">
+    <li className="grid min-w-0 grid-cols-[2.5rem_minmax(0,1fr)_auto] items-start gap-x-2.5 gap-y-0.5 py-2">
       <Button
         variant="ghost"
         className="row-span-2 size-10 p-0"
@@ -50,18 +50,18 @@ export function AttachmentItem({
             referrerPolicy="no-referrer"
             data-amp-mask
             data-amp-mask-attributes="src,alt"
-            className="size-10 rounded border bg-muted object-cover"
+            className="size-10 rounded-lg border border-primary/15 bg-primary/5 object-cover"
             onError={() => setImageFailed(true)}
           />
         ) : (
-          <span className="flex size-10 items-center justify-center rounded border bg-muted text-muted-foreground">
+          <span className="flex size-10 items-center justify-center rounded-lg border border-primary/15 bg-primary/5 text-primary">
             <Icon className="size-4" aria-hidden="true" />
           </span>
         )}
       </Button>
       <Button
         variant="link"
-        className="h-auto min-w-0 justify-start self-center whitespace-normal break-words p-0 text-left text-sm leading-tight"
+        className="h-auto min-w-0 justify-start self-center whitespace-normal [overflow-wrap:anywhere] p-0 text-left text-[13px] font-medium leading-snug text-foreground hover:text-primary"
         aria-label={`Open ${item.title}`}
         onClick={open}
       >
@@ -116,7 +116,7 @@ export function AttachmentItem({
           <Trash2 className="size-4" />
         </Button>
       </div>
-      <span className="col-span-2 col-start-2 min-w-0 break-words text-xs leading-tight text-muted-foreground">
+      <span className="col-span-2 col-start-2 min-w-0 [overflow-wrap:anywhere] text-[11px] leading-snug text-muted-foreground">
         {item.kind === 'file'
           ? `${kind} · ${item.fileName} · ${Math.ceil((item.byteSize ?? 0) / 1024)} KB`
           : kind}

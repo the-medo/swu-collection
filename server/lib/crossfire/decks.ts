@@ -101,6 +101,20 @@ export class CrossfireDecks {
         ))
         ${deckId ? tx`AND d.id = ${deckId}` : tx``}
         ${
+          query.folderId === 'unfiled'
+            ? tx`AND NOT EXISTS (
+              SELECT 1 FROM public.deck_folder_deck fd WHERE fd.deck_id = d.id
+            )`
+            : query.folderId
+              ? tx`AND EXISTS (
+                SELECT 1 FROM public.deck_folder_deck fd
+                JOIN public.deck_folder f ON f.id = fd.folder_id
+                WHERE fd.deck_id = d.id AND f.id = ${query.folderId}
+                  AND f.user_id = ${principal.userId}
+              )`
+              : tx``
+        }
+        ${
           search
             ? tx`AND (lower(d.name) LIKE ${pattern}
           OR d.leader_card_id_1 = ANY(${identities}::text[])

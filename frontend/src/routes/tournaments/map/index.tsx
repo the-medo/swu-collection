@@ -1,3 +1,5 @@
+import { competitionStyles } from '@/components/app/tournaments/competitionStyles';
+import { cn } from '@/lib/utils';
 import { createFileRoute } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
 import { z } from 'zod';
@@ -18,7 +20,7 @@ export const Route = createFileRoute('/tournaments/map/')({
   component: () => (
     <>
       <Helmet title="Tournament Map | SWUBase" />
-      <div className="p-2">
+      <div className={cn('p-2', competitionStyles.page)}>
         <TournamentsMap />
       </div>
     </>

@@ -1,3 +1,4 @@
+import { inboxStyles } from '@/components/app/inbox/inboxStyles';
 import { useEffect, useId, useState, type MouseEvent } from 'react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { UserDisplay } from '@/components/app/global/UserDisplay.tsx';
@@ -41,7 +42,7 @@ export function NotificationList({
     return () => clearTimeout(timer);
   }, [nextExpiry, now]);
   return (
-    <ul aria-label="Notifications" className="divide-y divide-border">
+    <ul aria-label="Notifications" className={inboxStyles.notificationList}>
       {items.map(item => {
         const invite = item.type === 'crossfire.invitation';
         const newMember = item.type === 'team.member.joined';
@@ -76,145 +77,144 @@ export function NotificationList({
           <li
             key={item.id}
             data-notification-id={item.id}
-            className={cn(
-              'flex flex-col gap-2 px-2 py-3',
-              !compact && 'sm:flex-row sm:items-center sm:gap-4',
-              !item.readAt && 'bg-primary/5',
-            )}
+            data-unread={!item.readAt}
+            className={cn(inboxStyles.notificationRow, compact && inboxStyles.notificationCompact)}
           >
-            <div className="flex min-w-0 flex-1 items-start gap-3">
-              <Icon
-                aria-hidden="true"
-                className={cn(
-                  'mt-0.5 h-5 w-5 shrink-0',
-                  item.readAt ? 'text-muted-foreground' : 'text-primary',
-                )}
-              />
-              <p id={descriptionId} className="min-w-0 text-sm leading-6! [overflow-wrap:anywhere]">
-                {!item.readAt && <span className="sr-only">Unread notification. </span>}
-                {newMember && <>You have a new team member! </>}
-                {item.actorUserId ? (
-                  <UserDisplay
-                    onPreviewLinkClick={markRead}
-                    user={{
-                      id: item.actorUserId,
-                      displayName: item.actorName ?? 'A player',
-                      image: item.actorImage,
-                    }}
-                  />
-                ) : (
-                  <span>{item.actorName ?? 'A player'}</span>
-                )}
-                {invite ? (
-                  <>
-                    {' invited you to play '}
-                    {available ? (
+            <div
+              className={cn(
+                'flex min-w-0 flex-1 items-start gap-2.5',
+                inboxStyles.notificationContent,
+              )}
+            >
+              <span className={inboxStyles.notificationIcon}>
+                <Icon aria-hidden="true" className="size-4" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p id={descriptionId} className="min-w-0 text-sm [overflow-wrap:anywhere]">
+                  {!item.readAt && <span className="sr-only">Unread notification. </span>}
+                  {newMember && <>You have a new team member! </>}
+                  {item.actorUserId ? (
+                    <UserDisplay
+                      onPreviewLinkClick={markRead}
+                      user={{
+                        id: item.actorUserId,
+                        displayName: item.actorName ?? 'A player',
+                        image: item.actorImage,
+                      }}
+                    />
+                  ) : (
+                    <span>{item.actorName ?? 'A player'}</span>
+                  )}
+                  {invite ? (
+                    <>
+                      {' invited you to play '}
+                      {available ? (
+                        <Link
+                          to="/crossfire"
+                          search={{ cfInvite: item.entityId }}
+                          className={cn(linkClassName, 'underline')}
+                          onClick={markRead}
+                        >
+                          Crossfire
+                        </Link>
+                      ) : (
+                        'Crossfire'
+                      )}
+                      .
+                      {!available && (
+                        <span className="ml-2 text-xs text-muted-foreground">Invitation ended</span>
+                      )}
+                    </>
+                  ) : newMember ? (
+                    <>
+                      {' joined '}
                       <Link
-                        to="/crossfire"
-                        search={{ cfInvite: item.entityId }}
-                        className={cn(linkClassName, 'underline')}
-                        onClick={markRead}
-                      >
-                        Crossfire
-                      </Link>
-                    ) : (
-                      'Crossfire'
-                    )}
-                    .
-                    {!available && (
-                      <span className="ml-2 text-xs text-muted-foreground">Invitation ended</span>
-                    )}
-                  </>
-                ) : newMember ? (
-                  <>
-                    {' joined '}
-                    <Link
-                      to="/teams/$teamId"
-                      params={{ teamId: item.entityId }}
-                      className={linkClassName}
-                      onClick={markRead}
-                    >
-                      {item.entityName ?? 'your team'}
-                    </Link>
-                    .
-                  </>
-                ) : (
-                  <>
-                    {comment
-                      ? item.type === 'comment.reply'
-                        ? ' replied to your comment on '
-                        : ' commented on '
-                      : ' favorited '}
-                    {comment ? (
-                      <a
-                        href={commentUrl}
-                        className={linkClassName}
-                        onClick={event => {
-                          markRead(event);
-                          if (
-                            !event.metaKey &&
-                            !event.ctrlKey &&
-                            !event.shiftKey &&
-                            !event.altKey &&
-                            event.button === 0
-                          ) {
-                            event.preventDefault();
-                            void navigate({ href: commentUrl });
-                          }
-                        }}
-                      >
-                        {item.entityName ?? 'the discussion'}
-                      </a>
-                    ) : (
-                      <Link
-                        to="/decks/$deckId"
-                        params={{ deckId: item.entityId }}
+                        to="/teams/$teamId"
+                        params={{ teamId: item.entityId }}
                         className={linkClassName}
                         onClick={markRead}
                       >
-                        {item.entityName ?? 'your deck'}
+                        {item.entityName ?? 'your team'}
                       </Link>
-                    )}
-                    .
-                  </>
-                )}
-              </p>
-            </div>
-            <div className="ml-auto flex shrink-0 items-center gap-2">
-              <time
-                dateTime={item.createdAt}
-                title={fullTimestamp}
-                className="whitespace-nowrap text-xs text-muted-foreground"
-              >
-                {formatDistanceToNow(createdAt, { addSuffix: true })}
-                <span className="sr-only"> ({fullTimestamp})</span>
-              </time>
-              <div className="flex items-center gap-1">
-                <Button
-                  size="iconMedium"
-                  variant="ghost"
-                  aria-label={item.readAt ? 'Mark unread' : 'Mark read'}
-                  data-notification-action={item.readAt ? 'unread' : 'read'}
-                  aria-describedby={descriptionId}
-                  title={item.readAt ? 'Mark unread' : 'Mark read'}
-                  disabled={disabled}
-                  onClick={() => onAction({ id: item.id, action: item.readAt ? 'unread' : 'read' })}
-                >
-                  {item.readAt ? <Mail aria-hidden="true" /> : <MailOpen aria-hidden="true" />}
-                </Button>
-                <Button
-                  size="iconMedium"
-                  variant="ghost"
-                  aria-label="Archive"
-                  data-notification-action="archive"
-                  aria-describedby={descriptionId}
-                  title="Archive"
-                  disabled={disabled}
-                  onClick={() => onAction({ id: item.id, action: 'archive' })}
-                >
-                  <Archive aria-hidden="true" />
-                </Button>
+                      .
+                    </>
+                  ) : (
+                    <>
+                      {comment
+                        ? item.type === 'comment.reply'
+                          ? ' replied to your comment on '
+                          : ' commented on '
+                        : ' favorited '}
+                      {comment ? (
+                        <a
+                          href={commentUrl}
+                          className={linkClassName}
+                          onClick={event => {
+                            markRead(event);
+                            if (
+                              !event.metaKey &&
+                              !event.ctrlKey &&
+                              !event.shiftKey &&
+                              !event.altKey &&
+                              event.button === 0
+                            ) {
+                              event.preventDefault();
+                              void navigate({ href: commentUrl });
+                            }
+                          }}
+                        >
+                          {item.entityName ?? 'the discussion'}
+                        </a>
+                      ) : (
+                        <Link
+                          to="/decks/$deckId"
+                          params={{ deckId: item.entityId }}
+                          className={linkClassName}
+                          onClick={markRead}
+                        >
+                          {item.entityName ?? 'your deck'}
+                        </Link>
+                      )}
+                      .
+                    </>
+                  )}
+                </p>
+                <div className={inboxStyles.notificationTime}>
+                  {!item.readAt && (
+                    <span className={inboxStyles.notificationUnreadDot} aria-hidden="true" />
+                  )}
+                  <time dateTime={item.createdAt} title={fullTimestamp}>
+                    {formatDistanceToNow(createdAt, { addSuffix: true })}
+                    <span className="sr-only"> ({fullTimestamp})</span>
+                  </time>
+                </div>
               </div>
+            </div>
+            <div className={inboxStyles.notificationActions}>
+              <Button
+                size="iconMedium"
+                variant="ghost"
+                aria-label={item.readAt ? 'Mark unread' : 'Mark read'}
+                data-notification-action={item.readAt ? 'unread' : 'read'}
+                aria-describedby={descriptionId}
+                title={item.readAt ? 'Mark unread' : 'Mark read'}
+                disabled={disabled}
+                onClick={() => onAction({ id: item.id, action: item.readAt ? 'unread' : 'read' })}
+              >
+                {item.readAt ? <Mail aria-hidden="true" /> : <MailOpen aria-hidden="true" />}
+              </Button>
+              <Button
+                size="iconMedium"
+                variant="ghost"
+                aria-label="Archive"
+                data-notification-action="archive"
+                aria-describedby={descriptionId}
+                title="Archive"
+                disabled={disabled}
+                onClick={() => onAction({ id: item.id, action: 'archive' })}
+              >
+                <Archive aria-hidden="true" />
+              </Button>
             </div>
           </li>
         );

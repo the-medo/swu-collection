@@ -1,4 +1,8 @@
 import { useRef } from 'react';
+import { ArrowLeft, MessageSquarePlus } from 'lucide-react';
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles';
+import { cn } from '@/lib/utils';
+
 import { Link, useBlocker, useNavigate } from '@tanstack/react-router';
 import { useForm } from '@tanstack/react-form';
 import { Helmet } from 'react-helmet-async';
@@ -27,19 +31,25 @@ export default function NewForumThread() {
       !savedId.current && (bodyDirty.current || !!form.getFieldValue('title').trim()),
   });
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-6 px-3 py-6 sm:px-6">
+    <div className={cn(workspaceStyles.theme, 'mx-auto w-full max-w-4xl space-y-4 p-4 sm:p-6')}>
       <Helmet title="New discussion | SWUBase" />
-      <Link to="/forum" className="text-sm text-muted-foreground hover:underline">
-        ← Back to forum
+      <Link
+        to="/forum"
+        className="inline-flex items-center gap-1.5 rounded text-xs font-medium text-muted-foreground hover:text-primary focus-visible:outline-2 focus-visible:outline-ring"
+      >
+        <ArrowLeft className="size-3.5" aria-hidden="true" /> Back to forum
       </Link>
-      <header>
-        <h1 className="text-3xl!">New discussion</h1>
+      <header className="space-y-2 border-b border-[color:var(--workspace-border)] pb-4">
+        <h1 className="m-0! border-0! p-0! flex items-center gap-2.5 text-2xl! font-semibold! tracking-tight!">
+          <MessageSquarePlus className="size-6 text-primary" aria-hidden="true" />
+          New discussion
+        </h1>
         <p className="text-sm text-muted-foreground">
           Give your conversation a title and share what’s on your mind.
         </p>
       </header>
       <SignInWrapper text="Sign in to start a discussion">
-        <div className="space-y-5 rounded-xl border bg-card p-4 sm:p-6">
+        <div className={cn(workspaceStyles.panel, 'space-y-4 p-4 sm:p-5')}>
           <form.Field
             name="title"
             validators={{
@@ -54,6 +64,7 @@ export default function NewForumThread() {
                 <Label htmlFor="forum-title">Title</Label>
                 <Input
                   id="forum-title"
+                  className="h-11 bg-background text-base"
                   placeholder="What would you like to discuss?"
                   maxLength={160}
                   value={field.state.value}
@@ -65,33 +76,42 @@ export default function NewForumThread() {
               </div>
             )}
           </form.Field>
-          <Label>Opening post</Label>
-          <PostDocumentForm
-            type="comments"
-            documentLabel="discussion"
-            initialPost={null}
-            submitLabel="Create discussion"
-            busy={mutation.isPending}
-            protectNavigation={false}
-            onDraftStateChange={state => {
-              bodyDirty.current = state.dirty;
-            }}
-            onSave={async content => {
-              const title = forumTitleSchema.safeParse(form.getFieldValue('title'));
-              if (!title.success) throw new Error('Enter a title between 1 and 160 characters.');
-              const result = await mutation.mutateAsync({ title: title.data, content });
-              savedId.current = result.id;
-            }}
-            onClose={() => {
-              const id = savedId.current;
-              if (id) void navigate({ to: '/forum/$discussionId', params: { discussionId: id } });
-              else {
-                bodyDirty.current = false;
-                form.reset();
-                void navigate({ to: '/forum' });
-              }
-            }}
-          />
+          <div className="space-y-1 border-t pt-4">
+            <p id="opening-post-label" className="text-sm font-semibold">
+              Opening post
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Add your question, idea or story. You can include links and format your post.
+            </p>
+          </div>
+          <section aria-labelledby="opening-post-label">
+            <PostDocumentForm
+              type="comments"
+              documentLabel="discussion"
+              initialPost={null}
+              submitLabel="Create discussion"
+              busy={mutation.isPending}
+              protectNavigation={false}
+              onDraftStateChange={state => {
+                bodyDirty.current = state.dirty;
+              }}
+              onSave={async content => {
+                const title = forumTitleSchema.safeParse(form.getFieldValue('title'));
+                if (!title.success) throw new Error('Enter a title between 1 and 160 characters.');
+                const result = await mutation.mutateAsync({ title: title.data, content });
+                savedId.current = result.id;
+              }}
+              onClose={() => {
+                const id = savedId.current;
+                if (id) void navigate({ to: '/forum/$discussionId', params: { discussionId: id } });
+                else {
+                  bodyDirty.current = false;
+                  form.reset();
+                  void navigate({ to: '/forum' });
+                }
+              }}
+            />
+          </section>
         </div>
       </SignInWrapper>
     </div>

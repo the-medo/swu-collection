@@ -1,3 +1,4 @@
+import { competitionStyles } from '@/components/app/tournaments/competitionStyles';
 import React from 'react';
 import { TournamentGroupWithMeta } from '../../../../../../types/TournamentGroup';
 import TournamentGroupTournament from './TournamentGroupTournament';
@@ -13,7 +14,7 @@ interface TournamentGroupProps {
 
 const TournamentGroup: React.FC<TournamentGroupProps> = ({ group, isMobile }) => {
   return (
-    <div className="bg-accent p-4 rounded-md mb-4">
+    <div className={cn('bg-accent p-4 rounded-md mb-4', competitionStyles.group)}>
       <div
         className={cn('flex justify-between items-center mb-2', {
           'flex-col': isMobile,
@@ -31,7 +32,9 @@ const TournamentGroup: React.FC<TournamentGroupProps> = ({ group, isMobile }) =>
           </Link>
         </Button>
       </div>
-      {group.group.description && <p className="text-gray-600 mb-4">{group.group.description}</p>}
+      {group.group.description && (
+        <p className="text-muted-foreground mb-4">{group.group.description}</p>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {group.tournaments.map(tournamentItem => (

@@ -47,18 +47,22 @@ const CardPoolTypeSelector: React.FC<CardPoolTypeSelectorProps> = ({
     <RadioGroup
       value={selectedType.toString()}
       onValueChange={value => setSelectedType(value as CardPoolType)}
-      className="space-y-1"
+      aria-label="Pool type"
+      className="gap-2"
     >
       {options.map(option => (
         <div
           key={option.value}
           className={cn(
-            `flex items-center space-x-2 rounded-md border p-4 
-                  ${selectedType === option.value ? 'border-primary bg-primary/5' : 'border-muted'}`,
+            'flex items-center gap-2 rounded-lg border p-2.5',
+            selectedType === option.value
+              ? 'border-[var(--limited-border)] bg-[var(--limited-soft)]'
+              : 'border-border',
             option.disabled && 'opacity-50 cursor-not-allowed',
           )}
         >
           <RadioGroupItem
+            className="border-[var(--limited-accent)] text-[var(--limited-accent)]"
             disabled={option.disabled}
             value={option.value.toString()}
             id={`type-${option.value}`}

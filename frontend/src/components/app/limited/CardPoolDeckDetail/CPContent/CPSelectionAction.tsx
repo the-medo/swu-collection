@@ -45,7 +45,7 @@ const CPSelectionAction: React.FC<CPSelectionActionProps> = ({ deckId, poolId })
   return (
     <div
       className={cn(
-        'border-t border-border bg-[green] px-3 py-2 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-muted/60',
+        'shrink-0 rounded-lg border border-[var(--limited-border)] bg-[var(--limited-soft)] px-2 py-2',
         'sticky bottom-0',
       )}
     >
@@ -65,7 +65,7 @@ const CPSelectionAction: React.FC<CPSelectionActionProps> = ({ deckId, poolId })
             Selected: <span className="font-medium text-foreground">{selectedNumbers.length}</span>
           </div>
         </div>
-        <div className="flex flex-1 items-center justify-end gap-2">
+        <div className="flex flex-1 flex-wrap items-center justify-end gap-2">
           <span className="text-sm text-muted-foreground hidden sm:inline">
             Move selection to this section:
           </span>

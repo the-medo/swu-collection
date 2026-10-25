@@ -48,6 +48,7 @@ interface AdvancedSearchFiltersProps {
   footerElement?: React.ReactNode;
   availableCardTypes?: AdvancedSearchStringLookup;
   disabled?: boolean;
+  compact?: boolean;
 }
 
 const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
@@ -57,6 +58,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
   footerElement,
   availableCardTypes,
   disabled = false,
+  compact = false,
 }) => {
   const [mobileExpanded, setMobileExpanded] = useState(false);
   const { open: sidebarOpen } = useSidebar();
@@ -129,11 +131,12 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
       e => {
         if (e.key === 'Enter') {
           onSearch();
+          if (compact) setMobileExpanded(false);
         } else if (e.key === 'Escape') {
           clearValue();
         }
       },
-    [onSearch],
+    [onSearch, compact],
   );
 
   const availableSearchCardTypes = availableCardTypes
@@ -148,31 +151,53 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
       id={onClose ? 'card-home-filters' : undefined}
       className={cn(
         'overflow-hidden w-full md:border-r max-md:border-b p-2',
+        compact &&
+          'shrink-0 border-[var(--workspace-border)] bg-card @[580px]/main-body:flex @[580px]/main-body:h-[calc(100dvh-1rem)] @[580px]/main-body:flex-col',
         mobileCollapsible && 'max-lg:!w-full max-lg:!max-w-none max-lg:border-b lg:shrink-0',
         {
           'md:w-[50px]': !filtersExpanded,
-          'lg:w-[350px] max-w-[350px]': filtersExpanded && sidebarOpen,
-          'md:w-[350px] max-w-[350px]': filtersExpanded && !sidebarOpen,
+          'lg:w-[350px] max-w-[350px]': !compact && filtersExpanded && sidebarOpen,
+          'md:w-[350px] max-w-[350px]': !compact && filtersExpanded && !sidebarOpen,
+          'max-w-none @[580px]/main-body:w-80': compact && filtersExpanded,
+          'md:w-auto @[580px]/main-body:w-12': compact && !filtersExpanded,
         },
       )}
     >
       <div
-        className={cn('flex transition-all duration-300 justify-between items-center p-2', {
-          'md:-rotate-90 md:origin-bottom-left md:w-[200px] md:translate-x-[43px] md:translate-y-[140px]':
-            !filtersExpanded && !mobileCollapsible,
-          'lg:-rotate-90 lg:origin-bottom-left lg:w-[200px] lg:translate-x-[43px] lg:translate-y-[140px]':
-            !filtersExpanded && mobileCollapsible,
-        })}
+        className={cn(
+          'flex shrink-0 transition-all duration-300 justify-between items-center p-2',
+          {
+            'md:-rotate-90 md:origin-bottom-left md:w-[200px] md:translate-x-[43px] md:translate-y-[140px]':
+              !compact && !filtersExpanded && !mobileCollapsible,
+            '@[580px]/main-body:flex-col-reverse @[580px]/main-body:gap-4 @[580px]/main-body:px-0':
+              compact && !filtersExpanded,
+            'lg:-rotate-90 lg:origin-bottom-left lg:w-[200px] lg:translate-x-[43px] lg:translate-y-[140px]':
+              !filtersExpanded && mobileCollapsible,
+          },
+        )}
       >
-        <div className="whitespace-nowrap text-2xl font-semibold tracking-tight">
+        <div
+          className={cn(
+            'whitespace-nowrap font-semibold tracking-tight',
+            compact
+              ? 'text-sm text-[var(--workspace-accent)] @max-[580px]/main-body:hidden'
+              : 'text-2xl',
+            compact && !filtersExpanded && '@[580px]/main-body:[writing-mode:vertical-rl]',
+          )}
+        >
           Search Filters
         </div>
-        <div className="flex items-center gap-2">
-          {mobileCollapsible && !onClose && (
+        <div
+          className={cn(
+            'flex items-center gap-2',
+            compact && '@max-[580px]/main-body:w-full @max-[580px]/main-body:justify-between',
+          )}
+        >
+          {(mobileCollapsible || compact) && !onClose && (
             <Button
               variant="ghost"
               size="sm"
-              className="lg:hidden"
+              className={compact ? '@[580px]/main-body:hidden' : 'lg:hidden'}
               disabled={disabled}
               aria-expanded={mobileExpanded}
               aria-label={mobileExpanded ? 'Hide search filters' : 'Show search filters'}
@@ -185,8 +210,16 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
               {mobileExpanded ? 'Hide' : 'Filters'}
             </Button>
           )}
+          {compact && footerElement && (
+            <div className="@[580px]/main-body:hidden [&_a]:mt-0 [&_a]:h-8 [&_a]:px-2 [&_a]:text-xs">
+              {footerElement}
+            </div>
+          )}
           <Button
-            className={mobileCollapsible && !onClose ? 'max-lg:hidden' : undefined}
+            className={cn(
+              mobileCollapsible && !onClose && 'max-lg:hidden',
+              compact && '@max-[580px]/main-body:hidden',
+            )}
             variant="ghost"
             size="sm"
             onClick={onClose ?? (() => setFiltersExpanded(!filtersExpanded))}
@@ -204,13 +237,19 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
             {filtersExpanded ? (
               <X className="h-4 w-4" />
             ) : (
-              <Filter className="h-4 w-4 md:rotate-90" />
+              <Filter className={cn('h-4 w-4', !compact && 'md:rotate-90')} />
             )}
           </Button>
         </div>
       </div>
       {!filtersExpanded && (
-        <div className="md:-rotate-90 md:origin-bottom-left md:w-[200px] md:translate-x-[37px] md:translate-y-[340px]">
+        <div
+          className={
+            compact
+              ? 'mt-2 @max-[580px]/main-body:hidden @[580px]/main-body:[&_a]:h-auto @[580px]/main-body:[&_a]:w-8 @[580px]/main-body:[&_a]:px-1 @[580px]/main-body:[&_a]:py-3 @[580px]/main-body:[&_a]:[writing-mode:vertical-rl]'
+              : 'md:-rotate-90 md:origin-bottom-left md:w-[200px] md:translate-x-[37px] md:translate-y-[340px]'
+          }
+        >
           {footerElement}
         </div>
       )}
@@ -218,16 +257,24 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
       {filtersExpanded && (
         <div
           className={cn(
-            'px-2',
+            compact
+              ? 'px-1 [&_input]:h-8 [&_input]:text-xs @[580px]/main-body:flex @[580px]/main-body:min-h-0 @[580px]/main-body:flex-1 @[580px]/main-body:flex-col'
+              : 'px-2',
+            compact && !mobileExpanded && '@max-[580px]/main-body:hidden',
             mobileCollapsible && !onClose && !mobileExpanded && 'max-lg:hidden',
           )}
         >
           <ScrollArea
-            className={cn(footerElement ? 'h-[calc(100vh-215px)]' : 'h-[calc(100vh-165px)]')}
+            className={cn(
+              footerElement ? 'h-[calc(100vh-215px)]' : 'h-[calc(100vh-165px)]',
+              compact &&
+                'h-[55dvh] @[580px]/main-body:h-auto @[580px]/main-body:min-h-0 @[580px]/main-body:flex-1',
+            )}
           >
-            <div className="space-y-2 pr-4">
+            <div className={cn('space-y-2 pr-4', compact && '[&_label]:text-xs')}>
               <Input
                 id="name-search"
+                aria-label="Search by card name"
                 autoFocus={Boolean(onClose)}
                 placeholder="Search by card name..."
                 value={name}
@@ -236,6 +283,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
               />
               <Input
                 id="text-search"
+                aria-label="Search card text"
                 placeholder="Search in card text, rules, deploy/epic text..."
                 value={text}
                 onChange={e => setText(e.target.value)}
@@ -253,7 +301,10 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                 showLabel={false}
                 showAllOption={false}
                 showNoneOption={false}
-                className="justify-center"
+                className={cn(
+                  'justify-center',
+                  compact && '[&_button]:h-8 [&_button]:w-10 [&_button]:px-1',
+                )}
               />
               <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
                 <div className="flex items-center space-x-2">
@@ -428,6 +479,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
               )}
               <Input
                 id="artist-search"
+                aria-label="Search by artist"
                 placeholder="Search by artist..."
                 value={artist}
                 onChange={e => setArtist(e.target.value)}
@@ -436,8 +488,21 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
             </div>
           </ScrollArea>
 
-          <div className="mt-4 pt-2 border-t flex-1 justify-between">
-            <div className="p-2 rounded-md bg-accent/50 dark:bg-primary/10">
+          <div
+            className={cn(
+              'pt-2 border-t justify-between',
+              compact ? 'shrink-0' : 'flex-1',
+              compact ? 'mt-2 border-[var(--workspace-border)]' : 'mt-4',
+            )}
+          >
+            <div
+              className={cn(
+                'rounded-md',
+                compact
+                  ? 'bg-[var(--workspace-soft)] p-1.5 [&_button]:h-8 [&_button]:px-2 [&_button]:text-xs'
+                  : 'p-2 bg-accent/50 dark:bg-primary/10',
+              )}
+            >
               <div className="flex justify-between items-center">
                 <span className="text-xs font-medium">Applied: {activeFiltersCount}</span>
                 <div className="flex items-center gap-2">
@@ -449,7 +514,7 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
                   <Button
                     onClick={() => {
                       onSearch();
-                      if (mobileCollapsible) setMobileExpanded(false);
+                      if (mobileCollapsible || compact) setMobileExpanded(false);
                     }}
                     disabled={isSearching || isLoadingCardList}
                   >
@@ -467,7 +532,11 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
               </div>
             </div>
           </div>
-          {footerElement}
+          {compact ? (
+            <div className="@max-[580px]/main-body:hidden">{footerElement}</div>
+          ) : (
+            footerElement
+          )}
         </div>
       )}
     </div>

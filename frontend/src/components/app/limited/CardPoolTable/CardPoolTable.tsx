@@ -1,3 +1,5 @@
+import { limitedStyles } from '@/components/app/limited/limitedStyles';
+import { cn } from '@/lib/utils';
 import React from 'react';
 import { DataTable, DataTableViewMode } from '@/components/ui/data-table.tsx';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
@@ -15,7 +17,19 @@ export const CardPoolTable: React.FC<CardPoolTableProps> = ({ pools, loading = f
 
   const columns = useCardPoolTableColumns({ view, isCompactBoxView: false });
 
-  return <DataTable columns={columns} data={pools} loading={loading} view={view} />;
+  return (
+    <div className={cn('min-w-0', limitedStyles.poolTable)}>
+      <DataTable
+        columns={columns}
+        data={pools}
+        loading={loading}
+        view={view}
+        tableBorder={false}
+        cellClassName="px-3 py-1"
+        headerCellClassName="h-8 px-3 text-xs"
+      />
+    </div>
+  );
 };
 
 export default CardPoolTable;

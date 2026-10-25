@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles';
+import { cn } from '@/lib/utils';
 import { getArtistKey, hasArtistCredit } from '../../../../../../shared/lib/artists.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useMemo, useState } from 'react';
@@ -119,7 +121,7 @@ const CardDetail: React.FC<CardDetailProps> = ({
   return (
     <>
       <Helmet title={`${card.name} | SWUBase`} />
-      <div className="@container/card-detail flex flex-col gap-4 p-2">
+      <div className={cn(workspaceStyles.theme, '@container/card-detail flex flex-col gap-4 p-2')}>
         <Link
           to="/cards/detail/$cardId"
           params={{ cardId }}
@@ -147,7 +149,7 @@ const CardDetail: React.FC<CardDetailProps> = ({
 
             {/* Card Variant Information */}
             {selectedVariant && (
-              <Card className="overflow-hidden">
+              <Card className="overflow-hidden border-[color:var(--workspace-border)]">
                 <CardContent className="pt-4 px-4 pb-3">
                   <div className="space-y-1">
                     <h3 className="text-base font-semibold">Variant Information</h3>
@@ -203,7 +205,7 @@ const CardDetail: React.FC<CardDetailProps> = ({
           </div>
 
           {/* Main Content - Card Details with Tabs */}
-          <Card className="@container/card-detail-content min-w-0 overflow-hidden">
+          <Card className="@container/card-detail-content min-w-0 overflow-hidden border-[color:var(--workspace-border)]">
             <CardContent className="pt-4 px-4">
               <Tabs
                 key={cardId}
@@ -213,7 +215,7 @@ const CardDetail: React.FC<CardDetailProps> = ({
                   onTabChange(cardDetailTabSchema.parse(value));
                 }}
               >
-                <TabsList className="mb-2 flex h-auto w-full flex-wrap justify-start gap-1 [&>button]:grow">
+                <TabsList className="mb-2 flex h-auto w-full flex-wrap justify-start gap-1 bg-[var(--workspace-soft)] [&>button]:grow [&>button[data-state=active]]:bg-primary [&>button[data-state=active]]:text-primary-foreground [&>button[data-state=inactive]:hover]:bg-primary/10">
                   <TabsTrigger value="details">Card Details</TabsTrigger>
                   <TabsTrigger value="variants">Variants ({allVariants.length})</TabsTrigger>
                   <TabsTrigger value="decks">Decks</TabsTrigger>
@@ -259,7 +261,7 @@ const CardDetail: React.FC<CardDetailProps> = ({
                     <div className="space-y-1">
                       <h3 className="text-base font-semibold">Card Text</h3>
                       <Separator className="my-1" />
-                      <div className="bg-muted p-2 rounded-md whitespace-pre-line text-sm">
+                      <div className="bg-[var(--workspace-soft)] p-2 rounded-md whitespace-pre-line text-sm">
                         {card.text}
                       </div>
                     </div>
@@ -270,7 +272,7 @@ const CardDetail: React.FC<CardDetailProps> = ({
                     <div className="space-y-1">
                       <h3 className="text-base font-semibold">Rules</h3>
                       <Separator className="my-1" />
-                      <div className="bg-muted p-2 rounded-md whitespace-pre-line text-sm">
+                      <div className="bg-[var(--workspace-soft)] p-2 rounded-md whitespace-pre-line text-sm">
                         {card.rules}
                       </div>
                     </div>
@@ -281,7 +283,7 @@ const CardDetail: React.FC<CardDetailProps> = ({
                     <div className="space-y-1">
                       <h3 className="text-base font-semibold">Epic Action</h3>
                       <Separator className="my-1" />
-                      <div className="bg-muted p-2 rounded-md whitespace-pre-line text-sm">
+                      <div className="bg-[var(--workspace-soft)] p-2 rounded-md whitespace-pre-line text-sm">
                         {card.epicAction}
                       </div>
                     </div>
@@ -292,7 +294,7 @@ const CardDetail: React.FC<CardDetailProps> = ({
                     <div className="space-y-1">
                       <h3 className="text-base font-semibold">Deploy Box</h3>
                       <Separator className="my-1" />
-                      <div className="bg-muted p-2 rounded-md whitespace-pre-line text-sm">
+                      <div className="bg-[var(--workspace-soft)] p-2 rounded-md whitespace-pre-line text-sm">
                         {card.deployBox}
                       </div>
                     </div>

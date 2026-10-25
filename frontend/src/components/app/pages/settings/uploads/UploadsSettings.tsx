@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card.tsx';
 import { useUser } from '@/hooks/useUser.ts';
 import { getRouteApi, useBlocker } from '@tanstack/react-router';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs.tsx';
+import { settingsStyles } from '../settingsStyles.ts';
 import { AlbumList } from '@/components/app/user-albums/AlbumList.tsx';
 import { AlbumEditor } from '@/components/app/user-albums/AlbumEditor.tsx';
 import { UserStorageMeter } from '@/components/app/user-albums/UserStorageMeter.tsx';
@@ -325,22 +326,11 @@ function UploadsNavigation({ userId }: { userId: string }) {
           });
       }}
     >
-      <TabsList
-        aria-label="Uploads views"
-        className="mb-2 h-auto gap-1 rounded-2xl border bg-card p-1.5"
-      >
-        <TabsTrigger
-          value="images"
-          disabled={uploading}
-          className="rounded-xl px-5 py-2.5 data-[state=active]:bg-[#f7f0dc] data-[state=active]:text-[#805e19] dark:data-[state=active]:bg-[#302a1b] dark:data-[state=active]:text-[#f1d48b]"
-        >
+      <TabsList aria-label="Uploads views" className={settingsStyles.tabs}>
+        <TabsTrigger value="images" disabled={uploading}>
           All images
         </TabsTrigger>
-        <TabsTrigger
-          value="albums"
-          disabled={uploading}
-          className="rounded-xl px-5 py-2.5 data-[state=active]:bg-[#f7f0dc] data-[state=active]:text-[#805e19] dark:data-[state=active]:bg-[#302a1b] dark:data-[state=active]:text-[#f1d48b]"
-        >
+        <TabsTrigger value="albums" disabled={uploading}>
           My albums
         </TabsTrigger>
       </TabsList>

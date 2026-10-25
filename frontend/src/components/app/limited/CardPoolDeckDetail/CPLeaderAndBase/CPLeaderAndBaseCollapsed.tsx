@@ -24,7 +24,12 @@ const CPLeaderAndBaseCollapsed: React.FC<CPLeaderAndBaseCollapsedProps> = ({
       {loading && <div className="text-xs opacity-60">Loading...</div>}
       {!loading && (
         <>
-          <Button size="sm" variant="outline" onClick={() => setLeadersAndBasesExpanded(true)}>
+          <Button
+            size="xs"
+            variant="outline"
+            aria-label="Change leader and base"
+            onClick={() => setLeadersAndBasesExpanded(true)}
+          >
             Change
           </Button>
           <div className="flex items-center gap-2">

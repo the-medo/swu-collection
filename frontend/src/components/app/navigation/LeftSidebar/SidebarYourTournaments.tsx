@@ -8,6 +8,9 @@ import { useSavedTournaments } from '@/api/tournaments/useSavedTournaments.ts';
 import { Button } from '@/components/ui/button.tsx';
 import {
   SidebarMenu,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
@@ -47,24 +50,20 @@ export function SidebarYourTournaments() {
 function SidebarTournamentSection({ children }: PropsWithChildren) {
   const { setOpenMobile } = useSidebar();
   return (
-    <div
-      role="group"
-      aria-label="Your tournaments in sidebar"
-      className="mt-2 border-t border-border/60 pt-2"
-    >
-      <div className="flex items-center justify-between px-2 pb-1 text-[10px] font-medium text-muted-foreground">
+    <SidebarGroup role="group" aria-label="Your tournaments in sidebar" className="py-0">
+      <SidebarGroupLabel className="flex items-center justify-between">
         <span>Your tournaments</span>
         <Link
           to="/tournaments/calendar"
           onClick={() => setOpenMobile(false)}
-          className="rounded p-1 hover:text-foreground"
+          className="rounded p-1 hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
         >
           <CalendarDays className="size-3.5" />
           <span className="sr-only">Your calendar</span>
         </Link>
-      </div>
-      {children}
-    </div>
+      </SidebarGroupLabel>
+      <SidebarGroupContent>{children}</SidebarGroupContent>
+    </SidebarGroup>
   );
 }
 

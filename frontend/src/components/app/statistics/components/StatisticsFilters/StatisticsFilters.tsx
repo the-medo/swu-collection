@@ -1,3 +1,4 @@
+import { statisticsStyles } from '@/components/app/statistics/statisticsStyles';
 import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
 import StatisticsDateRange from '@/components/app/statistics/components/StatisticsFilters/StatisticsDateRange/StatisticsDateRange.tsx';
 import { DateRange } from 'react-day-picker';
@@ -115,9 +116,9 @@ const StatisticsFilters: React.FC<StatisticsFiltersProps> = ({ teamId }) => {
   }, [isClearingCache, queryClient, scopeId, toast]);
 
   return (
-    <div className="flex w-full flex-wrap items-end gap-4">
+    <div className={statisticsStyles.filters}>
       <div className="flex flex-col gap-1">
-        <span className="text-xs font-semibold">Match type:</span>
+        <span className="text-xs font-medium text-muted-foreground">Match type</span>
         <MatchTypeSelector
           value={(sMatchType as MatchType | undefined) ?? MatchType.ALL}
           onChange={matchType => {
@@ -130,8 +131,8 @@ const StatisticsFilters: React.FC<StatisticsFiltersProps> = ({ teamId }) => {
       </div>
       {teamId && (
         <div className="flex flex-col gap-1">
-          <Label htmlFor="inTeam" className="text-xs font-semibold">
-            In-team only:
+          <Label htmlFor="inTeam" className="text-xs font-medium text-muted-foreground">
+            In-team only
           </Label>
           <div className="flex gap-2">
             <Switch
@@ -149,7 +150,7 @@ const StatisticsFilters: React.FC<StatisticsFiltersProps> = ({ teamId }) => {
         </div>
       )}
       <div className="flex flex-col gap-1">
-        <span className="text-xs font-semibold">Date range:</span>
+        <span className="text-xs font-medium text-muted-foreground">Date range</span>
         <StatisticsDateRange
           selectedOptionId={sDateRangeOption}
           dateRange={dateRange}
@@ -158,7 +159,7 @@ const StatisticsFilters: React.FC<StatisticsFiltersProps> = ({ teamId }) => {
         />
       </div>
       <div className="flex flex-col gap-1">
-        <span className="text-xs font-semibold">Swubase deck format:</span>
+        <span className="text-xs font-medium text-muted-foreground">Format</span>
         <FormatSelect
           value={sFormatId ?? null}
           onChange={formatId => {
@@ -172,7 +173,7 @@ const StatisticsFilters: React.FC<StatisticsFiltersProps> = ({ teamId }) => {
       </div>
       {/* === Commented for now, as we will track games only for premier ===  */}
       {/*<div className="flex flex-col gap-1">
-        <span className="text-xs font-semibold">Karabast game format:</span>
+        <span className="text-xs font-medium text-muted-foreground">Karabast game format:</span>
         <KarabastFormatSelect
           value={(sKarabastFormat as KarabastSwuGameFormat) ?? null}
           onChange={formatId => {

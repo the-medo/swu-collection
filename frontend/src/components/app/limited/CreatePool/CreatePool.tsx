@@ -1,7 +1,8 @@
+import { limitedStyles } from '@/components/app/limited/limitedStyles';
+import { cn } from '@/lib/utils';
 import React, { useState } from 'react';
-import GridSection from '@/components/app/global/GridSection/GridSection.tsx';
-import GridSectionContent from '@/components/app/global/GridSection/GridSectionContent.tsx';
-import SectionHeader from '@/components/app/daily-snapshots/sections/components/SectionHeader.tsx';
+import { ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
+import { Label } from '@/components/ui/label.tsx';
 import {
   CARD_POOL_BOOSTER_COUNTS,
   CardPoolType,
@@ -10,7 +11,6 @@ import {
 } from '../../../../../../shared/types/cardPools.ts';
 import CardPoolTypeSelector from '@/components/app/limited/CreatePool/CardPoolTypeSelector.tsx';
 import { SwuSet } from '../../../../../../types/enums.ts';
-import SetIcon from '@/components/app/global/icons/SetIcon.tsx';
 import SetSelect from '@/components/app/global/SetSelect.tsx';
 import { cardPoolSets } from '../../../../../../lib/swu-resources/card-pool-info.ts';
 import VisibilitySelector from '@/components/app/global/VisibilitySelector/VisibilitySelector.tsx';
@@ -26,14 +26,10 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group.tsx';
 import CustomPoolCardEntry from './CustomPoolCardEntry.tsx';
 import type { CustomPoolDraftEntry } from './customPoolDraft.ts';
 
-type PoolCreationMode = 'generated' | 'custom';
+import PoolSetArtwork from './PoolSetArtwork.tsx';
+import { SealedDeckIcon } from '@/components/app/global/icons/CardLibraryIcons.tsx';
 
-const gridSizing = {
-  4: { row: { from: 1, to: 3 }, col: { from: 1, to: 1 } },
-  3: { row: { from: 1, to: 3 }, col: { from: 1, to: 1 } },
-  2: { row: { from: 1, to: 3 }, col: { from: 1, to: 1 } },
-  1: { row: { from: 2, to: 2 }, col: { from: 1, to: 1 } },
-};
+type PoolCreationMode = 'generated' | 'custom';
 
 const formatDate = (date: Date) => {
   const y = date.getFullYear();
@@ -160,143 +156,167 @@ const CreatePool: React.FC = () => {
     (creationMode === 'generated' || customCards.length > 0);
 
   return (
-    <GridSection id="create-pool-section" sizing={gridSizing}>
-      <GridSectionContent>
-        <SectionHeader
-          headerAndTooltips={
-            <>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h4>Create new card pool</h4>
-              </div>
-            </>
-          }
-        />
-        <div className="flex flex-col gap-2">
-          <div className={'bg-black rounded-lg p-2'}>
-            <SetIcon set={selectedSet} size="full" />
-            <SetSelect
-              value={selectedSet}
-              emptyOption={false}
-              showFullName={true}
-              onChange={handleSetChange}
-              forcedSetList={cardPoolSets}
-            />
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <span className="text-sm font-medium">Creation method</span>
-            <ToggleGroup
-              type="single"
-              value={creationMode}
-              onValueChange={handleCreationModeChange}
-              className="justify-start"
-              aria-label="Card pool creation method"
-            >
-              <ToggleGroupItem value="generated">Generate packs</ToggleGroupItem>
-              <ToggleGroupItem value="custom">Enter my cards</ToggleGroupItem>
-            </ToggleGroup>
-          </div>
-
-          {creationMode === 'generated' ? (
-            <>
-              <CardPoolTypeSelector
-                selectedType={selectedType}
-                setSelectedType={handleTypeChange}
-                sealedBoosterCount={boosterCount}
-                showPrerelease={expanded}
-              />
-
-              {selectedType === CardPoolType.Sealed && (
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm font-medium">Booster packs</span>
-                  <ToggleGroup
-                    type="single"
-                    value={String(boosterCount)}
-                    onValueChange={value => {
-                      const count = CARD_POOL_BOOSTER_COUNTS.find(
-                        candidate => String(candidate) === value,
-                      );
-                      if (count !== undefined) {
-                        setBoosterCount(count);
-                      }
-                    }}
-                    className="justify-start"
-                    aria-label="Number of booster packs"
-                  >
-                    {CARD_POOL_BOOSTER_COUNTS.map(count => (
-                      <ToggleGroupItem key={count} value={String(count)}>
-                        {count} packs
-                      </ToggleGroupItem>
-                    ))}
-                  </ToggleGroup>
-                </div>
-              )}
-            </>
-          ) : (
-            <CustomPoolCardEntry
-              selectedSet={selectedSet}
-              entries={customCards}
-              onChange={setCustomCards}
-              disabled={createPoolMutation.isPending}
-              description={
-                <>
-                  Enter a {selectedSet.toUpperCase()} collector number and press Enter. You can
-                  create custom pool now and update it afterwards.
-                </>
-              }
-            />
-          )}
-
-          {expanded && (
-            <div className="flex flex-col gap-2 mt-2">
-              <Input
-                type="text"
-                placeholder="Name"
-                value={poolName}
-                maxLength={200}
-                onChange={e => {
-                  if (!userEditedName) setUserEditedName(true);
-                  setName(e.target.value);
-                }}
-              />
-              <Textarea
-                placeholder="Description"
-                value={description}
-                maxLength={2000}
-                onChange={e => setDescription(e.target.value)}
-              />
-            </div>
-          )}
-
-          <div className="flex justify-between gap-2 mt-2 flex-wrap">
-            <VisibilitySelector value={visibility} onChange={setVisibility} />
-            <SignInWrapper
-              text={creationMode === 'custom' ? 'Sign in to create' : 'Sign in to generate'}
-            >
-              <Button onClick={handleCreate} disabled={!canCreate}>
-                {createPoolMutation.isPending
-                  ? 'Creating...'
-                  : creationMode === 'custom'
-                    ? 'Create custom pool'
-                    : 'Generate'}
-              </Button>
-            </SignInWrapper>
-          </div>
-
-          <div className="-mt-2">
-            {!expanded && (
-              <button
-                type="button"
-                className="text-xs text-muted-foreground hover:text-foreground underline"
-                onClick={() => setExpanded(true)}
-              >
-                Show more options
-              </button>
-            )}
-          </div>
+    <section
+      id="create-pool-section"
+      aria-labelledby="create-pool-heading"
+      className={cn('limited-create-pool overflow-hidden', limitedStyles.panel)}
+    >
+      <div className={limitedStyles.createCover}>
+        <PoolSetArtwork set={selectedSet} />
+        <div className="relative z-10 p-4">
+          <SealedDeckIcon size={24} className="mb-2" />
+          <h2 id="create-pool-heading" className={cn('text-white', limitedStyles.heading)}>
+            Create card pool
+          </h2>
+          <p className="m-0! mt-1! max-w-48 text-xs text-white/80">
+            Open some packs. See what you can build.
+          </p>
         </div>
-      </GridSectionContent>
-    </GridSection>
+      </div>
+      <div className="flex flex-col gap-3 p-4">
+        <div className="space-y-1">
+          <span className="text-xs font-medium text-muted-foreground">Set</span>
+          <SetSelect
+            value={selectedSet}
+            emptyOption={false}
+            showFullName={true}
+            onChange={handleSetChange}
+            forcedSetList={cardPoolSets}
+          />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <span className="text-xs font-medium text-muted-foreground">Creation method</span>
+          <ToggleGroup
+            type="single"
+            value={creationMode}
+            onValueChange={handleCreationModeChange}
+            className={limitedStyles.segments}
+            aria-label="Card pool creation method"
+          >
+            <ToggleGroupItem value="generated">Generate packs</ToggleGroupItem>
+            <ToggleGroupItem value="custom">Enter my cards</ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+
+        {creationMode === 'generated' ? (
+          <>
+            <CardPoolTypeSelector
+              selectedType={selectedType}
+              setSelectedType={handleTypeChange}
+              sealedBoosterCount={boosterCount}
+              showPrerelease={expanded || selectedType === CardPoolType.Prerelease}
+            />
+
+            {selectedType === CardPoolType.Sealed && (
+              <div className="flex flex-col gap-1">
+                <span className="text-xs font-medium text-muted-foreground">Booster packs</span>
+                <ToggleGroup
+                  type="single"
+                  value={String(boosterCount)}
+                  onValueChange={value => {
+                    const count = CARD_POOL_BOOSTER_COUNTS.find(
+                      candidate => String(candidate) === value,
+                    );
+                    if (count !== undefined) {
+                      setBoosterCount(count);
+                    }
+                  }}
+                  className={limitedStyles.segments}
+                  aria-label="Number of booster packs"
+                >
+                  {CARD_POOL_BOOSTER_COUNTS.map(count => (
+                    <ToggleGroupItem key={count} value={String(count)}>
+                      {count} packs
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+              </div>
+            )}
+          </>
+        ) : (
+          <CustomPoolCardEntry
+            selectedSet={selectedSet}
+            entries={customCards}
+            onChange={setCustomCards}
+            disabled={createPoolMutation.isPending}
+            description={
+              <>
+                Enter a {selectedSet.toUpperCase()} collector number and press Enter. You can create
+                the pool now and add more cards later.
+              </>
+            }
+          />
+        )}
+
+        {expanded && (
+          <div id="pool-extra-options" className="flex flex-col gap-2">
+            <Label htmlFor="pool-name">Name</Label>
+            <Input
+              type="text"
+              id="pool-name"
+              placeholder="Pool name"
+              value={poolName}
+              maxLength={200}
+              onChange={e => {
+                if (!userEditedName) setUserEditedName(true);
+                setName(e.target.value);
+              }}
+            />
+            <Label htmlFor="pool-description">Description</Label>
+            <Textarea
+              id="pool-description"
+              placeholder="Description"
+              value={description}
+              maxLength={2000}
+              onChange={e => setDescription(e.target.value)}
+            />
+          </div>
+        )}
+
+        <fieldset className="min-w-0">
+          <legend className="mb-1 text-xs font-medium text-muted-foreground">Visibility</legend>
+          <VisibilitySelector
+            className={limitedStyles.segments}
+            value={visibility}
+            onChange={value => {
+              if (value) setVisibility(value);
+            }}
+          />
+        </fieldset>
+        <div className="flex [&>button]:w-full [&>button]:bg-[var(--limited-accent)] [&>button]:text-[var(--limited-contrast)]">
+          <SignInWrapper
+            text={creationMode === 'custom' ? 'Sign in to create' : 'Sign in to generate'}
+          >
+            <Button
+              className={cn('w-full justify-between', limitedStyles.primary)}
+              onClick={handleCreate}
+              disabled={!canCreate}
+            >
+              {createPoolMutation.isPending
+                ? 'Creating...'
+                : creationMode === 'custom'
+                  ? 'Create custom pool'
+                  : `Generate ${boosterCount} packs`}
+              <ArrowRight size={16} aria-hidden="true" />
+            </Button>
+          </SignInWrapper>
+        </div>
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-7 justify-start self-start px-0 text-xs text-muted-foreground"
+          aria-expanded={expanded}
+          aria-controls="pool-extra-options"
+          onClick={() => setExpanded(value => !value)}
+        >
+          {expanded ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+          {expanded ? 'Fewer options' : 'Name, description & prerelease'}
+        </Button>
+      </div>
+    </section>
   );
 };
 

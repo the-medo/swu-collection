@@ -1,13 +1,16 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils.ts';
 import { creatorTheme, creatorTitle } from './creatorStyles.ts';
+import { workspaceStyles } from '../global/WorkspacePage/workspaceStyles.ts';
 
 export function CreatorLayout({
   children,
   fullWidth = false,
+  compact = false,
 }: {
   children: ReactNode;
   fullWidth?: boolean;
+  compact?: boolean;
 }) {
   return (
     <div
@@ -16,6 +19,7 @@ export function CreatorLayout({
         creatorTheme,
         'mx-auto flex w-full min-w-0 flex-col gap-5 px-2 pt-2 pb-10 sm:px-4',
         !fullWidth && 'max-w-380',
+        compact && [workspaceStyles.theme, 'gap-3 pb-6'],
       )}
     >
       {children}

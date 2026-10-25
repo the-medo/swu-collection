@@ -125,33 +125,31 @@ export function useDeckTableColumns({
         const deckId = row.original.deck.id as string;
 
         return (
-          <Link to={'/decks/' + deckId} className="font-bold">
-            <Button
-              variant="link"
-              className={cn('flex flex-col gap-0 p-0 w-full items-start justify-center', {
-                'items-center': view === 'box',
+          <Link
+            to={'/decks/' + deckId}
+            className={cn('flex flex-col gap-1 py-2 w-full items-start justify-center text-left', {
+              'items-center': view === 'box',
+            })}
+          >
+            <span
+              className={cn('font-semibold [overflow-wrap:anywhere]', {
+                'max-w-[70vw] text-center': view === 'box',
               })}
             >
+              {name}
+            </span>
+            {row.original.deck.description && (
               <span
-                className={cn('text-wrap', {
-                  'truncate ellipsis max-w-[75vw]': view === 'box',
-                })}
+                className={cn(
+                  'text-xs font-normal text-muted-foreground max-w-80 line-clamp-2 [overflow-wrap:anywhere]',
+                  {
+                    'max-w-[70vw] text-center': view === 'box',
+                  },
+                )}
               >
-                {name}
+                {row.original.deck.description}
               </span>
-              {row.original.deck.description && (
-                <span
-                  className={cn(
-                    'text-xs font-normal italic max-w-80 truncate ellipsis overflow-hidden whitespace-nowrap',
-                    {
-                      'truncate ellipsis max-w-[75vw]': view === 'box',
-                    },
-                  )}
-                >
-                  {row.original.deck.description}
-                </span>
-              )}
-            </Button>
+            )}
           </Link>
         );
       },

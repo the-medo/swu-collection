@@ -1,3 +1,4 @@
+import { statisticsStyles } from '@/components/app/statistics/statisticsStyles';
 import * as React from 'react';
 import { StatisticsHistoryData } from '@/components/app/statistics/useGameResults.ts';
 import { useMemo, useState } from 'react';
@@ -100,7 +101,7 @@ const StatisticsLeaderBaseLists: React.FC<StatisticsLeaderBaseListsProps> = ({
             : 'No leader/base combinations to show.'}
         </p>
       ) : (
-        <>
+        <div className={statisticsStyles.ledger}>
           {visibleCombinations.map(combo => (
             <LeaderBaseInfoThumbnail
               key={combo.leaderBaseStatistics.deckId}
@@ -110,8 +111,8 @@ const StatisticsLeaderBaseLists: React.FC<StatisticsLeaderBaseListsProps> = ({
               statSectionVariant="horizontal"
             />
           ))}
-          <div ref={observerTarget} className="h-4" />
-        </>
+          <div ref={observerTarget} className="h-1" />
+        </div>
       )}
     </div>
   );

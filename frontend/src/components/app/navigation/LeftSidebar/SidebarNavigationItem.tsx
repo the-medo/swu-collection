@@ -1,3 +1,4 @@
+import { sidebarStyles } from '@/components/app/navigation/LeftSidebar/sidebarStyles';
 import { useState, type ComponentType, type ReactNode } from 'react';
 import { Link, useLocation } from '@tanstack/react-router';
 import { ChartSpline, ChevronRight } from 'lucide-react';
@@ -28,10 +29,11 @@ export interface SidebarNavigationEntry extends SidebarNavigationLink {
   icon: ComponentType<{ className?: string }>;
   label?: string;
   action?: ReactNode;
+  secondaryAction?: ReactNode;
   badge?: ReactNode;
   className?: string;
   items?: SidebarNavigationLink[];
-  content?: ReactNode;
+  submenu?: 'always' | 'collapsed-only';
 }
 
 export function SidebarNavigationItem({ item }: { item: SidebarNavigationEntry }) {
@@ -43,11 +45,13 @@ export function SidebarNavigationItem({ item }: { item: SidebarNavigationEntry }
   const matches = (url: string) => pathname === url || pathname.startsWith(`${url}/`);
   const childActive = item.items?.some(link => matches(link.url)) ?? false;
   const active = matches(item.url) || childActive;
-  const hasChildren = Boolean(item.items?.length || item.content);
+  const hasChildren = Boolean(item.items?.length);
+  const canCollapse = hasChildren && !item.submenu;
+  const actionCount =
+    Number(Boolean(item.action)) + Number(Boolean(item.secondaryAction)) + Number(canCollapse);
   const open =
-    disclosure?.pathname === pathname
-      ? disclosure.open
-      : childActive || Boolean(item.content && matches(item.url) && pathname !== item.url);
+    item.submenu === 'always' ||
+    (disclosure?.pathname === pathname ? disclosure.open : childActive);
   const label = item.label ?? item.title;
   const navigate = () => {
     setFlyoutOpen(false);
@@ -79,7 +83,6 @@ export function SidebarNavigationItem({ item }: { item: SidebarNavigationEntry }
             </SidebarMenuSubItem>
           ))}
         </SidebarMenuSub>
-        {item.content}
       </>
     );
   };
@@ -109,7 +112,10 @@ export function SidebarNavigationItem({ item }: { item: SidebarNavigationEntry }
                 setFlyoutOpen(false);
               }
             }}
-            className="sidebar-navigation-flyout w-64 max-h-(--radix-popover-content-available-height) overflow-y-auto p-2"
+            className={cn(
+              'w-64 max-h-(--radix-popover-content-available-height) overflow-y-auto p-2',
+              sidebarStyles.navigationFlyout,
+            )}
           >
             {sublinks(true)}
           </PopoverContent>
@@ -126,7 +132,7 @@ export function SidebarNavigationItem({ item }: { item: SidebarNavigationEntry }
             asChild
             tooltip={label}
             isActive={active}
-            className={cn(item.className, item.action && hasChildren && 'sidebar-two-actions')}
+            className={cn(item.className, actionCount > 1 && sidebarStyles.twoActions)}
           >
             <Link to={item.url} aria-label={label} onClick={navigate}>
               <item.icon />
@@ -134,10 +140,11 @@ export function SidebarNavigationItem({ item }: { item: SidebarNavigationEntry }
               {expanded && item.badge}
             </Link>
           </SidebarMenuButton>
-          {expanded && (item.action || hasChildren) && (
-            <div className="sidebar-item-actions">
+          {expanded && actionCount > 0 && (
+            <div className={sidebarStyles.itemActions}>
+              {item.secondaryAction}
               {item.action}
-              {hasChildren && (
+              {canCollapse && (
                 <CollapsibleTrigger asChild>
                   <SidebarMenuAction aria-label={`${label} shortcuts`} title={`${label} shortcuts`}>
                     <ChevronRight className={cn('transition-transform', open && 'rotate-90')} />
@@ -147,7 +154,9 @@ export function SidebarNavigationItem({ item }: { item: SidebarNavigationEntry }
             </div>
           )}
         </div>
-        {hasChildren && <CollapsibleContent>{sublinks()}</CollapsibleContent>}
+        {hasChildren && item.submenu !== 'collapsed-only' && (
+          <CollapsibleContent>{sublinks()}</CollapsibleContent>
+        )}
       </SidebarMenuItem>
     </Collapsible>
   );

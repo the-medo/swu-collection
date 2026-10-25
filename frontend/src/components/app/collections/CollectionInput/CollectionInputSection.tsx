@@ -35,7 +35,7 @@ const CollectionInputSection: React.FC<CollectionInputSectionProps> = ({ collect
 
   return (
     <Card>
-      <Tabs defaultValue="name" className="w-full md:w-[400px]">
+      <Tabs defaultValue="name" className="w-full min-w-0">
         <CardHeader className={cn({ 'p-2': isMobile }, ' pb-0')}>
           <CardTitle className="pb-2 flex gap-2 items-center">
             {isMobile && (

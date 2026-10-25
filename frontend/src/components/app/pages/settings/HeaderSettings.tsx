@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button.tsx';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import { HeaderCropEditor } from '@/components/app/global/HeaderCropEditor.tsx';
 import { GalleryImagePicker } from '@/components/app/global/GalleryImagePicker.tsx';
+import { settingsStyles } from './settingsStyles.ts';
 import type {
   HeaderCrop,
   HeaderImageOption,
@@ -108,7 +109,7 @@ function HeaderSettingsEditor({
           }
         }}
       >
-        <TabsList aria-label="Profile header source" className="h-auto flex-wrap">
+        <TabsList aria-label="Profile header source" className={settingsStyles.tabs}>
           <TabsTrigger value="battlefield" disabled={busy}>
             Battlefield
           </TabsTrigger>

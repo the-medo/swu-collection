@@ -1,7 +1,5 @@
 import React, { useCallback } from 'react';
-import LeaderSelector from '@/components/app/global/LeaderSelector/LeaderSelector.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { Switch } from '@/components/ui/switch.tsx';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,29 +22,26 @@ interface CardPoolFiltersProps {
 }
 
 const CardPoolFilters: React.FC<CardPoolFiltersProps> = ({ initialized }) => {
-  const { set, type, custom, leader, activeFiltersCount, hasActiveFilters } =
-    useCardPoolFilterStore();
-  const { setSet, setType, setCustom, setLeader, resetFilters } = useCardPoolFilterStoreActions();
+  const { set, type, activeFiltersCount, hasActiveFilters } = useCardPoolFilterStore();
+  const { setSet, setType, resetFilters } = useCardPoolFilterStoreActions();
 
-  const onLeaderChange = useCallback((leaderCardId: string | undefined) => {
-    setLeader(leaderCardId);
-  }, []);
+  const onSetChange = useCallback(
+    (setId: string | null) => {
+      setSet(setId || undefined);
+    },
+    [setSet],
+  );
 
-  const onSetChange = useCallback((setId: string | null) => {
-    setSet(setId || undefined);
-  }, []);
-
-  const onTypeChange = useCallback((v: string) => {
-    setType((v || undefined) as CardPoolType | undefined);
-  }, []);
-
-  const onCustomToggle = useCallback((v: boolean) => {
-    setCustom(v);
-  }, []);
+  const onTypeChange = useCallback(
+    (v: string) => {
+      setType((v || undefined) as CardPoolType | undefined);
+    },
+    [setType],
+  );
 
   const handleReset = useCallback(() => {
-    setTimeout(() => resetFilters(), 50);
-  }, []);
+    resetFilters();
+  }, [resetFilters]);
 
   if (!initialized) {
     return <div className="p-2 flex justify-center">Loading filters...</div>;
@@ -59,16 +54,8 @@ const CardPoolFilters: React.FC<CardPoolFiltersProps> = ({ initialized }) => {
   ];
 
   return (
-    <div className="p-2 flex flex-wrap items-center gap-2">
-      {/* Leader prepared for the future - control visible now */}
-      {/*<LeaderSelector
-        trigger={null}
-        size="w100"
-        leaderCardId={leader}
-        onLeaderSelected={onLeaderChange}
-      />*/}
-
-      <div className="w-[230px]">
+    <div className="flex flex-wrap items-center gap-2">
+      <div className="w-full sm:w-[230px]">
         <SetSelect
           value={set as SwuSet | null}
           emptyOption={true}
@@ -82,7 +69,7 @@ const CardPoolFilters: React.FC<CardPoolFiltersProps> = ({ initialized }) => {
       {/* Type selector */}
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="w-[200px] justify-between">
+          <Button variant="outline" className="min-w-36 justify-between">
             {type ? typeLabel(type) : 'All Types'}
             <SlidersHorizontal className="h-4 w-4 ml-2" />
           </Button>
@@ -99,17 +86,10 @@ const CardPoolFilters: React.FC<CardPoolFiltersProps> = ({ initialized }) => {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Custom toggle */}
-      {/*<div className="inline-flex items-center gap-2 px-3 py-2 border rounded-md">
-        <Switch checked={!!custom} onCheckedChange={onCustomToggle} id="pool-custom-switch" />
-        <label htmlFor="pool-custom-switch" className="text-sm">
-          Custom only
-        </label>
-      </div>*/}
-
-      <div className="flex justify-end pt-2">
+      <div className="flex justify-end">
         <Button variant="secondary" size="sm" disabled={!hasActiveFilters} onClick={handleReset}>
-          <RefreshCcw className="h-4 w-4 mr-2" /> Reset Filters ({activeFiltersCount})
+          <RefreshCcw className="h-4 w-4 mr-2" /> Reset{' '}
+          {activeFiltersCount > 0 ? `(${activeFiltersCount})` : ''}
         </Button>
       </div>
     </div>

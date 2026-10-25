@@ -12,6 +12,12 @@ import {
 } from '@/components/ui/select';
 import debounce from 'lodash.debounce';
 import { useCallback } from 'react';
+import { Search } from 'lucide-react';
+
+const controlClassName =
+  'h-8 min-w-0 rounded-lg border-[color:var(--workspace-border)] bg-background px-2.5 py-1 text-[13px] shadow-none';
+const selectContentClassName =
+  'rounded-lg border-[color:var(--workspace-border)] [&_[role=option]]:rounded-md [&_[role=option]]:text-[13px] [&_[role=option]:focus]:bg-[var(--workspace-soft)] [&_[role=option]:focus]:text-primary [&_[role=option][data-state=checked]]:text-primary';
 
 interface CardStatsFiltersProps {
   className?: string;
@@ -85,21 +91,26 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
   }, []);
 
   return (
-    <div className={cn('space-y-4 @container/card-stat-filters', className)}>
-      <div className="grid grid-cols-1 lg:grid-cols-2 @[1200px]/card-stat-filters:grid-cols-4 gap-4">
+    <div
+      className={cn(
+        '@container/card-stat-filters min-w-0 rounded-xl border border-[color:var(--workspace-border)] bg-card p-2.5',
+        className,
+      )}
+    >
+      <div className="grid grid-cols-1 gap-2.5 @[280px]/card-stat-filters:grid-cols-2 @[800px]/card-stat-filters:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_7rem_minmax(0,1.2fr)]">
         {/* Sort By */}
-        <div className="flex items-center gap-4 xl:pr-8 min-w-[300px]">
-          <Label htmlFor="sort-by" className="max-xl:w-32 shrink-0">
-            Sort by:
+        <div className="min-w-0 space-y-1">
+          <Label htmlFor="sort-by" className="block text-xs font-medium text-muted-foreground">
+            Sort by
           </Label>
           <Select value={sortBy} onValueChange={handleSortByChange}>
-            <SelectTrigger id="sort-by">
+            <SelectTrigger id="sort-by" className={controlClassName}>
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className={selectContentClassName}>
               <SelectItem value="md">MD Count</SelectItem>
               <SelectItem value="sb">SB Count</SelectItem>
-              <SelectItem value="total">Total Count (MD + SB)</SelectItem>
+              <SelectItem value="total">Total (MD + SB)</SelectItem>
               <SelectItem value="avgMd">Avg. MD</SelectItem>
               <SelectItem value="avgTotal">Avg. MD + SB</SelectItem>
               <SelectItem value="deckCount">Deck Count</SelectItem>
@@ -109,29 +120,30 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
         </div>
 
         {/* Group By */}
-        <div className="flex items-center gap-4 xl:pr-8 min-w-[300px]">
-          <Label htmlFor="group-by" className="max-xl:w-32 shrink-0">
-            Group by:
+        <div className="min-w-0 space-y-1">
+          <Label htmlFor="group-by" className="block text-xs font-medium text-muted-foreground">
+            Group by
           </Label>
           <Select value={groupBy} onValueChange={handleGroupByChange}>
-            <SelectTrigger id="group-by">
+            <SelectTrigger id="group-by" className={controlClassName}>
               <SelectValue placeholder="Group by" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className={selectContentClassName}>
               <SelectItem value="none">None</SelectItem>
               <SelectItem value="type">Card Type</SelectItem>
               <SelectItem value="cost">Card Cost</SelectItem>
-              <SelectItem value="set">
-                Set <span className="text-xs ml-16">(shows set meta share)</span>
-              </SelectItem>
+              <SelectItem value="set">Set (meta share)</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         {/* Min Deck Count */}
-        <div className="flex items-center gap-4 xl:pr-8 min-w-[300px]">
-          <Label htmlFor="min-deck-count" className="max-xl:w-32 shrink-0">
-            Min. Deck Count:
+        <div className="min-w-0 space-y-1">
+          <Label
+            htmlFor="min-deck-count"
+            className="block text-xs font-medium text-muted-foreground"
+          >
+            Min. decks
           </Label>
           <Input
             id="min-deck-count"
@@ -140,22 +152,23 @@ const CardStatsFilters: React.FC<CardStatsFiltersProps> = ({ className }) => {
             value={localMinDeckCount}
             onChange={handleMinDeckCountChange}
             placeholder="Minimum deck count"
-            className="flex-1"
+            className={controlClassName}
           />
         </div>
 
         {/* Card Search */}
-        <div className="flex items-center gap-4 xl:pr-8 min-w-[300px]">
-          <Label htmlFor="card-search" className="max-xl:w-32 shrink-0">
-            Card Search:
+        <div className="min-w-0 space-y-1">
+          <Label htmlFor="card-search" className="block text-xs font-medium text-muted-foreground">
+            Card search
           </Label>
           <Input
             id="card-search"
+            icon={Search}
             type="text"
             value={localCardSearch}
             onChange={handleCardSearchChange}
             placeholder="Search cards..."
-            className="flex-1"
+            className={cn(controlClassName, 'pl-8')}
           />
         </div>
       </div>

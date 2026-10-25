@@ -1,3 +1,4 @@
+import { statisticsStyles } from '@/components/app/statistics/statisticsStyles';
 import * as React from 'react';
 import MatchResultBox from '@/components/app/statistics/components/MatchResultBox/MatchResultBox.tsx';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
@@ -31,9 +32,9 @@ const SubpageMatches: React.FC<SubpageMatchesProps> = ({ matches }) => {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className={statisticsStyles.ledger}>
       {visibleMatches.map(match => (
-        <MatchResultBox key={match.id} match={match} />
+        <MatchResultBox key={match.id} match={match} artworkVariant="portrait" />
       ))}
       <div ref={observerTarget} className="h-4" />
     </div>

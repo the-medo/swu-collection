@@ -1,3 +1,5 @@
+import { competitionStyles } from '@/components/app/tournaments/competitionStyles';
+import { cn } from '@/lib/utils';
 import { createFileRoute } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
 import TournamentsAll from '@/components/app/tournaments/pages/TournamentsAll/TournamentsAll.tsx';
@@ -10,7 +12,7 @@ function TournamentsAllPage() {
   return (
     <>
       <Helmet title="All Tournaments | SWUBase" />
-      <div className="p-2">
+      <div className={cn('p-2', competitionStyles.page)}>
         <TournamentsAll />
       </div>
     </>

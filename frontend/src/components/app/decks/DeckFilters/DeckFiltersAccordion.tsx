@@ -1,3 +1,5 @@
+import { browseStyles } from '@/components/app/global/BrowsePage/browseStyles';
+import { cn } from '@/lib/utils';
 import * as React from 'react';
 import {
   Accordion,
@@ -12,11 +14,13 @@ import { useDeckFilterStore } from '@/components/app/decks/DeckFilters/useDeckFi
 interface DeckFiltersAccordionProps {
   defaultOpen?: boolean;
   initialized?: boolean;
+  actions?: React.ReactNode;
 }
 
 const DeckFiltersAccordion: React.FC<DeckFiltersAccordionProps> = ({
   defaultOpen = false,
   initialized,
+  actions,
 }) => {
   const { activeFiltersCount } = useDeckFilterStore();
 
@@ -25,10 +29,16 @@ const DeckFiltersAccordion: React.FC<DeckFiltersAccordionProps> = ({
       type="single"
       collapsible
       defaultValue={defaultOpen || activeFiltersCount > 0 ? 'filters' : undefined}
-      className="w-full mb-2 sticky"
+      className="w-full"
     >
-      <AccordionItem value="filters" className="border rounded-md">
-        <AccordionTrigger className="px-4 pt-3 pb-1 hover:no-underline">
+      <AccordionItem
+        value="filters"
+        className={cn(
+          'flex flex-wrap items-center border rounded-md [&>h3]:flex-1',
+          browseStyles.deckFilterPanel,
+        )}
+      >
+        <AccordionTrigger className="px-4 py-3 hover:no-underline">
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="h-4 w-4" />
             <span className="font-medium">Filters</span>
@@ -39,9 +49,16 @@ const DeckFiltersAccordion: React.FC<DeckFiltersAccordionProps> = ({
             )}
           </div>
         </AccordionTrigger>
-        <AccordionContent className="p-0">
-          <DeckFilters initialized={initialized} />
-        </AccordionContent>
+        {actions && (
+          <div className="ml-auto flex flex-wrap items-center justify-end gap-2 px-3 py-1.5">
+            {actions}
+          </div>
+        )}
+        <div className="w-full">
+          <AccordionContent className="p-0">
+            <DeckFilters initialized={initialized} />
+          </AccordionContent>
+        </div>
       </AccordionItem>
     </Accordion>
   );

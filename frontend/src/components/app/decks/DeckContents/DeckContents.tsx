@@ -38,6 +38,8 @@ import { deckDetailTabSchema, type DeckDetailTab } from '../DeckDetail/deckDetai
 import { useUser } from '@/hooks/useUser.ts';
 import { useGetUserSetting } from '@/api/user/useGetUserSetting.ts';
 
+import { cn } from '@/lib/utils.ts';
+
 interface DeckContentsProps {
   deckId: string;
   setDeckId?: (id: string) => void;
@@ -144,7 +146,10 @@ const DeckContents: React.FC<DeckContentsProps> = ({
       <div className="@container/deck-contents w-full">
         <div className="flex flex-col justify-center gap-2 w-full @[700px]/deck-contents:flex-row">
           {!deckbuilder && !compact && (
-            <div data-deck-sidebar className="flex flex-row flex-wrap justify-center w-full gap-2 items-center self-start @[700px]/deck-contents:w-[350px] @[700px]/deck-contents:shrink-0 @[700px]/deck-contents:flex-col @[700px]/deck-contents:justify-start">
+            <div
+              data-deck-sidebar
+              className="flex flex-row flex-wrap justify-center w-full gap-2 items-center self-start @[700px]/deck-contents:w-[350px] @[700px]/deck-contents:shrink-0 @[700px]/deck-contents:flex-col @[700px]/deck-contents:justify-start"
+            >
               {!compact && (
                 <div className="flex flex-row gap-2 flex-wrap items-center justify-center">
                   <DeckLeaderBase deckId={deckId} size={embedded && isMobile ? 'w200' : 'w300'} />
@@ -152,9 +157,16 @@ const DeckContents: React.FC<DeckContentsProps> = ({
               )}
               {editable && (
                 <Link to="/decks/$deckId/edit" params={{ deckId }} search={deckbuilderSearch}>
-                  <DeckGradientButton deckId={deckId} variant="outline" size="lg" className="w-56 max-w-full">
+                  <DeckGradientButton
+                    deckId={deckId}
+                    variant="outline"
+                    size="lg"
+                    className="w-56 max-w-full"
+                  >
                     <Hammer className="mr-4" />
-                    <span className="font-['Satoshi',sans-serif] text-xl font-semibold tracking-tight">Deckbuilder</span>
+                    <span className="font-['Satoshi',sans-serif] text-xl font-semibold tracking-tight">
+                      Deckbuilder
+                    </span>
                   </DeckGradientButton>
                 </Link>
               )}
@@ -170,7 +182,9 @@ const DeckContents: React.FC<DeckContentsProps> = ({
                   }}
                 >
                   <BookOpen className="mr-4" />
-                  <span className="font-['Satoshi',sans-serif] text-xl font-semibold tracking-tight">Guide</span>
+                  <span className="font-['Satoshi',sans-serif] text-xl font-semibold tracking-tight">
+                    Guide
+                  </span>
                 </DeckGradientButton>
               )}
               <DeckPricing deckId={deckId} showReloadButtonWhenNoPrices={true} />
@@ -219,9 +233,20 @@ const DeckContents: React.FC<DeckContentsProps> = ({
             <div className="flex flex-col gap-2 w-full">
               <div
                 ref={subpages}
-                className="flex flex-wrap justify-between gap-4 max-lg:justify-center max-lg:border-t max-lg:pt-2 border-b pb-2"
+                className={cn(
+                  'flex flex-wrap justify-between max-lg:justify-center max-lg:border-t max-lg:pt-2 border-b',
+                  deckbuilder ? 'gap-1 border-[var(--workspace-border)] pb-1' : 'gap-4 pb-2',
+                )}
               >
-                <DeckNavigationMenu gradient={!compact} deckId={deckId} className="justify-between">
+                <DeckNavigationMenu
+                  gradient={!compact && !deckbuilder}
+                  deckId={deckId}
+                  className={cn(
+                    'justify-between',
+                    deckbuilder &&
+                      'mb-0 border border-[var(--workspace-border)] bg-[var(--workspace-soft)] [&_button]:h-8 [&_button]:px-2 [&_button]:text-xs',
+                  )}
+                >
                   {compact && (
                     <NavigationMenuList className="flex-wrap justify-start gap-1">
                       <DeckBoardCardCounts deckId={deckId} />

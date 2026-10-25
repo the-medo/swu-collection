@@ -23,9 +23,9 @@ const CollectionContents: React.FC<CollectionContentsProps> = ({ collectionId })
   const loadedCollectionId = useCollectionGroupStoreLoadedCollectionId();
 
   return (
-    <div className="flex flex-col gap-2 w-full">
-      <Card>
-        <CardHeader className="p-2 flex flex-col gap-2">
+    <div className="collection-contents flex min-w-0 flex-col gap-4 w-full">
+      <Card className="rounded-2xl shadow-none">
+        <CardHeader className="p-4 flex flex-col gap-4">
           <CollectionLayoutSettings />
           <CollectionFilter />
         </CardHeader>

@@ -4,18 +4,19 @@ import { createApiError } from '@/api/errors.ts';
 import { useSession } from '@/lib/auth-client.ts';
 
 // Separate session-scoped queries keep private choices out of an anonymous editor.
-export function useEditorDecks(source: 'mine' | 'public') {
+export function useEditorDecks(source: 'mine' | 'public', folderId?: string, enabled = true) {
   const session = useSession();
   const userId = session.data?.user.id;
   return useInfiniteQuery({
-    queryKey: ['editor-decks', session.data?.session.id ?? 'anonymous', source],
-    enabled: !session.isPending && (source === 'public' || !!userId),
+    queryKey: ['editor-decks', session.data?.session.id ?? 'anonymous', source, folderId],
+    enabled: enabled && !session.isPending && !session.error && (source === 'public' || !!userId),
     initialPageParam: 0,
     queryFn: async ({ pageParam, signal }) => {
       const response = await api.deck.$get(
         {
           query: {
             userId: source === 'mine' ? userId : undefined,
+            folderId: source === 'mine' ? folderId : undefined,
             limit: '20',
             offset: String(pageParam),
             sort: 'deck.updated_at',

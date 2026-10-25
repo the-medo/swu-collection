@@ -48,7 +48,7 @@ const DashboardLeaderBase: React.FC<DashboardLeaderBaseProps> = ({
       // as it calculates the same stats (winrate, wins, losses)
       return { leaderBaseStatistics: calculateDeckStatistics(key, matches), deckStatistics };
     });
-  }, [byLeaderBase]);
+  }, [byLeaderBase, byDeckId]);
 
   if (recentCombinations.length === 0) return null;
 

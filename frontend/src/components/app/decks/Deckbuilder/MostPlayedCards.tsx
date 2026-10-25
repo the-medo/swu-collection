@@ -108,15 +108,15 @@ function MostPlayedCardsResults({
       aria-label="Most played cards"
       className="min-w-0 flex-1 p-2 @[1080px]/main-body:flex @[1080px]/main-body:min-h-0 @[1080px]/main-body:flex-col"
     >
-      <header className="mb-2 flex shrink-0 flex-wrap items-center justify-between gap-3 p-2">
-        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-2">
-          <h3 className="mb-0 hidden text-2xl font-semibold tracking-tight @[1080px]/main-body:block">
+      <header className="mb-1 flex shrink-0 flex-wrap items-center justify-between gap-1 py-1 [&_nav_button]:h-8 [&_nav_button]:px-2 [&_nav_button]:text-xs">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1">
+          <h3 className="m-0! hidden text-sm! leading-8! font-semibold tracking-tight @[1080px]/main-body:block">
             Most played cards
             {!isLoading && !isError && cardIds.length > 0 && (
               <span className="ml-2 text-sm text-muted-foreground">({cardIds.length} cards)</span>
             )}
           </h3>
-          <div className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
             <span className="mr-1">Your deck’s aspects</span>
             {aspects.map((aspect, index) => (
               <AspectIcon key={`${aspect}-${index}`} aspect={aspect} size="small" />

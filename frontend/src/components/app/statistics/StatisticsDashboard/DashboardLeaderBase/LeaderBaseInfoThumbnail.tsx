@@ -1,16 +1,16 @@
+import { areGameAndMatchRecordsEqual } from '@/components/app/statistics/lib/resultStatistics';
+import { statisticsStyles } from '@/components/app/statistics/statisticsStyles';
+import { cn } from '@/lib/utils';
 import * as React from 'react';
 import { useCardList, type CardListResponse } from '@/api/lists/useCardList.ts';
 import { useMemo } from 'react';
 import { basicBaseForAspect } from '../../../../../../../shared/lib/basicBases.ts';
-import DeckBackgroundDecoration from '@/components/app/global/DeckBackgroundDecoration.tsx';
-import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
-import { Card, CardContent } from '@/components/ui/card.tsx';
+import { StatisticsDeckArtwork } from '@/components/app/statistics/common/StatisticsDeckArtwork.tsx';
+import { ChevronDown } from 'lucide-react';
 import { DeckStatistics } from '@/components/app/statistics/lib/deckLib.ts';
 import { Link } from '@tanstack/react-router';
 import DeckInfoThumbnailCompact from '@/components/app/statistics/StatisticsDecks/StatisticsDeckLists/DeckInfoThumbnailCompact.tsx';
 import { StatSection, StatSectionProps } from '@/components/app/statistics/common/StatSection.tsx';
-import { cn } from '@/lib/utils.ts';
-import DeckInfoThumbnail from '@/components/app/statistics/StatisticsDecks/StatisticsDeckLists/DeckInfoThumbnail.tsx';
 import { getTeamUrlPrefix } from '@/components/app/teams/lib/getTeamUrlPrefix.ts';
 import { getStatisticsTimestampMs } from '@/components/app/statistics/lib/date.ts';
 import { useGetBulkDecks } from '@/api/decks/useGetBulkDecks.ts';
@@ -47,8 +47,12 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
     gameWinrate,
     matchWins,
     matchLosses,
+    matchDraws,
+    totalMatches,
+    totalGames,
     gameWins,
     gameLosses,
+    gameDraws,
     matches,
   } = statistics;
 
@@ -138,90 +142,69 @@ const LeaderBaseInfoThumbnail: React.FC<LeaderBaseInfoThumbnailProps> = ({
       baseCard: base,
     };
   }, [leaderCardId, baseCardKey, cardListData]);
+  const artworkLabel = `${leaderCard?.name ?? 'Unknown leader'} / ${baseCard?.name ?? baseCardKey ?? 'Unknown base'}`;
 
   return (
-    <Link
-      to={`${getTeamUrlPrefix(teamId)}/statistics/leader-and-base`}
-      params={{
-        teamId,
-      }}
-      search={(prev: Record<string, unknown>) => ({
-        ...prev,
-        sLeaderCardId: leaderCardId,
-        sBaseCardKey: baseCardKey,
-      })}
-      className="max-sm:block max-sm:w-full max-sm:min-w-0"
-    >
-      <Card className="overflow-hidden relative w-full h-full min-h-[200px] min-w-[350px] max-sm:min-w-0 hover:shadow-md">
-        <div className="flex-1 relative h-full">
-          {leaderCard && (
-            <DeckBackgroundDecoration
-              leaderCard={leaderCard}
-              baseCard={baseCard}
-              position="top-left"
-            >
-              <BaseAvatar cardId={baseCardKey} bordered={false} size="40" shape="circle" />
-            </DeckBackgroundDecoration>
+    <article className={statisticsStyles.leaderEntry}>
+      <div className={statisticsStyles.leaderMain}>
+        <Link
+          to={`${getTeamUrlPrefix(teamId)}/statistics/leader-and-base`}
+          params={{ teamId }}
+          search={(prev: Record<string, unknown>) => ({
+            ...prev,
+            sLeaderCardId: leaderCardId,
+            sBaseCardKey: baseCardKey,
+          })}
+          className={cn(
+            'group/deck-row flex items-center rounded-md focus-visible:outline-2 focus-visible:outline-primary',
+            statisticsStyles.leaderLink,
           )}
-          <CardContent
-            className={cn('flex h-full p-2 relative z-10 items-start gap-4', {
-              'flex-row flex-wrap justify-end max-sm:flex-col max-sm:items-stretch':
-                statSectionVariant === 'horizontal',
-              'flex-col pt-12 justify-start': statSectionVariant === 'vertical',
-            })}
-          >
-            {statSectionVariant === 'horizontal' && (
-              <div className="flex flex-col flex-1 gap-2 pl-40 max-sm:mt-8 max-sm:w-full max-sm:min-w-0 max-sm:pl-28">
-                {recentDecks.map(deck => (
-                  <DeckInfoThumbnail
-                    key={deck.deckId}
-                    teamId={teamId}
-                    statistics={hydratedDeckStatistics[deck.deckId]}
-                    statSectionVariant={statSectionVariant}
-                    displayDeckBackground={false}
-                    compactOnMobile
-                  />
-                ))}
-              </div>
-            )}
-            <div
-              className={cn('flex gap-4 items-end justify-end', {
-                'self-end': statSectionVariant === 'vertical',
-              })}
-            >
-              <div
-                className={cn('flex gap-4', {
-                  'flex-col p-2 m-2 bg-secondary rounded-lg': statSectionVariant === 'horizontal',
-                })}
-              >
-                <StatSection
-                  label="Games"
-                  wins={gameWins}
-                  losses={gameLosses}
-                  winrate={gameWinrate}
-                  variant={statSectionVariant}
-                />
-                <StatSection
-                  label="Matches"
-                  wins={matchWins}
-                  losses={matchLosses}
-                  winrate={matchWinrate}
-                  variant={statSectionVariant}
-                />
-              </div>
-            </div>
-            {statSectionVariant === 'vertical' &&
-              recentDecks.map(deck => (
-                <DeckInfoThumbnailCompact
-                  key={deck.deckId}
-                  teamId={teamId}
-                  statistics={hydratedDeckStatistics[deck.deckId]}
-                />
-              ))}
-          </CardContent>
+          aria-label={`Statistics for ${artworkLabel}`}
+          title={artworkLabel}
+        >
+          <StatisticsDeckArtwork leaderId={leaderCardId} baseKey={baseCardKey} />
+        </Link>
+        <div className={statisticsStyles.deckRecords}>
+          <StatSection
+            label="Games"
+            total={totalGames}
+            wins={gameWins}
+            losses={gameLosses}
+            draws={gameDraws}
+            winrate={gameWinrate}
+            variant={statSectionVariant}
+          />
+          {!areGameAndMatchRecordsEqual(statistics) && (
+            <StatSection
+              label="Matches"
+              total={totalMatches}
+              wins={matchWins}
+              losses={matchLosses}
+              draws={matchDraws}
+              winrate={matchWinrate}
+              variant={statSectionVariant}
+            />
+          )}
         </div>
-      </Card>
-    </Link>
+      </div>
+      {recentDecks.length > 0 && (
+        <details className={statisticsStyles.recentDecks}>
+          <summary>
+            <ChevronDown size={13} aria-hidden="true" />
+            {recentDecks.length} recent {recentDecks.length === 1 ? 'deck' : 'decks'}
+          </summary>
+          <div>
+            {recentDecks.map(deck => (
+              <DeckInfoThumbnailCompact
+                key={deck.deckId}
+                teamId={teamId}
+                statistics={hydratedDeckStatistics[deck.deckId]}
+              />
+            ))}
+          </div>
+        </details>
+      )}
+    </article>
   );
 };
 

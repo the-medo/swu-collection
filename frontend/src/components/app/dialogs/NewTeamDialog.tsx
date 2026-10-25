@@ -1,3 +1,4 @@
+import { dialogStyles } from '@/components/ui/dialogStyles';
 import Dialog, { DialogProps } from '@/components/app/global/Dialog.tsx';
 import * as React from 'react';
 import { useUser } from '@/hooks/useUser.ts';
@@ -75,14 +76,14 @@ const NewTeamDialog: React.FC<NewTeamDialogProps> = ({ trigger, triggerDisabled 
     <Dialog
       trigger={trigger}
       triggerDisabled={triggerDisabled}
-      header="Create Team"
+      header="Create a team"
+      headerDescription="Bring your testing group together. New teams start private."
       open={open}
       onOpenChange={setOpen}
-      contentClassName="md:min-w-[450px]"
     >
       {user ? (
         <form
-          className="flex flex-col gap-4"
+          className={dialogStyles.form}
           onSubmit={e => {
             e.preventDefault();
             e.stopPropagation();
@@ -97,7 +98,7 @@ const NewTeamDialog: React.FC<NewTeamDialogProps> = ({ trigger, triggerDisabled 
                 <Input
                   type="text"
                   id={field.name}
-                  placeholder="My Awesome Team"
+                  placeholder="e.g. The Outer Rim"
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={e =>
@@ -119,7 +120,7 @@ const NewTeamDialog: React.FC<NewTeamDialogProps> = ({ trigger, triggerDisabled 
             }}
             children={field => (
               <div className="flex flex-col gap-2">
-                <Label htmlFor={field.name}>Shortcut (URL-friendly)</Label>
+                <Label htmlFor={field.name}>Team address</Label>
                 <Input
                   type="text"
                   id={field.name}
@@ -153,12 +154,22 @@ const NewTeamDialog: React.FC<NewTeamDialogProps> = ({ trigger, triggerDisabled 
           <form.Subscribe
             selector={state => [state.canSubmit, state.isSubmitting]}
             children={([canSubmit, isSubmitting]) => (
-              <Button
-                type="submit"
-                disabled={!canSubmit || isSubmitting || createTeamMutation.isPending}
-              >
-                {createTeamMutation.isPending ? 'Creating...' : 'Create Team'}
-              </Button>
+              <div className={dialogStyles.formActions}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={createTeamMutation.isPending}
+                  onClick={() => setOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={!canSubmit || isSubmitting || createTeamMutation.isPending}
+                >
+                  {createTeamMutation.isPending ? 'Creating...' : 'Create team'}
+                </Button>
+              </div>
             )}
           />
         </form>

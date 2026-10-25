@@ -1,3 +1,5 @@
+import { limitedStyles } from '@/components/app/limited/limitedStyles';
+import { cn } from '@/lib/utils';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { useCardList } from '@/api/lists/useCardList.ts';
@@ -98,9 +100,11 @@ const CustomPoolCardEntry: React.FC<CustomPoolCardEntryProps> = ({
   };
 
   return (
-    <div className="rounded-md border border-border bg-muted/20 p-3">
+    <div
+      className={cn('rounded-lg border border-border bg-muted/20 p-2.5', limitedStyles.customEntry)}
+    >
       <div className="mb-2">
-        <h5 className="font-medium">Enter your cards</h5>
+        <h5 className={limitedStyles.heading}>Enter your cards</h5>
         <p className="text-xs text-muted-foreground">
           {description ?? (
             <>

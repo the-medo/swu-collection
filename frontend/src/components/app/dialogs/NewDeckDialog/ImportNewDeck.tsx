@@ -1,3 +1,4 @@
+import { dialogStyles } from '@/components/ui/dialogStyles';
 import * as React from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useToast } from '@/hooks/use-toast.ts';
@@ -15,6 +16,7 @@ import type { DeckFolder } from '../../../../../../types/DeckFolder.ts';
 
 interface ImportNewDeckProps {
   onSuccess: () => void;
+  onCancel: () => void;
   folders: DeckFolder[];
   folderId: string | null;
   onFolderChange: (id: string | null) => void;
@@ -24,6 +26,7 @@ interface ImportNewDeckProps {
 
 export const ImportNewDeck: React.FC<ImportNewDeckProps> = ({
   onSuccess,
+  onCancel,
   folders,
   folderId,
   onFolderChange,
@@ -67,7 +70,7 @@ export const ImportNewDeck: React.FC<ImportNewDeckProps> = ({
 
   return (
     <form
-      className="flex flex-col gap-4"
+      className={dialogStyles.form}
       onSubmit={e => {
         e.preventDefault();
         e.stopPropagation();
@@ -86,11 +89,18 @@ export const ImportNewDeck: React.FC<ImportNewDeckProps> = ({
             <Input
               type="text"
               id="import-deck-link"
-              placeholder="Deck link (SWUDB, SWU Forge, Melee, HoloScan, or Protect the Pod)"
+              placeholder="https://…"
+              aria-describedby="import-deck-link-help"
               value={field.state.value}
               onBlur={field.handleBlur}
               onChange={e => field.handleChange(e.target.value)}
             />
+            <p
+              id="import-deck-link-help"
+              className="m-0 text-xs leading-relaxed text-muted-foreground"
+            >
+              Paste a link from SWUDB, SWU Forge, Melee, HoloScan, or Protect the Pod.
+            </p>
             <FormFieldError meta={field.state.meta} />
           </div>
         )}
@@ -110,7 +120,10 @@ export const ImportNewDeck: React.FC<ImportNewDeckProps> = ({
               allowEmpty={false}
               onChange={field.handleChange}
             />
-            <p id="import-deck-format-help" className="text-sm text-muted-foreground">
+            <p
+              id="import-deck-format-help"
+              className="m-0 text-xs leading-relaxed text-muted-foreground"
+            >
               Each deckbuilder handles formats differently, so choose the format you want to use in
               SWUBase. This choice will be kept when you refresh the deck.
             </p>
@@ -135,19 +148,29 @@ export const ImportNewDeck: React.FC<ImportNewDeckProps> = ({
         selector={state => [state.canSubmit, state.isSubmitting, state.values] as const}
       >
         {([canSubmit, isSubmitting, values]) => (
-          <Button
-            type="submit"
-            disabled={
-              !canSubmit ||
-              isSubmitting ||
-              importDeck.isPending ||
-              folderBlocked ||
-              !values.deckLink.trim() ||
-              values.format === null
-            }
-          >
-            {importDeck.isPending ? 'Importing...' : 'Import'}
-          </Button>
+          <div className={dialogStyles.formActions}>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={importDeck.isPending}
+              onClick={onCancel}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={
+                !canSubmit ||
+                isSubmitting ||
+                importDeck.isPending ||
+                folderBlocked ||
+                !values.deckLink.trim() ||
+                values.format === null
+              }
+            >
+              {importDeck.isPending ? 'Importing...' : 'Import deck'}
+            </Button>
+          </div>
         )}
       </form.Subscribe>
     </form>

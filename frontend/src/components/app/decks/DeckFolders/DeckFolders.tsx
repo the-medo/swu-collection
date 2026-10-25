@@ -1,3 +1,4 @@
+import { browseStyles } from '@/components/app/global/BrowsePage/browseStyles';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { cn } from '@/lib/utils.ts';
 import { FolderPlus, Loader2 } from 'lucide-react';
@@ -9,7 +10,6 @@ import {
   useDeckFilterStore,
   useInitializeDeckFilterFromUrlParams,
 } from '@/components/app/decks/DeckFilters/useDeckFilterStore.ts';
-import NewDeckDialog from '@/components/app/dialogs/NewDeckDialog/NewDeckDialog.tsx';
 import { MAX_BULK_DECK_DELETE_COUNT } from '../../../../../../types/ZDeck.ts';
 import {
   getDeckFolderDescendants,
@@ -104,34 +104,35 @@ export default function DeckFolders({ userId }: { userId: string }) {
   const selectedDecks = Object.values(selection);
 
   return (
-    <div className="flex w-full min-w-0 flex-col gap-3 p-2 pb-24">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="mb-0">Your decks</h3>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant="ghost"
-            disabled={!opened.size && !unfiledOpen}
-            onClick={() => {
-              changeOpened(() => new Set());
-              setUnfiledOpen(false);
-            }}
-          >
-            Collapse all folders
-          </Button>
-          <DeckFolderDialog
-            folders={folders}
-            onSaved={onSaved}
-            trigger={
-              <Button variant="outline" disabled={query.isPending || query.isError}>
-                <FolderPlus className="h-4 w-4" />
-                New folder
-              </Button>
-            }
-          />
-          <NewDeckDialog trigger={<Button>New deck</Button>} />
-        </div>
-      </div>
-      <DeckFiltersAccordion initialized={initialized} />
+    <div className="flex w-full min-w-0 flex-col gap-4 pb-24">
+      <DeckFiltersAccordion
+        initialized={initialized}
+        actions={
+          <>
+            <Button
+              size="sm"
+              variant="ghost"
+              disabled={!opened.size && !unfiledOpen}
+              onClick={() => {
+                changeOpened(() => new Set());
+                setUnfiledOpen(false);
+              }}
+            >
+              Collapse all folders
+            </Button>
+            <DeckFolderDialog
+              folders={folders}
+              onSaved={onSaved}
+              trigger={
+                <Button size="sm" variant="outline" disabled={query.isPending || query.isError}>
+                  <FolderPlus className="h-4 w-4" />
+                  New folder
+                </Button>
+              }
+            />
+          </>
+        }
+      />
       {query.isPending && (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -163,63 +164,74 @@ export default function DeckFolders({ userId }: { userId: string }) {
               Drop here to move to the top level
             </div>
           )}
-          <Table
-            aria-label="Deck folders"
-            className="table-fixed [--folder-indent:16px] [--folder-max-indent:32px] sm:[--folder-indent:28px] sm:[--folder-max-indent:224px]"
+          <div
+            className={cn(
+              'overflow-hidden rounded-2xl border border-border bg-card',
+              browseStyles.folderTable,
+            )}
           >
-            <TableHeader>
-              <TableRow>
-                <TableHead>Folder</TableHead>
-                <TableHead className="w-16 px-1 sm:w-32 sm:px-2 lg:w-[20rem]">
-                  <span className="sr-only">Limited default and new deck</span>
-                </TableHead>
-                <TableHead className="w-12 px-1 text-right sm:w-14 sm:px-2">Decks</TableHead>
-                <TableHead className="w-14 px-1 text-right sm:w-20 sm:px-2">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {!query.isError &&
-                folders
-                  .filter(folder => !folder.parentId)
-                  .map(folder => (
-                    <DeckFolderSection
-                      key={folder.id}
-                      folder={folder}
-                      folders={folders}
-                      filters={filters}
-                      opened={opened}
-                      onToggle={id =>
-                        changeOpened(current => {
-                          if (current.has(id)) current.delete(id);
-                          else current.add(id);
-                          return current;
-                        })
-                      }
-                      onSaved={onSaved}
-                      onSetDefaultLimited={folderId => defaultLimitedFolder.mutate(folderId)}
-                      defaultLimitedPending={defaultLimitedFolder.isPending}
-                      drag={drag}
-                      onDeleted={id => {
-                        const removed = getDeckFolderDescendants(folders, id);
-                        changeOpened(current => {
-                          removed.forEach(folderId => current.delete(folderId));
-                          return current;
-                        });
-                        setSelection({});
-                      }}
-                      selection={selection}
-                      onSelectionChange={onSelectionChange}
-                    />
-                  ))}
-              <UnfiledDeckSection
-                open={unfiledOpen}
-                onToggle={() => setUnfiledOpen(current => !current)}
-                filters={filters}
-                selection={selection}
-                onSelectionChange={onSelectionChange}
-              />
-            </TableBody>
-          </Table>
+            <Table
+              aria-label="Deck folders"
+              className="table-fixed [--folder-indent:16px] [--folder-max-indent:32px] sm:[--folder-indent:28px] sm:[--folder-max-indent:224px]"
+            >
+              <colgroup className="max-mobile:hidden">
+                <col />
+                <col className="w-16 sm:w-32 lg:w-[20rem]" />
+                <col className="w-12 sm:w-14" />
+                <col className="w-14 sm:w-20" />
+              </colgroup>
+              <TableHeader className="sr-only">
+                <TableRow>
+                  <TableHead scope="col">Folder</TableHead>
+                  <TableHead scope="col">Limited default and new deck</TableHead>
+                  <TableHead scope="col">Decks</TableHead>
+                  <TableHead scope="col">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {!query.isError &&
+                  folders
+                    .filter(folder => !folder.parentId)
+                    .map(folder => (
+                      <DeckFolderSection
+                        key={folder.id}
+                        folder={folder}
+                        folders={folders}
+                        filters={filters}
+                        opened={opened}
+                        onToggle={id =>
+                          changeOpened(current => {
+                            if (current.has(id)) current.delete(id);
+                            else current.add(id);
+                            return current;
+                          })
+                        }
+                        onSaved={onSaved}
+                        onSetDefaultLimited={folderId => defaultLimitedFolder.mutate(folderId)}
+                        defaultLimitedPending={defaultLimitedFolder.isPending}
+                        drag={drag}
+                        onDeleted={id => {
+                          const removed = getDeckFolderDescendants(folders, id);
+                          changeOpened(current => {
+                            removed.forEach(folderId => current.delete(folderId));
+                            return current;
+                          });
+                          setSelection({});
+                        }}
+                        selection={selection}
+                        onSelectionChange={onSelectionChange}
+                      />
+                    ))}
+                <UnfiledDeckSection
+                  open={unfiledOpen}
+                  onToggle={() => setUnfiledOpen(current => !current)}
+                  filters={filters}
+                  selection={selection}
+                  onSelectionChange={onSelectionChange}
+                />
+              </TableBody>
+            </Table>
+          </div>
           <div aria-live="polite" className="sr-only">
             {drag.drag ? drag.description : drag.isPending ? 'Saving folder position' : ''}
           </div>

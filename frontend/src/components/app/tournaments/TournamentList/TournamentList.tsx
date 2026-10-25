@@ -53,11 +53,27 @@ const TournamentList: React.FC<TournamentListProps> = ({ params }) => {
       )}
 
       {/* Edit Tournament Dialog */}
-      {tournamentToEdit && <EditTournamentDialog trigger={<></>} tournament={tournamentToEdit} />}
+      {tournamentToEdit && (
+        <EditTournamentDialog
+          trigger={<></>}
+          tournament={tournamentToEdit}
+          open
+          onOpenChange={open => {
+            if (!open) setTournamentToEdit(null);
+          }}
+        />
+      )}
 
       {/* Delete Tournament Dialog */}
       {tournamentToDelete && (
-        <DeleteTournamentDialog trigger={<></>} tournament={tournamentToDelete} />
+        <DeleteTournamentDialog
+          trigger={<></>}
+          tournament={tournamentToDelete}
+          open
+          onOpenChange={open => {
+            if (!open) setTournamentToDelete(null);
+          }}
+        />
       )}
     </div>
   );

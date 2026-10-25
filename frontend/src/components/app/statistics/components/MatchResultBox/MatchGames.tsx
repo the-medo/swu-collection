@@ -1,19 +1,25 @@
-import * as React from 'react';
-import { GameResult } from '../../../../../../../server/db/schema/game_result.ts';
-import GameRow from './GameRow.tsx';
+import { statisticsStyles } from '@/components/app/statistics/statisticsStyles';
+import type { GameResult } from '../../../../../../../server/db/schema/game_result.ts';
 
-interface MatchGamesProps {
-  games: GameResult[];
-}
-
-const MatchGames: React.FC<MatchGamesProps> = ({ games }) => {
+export default function MatchGames({ games }: { games: GameResult[] }) {
   return (
-    <div className="flex flex-col border-l border-border/40 h-full min-w-[150px] max-lg:hidden">
-      {games.map((game, index) => (
-        <GameRow key={game.id || index} game={game} index={index} />
-      ))}
-    </div>
+    <span className={statisticsStyles.gameResults} role="group" aria-label="Game results">
+      {games.map((game, index) => {
+        const gameNumber = game.gameNumber ?? index + 1;
+        const outcome = game.isWinner === true ? 'Win' : game.isWinner === false ? 'Loss' : 'Draw';
+        return (
+          <span
+            key={game.id || index}
+            className={statisticsStyles.gameResult}
+            data-result={game.isWinner === true ? 3 : game.isWinner === false ? 0 : 1}
+            role="img"
+            title={`Game ${gameNumber}: ${outcome}`}
+            aria-label={`Game ${gameNumber}: ${outcome}`}
+          >
+            <strong>{outcome[0]}</strong>
+          </span>
+        );
+      })}
+    </span>
   );
-};
-
-export default MatchGames;
+}

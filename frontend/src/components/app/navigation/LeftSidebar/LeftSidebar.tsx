@@ -1,3 +1,4 @@
+import { sidebarStyles } from '@/components/app/navigation/LeftSidebar/sidebarStyles';
 import { useLocation } from '@tanstack/react-router';
 import { useCrossfireInvitations } from '@/components/app/crossfire/invitationContext.ts';
 import {
@@ -9,7 +10,7 @@ import {
   Star,
   TrophyIcon,
   Users,
-  ArrowUpRight,
+  Earth,
   Radio,
   X,
 } from 'lucide-react';
@@ -59,7 +60,6 @@ import {
   WantlistIcon,
 } from '@/components/app/global/icons/CardLibraryIcons.tsx';
 import { SidebarNavigationItem, type SidebarNavigationEntry } from './SidebarNavigationItem.tsx';
-import './left-sidebar.css';
 
 const getGroups = ({
   setOpenMobile,
@@ -67,6 +67,7 @@ const getGroups = ({
   authenticated,
   showLists,
   canCrossfire,
+  isAdmin,
   invitationCount,
 }: {
   setOpenMobile: (open: boolean) => void;
@@ -74,12 +75,14 @@ const getGroups = ({
   authenticated: boolean;
   showLists: boolean;
   canCrossfire: boolean;
+  isAdmin: boolean;
   invitationCount: number;
 }): { id: string; title: string; items: SidebarNavigationEntry[] }[] => {
   const teamsItem: SidebarNavigationEntry = {
     title: 'Teams',
     url: '/teams',
     icon: Users,
+    submenu: 'always',
     action: (
       <NewTeamDialog
         trigger={
@@ -125,7 +128,6 @@ const getGroups = ({
             { title: 'Tournament map', url: '/tournaments/map' },
             ...(authenticated ? [{ title: 'Your calendar', url: '/tournaments/calendar' }] : []),
           ],
-          content: authenticated ? <SidebarYourTournaments /> : undefined,
         },
         {
           title: 'Public decks',
@@ -140,108 +142,22 @@ const getGroups = ({
             </SidebarMenuAction>
           ),
           items: authenticated ? undefined : [{ title: 'Favorite decks', url: '/decks/favorite' }],
+          submenu: 'collapsed-only' as const,
         },
-        {
-          title: 'Creators',
-          url: '/creators',
-          icon: Radio,
-          className: 'sidebar-creators',
-          badge: <span className="sidebar-preview">Preview</span>,
-        },
-        ...(!authenticated ? [...publicLists, teamsItem] : []),
+        ...(isAdmin
+          ? [
+              {
+                title: 'Creators',
+                url: '/creators',
+                icon: Radio,
+                className: sidebarStyles.creators,
+                badge: <span className={sidebarStyles.preview}>Preview</span>,
+              },
+            ]
+          : []),
+        ...(!authenticated ? publicLists : []),
       ],
     },
-    ...(authenticated
-      ? [
-          {
-            id: 'your-space',
-            title: 'Your space',
-            items: [
-              {
-                title: 'Decks',
-                label: 'Your decks',
-                url: '/decks/your',
-                icon: DeckIcon,
-                action: (
-                  <NewDeckDialog
-                    trigger={
-                      <SidebarMenuAction title="Add Deck">
-                        <Plus />
-                        <span className="sr-only">Add Deck</span>
-                      </SidebarMenuAction>
-                    }
-                  />
-                ),
-                items: [{ title: 'Favorite decks', url: '/decks/favorite' }],
-              },
-              ...(showLists
-                ? [
-                    {
-                      title: 'Collections',
-                      label: 'Your collections',
-                      url: '/collections/your',
-                      icon: CollectionIcon,
-                      action: (
-                        <NewCollectionDialog
-                          collectionType={CollectionType.COLLECTION}
-                          trigger={
-                            <SidebarMenuAction title="Add Collection">
-                              <Plus />
-                              <span className="sr-only">Add Collection</span>
-                            </SidebarMenuAction>
-                          }
-                        />
-                      ),
-                      items: [{ title: 'Public collections', url: '/collections/public' }],
-                    },
-                    {
-                      title: 'Wantlists',
-                      label: 'Your wantlists',
-                      url: '/wantlists/your',
-                      icon: WantlistIcon,
-                      action: (
-                        <NewCollectionDialog
-                          collectionType={CollectionType.WANTLIST}
-                          trigger={
-                            <SidebarMenuAction title="Add Wantlist">
-                              <Plus />
-                              <span className="sr-only">Add Wantlist</span>
-                            </SidebarMenuAction>
-                          }
-                        />
-                      ),
-                      items: [{ title: 'Public wantlists', url: '/wantlists/public' }],
-                    },
-                    {
-                      title: 'Lists',
-                      label: 'Your other lists',
-                      url: '/lists/your',
-                      icon: CardListIcon,
-                      action: (
-                        <NewCollectionDialog
-                          collectionType={CollectionType.OTHER}
-                          trigger={
-                            <SidebarMenuAction title="Add card list">
-                              <Plus />
-                              <span className="sr-only">Add card list</span>
-                            </SidebarMenuAction>
-                          }
-                        />
-                      ),
-                    },
-                  ]
-                : []),
-              teamsItem,
-              {
-                title: 'Statistics',
-                label: 'Your statistics',
-                url: '/statistics',
-                icon: ChartSpline,
-              },
-            ],
-          },
-        ]
-      : []),
     {
       id: 'play',
       title: 'Play',
@@ -271,9 +187,123 @@ const getGroups = ({
               },
             ]
           : []),
+        ...(authenticated
+          ? [
+              {
+                title: 'Decks',
+                label: 'Your decks',
+                url: '/decks/your',
+                icon: DeckIcon,
+                action: (
+                  <NewDeckDialog
+                    trigger={
+                      <SidebarMenuAction title="Add Deck">
+                        <Plus />
+                        <span className="sr-only">Add Deck</span>
+                      </SidebarMenuAction>
+                    }
+                  />
+                ),
+                items: [{ title: 'Favorite decks', url: '/decks/favorite' }],
+                submenu: 'collapsed-only' as const,
+              },
+            ]
+          : []),
         { title: 'Sealed deck', url: '/limited', icon: SealedDeckIcon },
+        ...(authenticated
+          ? [
+              {
+                title: 'Statistics',
+                label: 'Your statistics',
+                url: '/statistics',
+                icon: ChartSpline,
+              },
+            ]
+          : []),
+        teamsItem,
       ],
     },
+    ...(authenticated && showLists
+      ? [
+          {
+            id: 'your-space',
+            title: 'Your space',
+            items: [
+              {
+                title: 'Collections',
+                label: 'Your collections',
+                url: '/collections/your',
+                icon: CollectionIcon,
+                action: (
+                  <NewCollectionDialog
+                    collectionType={CollectionType.COLLECTION}
+                    trigger={
+                      <SidebarMenuAction title="Add Collection">
+                        <Plus />
+                        <span className="sr-only">Add Collection</span>
+                      </SidebarMenuAction>
+                    }
+                  />
+                ),
+                items: [{ title: 'Public collections', url: '/collections/public' }],
+                submenu: 'collapsed-only' as const,
+                secondaryAction: (
+                  <SidebarMenuAction asChild title="Public collections">
+                    <Link to="/collections/public" onClick={() => setOpenMobile(false)}>
+                      <Earth />
+                      <span className="sr-only">Public collections</span>
+                    </Link>
+                  </SidebarMenuAction>
+                ),
+              },
+              {
+                title: 'Wantlists',
+                label: 'Your wantlists',
+                url: '/wantlists/your',
+                icon: WantlistIcon,
+                action: (
+                  <NewCollectionDialog
+                    collectionType={CollectionType.WANTLIST}
+                    trigger={
+                      <SidebarMenuAction title="Add Wantlist">
+                        <Plus />
+                        <span className="sr-only">Add Wantlist</span>
+                      </SidebarMenuAction>
+                    }
+                  />
+                ),
+                items: [{ title: 'Public wantlists', url: '/wantlists/public' }],
+                submenu: 'collapsed-only' as const,
+                secondaryAction: (
+                  <SidebarMenuAction asChild title="Public wantlists">
+                    <Link to="/wantlists/public" onClick={() => setOpenMobile(false)}>
+                      <Earth />
+                      <span className="sr-only">Public wantlists</span>
+                    </Link>
+                  </SidebarMenuAction>
+                ),
+              },
+              {
+                title: 'Lists',
+                label: 'Your other lists',
+                url: '/lists/your',
+                icon: CardListIcon,
+                action: (
+                  <NewCollectionDialog
+                    collectionType={CollectionType.OTHER}
+                    trigger={
+                      <SidebarMenuAction title="Add card list">
+                        <Plus />
+                        <span className="sr-only">Add card list</span>
+                      </SidebarMenuAction>
+                    }
+                  />
+                ),
+              },
+            ],
+          },
+        ]
+      : []),
   ];
 };
 
@@ -283,7 +313,9 @@ export function LeftSidebar() {
   const showLists =
     !user ||
     (!sidebarSettingsPending && (sidebarSettings?.left_sidebar_collections_and_lists ?? true));
-  const canCrossfire = useRole()('crossfire');
+  const hasRole = useRole();
+  const canCrossfire = hasRole('crossfire');
+  const isAdmin = hasRole('admin');
   const isCrossfire = useLocation({
     select: location => location.pathname.startsWith('/crossfire'),
   });
@@ -305,6 +337,7 @@ export function LeftSidebar() {
     authenticated: Boolean(user),
     showLists,
     canCrossfire,
+    isAdmin,
     invitationCount,
   });
 
@@ -312,7 +345,10 @@ export function LeftSidebar() {
 
   return (
     <Sidebar collapsible="icon" variant="sidebar">
-      <div className="left-sidebar flex h-full min-h-0 flex-col" data-expanded={expanded}>
+      <div
+        className={cn('flex h-full min-h-0 flex-col', sidebarStyles.sidebar)}
+        data-expanded={expanded}
+      >
         <SidebarHeader className="p-3 pb-2 group-data-[collapsible=icon]:p-2">
           <div className="flex items-center gap-2">
             {activeTeam?.logoUrl && teamIdOrShortcut ? (
@@ -320,7 +356,10 @@ export function LeftSidebar() {
                 <Link
                   to="/teams/$teamId"
                   params={{ teamId: teamIdOrShortcut }}
-                  className="sidebar-brand flex min-w-0 flex-1 items-center gap-3 rounded-xl"
+                  className={cn(
+                    'flex min-w-0 flex-1 items-center gap-3 rounded-xl',
+                    sidebarStyles.brand,
+                  )}
                   onClick={() => setOpenMobile(false)}
                   aria-label={activeTeam.name}
                 >
@@ -348,7 +387,7 @@ export function LeftSidebar() {
                     to="/"
                     aria-label="SWUBASE home"
                     onClick={() => setOpenMobile(false)}
-                    className="sidebar-brand shrink-0 rounded-lg p-1"
+                    className={cn('shrink-0 rounded-lg p-1', sidebarStyles.brand)}
                   >
                     <img src={swubaseLogo} alt="" className="size-6" />
                   </Link>
@@ -358,7 +397,10 @@ export function LeftSidebar() {
               <Link
                 to="/"
                 aria-label="SWUBASE home"
-                className="sidebar-brand flex min-w-0 flex-1 items-center gap-3 rounded-xl"
+                className={cn(
+                  'flex min-w-0 flex-1 items-center gap-3 rounded-xl',
+                  sidebarStyles.brand,
+                )}
                 onClick={() => setOpenMobile(false)}
               >
                 {isCrossfire && canCrossfire ? (
@@ -411,25 +453,27 @@ export function LeftSidebar() {
           <SidebarGroup className="gap-2 pt-2 pb-0">
             <SidebarGroupContent className="space-y-2">
               {expanded && (
-                <div className="sidebar-card-search">
+                <div className={sidebarStyles.cardSearch}>
                   <CardSearchCommand id="card-search-left-sidebar" />
                 </div>
               )}
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild tooltip="Card database" className="sidebar-database">
+                  <SidebarMenuButton
+                    asChild
+                    tooltip="Card database"
+                    className={sidebarStyles.database}
+                  >
                     <Link to="/cards/search" onClick={() => setOpenMobile(false)}>
                       <LayoutGrid aria-hidden="true" />
                       <span className="flex-1">Card database</span>
-                      {expanded && (
-                        <ArrowUpRight className="size-3.5! opacity-60" aria-hidden="true" />
-                      )}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
+          {user && expanded && <SidebarYourTournaments />}
           {groups.map(group => (
             <SidebarGroup key={group.id} className="py-0">
               <SidebarGroupLabel>{group.title}</SidebarGroupLabel>

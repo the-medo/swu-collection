@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -68,6 +69,9 @@ export default function SignIn({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Sign In</DialogTitle>
+          <DialogDescription>
+            Keep your decks, collections, and teams together in your account.
+          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4">
           <div className={cn('w-full gap-2 flex items-center', 'justify-between flex-col')}>

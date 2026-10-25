@@ -35,7 +35,7 @@ interface TournamentMetaChartProps {
 const chartConfig = {
   data: {
     label: 'Count',
-    color: 'hsl(var(--primary))',
+    color: 'var(--competition-accent, hsl(var(--primary)))',
   },
 };
 
@@ -113,7 +113,7 @@ const CustomBarDataLabel = ({
       opacity={dimmed ? DIMMED_OPACITY : 1}
       style={
         type === 'count'
-          ? { fontWeight: 'bold' }
+          ? { fontWeight: 'bold', fill: 'var(--competition-bar-label, hsl(var(--foreground)))' }
           : { fontSize: '10px', fontStyle: 'italic' }
       }
     >

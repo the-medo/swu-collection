@@ -1,3 +1,5 @@
+import { competitionStyles } from '@/components/app/tournaments/competitionStyles';
+import { cn } from '@/lib/utils';
 import * as React from 'react';
 import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.ts';
 import { getDeckKeys } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
@@ -263,13 +265,22 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({
 
   return (
     <div
-      className="space-y-2"
+      className={embedded ? 'space-y-2' : cn('space-y-2', competitionStyles.meta)}
       data-screenshot-target="tournament-meta-analysis"
       data-meta-part={metaPart}
       data-meta-info={metaInfo}
       data-view-mode={viewMode}
     >
-      <div className="flex flex-row gap-2 flex-wrap justify-between">
+      <div
+        className={
+          embedded
+            ? 'flex flex-row gap-2 flex-wrap justify-between'
+            : cn(
+                'flex flex-row gap-2 flex-wrap justify-between',
+                competitionStyles.analysisControls,
+              )
+        }
+      >
         {!embedded && (
           <MobileCard>
             <ViewModeSelector value={viewMode} onChange={setViewMode} />
@@ -284,7 +295,9 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({
       </div>
 
       <div
-        className={embedded ? 'flex flex-col gap-2' : 'flex items-center gap-4 flex-wrap justify-between'}
+        className={
+          embedded ? 'flex flex-col gap-2' : 'flex items-center gap-4 flex-wrap justify-between'
+        }
       >
         <span className="text-[10px] w-auto">Total decks analyzed: {filteredDecks.length}</span>
         {viewMode === 'table' && (
@@ -320,7 +333,16 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({
               />
             </div>
           )}
-          <Alert variant="info" size="xs" className="w-auto max-w-full">
+          <Alert
+            role="note"
+            variant="info"
+            size="xs"
+            className={
+              embedded
+                ? 'w-auto max-w-full'
+                : cn('w-auto max-w-full', competitionStyles.methodology)
+            }
+          >
             <InfoIcon className="size-4 top-0 left-0" />{' '}
             <ul className="">
               <li>

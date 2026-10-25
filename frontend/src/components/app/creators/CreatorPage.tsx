@@ -3,7 +3,7 @@ import { ClaimedBadge, YoutubeClaimButton } from './YoutubeClaim.tsx';
 import { lazy, Suspense } from 'react';
 import { Link } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
-import { Search } from 'lucide-react';
+import { BadgeCheck, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
@@ -173,13 +173,20 @@ export function CreatorPage({
         </div>
       </header>
       {user && !profile.ownerId && (
-        <section className={`${creatorPanel} flex flex-wrap items-center justify-between gap-4`}>
-          <div className="max-w-2xl space-y-2">
-            <h2 className={creatorHeading}>Is this your channel?</h2>
-            <p className={creatorDescription}>
-              Connect YouTube to claim this profile and manage your content. Decklists imported for
-              your videos will move to your account as unlisted decks.
-            </p>
+        <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--creator-border)] bg-[var(--creator-soft)] px-4 py-3">
+          <div className="flex min-w-0 max-w-3xl flex-1 basis-72 items-start gap-2.5">
+            <BadgeCheck
+              size={18}
+              className="mt-0.5 shrink-0 text-[var(--creator-accent)]"
+              aria-hidden="true"
+            />
+            <div className="grid min-w-0 gap-1">
+              <h2 className={creatorSubheading}>Is this your channel?</h2>
+              <p className={cn(creatorDescription, 'text-foreground/80')}>
+                Connect YouTube to claim this profile and manage your content. Decklists imported
+                for your videos will move to your account as unlisted decks.
+              </p>
+            </div>
           </div>
           <YoutubeClaimButton creatorId={profile.id}>Claim this profile</YoutubeClaimButton>
         </section>

@@ -123,7 +123,7 @@ function CommentThread({
             <div
               role="region"
               aria-label="Comment replies"
-              className="min-w-0 border-l border-border/70 pl-2 sm:pl-3"
+              className="min-w-0 border-l-2 border-primary/15 pl-2 sm:pl-3"
             >
               {query.isPending && (
                 <p role="status" className="text-xs">
@@ -380,10 +380,14 @@ export default function DiscussionComments({
     onChanged,
   };
   return (
-    <section ref={section} aria-label={ariaLabel} className="min-w-0 space-y-6">
+    <section ref={section} aria-label={ariaLabel} className="min-w-0 space-y-4">
       {openingCommentId && !denied && (
-        <Card role="region" aria-label="Opening post" className="min-w-0 rounded-xl shadow-none">
-          <CardContent className="min-w-0 px-5 py-2 sm:px-7">
+        <Card
+          role="region"
+          aria-label="Opening post"
+          className="min-w-0 rounded-xl border-t-2 border-t-primary/50 shadow-none"
+        >
+          <CardContent className="min-w-0 px-4 py-1 sm:px-5">
             {pinnedOpening ? (
               <CommentThread comment={pinnedOpening} {...threadProps} />
             ) : opening.isError ? (
@@ -406,16 +410,16 @@ export default function DiscussionComments({
         aria-label={openingCommentId ? 'Comments' : undefined}
         className="min-w-0 rounded-xl shadow-none"
       >
-        <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3 space-y-0 border-b px-5 py-4 sm:px-7">
+        <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2 space-y-0 border-b bg-muted/20 px-4 py-3 sm:px-5">
           <h3
             aria-label={
               !denied && commentCount !== undefined ? `Comments (${commentCount})` : undefined
             }
-            className="mb-0! flex items-center gap-2.5 text-lg!"
+            className="m-0! border-0! p-0! flex items-center gap-2 text-base! font-semibold!"
           >
             Comments
             {!denied && commentCount !== undefined && (
-              <span className="rounded-full bg-muted/40 px-2 py-0.5 text-xs font-medium tracking-normal text-muted-foreground">
+              <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium tracking-normal text-primary">
                 {commentCount}
               </span>
             )}
@@ -434,7 +438,7 @@ export default function DiscussionComments({
             </SignInWrapper>
           )}
         </CardHeader>
-        <CardContent className="min-w-0 space-y-4 p-5 sm:px-7">
+        <CardContent className="min-w-0 space-y-3 p-4 sm:px-5">
           {denied || info.isError || query.isError ? (
             <div role="alert" className="space-y-2 text-sm">
               <p>

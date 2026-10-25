@@ -20,6 +20,11 @@ import { ProfileAvatar } from '@/components/app/users/UserDetail/ProfileSidebar.
 import { Button } from '@/components/ui/button.tsx';
 import { Link } from '@tanstack/react-router';
 import { ArrowRight } from 'lucide-react';
+import {
+  workspaceStyles,
+  workspaceTheme,
+} from '@/components/app/global/WorkspacePage/workspaceStyles.ts';
+import { PortalThemeProvider } from '@/components/ui/portal-theme';
 
 export function SettingsPage() {
   const { page } = Route.useSearch();
@@ -28,9 +33,9 @@ export function SettingsPage() {
   if (!user) return null;
 
   return (
-    <>
+    <PortalThemeProvider value={workspaceTheme}>
       <Helmet title={`${current.label} · User settings | SWUBase`} />
-      <div className="flex min-h-dvh min-w-0 flex-col">
+      <div className={cn(workspaceStyles.theme, 'flex min-h-dvh min-w-0 flex-col')}>
         <ProfileHeader userId={user.id} />
         <div className="grid min-w-0 flex-1 grid-cols-[92px_minmax(0,1fr)] grid-rows-[auto_auto_1fr] @[401px]/main-body:grid-cols-[112px_minmax(0,1fr)] @[761px]/main-body:grid-cols-[208px_minmax(0,1fr)] @[761px]/main-body:grid-rows-[auto_1fr] @[1001px]/main-body:grid-cols-[240px_minmax(0,1fr)]">
           <ProfileAvatar user={user} canEdit />
@@ -55,12 +60,12 @@ export function SettingsPage() {
           >
             <SettingsNavigation page={current.id} />
           </aside>
-          <div className="col-span-2 row-start-3 min-w-0 border-t border-border p-4 @[761px]/main-body:col-span-1 @[761px]/main-body:col-start-2 @[761px]/main-body:row-start-2 @[761px]/main-body:p-6">
+          <div className="col-span-2 row-start-3 min-w-0 border-t border-border p-4 @[761px]/main-body:col-span-1 @[761px]/main-body:col-start-2 @[761px]/main-body:row-start-2">
             <section
               key={page}
               aria-labelledby="settings-heading"
               className={cn(
-                '@container/settings-content min-w-0 space-y-6',
+                '@container/settings-content min-w-0 space-y-4',
                 page === 'uploads' ? 'max-w-6xl' : page === 'profile' ? 'max-w-4xl' : 'max-w-2xl',
               )}
             >
@@ -68,7 +73,10 @@ export function SettingsPage() {
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <current.icon className="size-4" aria-hidden="true" />
                 </span>
-                <h2 id="settings-heading" className="m-0! min-w-0 border-0! p-0! text-xl! font-semibold!">
+                <h2
+                  id="settings-heading"
+                  className="m-0! min-w-0 border-0! p-0! text-xl! font-semibold!"
+                >
                   {current.label}
                 </h2>
               </div>
@@ -87,6 +95,6 @@ export function SettingsPage() {
           </div>
         </div>
       </div>
-    </>
+    </PortalThemeProvider>
   );
 }

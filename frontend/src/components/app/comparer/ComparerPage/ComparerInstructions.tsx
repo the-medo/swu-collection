@@ -1,58 +1,39 @@
-import * as React from 'react';
-import { Scale, Layers, Star } from 'lucide-react';
+import { Layers, Crown, Scale } from 'lucide-react';
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles.ts';
 
-const ComparerInstructions: React.FC = () => {
+const steps = [
+  {
+    icon: Layers,
+    title: 'Add items',
+    text: 'Use “Add to comparer” on a deck, collection, wantlist or card list.',
+  },
+  {
+    icon: Crown,
+    title: 'Choose your main item',
+    text: 'Use the crown button in Selected items. Everything else is compared against this item.',
+  },
+  {
+    icon: Scale,
+    title: 'Explore the differences',
+    text: 'Compare deck quantities and switch table views, or see which cards your lists have in common.',
+  },
+];
+
+export default function ComparerInstructions() {
   return (
     <div className="space-y-3 text-sm">
-      <div className="flex items-center gap-2 mb-2">
-        <Scale className="h-5 w-5 text-primary" />
-        <h3 className="font-semibold">Comparer - Quick Guide</h3>
-      </div>
-
-      <div className="flex items-start gap-3">
-        <div className="bg-primary/10 p-2 rounded-full">
-          <Layers size={18} className="text-primary" />
+      <h2 className={workspaceStyles.heading}>How it works</h2>
+      {steps.map(({ icon: Icon, title, text }) => (
+        <div key={title} className="flex items-start gap-2.5">
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-[var(--workspace-soft)] text-[var(--workspace-accent)]">
+            <Icon className="size-3.5" />
+          </span>
+          <div>
+            <p className="font-medium">{title}</p>
+            <p className="text-xs leading-relaxed text-muted-foreground">{text}</p>
+          </div>
         </div>
-        <div>
-          <p className="font-medium">Add entires</p>
-          <p className="text-muted-foreground">
-            Add collections, decks, wantlists or card lists to compare by clicking the "Add to comparer"
-            button on their detail page.
-          </p>
-        </div>
-      </div>
-
-      <div className="flex items-start gap-3">
-        <div className="bg-primary/10 p-2 rounded-full">
-          <Star size={18} className="text-primary" />
-        </div>
-        <div>
-          <p className="font-medium">Choose Main entry</p>
-          <p className="text-muted-foreground">
-            All other entries will be compared against this one.
-          </p>
-        </div>
-      </div>
-
-      <div className="flex items-start gap-3">
-        <div className="bg-primary/10 p-2 rounded-full">
-          <Scale size={18} className="text-primary" />
-        </div>
-        <div>
-          <p className="font-medium">View Matching Cards</p>
-          <p className="text-muted-foreground">
-            See which cards appear in both collections and their quantities. This is helpful for
-            finding duplicates or completing sets.
-          </p>
-        </div>
-      </div>
-
-      <p className="text-xs text-muted-foreground pt-2">
-        Tip: This tool is great for finding cards to trade with other collectors or identifying
-        potential upgrades for your collection.
-      </p>
+      ))}
     </div>
   );
-};
-
-export default ComparerInstructions;
+}

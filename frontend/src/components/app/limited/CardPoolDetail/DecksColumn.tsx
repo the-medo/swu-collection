@@ -1,4 +1,6 @@
-import React, { useMemo } from 'react';
+import { limitedStyles } from '@/components/app/limited/limitedStyles';
+import { cn } from '@/lib/utils';
+import { useMemo } from 'react';
 import type { CardPoolWithDeckState } from '@/api/card-pools/useGetCardPool.ts';
 import { useGetCardPoolDecks } from '@/api/card-pools/useGetCardPoolDecks.ts';
 import CreateDeckSection from './CreateDeckSection.tsx';
@@ -6,7 +8,9 @@ import DeckCard from './DeckCard.tsx';
 import { useUser } from '@/hooks/useUser.ts';
 import EditCustomPoolCardsSection from './EditCustomPoolCardsSection.tsx';
 import { Alert } from '@/components/ui/alert.tsx';
+import { Button } from '@/components/ui/button.tsx';
 import { TriangleAlert } from 'lucide-react';
+import { DeckIcon } from '@/components/app/global/icons/CardLibraryIcons.tsx';
 import { Visibility } from '../../../../../../shared/types/visibility.ts';
 
 export interface DecksColumnProps {
@@ -14,40 +18,28 @@ export interface DecksColumnProps {
   initialDeckVisibility?: Visibility;
 }
 
-const DecksColumn: React.FC<DecksColumnProps> = ({ pool, initialDeckVisibility }) => {
+export default function DecksColumn({ pool, initialDeckVisibility }: DecksColumnProps) {
   const defaultVisibility =
     initialDeckVisibility ?? (pool?.visibility as Visibility | null) ?? Visibility.Unlisted;
-  const { data, isFetching, isError } = useGetCardPoolDecks({ id: pool?.id });
+  const { data, isPending, isError, refetch, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    useGetCardPoolDecks({ id: pool?.id });
   const user = useUser();
-
-  const decks = useMemo(() => {
-    if (!data?.pages) return [];
-    return data.pages.flatMap(page => page?.data ?? []);
-  }, [data]);
-
-  const { yourDecks, otherDecks } = useMemo(() => {
-    if (!user) return { yourDecks: decks, otherDecks: [] as typeof decks };
-    const yd = decks.filter(d => d.user?.id === user.id);
-    const od = decks.filter(d => d.user?.id !== user.id);
-    return { yourDecks: yd, otherDecks: od };
-  }, [decks, user]);
-
-  const noDecks = !isFetching && !isError && decks.length === 0;
+  const decks = useMemo(() => data?.pages.flatMap(page => page?.data ?? []) ?? [], [data]);
+  const yourDecks = user ? decks.filter(item => item.user?.id === user.id) : [];
+  const otherDecks = user ? decks.filter(item => item.user?.id !== user.id) : decks;
   const canManageCustomPool = Boolean(user && pool?.custom && user.id === pool.userId);
 
   return (
-    <div className="h-full rounded-lg border border-border bg-card p-3">
-      <h3 className="text-sm font-semibold mb-2">Decks</h3>
+    <div className={cn('space-y-4', limitedStyles.decksColumn)}>
       <CreateDeckSection
         key={`${pool?.id}:${defaultVisibility}`}
         pool={pool}
         initialVisibility={defaultVisibility}
-        className="mb-3"
       />
       {pool && canManageCustomPool && (
-        <>
+        <div className={cn('p-3', limitedStyles.panel)}>
           <EditCustomPoolCardsSection pool={pool} />
-          <Alert variant="warning" size="xs" className="mb-3 items-start">
+          <Alert variant="warning" size="xs" className="items-start">
             <TriangleAlert className="mt-0.5 size-3.5 shrink-0" />
             <span>
               {pool.hasDecks
@@ -55,53 +47,89 @@ const DecksColumn: React.FC<DecksColumnProps> = ({ pool, initialDeckVisibility }
                 : 'You can update this pool only while it has no decks. Creating a deck will lock its card list.'}
             </span>
           </Alert>
-        </>
+        </div>
       )}
-      {isFetching && <div className="text-xs opacity-60">Loading decks...</div>}
-      {isError && <div className="text-xs text-red-400">Failed to load decks.</div>}
-      {noDecks && (
-        <div className="text-xs opacity-60">No public decks created for this pool yet.</div>
+      {isPending && (
+        <div role="status" className="text-xs text-muted-foreground">
+          Loading decks…
+        </div>
       )}
-
-      {!isFetching && !isError && decks.length > 0 && (
+      {isError && (
+        <div role="alert" className="text-xs">
+          Could not load decks.{' '}
+          <Button size="xs" variant="outline" onClick={() => void refetch()}>
+            Retry
+          </Button>
+        </div>
+      )}
+      {!isPending && data && (
         <>
-          {!user && (
-            <div className="flex flex-wrap gap-2">
-              {decks.map(item => (
-                <DeckCard key={item.deck.id} deck={item.deck} />
-              ))}
-            </div>
-          )}
-
           {user && (
-            <div className="flex flex-col gap-3">
-              {yourDecks.length > 0 && (
-                <div>
-                  <h5>Your decks</h5>
-                  <div className="flex flex-wrap gap-2">
-                    {yourDecks.map(item => (
-                      <DeckCard key={item.deck.id} deck={item.deck} />
-                    ))}
+            <section aria-labelledby="pool-your-decks-heading">
+              <h2
+                id="pool-your-decks-heading"
+                className={cn(
+                  limitedStyles.heading,
+                  'mb-2! flex items-center justify-between gap-2',
+                )}
+              >
+                Your decks{' '}
+                <span className="rounded-md bg-[var(--limited-soft)] px-2 py-0.5 text-xs text-[var(--limited-accent)]">
+                  {yourDecks.length}
+                  {hasNextPage ? '+' : ''}
+                </span>
+              </h2>
+              <div className="grid gap-2">
+                {yourDecks.map(item => (
+                  <DeckCard key={item.deck.id} deck={item.deck} />
+                ))}
+                {!yourDecks.length && (
+                  <div className="flex items-start gap-2 rounded-xl border border-dashed border-[var(--limited-border)] p-3 text-muted-foreground">
+                    <DeckIcon size={24} className="shrink-0" />
+                    <p className="m-0! text-xs leading-relaxed">
+                      {hasNextPage
+                        ? 'Load more to see earlier builds, or start a new deck above.'
+                        : 'Your builds will live here. Start a deck above and try out a leader.'}
+                    </p>
                   </div>
-                </div>
-              )}
-
-              {otherDecks.length > 0 && (
-                <div>
-                  <h5>Other decks</h5>
-                  <div className="flex flex-wrap gap-2">
-                    {otherDecks.map(item => (
-                      <DeckCard key={item.deck.id} deck={item.deck} />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            </section>
+          )}
+          {(otherDecks.length > 0 || !user) && (
+            <section aria-labelledby="pool-community-decks-heading">
+              <h2 id="pool-community-decks-heading" className={cn(limitedStyles.heading, 'mb-2!')}>
+                {user ? 'Other decks' : 'Decks from this pool'}
+              </h2>
+              <div className="grid gap-2">
+                {otherDecks.map(item => (
+                  <DeckCard
+                    key={item.deck.id}
+                    deck={item.deck}
+                    author={item.user?.displayName || item.user?.name}
+                  />
+                ))}
+                {!otherDecks.length && (
+                  <p className="m-0! rounded-xl border border-dashed border-[var(--limited-border)] p-3 text-xs text-muted-foreground">
+                    No public builds yet. Try your take on this pool.
+                  </p>
+                )}
+              </div>
+            </section>
+          )}
+          {hasNextPage && (
+            <Button
+              className="w-full"
+              variant="outline"
+              size="sm"
+              disabled={isFetchingNextPage}
+              onClick={() => void fetchNextPage()}
+            >
+              {isFetchingNextPage ? 'Loading…' : 'Load more decks'}
+            </Button>
           )}
         </>
       )}
     </div>
   );
-};
-
-export default DecksColumn;
+}

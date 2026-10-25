@@ -15,6 +15,7 @@ export interface StatisticsMetaDataItem {
   draws: number;
   gameWins: number;
   gameLosses: number;
+  gameDraws: number;
   percentage: number;
 }
 
@@ -74,9 +75,7 @@ export const getStatisticsMetaKeys = (
   }
 
   if (metaInfo === 'aspectsDetailed') {
-    const detailedKey = aspects
-      .sort((a, b) => aspectSortValues[a] - aspectSortValues[b])
-      .join('-');
+    const detailedKey = aspects.sort((a, b) => aspectSortValues[a] - aspectSortValues[b]).join('-');
 
     return [detailedKey || unknownOpponentMetaKey];
   }
@@ -148,6 +147,7 @@ export const analyzeStatisticsMeta = (
         draws: 0,
         gameWins: 0,
         gameLosses: 0,
+        gameDraws: 0,
       };
 
       existingItem.count += 1;
@@ -162,6 +162,7 @@ export const analyzeStatisticsMeta = (
 
       existingItem.gameWins += opponentMatch.finalWins ?? 0;
       existingItem.gameLosses += opponentMatch.finalLosses ?? 0;
+      existingItem.gameDraws += match.games.filter(game => game.isWinner == null).length;
 
       countMap.set(key, existingItem);
     });

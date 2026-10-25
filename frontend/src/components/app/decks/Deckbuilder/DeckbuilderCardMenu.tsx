@@ -62,7 +62,7 @@ const DeckbuilderCardMenu: React.FC<DeckbuilderCardMenuProps> = ({
     <>
       {(displayDropdown || displayQuantity) && (
         <div
-          className="flex w-full items-center gap-1"
+          className="flex w-full items-center gap-1 [&_[role=tablist]]:bg-[var(--workspace-soft)] [&_[role=tab][data-state=active]]:bg-primary [&_[role=tab][data-state=active]]:text-primary-foreground"
           onClick={e => e.stopPropagation()}
           onMouseDown={e => e.stopPropagation()}
         >
@@ -73,6 +73,7 @@ const DeckbuilderCardMenu: React.FC<DeckbuilderCardMenuProps> = ({
                   value={deckCard.quantity}
                   onChange={n => quantityChangeHandler(n, 1)}
                   variant="compact"
+                  label={`Main deck quantity for ${card?.name ?? deckCard.cardId}`}
                   disabled={!editable}
                 />
               </div>

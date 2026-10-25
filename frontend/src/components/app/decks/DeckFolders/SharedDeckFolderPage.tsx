@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Folder, Loader2 } from 'lucide-react';
+import { Folder, Loader2, ChevronsDownUp, Eye } from 'lucide-react';
 import { useSharedDeckFolder } from '@/api/deck-folders/useSharedDeckFolder.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx';
 import DeckFolderSection from './DeckFolderSection.tsx';
 import { readSharedOpenDeckFolders, writeSharedOpenDeckFolders } from './openFoldersStorage.ts';
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles.ts';
+import { cn } from '@/lib/utils.ts';
 
 export default function SharedDeckFolderPage({ folderId }: { folderId: string }) {
   const user = useUser();
@@ -32,16 +34,26 @@ function FolderPage({ folderId, viewerId }: { folderId: string; viewerId?: strin
 
   if (query.isPending)
     return (
-      <div className="flex items-center gap-2 p-4 text-muted-foreground">
+      <div
+        role="status"
+        className={cn(workspaceStyles.theme, 'flex items-center gap-2 p-4 text-muted-foreground')}
+      >
         <Loader2 className="h-4 w-4 animate-spin" />
         Loading folder...
       </div>
     );
   if (query.isError)
     return (
-      <div role="alert" className="flex flex-col items-start gap-3 p-4">
+      <div
+        role="alert"
+        className={cn(
+          workspaceStyles.theme,
+          workspaceStyles.panel,
+          'm-2 flex flex-col items-start gap-3 p-4',
+        )}
+      >
         <Helmet title="Folder unavailable | SWUBase" />
-        <h3 className="mb-0">Folder unavailable</h3>
+        <h1 className={workspaceStyles.title}>Folder unavailable</h1>
         <p className="text-sm text-muted-foreground">
           {query.error.status === 404
             ? 'This folder may be private, no longer shared, or removed. For a team folder, sign in with an account that belongs to the team.'
@@ -53,52 +65,72 @@ function FolderPage({ folderId, viewerId }: { folderId: string; viewerId?: strin
       </div>
     );
   const { name, folders } = query.data;
+  const deckCount = folders.reduce((total, folder) => total + folder.deckCount, 0);
   return (
-    <div className="flex w-full min-w-0 flex-col gap-3 p-2">
+    <div className={cn(workspaceStyles.theme, 'flex w-full flex-col gap-3 p-2')}>
       <Helmet title={`${name} — Folder decks | SWUBase`} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-2">
-          <Folder className="h-5 w-5 shrink-0 text-muted-foreground" />
-          <h3 className="mb-0 break-words">{name}</h3>
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--workspace-border)] pb-3">
+        <div className="flex min-w-0 flex-1 basis-full items-center gap-3 sm:basis-0">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[var(--workspace-soft)] text-[var(--workspace-accent)]">
+            <Folder className="size-5" />
+          </span>
+          <div className="min-w-0">
+            <h1 className={cn(workspaceStyles.title, 'break-words')}>{name}</h1>
+            <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+              <span>
+                Shared folder · {deckCount} {deckCount === 1 ? 'deck' : 'decks'}
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Eye className="size-3.5" /> View only
+              </span>
+            </p>
+          </div>
         </div>
-        <Button variant="ghost" disabled={!opened.size} onClick={() => setOpened(new Set())}>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={!opened.size}
+          onClick={() => setOpened(new Set())}
+        >
+          <ChevronsDownUp className="size-4" />
           Collapse all folders
         </Button>
+      </header>
+      <div className={cn(workspaceStyles.panel, 'overflow-hidden')}>
+        <Table
+          aria-label="Folder decks"
+          className="table-fixed [--folder-indent:16px] [--folder-max-indent:32px] sm:[--folder-indent:28px] sm:[--folder-max-indent:224px]"
+        >
+          <TableHeader>
+            <TableRow>
+              <TableHead>Folder</TableHead>
+              <TableHead className="w-14 text-right">Decks</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {folders
+              .filter(folder => !folder.parentId)
+              .map(folder => (
+                <DeckFolderSection
+                  key={folder.id}
+                  folder={folder}
+                  folders={folders}
+                  filters={{ sharedFolderId: folderId }}
+                  opened={opened}
+                  readOnly
+                  onToggle={id =>
+                    setOpened(current => {
+                      const next = new Set(current);
+                      if (next.has(id)) next.delete(id);
+                      else next.add(id);
+                      return next;
+                    })
+                  }
+                />
+              ))}
+          </TableBody>
+        </Table>
       </div>
-      <p className="text-sm text-muted-foreground">Folder decks · View only</p>
-      <Table
-        aria-label="Folder decks"
-        className="table-fixed [--folder-indent:16px] [--folder-max-indent:32px] sm:[--folder-indent:28px] sm:[--folder-max-indent:224px]"
-      >
-        <TableHeader>
-          <TableRow>
-            <TableHead>Folder</TableHead>
-            <TableHead className="w-14 text-right">Decks</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {folders
-            .filter(folder => !folder.parentId)
-            .map(folder => (
-              <DeckFolderSection
-                key={folder.id}
-                folder={folder}
-                folders={folders}
-                filters={{ sharedFolderId: folderId }}
-                opened={opened}
-                readOnly
-                onToggle={id =>
-                  setOpened(current => {
-                    const next = new Set(current);
-                    if (next.has(id)) next.delete(id);
-                    else next.add(id);
-                    return next;
-                  })
-                }
-              />
-            ))}
-        </TableBody>
-      </Table>
     </div>
   );
 }

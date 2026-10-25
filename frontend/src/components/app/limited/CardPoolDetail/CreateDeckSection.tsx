@@ -1,5 +1,6 @@
+import { limitedStyles } from '@/components/app/limited/limitedStyles';
 import React from 'react';
-import { CardPool } from '../../../../../../server/db/schema/card_pool.ts';
+import type { CardPool } from '../../../../../../server/db/schema/card_pool.ts';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import VisibilitySelector from '@/components/app/global/VisibilitySelector/VisibilitySelector.tsx';
@@ -8,6 +9,8 @@ import { useCreateCardPoolDeck } from '@/api/card-pools/useCreateCardPoolDeck.ts
 import { cn } from '@/lib/utils.ts';
 import { useNavigate } from '@tanstack/react-router';
 import { useCardPoolDeckDetailStoreActions } from '@/components/app/limited/CardPoolDeckDetail/useCardPoolDeckDetailStore.ts';
+import { ArrowRight, LoaderCircle } from 'lucide-react';
+import { DeckIcon } from '@/components/app/global/icons/CardLibraryIcons.tsx';
 import SignInWrapper from '@/components/app/auth/SignInWrapper.tsx';
 
 export interface CreateDeckSectionProps {
@@ -60,37 +63,82 @@ const CreateDeckSection: React.FC<CreateDeckSectionProps> = ({
   };
 
   return (
-    <div className={cn('border rounded-lg p-3', className)}>
-      <div className="flex flex-col gap-2">
-        <Input
-          value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder="Deck name"
-          className="w-full h-8 text-sm"
-          disabled={!pool?.id || !poolIsReady || createMutation.isPending}
-        />
-        <VisibilitySelector value={visibility} onChange={setVisibility} />
-        <SignInWrapper text="Sign in to start a deck">
-          <Button
-            type="button"
-            onClick={handleCreate}
-            disabled={!canSubmit}
-            className="w-full h-8 px-3"
-          >
-            {createMutation.isPending ? 'Creating…' : 'Start a new deck!'}
-          </Button>
-        </SignInWrapper>
+    <section
+      aria-labelledby="create-pool-deck-heading"
+      className={cn(limitedStyles.deckCreate, className)}
+    >
+      <div className="mb-4 flex items-center gap-3">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-[var(--limited-border)] bg-card text-[var(--limited-accent)]">
+          <DeckIcon size={23} />
+        </span>
+        <div>
+          <h2 id="create-pool-deck-heading" className={limitedStyles.heading}>
+            Create a deck
+          </h2>
+          <p className="m-0! text-xs text-muted-foreground">Build with the cards in this pool.</p>
+        </div>
+      </div>
+      <div className="flex flex-col gap-3">
+        <div className="space-y-1.5">
+          <label htmlFor="pool-new-deck-name" className="text-xs font-medium">
+            Deck name
+          </label>
+          <Input
+            id="pool-new-deck-name"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="Deck name"
+            className="h-9 w-full text-sm"
+            disabled={!poolIsReady || createMutation.isPending}
+          />
+        </div>
+        <fieldset className="min-w-0" disabled={createMutation.isPending}>
+          <legend className="mb-1.5 text-xs font-medium">Visibility</legend>
+          <VisibilitySelector
+            className={limitedStyles.segments}
+            value={visibility}
+            onChange={value => {
+              if (value) setVisibility(value);
+            }}
+          />
+        </fieldset>
+        <div className="flex [&>button]:w-full [&>button]:bg-[var(--limited-accent)] [&>button]:text-[var(--limited-contrast)]">
+          <SignInWrapper text="Sign in to start a deck">
+            <Button
+              type="button"
+              onClick={handleCreate}
+              disabled={!canSubmit}
+              className={cn('h-10 w-full justify-between px-3', limitedStyles.primary)}
+            >
+              {createMutation.isPending ? 'Creating…' : 'Create deck'}
+              {createMutation.isPending ? (
+                <LoaderCircle
+                  className="size-4 animate-spin motion-reduce:animate-none"
+                  aria-hidden="true"
+                />
+              ) : (
+                <ArrowRight size={16} aria-hidden="true" />
+              )}
+            </Button>
+          </SignInWrapper>
+        </div>
         {pool?.status === 'in_progress' && (
-          <div className="text-xs text-muted-foreground">
-            This card pool is incomplete and cannot be used to create a deck.
-          </div>
+          <p className="m-0! text-xs text-muted-foreground">
+            Complete the pool’s card list before creating a deck.
+          </p>
         )}
         {createMutation.isError && (
-          <div className="text-xs text-red-500">{createMutation.error.message}</div>
+          <div role="alert" className="text-xs text-destructive">
+            {createMutation.error.message}
+          </div>
         )}
-        {createMutation.isSuccess && <div className="text-xs text-green-600">Deck created!</div>}
+        {createMutation.isSuccess && (
+          <div role="status" className="text-xs text-[var(--limited-accent)]">
+            Deck created!
+          </div>
+        )}
       </div>
-    </div>
+    </section>
   );
 };
 

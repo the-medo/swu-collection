@@ -1,10 +1,6 @@
 import * as React from 'react';
 import { MatchupResult } from '@/components/app/statistics/lib/useAnalyzeMatchups.ts';
-import BaseAvatar from '@/components/app/global/BaseAvatar.tsx';
-import { useCardList } from '@/api/lists/useCardList.ts';
-import DeckBackgroundDecoration from '@/components/app/global/DeckBackgroundDecoration.tsx';
-import { useMemo } from 'react';
-import { getCardIdFromKey } from '@/components/app/statistics/lib/lib.ts';
+import { StatisticsDeckArtwork } from '@/components/app/statistics/common/StatisticsDeckArtwork.tsx';
 import { StatSection } from '@/components/app/statistics/common/StatSection.tsx';
 
 interface SingleMatchupRowProps {
@@ -13,46 +9,24 @@ interface SingleMatchupRowProps {
 }
 
 const SingleMatchupRow: React.FC<SingleMatchupRowProps> = ({ opponentDeckKey, result }) => {
-  const { data: cardList } = useCardList();
-
   const [leaderCardId, baseCardKey] = opponentDeckKey.split('|');
 
   const matchWinrate = result.total > 0 ? (result.wins / result.total) * 100 : 0;
   const gameWinrate = result.gameTotal > 0 ? (result.gameWins / result.gameTotal) * 100 : 0;
 
-  const { leaderCard, baseCard } = useMemo(() => {
-    const leader = leaderCardId ? cardList?.cards[leaderCardId] : undefined;
-    const baseId = getCardIdFromKey(baseCardKey, cardList?.cards);
-    const base = baseId ? cardList?.cards[baseId] : undefined;
-
-    return {
-      leaderCard: leader,
-      baseCard: base,
-    };
-  }, [leaderCardId, baseCardKey, cardList]);
-  const leaderName = leaderCard?.name ?? 'Unknown Leader';
-
   return (
     <tr className="border-b last:border-0 hover:bg-muted/50 transition-colors">
-      <td className="h-[50px]">
-        <div className="overflow-hidden relative h-full">
-          <DeckBackgroundDecoration leaderCard={leaderCard} baseCard={baseCard} position="top-left">
-            <BaseAvatar cardId={baseCardKey} bordered={false} size="40" shape="circle" />
-          </DeckBackgroundDecoration>
-        </div>
-      </td>
-      <td className="py-3">
-        <div className="flex flex-col">
-          <span className="font-medium text-sm">{leaderName}</span>
-          <span className="text-xs text-muted-foreground">{baseCardKey}</span>
-        </div>
+      <td className="px-4 py-3">
+        <StatisticsDeckArtwork leaderId={leaderCardId} baseKey={baseCardKey} />
       </td>
       <td className="py-3 px-4 text-center">
         <div className="flex flex-col">
           <StatSection
             variant="horizontal"
+            total={result.total}
             wins={result.wins}
             losses={result.losses}
+            draws={result.draws}
             winrate={matchWinrate}
             percentageVariant="horizontal"
           />
@@ -62,6 +36,7 @@ const SingleMatchupRow: React.FC<SingleMatchupRowProps> = ({ opponentDeckKey, re
         <div className="flex flex-col">
           <StatSection
             variant="horizontal"
+            total={result.gameTotal}
             wins={result.gameWins}
             losses={result.gameLosses}
             winrate={gameWinrate}

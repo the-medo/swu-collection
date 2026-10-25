@@ -17,13 +17,14 @@ import type {
 } from '../../../../../shared/creators/claims.ts';
 import { CreatorAvatar } from './CreatorLayout.tsx';
 import { Field, selectClass, Status } from './CreatorControls.tsx';
-import { creatorDescription, creatorHeading, creatorPanel } from './creatorStyles.ts';
+import { creatorDescription, creatorSubheading } from './creatorStyles.ts';
+import { workspaceStyles } from '../global/WorkspacePage/workspaceStyles.ts';
 
 export function ClaimedBadge() {
   return (
     <Badge
       variant="outline"
-      className="w-fit gap-1 border-emerald-600/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+      className="w-fit gap-1 border-[var(--creator-border)] bg-[var(--creator-soft)] text-[var(--creator-accent)]"
     >
       <BadgeCheck size={13} aria-hidden="true" />
       Claimed
@@ -46,9 +47,11 @@ export function YoutubeClaimButton({
     return () => window.removeEventListener('pageshow', reset);
   }, []);
   return (
-    <div className="grid justify-items-start gap-2">
+    <div className="grid min-w-0 justify-items-start gap-2">
       <Button
-        className="bg-[#c62828] text-white hover:bg-[#a82020]"
+        variant="outline"
+        size="sm"
+        className="h-auto min-h-9 whitespace-normal text-left"
         disabled={claim.isPending || redirecting}
         onClick={() =>
           claim.mutate(creatorId, {
@@ -59,10 +62,10 @@ export function YoutubeClaimButton({
           })
         }
       >
-        <Youtube size={17} aria-hidden="true" />
+        <Youtube size={16} className="text-[#c62828] dark:text-red-400" aria-hidden="true" />
         {claim.isPending || redirecting ? 'Opening Google…' : children}
       </Button>
-      <Status error={claim.error} />
+      <Status compact error={claim.error} />
     </div>
   );
 }
@@ -85,9 +88,12 @@ export function YoutubeClaimConfirmation({
   const cancel = useCancelYoutubeClaim();
   if (!pending.data)
     return (
-      <section className={`${creatorPanel} space-y-4`}>
-        <Status loading={pending.isPending} error={pending.error ?? cancel.error} />
+      <section
+        className={`${workspaceStyles.panel} grid max-w-2xl gap-3 p-4 [&>button]:justify-self-start`}
+      >
+        <Status compact loading={pending.isPending} error={pending.error ?? cancel.error} />
         <Button
+          size="sm"
           variant="outline"
           disabled={cancel.isPending}
           onClick={() => cancel.mutate(claimId, { onSuccess: onCancel })}
@@ -127,7 +133,7 @@ function ClaimChoice({
     busy = confirm.isPending || cancel.isPending;
   return (
     <form
-      className={`${creatorPanel} grid max-w-2xl gap-5`}
+      className={`${workspaceStyles.panel} grid max-w-2xl gap-4 overflow-hidden p-4 sm:p-5`}
       onSubmit={event => {
         event.preventDefault();
         confirm.mutate(
@@ -139,25 +145,30 @@ function ClaimChoice({
         );
       }}
     >
-      <div className="flex items-center gap-4">
+      <div className="-mx-4 -mt-4 flex min-w-0 items-center gap-3 border-b border-[var(--creator-border)] bg-[var(--creator-soft)] px-4 py-3 sm:-mx-5 sm:-mt-5 sm:px-5">
         <CreatorAvatar
           name={preview.channel.title}
           src={preview.channel.avatarUrl}
-          className="size-14"
+          className="size-10 rounded-lg border-0 text-sm"
         />
-        <div>
-          <p className="text-xs text-muted-foreground">YouTube channel verified</p>
-          <h2 className={creatorHeading}>{preview.channel.title}</h2>
+        <div className="grid min-w-0 gap-1">
+          <p className="flex items-center gap-1.5 text-xs text-[var(--creator-accent)]">
+            <BadgeCheck size={14} className="shrink-0" aria-hidden="true" />
+            YouTube channel verified
+          </p>
+          <h2 className={creatorSubheading}>{preview.channel.title}</h2>
         </div>
       </div>
-      <h3 className={creatorHeading}>
-        {existing ? 'Connect to your creator profile' : 'Create your creator profile?'}
-      </h3>
-      <p className={creatorDescription}>
-        {existing
-          ? 'This channel is not in the creator directory yet. Choose which of your profiles it belongs to.'
-          : 'This channel is not in the creator directory yet. Create a profile with its name and avatar, then customize it in your studio.'}
-      </p>
+      <div className="grid gap-1.5">
+        <h3 className={creatorSubheading}>
+          {existing ? 'Connect to your creator profile' : 'Create your creator profile?'}
+        </h3>
+        <p className={creatorDescription}>
+          {existing
+            ? 'This channel is not in the creator directory yet. Choose which of your profiles it belongs to.'
+            : 'This channel is not in the creator directory yet. Create a profile with its name and avatar, then customize it in your studio.'}
+        </p>
+      </div>
       {existing ? (
         <Field label="Creator profile">
           <select
@@ -197,9 +208,9 @@ function ClaimChoice({
           </Field>
         </>
       )}
-      <Status error={confirm.error ?? cancel.error} />
-      <div className="flex flex-wrap gap-2">
-        <Button type="submit" disabled={busy}>
+      <Status compact error={confirm.error ?? cancel.error} />
+      <div className="flex flex-wrap gap-2 border-t border-border pt-3">
+        <Button size="sm" type="submit" disabled={busy}>
           {confirm.isPending
             ? 'Connecting…'
             : existing
@@ -207,6 +218,7 @@ function ClaimChoice({
               : 'Create creator profile'}
         </Button>
         <Button
+          size="sm"
           type="button"
           variant="outline"
           disabled={busy}

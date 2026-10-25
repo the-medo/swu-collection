@@ -618,3 +618,69 @@ test('invitation fanout rechecks membership before disclosing an event', async (
     await sql`UPDATE "user" SET role = 'admin,crossfire' WHERE id = ${b.userId}`;
   }
 });
+
+test('deck browser filters owned folders and unfiled decks without leaking other folders', async () => {
+  const browser = new CrossfireDecks(sql, catalog);
+  const parent = randomUUID(),
+    child = randomUUID(),
+    other = randomUUID();
+  await sql`INSERT INTO deck_folder (id, user_id, name) VALUES
+    (${parent}, ${a.userId}, 'Fixture parent'), (${other}, ${b.userId}, 'Fixture foreign')`;
+  await sql`INSERT INTO deck_folder (id, user_id, name, parent_id)
+    VALUES (${child}, ${a.userId}, 'Fixture child', ${parent})`;
+  const filed: string[] = [];
+  try {
+    for (let n = 0; n < 23; n++) {
+      const id = randomUUID();
+      decks.push(id);
+      filed.push(id);
+      await sql`INSERT INTO deck (id, user_id, format, name, leader_card_id_1, base_card_id)
+        VALUES (${id}, ${a.userId}, 1, ${prefix + ' folder ' + n}, ${ids.leader}, ${ids.base})`;
+      await sql`INSERT INTO deck_folder_deck (deck_id, folder_id) VALUES (${id}, ${parent})`;
+    }
+    await sql`INSERT INTO deck_folder_deck (deck_id, folder_id) VALUES
+      (${decks[0]!}, ${child}), (${decks[1]!}, ${other})`;
+    const first = await browser.list(a, { source: 'mine', search: '', folderId: parent });
+    expect(first.data).toHaveLength(20);
+    const next = await browser.list(a, {
+      source: 'mine',
+      search: '',
+      folderId: parent,
+      cursor: first.nextCursor!,
+    });
+    expect(next.data).toHaveLength(3);
+    expect(new Set([...first.data, ...next.data].map(row => row.id))).toEqual(new Set(filed));
+    expect(
+      (await browser.list(a, { source: 'mine', search: 'folder 22', folderId: parent })).data.map(
+        row => row.id,
+      ),
+    ).toEqual([filed[22]!]);
+    expect(
+      (
+        await browser.list(a, { source: 'mine', search: catalog[ids.leader].name, folderId: child })
+      ).data.map(row => row.id),
+    ).toEqual([decks[0]!]);
+    expect((await browser.list(a, { source: 'mine', search: '', folderId: other })).data).toEqual(
+      [],
+    );
+    expect((await browser.list(b, { source: 'mine', search: '', folderId: parent })).data).toEqual(
+      [],
+    );
+    expect(
+      (await browser.list(a, { source: 'mine', search: '', folderId: 'unfiled' })).data.every(
+        row => !filed.includes(row.id) && row.id !== decks[0],
+      ),
+    ).toBe(true);
+    expect(
+      (await browser.list(c, { source: 'mine', search: '', folderId: 'unfiled' })).data.map(
+        row => row.id,
+      ),
+    ).toContain(decks[2]!);
+    expect(
+      (await browser.list(a, { source: 'mine', search: '', folderId: randomUUID() })).data,
+    ).toEqual([]);
+    expect(() => browser.list(a, { source: 'public', search: '', folderId: parent })).toThrow();
+  } finally {
+    await sql`DELETE FROM deck_folder WHERE id = ANY(${[parent, child, other]})`;
+  }
+});
