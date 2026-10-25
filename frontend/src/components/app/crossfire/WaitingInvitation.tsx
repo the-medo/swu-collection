@@ -1,5 +1,6 @@
+import { crossfireHomeStyles as styles } from './crossfireHomeStyles.ts';
 import { useState } from 'react';
-import { Copy } from 'lucide-react';
+import { Copy, Link2 } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
@@ -20,18 +21,25 @@ export function WaitingInvitation({
   const [copied, setCopied] = useState(false);
   return (
     <section
-      className="cf-home-card cf-host-waiting space-y-4"
+      className={`${styles.panel} cf-host-waiting flex min-h-110 flex-col gap-5 sm:p-7`}
       aria-label="Waiting for your opponent"
     >
-      <div className="flex items-center justify-between">
-        <h2>Waiting for your opponent</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className={styles.icon}>
+            <Link2 className="size-4" />
+          </span>
+          <h2 className={styles.heading}>Waiting for your opponent</h2>
+        </div>
         {lobby.expiresAt && <InvitationCountdown expiresAt={lobby.expiresAt} />}
       </div>
-      <InvitationPortraits leaderId={lobby.host?.leaderId} baseId={lobby.host?.baseId} />
+      <div className="max-w-80">
+        <InvitationPortraits leaderId={lobby.host?.leaderId} baseId={lobby.host?.baseId} />
+      </div>
       <p className="text-sm text-muted-foreground">
         Your deck is locked in. The game starts when your opponent accepts with their deck.
       </p>
-      <p>{lobby.bestOf === 3 ? 'Best of 3' : 'Best of 1'}</p>
+      <p className="text-sm font-semibold">{lobby.bestOf === 3 ? 'Best of 3' : 'Best of 1'}</p>
       <PolicySummary policy={lobby.policy} />
       <p className="text-xs text-muted-foreground">
         {lobby.showLeader
@@ -65,7 +73,7 @@ export function WaitingInvitation({
       </div>
       {copied && <p role="status">Invitation copied.</p>}
       {cancel.isError && <p role="alert">Could not cancel this invitation. Try again.</p>}
-      <div className="flex gap-2">
+      <div className="mt-auto flex flex-wrap gap-2">
         <Button variant="outline" disabled={cancel.isPending} onClick={() => cancel.mutate()}>
           Cancel invitation
         </Button>

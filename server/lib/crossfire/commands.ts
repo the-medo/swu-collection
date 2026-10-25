@@ -1,4 +1,4 @@
-import { inputSchema } from '../../../play/engine/model.ts';
+import { IllegalInput, inputSchema } from '../../../play/engine/model.ts';
 import type { DurableGame } from '../../../play/host/durable-game.ts';
 import { stateDigest, StorageError } from '../../../play/storage/postgres.ts';
 import type { Projector } from '../../../play/projection/projector.ts';
@@ -95,6 +95,54 @@ export async function submitConnectedConcession(
       playerId: grant.seat,
       expectedRevision: state.revision,
     }),
+    {
+      check: () => permitted(() => connections.revalidate(grant)),
+      commit: tx => permitted(() => requireConnection(tx, grant, true)),
+    },
+  );
+}
+
+export class HandRevealRateLimitError extends Error {}
+// Keep the budget with the loaded game, so replacing a socket cannot reset it.
+const revealBudgets = new WeakMap<DurableGame, Map<string, number[]>>();
+
+/** A player can grant/revoke access to their own hand, independent of whose turn it is. */
+export async function submitConnectedHandReveal(
+  host: DurableGame,
+  connections: CrossfireConnections,
+  rawGrant: ConnectionGrant,
+  commandId: string,
+  revealed: boolean,
+) {
+  const grant = structuredClone(rawGrant);
+  if (grant.role !== 'player' || grant.purpose !== 'live' || typeof revealed !== 'boolean')
+    throw new StorageError('not-authorized');
+  return host.submitProjected(
+    grant.seat,
+    commandId,
+    stateDigest(JSON.stringify({ kind: 'set-hand-reveal', wireVersion: WIRE_VERSION, revealed })),
+    state => {
+      const current =
+        state.disclosure.revealedHands?.[grant.seat] ?? state.disclosure.handsToPlayers;
+      if (current === revealed) throw new IllegalInput();
+      // Limit new attempts, including failed commits; durable retries above recover their receipt.
+      // Concealing is never rate-limited, so consent can always be withdrawn.
+      if (revealed) {
+        const budget = revealBudgets.get(host) ?? new Map<string, number[]>();
+        const now = Date.now();
+        const recent = (budget.get(grant.seat) ?? []).filter(at => now - at < 30_000);
+        if (recent.length >= 3) throw new HandRevealRateLimitError();
+        budget.set(grant.seat, [...recent, now]);
+        revealBudgets.set(host, budget);
+      }
+      return {
+        type: 'set-hand-reveal',
+        gameId: grant.gameId,
+        playerId: grant.seat,
+        expectedRevision: state.revision,
+        revealed,
+      };
+    },
     {
       check: () => permitted(() => connections.revalidate(grant)),
       commit: tx => permitted(() => requireConnection(tx, grant, true)),

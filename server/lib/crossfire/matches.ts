@@ -320,8 +320,10 @@ export class CrossfireMatches {
         });
         await insertGame(tx, checkpoint);
         await tx`INSERT INTO play.lobbies(id,creator_user_id,game_id,status,versions,best_of,allow_spectators,hands_to_players,hands_to_spectators) VALUES (${nextId},${data.root.creator_user_id},${gameId},'started',${tx.json(pinned)},${data.root.best_of},${data.root.allow_spectators},${data.root.hands_to_players},${data.root.hands_to_spectators})`;
-        for (const r of ready)
-          await tx`INSERT INTO play.participants(lobby_id,seat,user_id,session_id,deck_snapshot) VALUES (${nextId},${r.seat},${data.people.find(p => p.seat === r.seat)!.user_id},${r.session_id},${tx.json(decks[r.seat === 'p1' ? 0 : 1]!)})`;
+        for (const r of ready) {
+          const person = data.people.find(p => p.seat === r.seat)!;
+          await tx`INSERT INTO play.participants(lobby_id,seat,user_id,session_id,deck_snapshot,battlefield) VALUES (${nextId},${r.seat},${person.user_id},${r.session_id},${tx.json(decks[r.seat === 'p1' ? 0 : 1]!)},${person.battlefield ? tx.json(person.battlefield) : null})`;
+        }
         if (choice.kind === 'rematch') {
           await registerMatch(tx, nextId, checkpoint);
           await tx`UPDATE play.matches SET rematch_lobby_id=${nextId} WHERE id=${data.match.id}`;

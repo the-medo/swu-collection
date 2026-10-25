@@ -299,7 +299,7 @@ export function publicBattlefieldScene(scene: BattlefieldScene): BattlefieldScen
     light: { ...scene.light },
     placements: battlefieldDrawOrder(scene, true).map((p, order) => ({
       ...p,
-      layerId: publicScene.layers[0].id,
+      layerId: publicScene.layers[0]!.id,
       visible: true,
       order,
     })),
@@ -345,7 +345,7 @@ export function deleteBattlefieldLayer(scene: BattlefieldScene, id: string): Bat
     const roots = battlefieldChildren(scene, null);
     const index = roots.findIndex(entry => entry.id === id);
     const target = roots[index > 0 ? index - 1 : index + 1];
-    if (target.kind !== 'layer') return scene;
+    if (!target || target.kind !== 'layer') return scene;
     const siblings = battlefieldChildren(scene, target.id).map(entry =>
       entry.kind === 'layer'
         ? {

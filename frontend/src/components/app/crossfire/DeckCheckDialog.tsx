@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from './CrossfireDialog.tsx';
+} from '@/components/ui/dialog.tsx';
 import type { CardList } from '../../../../../lib/swu-resources/types.ts';
 import type { CrossfireDeckIssue } from '../../../../../shared/types/crossfire.ts';
 import { deckCardName, issueLabel, words } from './presentation.ts';

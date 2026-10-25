@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
+import { useGameBattlefields } from '@/api/crossfire/useGameBattlefields.ts';
 import { getConnectionTicket } from '@/api/crossfire/getConnectionTicket.ts';
 import { crossfireWsUrl } from '@/lib/crossfireWsUrl.ts';
 import type { CrossfireLobby } from '../../../../../shared/types/crossfire.ts';
@@ -33,15 +34,18 @@ import './replay.css';
 
 export default function ReplayBoard({
   lobby,
+  sessionId,
   initialPosition,
   initialBranch,
   practiceRequest,
 }: {
   lobby: CrossfireLobby;
+  sessionId: string;
   initialPosition?: string;
   initialBranch?: string;
   practiceRequest?: string;
 }) {
+  const battlefields = useGameBattlefields(sessionId, lobby.id);
   const [logOpen, setLogOpen] = useState(false),
     [playing, setPlaying] = useState(false),
     [speed, setSpeed] = useState(1),
@@ -357,6 +361,8 @@ export default function ReplayBoard({
             <BoardPosition
               key={state.view.epoch}
               view={state.view}
+              battlefields={battlefields.data}
+              playerNames={lobby.playerNames}
               seat={state.viewer?.role === 'player' ? state.viewer.seat : undefined}
               bottomSeat={bottom}
               readOnly

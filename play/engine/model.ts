@@ -14,6 +14,12 @@ export const idSchema = z
   .regex(/^[a-zA-Z][a-zA-Z0-9_-]{0,79}$/)
   .refine(value => !['constructor', 'prototype', '__proto__'].includes(value));
 export const cardIdSchema = z.string().min(1).max(120);
+export const disclosureSchema = z.strictObject({
+  handsToPlayers: z.boolean(),
+  handsToSpectators: z.boolean(),
+  // Optional to preserve the exact encoding of historical checkpoints.
+  revealedHands: z.record(idSchema, z.boolean()).optional(),
+});
 const count = z.number().int().nonnegative();
 export const zoneSchema = z.enum([
   'base',
@@ -2406,7 +2412,7 @@ export const stateSchema = z.strictObject({
       .strictObject({ id: idSchema, bounds: z.array(z.number().int().positive()) })
       .nullable(),
   }),
-  disclosure: z.strictObject({ handsToPlayers: z.boolean(), handsToSpectators: z.boolean() }),
+  disclosure: disclosureSchema,
   result: z
     .strictObject({
       winner: idSchema.nullable(),
@@ -2436,6 +2442,12 @@ export const inputSchema = z.discriminatedUnion('type', [
     values: z.array(count).max(120),
   }),
   z.strictObject({ ...envelope, type: z.literal('concede'), playerId: idSchema }),
+  z.strictObject({
+    ...envelope,
+    type: z.literal('set-hand-reveal'),
+    playerId: idSchema,
+    revealed: z.boolean(),
+  }),
 ]);
 export type EngineInput = z.infer<typeof inputSchema>;
 

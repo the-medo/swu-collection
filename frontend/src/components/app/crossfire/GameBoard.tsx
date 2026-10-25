@@ -12,6 +12,7 @@ import { CrossfireLogo } from './CrossfireLogo.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { useCardList } from '@/api/lists/useCardList.ts';
+import { useGameBattlefields } from '@/api/crossfire/useGameBattlefields.ts';
 import { getConnectionTicket } from '@/api/crossfire/getConnectionTicket.ts';
 import { crossfireWsUrl } from '@/lib/crossfireWsUrl.ts';
 import type { CrossfireLobby } from '../../../../../shared/types/crossfire.ts';
@@ -31,6 +32,7 @@ export default function GameBoard({
   sessionId: string;
 }) {
   const navigate = useNavigate();
+  const battlefields = useGameBattlefields(sessionId, lobby.id);
   const abandoned = lobby.exit?.status === 'abandoned';
   const [logOpen, setLogOpen] = useState(false);
   const role = lobby.mySeat ? 'player' : 'spectator';
@@ -58,7 +60,7 @@ export default function GameBoard({
           <Helmet>
             <title>Crossfire game | SWUBASE</title>
           </Helmet>
-          <header className="cf-header">
+          <header className={`cf-header${state.view?.phase === 'ended' ? ' cf-header-ended' : ''}`}>
             <div className="flex items-center gap-3">
               <CrossfireLogo dark className="cf-header-logo h-7 w-12" />
               <h1 className="cf-wordmark">
@@ -194,9 +196,12 @@ export default function GameBoard({
             <BoardPosition
               key={state.view.epoch}
               view={state.view}
+              battlefields={battlefields.data}
+              playerNames={lobby.playerNames}
               seat={seat}
               pending={
                 state.pending ||
+                state.status !== 'connected' ||
                 state.controlPending ||
                 !!state.undo ||
                 lobby.exit?.status === 'pending'

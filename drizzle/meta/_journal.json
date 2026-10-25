@@ -645,6 +645,13 @@
       "when": 1792801065904,
       "tag": "0091_creator_claims",
       "breakpoints": true
+    },
+    {
+      "idx": 92,
+      "version": "7",
+      "when": 1792956444852,
+      "tag": "0092_crossfire_improvements",
+      "breakpoints": true
     }
   ]
 }

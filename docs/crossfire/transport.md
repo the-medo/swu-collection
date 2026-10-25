@@ -77,3 +77,21 @@ spectator preferences, room isolation, replacement/retry/resync, sign-out,
 message floods, frame limits, graceful process shutdown and committed recovery
 after killing a worker and expiring its lease. Cross-process routing is not
 implemented: a game owned by another worker is temporarily unavailable here.
+
+Protocol 41 adds `set-hand-reveal` with a UUID `commandId` and boolean `revealed`.
+It uses the same durable receipts and commit-time authorization as ordinary
+commands, without consuming an action or resolving a decision. Runtime 1.3.0
+records per-seat hand consent in the game state; older checkpoints keep their
+original encoding and disclosure policy. The view exposes `handRevealed` per
+player only when the pinned engine supports the command.
+
+Live spectator admission requires a valid signed-in session and Crossfire role.
+After admission, the worker persists a server-authored chat notice with the
+spectator's public display name and publishes it to both players outside the
+game command queue. A failed notice is logged without blocking the board;
+permission failures still revoke access.
+System notices use `seat: null`; account IDs and private names never enter chat
+messages. Concurrent tabs and reconnects within 30 seconds are deduplicated.
+Player chat retains its 500-message budget and last 100 messages. The last 20
+system notices are retained separately, so spectators cannot fill the player
+budget or evict player messages. Player-only chat permissions still apply.

@@ -464,10 +464,18 @@ button.cf-pile:hover {
   display: none;
 }
 .cf-rail-label {
-  min-width: 84px;
+  flex: 0 0 clamp(100px, 10vw, 150px);
+  min-width: 0;
   color: #96b1c9;
   text-align: right;
   font-size: 11px;
+  line-height: 1.2;
+}
+.cf-rail-name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .cf-rail-label small {
   display: block;
@@ -524,14 +532,71 @@ button.cf-pile:hover {
   object-fit: cover;
 }
 .cf-battlefield {
+  --cf-action-band-height: 62px;
+  position: relative;
+  isolation: isolate;
   z-index: 1;
   min-height: 0;
   flex: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) var(--cf-base-width) minmax(0, 1fr);
-  grid-template-rows: minmax(100px, 1fr) 62px minmax(100px, 1fr);
+  grid-template-rows: minmax(100px, 1fr) var(--cf-action-band-height) minmax(100px, 1fr);
   gap: 8px 14px;
   padding: 4px 18px;
+}
+.cf-battlefield-skies,
+.cf-battlefield-shade,
+.cf-player-battlefield {
+  position: absolute;
+  grid-column: 1 / -1;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 13px;
+  pointer-events: none;
+}
+.cf-battlefield-skies,
+.cf-battlefield-shade {
+  grid-row: 1 / -1;
+}
+.cf-battlefield-skies {
+  z-index: -3;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: inherit;
+  row-gap: inherit;
+}
+.cf-battlefield-skies > svg {
+  position: absolute;
+  grid-column: 1 / -1;
+  grid-row: 1 / 3;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* Keep the first sky opaque beneath the fade to avoid a dark seam. */
+.cf-battlefield-skies > svg + svg {
+  grid-row: 2 / 4;
+  mask-image: linear-gradient(to bottom, transparent, #000 var(--cf-action-band-height));
+}
+.cf-battlefield-shade {
+  z-index: -1;
+  background: #050c1840;
+}
+.cf-player-battlefield {
+  z-index: -2;
+}
+.cf-battlefield-upper {
+  grid-row: 1 / 2;
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent);
+}
+.cf-battlefield-lower {
+  grid-row: 3 / 4;
+  mask-image: linear-gradient(to top, #000 calc(100% - 28px), transparent);
+}
+.cf-player-battlefield > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 .cf-arena {
   position: relative;
@@ -826,29 +891,90 @@ button.cf-pile:hover {
   width: auto;
   max-width: 100%;
 }
-.cf-player-label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  color: #a4bfd3;
-  font-size: 10px;
-  height: 18px;
-  flex-shrink: 0;
+/* Let the marker straddle the corner without reducing the card area. */
+.cf-ground {
+  overflow: visible;
 }
-.cf-opponent .cf-player-label {
-  color: #d79d95;
+.cf-ground > .cf-arena-cards {
+  border-radius: inherit;
+}
+.cf-initiative-slot {
+  position: absolute;
+  top: -9px;
+  right: -3px;
+  max-width: 100%;
+  z-index: 5;
+  pointer-events: none;
+}
+.cf-opponent .cf-initiative-slot {
+  top: auto;
+  bottom: -9px;
 }
 .cf-initiative {
-  display: inline-flex;
-  gap: 3px;
+  display: flex;
+  gap: 5px;
   align-items: center;
-  padding: 2px 4px;
-  border: 1px solid #b08a4d70;
-  background: #64472033;
-  border-radius: 4px;
-  color: #ebca83;
+  padding: 3px 6px;
+  border: 1px solid #536675;
+  background: linear-gradient(135deg, #22313df5, #14202cf5);
+  border-radius: 6px;
+  color: #a6bac8;
+  box-shadow: 0 2px 6px #0004;
+  transform-origin: top right;
+}
+.cf-opponent .cf-initiative {
+  transform-origin: bottom right;
+}
+.cf-initiative > svg {
+  width: 18px;
+  height: 18px;
+  padding: 3px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #354856;
+  color: #b7cbd9;
+}
+.cf-initiative-label {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.cf-initiative strong {
+  font-size: 9px;
+  line-height: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.cf-initiative small {
   font-size: 8px;
+  line-height: 9px;
+  font-weight: 600;
+}
+.cf-initiative[data-claimed='true'] {
+  background: linear-gradient(135deg, #ffe69b, #efb640);
+  border-color: #fff0bb;
+  color: #2c1b08;
+  box-shadow:
+    0 0 20px #f4b84870,
+    0 3px 10px #0009;
+  animation: cf-initiative-claimed 850ms ease-out 2;
+}
+.cf-initiative[data-claimed='true'] > svg {
+  background: #422c10;
+  color: #ffe69b;
+}
+@keyframes cf-initiative-claimed {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.06);
+    box-shadow:
+      0 0 30px #ffd15ac0,
+      0 0 0 4px #ffd15a40;
+  }
 }
 .cf-deployed {
   display: flex;
@@ -890,6 +1016,18 @@ button.cf-pile:hover {
 .cf-action-band.cf-your-choice {
   border-color: #54a7b352;
   background: linear-gradient(90deg, #0e2633e6, #0b1727ef);
+}
+.cf-battlefield:has(.cf-battlefield-skies) .cf-action-band {
+  justify-self: center;
+  align-self: center;
+  width: fit-content;
+  max-width: 100%;
+  max-height: var(--cf-action-band-height);
+  background: #09132280;
+  backdrop-filter: blur(8px);
+}
+.cf-battlefield:has(.cf-battlefield-skies) .cf-action-band.cf-your-choice {
+  background: linear-gradient(90deg, #0e263380, #0b172780);
 }
 .cf-action-hint,
 .cf-waiting {
@@ -1178,9 +1316,6 @@ button.cf-pile:hover {
     gap: 8px;
     padding-inline: 12px;
   }
-  .cf-rail-label {
-    display: none;
-  }
   .cf-action-hint small {
     display: none;
   }
@@ -1369,7 +1504,7 @@ button.cf-pile:hover {
   .cf-battlefield {
     gap: 5px;
     padding: 2px 5px;
-    grid-template-rows: minmax(100px, 1fr) 62px minmax(100px, 1fr);
+    grid-template-rows: minmax(100px, 1fr) var(--cf-action-band-height) minmax(100px, 1fr);
   }
   .cf-arena {
     border-radius: 7px;
@@ -1396,21 +1531,6 @@ button.cf-pile:hover {
   }
   .cf-command-slot .cf-card {
     max-height: 61px;
-  }
-  .cf-player-label {
-    flex-wrap: wrap;
-    font-size: 8px;
-    height: auto;
-    min-height: 13px;
-    gap: 2px;
-  }
-  .cf-initiative {
-    font-size: 6px;
-    padding: 1px 3px;
-  }
-  .cf-initiative svg {
-    width: 8px;
-    height: 8px;
   }
   .cf-stat {
     min-width: 19px;
@@ -1518,6 +1638,9 @@ button.cf-pile:hover {
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .cf-initiative[data-claimed='true'] {
+    animation: none;
+  }
   .cf-card {
     transition: none;
   }
@@ -1563,9 +1686,6 @@ button.cf-pile:hover {
 }
 
 @media (max-width: 1100px) {
-  .cf-rail-label {
-    display: none;
-  }
   .cf-player-rail {
     gap: 7px;
   }
@@ -2719,7 +2839,8 @@ button.cf-pile:hover {
     margin-inline: -9px;
   }
   .cf-battlefield {
-    grid-template-rows: minmax(0, 1fr) 48px minmax(0, 1fr);
+    --cf-action-band-height: 48px;
+    grid-template-rows: minmax(0, 1fr) var(--cf-action-band-height) minmax(0, 1fr);
     gap: 4px 8px;
   }
   .cf-arena-cards {
@@ -2749,14 +2870,6 @@ button.cf-pile:hover {
   .cf-force-over-base .cf-token-label svg {
     width: 16px;
     height: 16px;
-  }
-  .cf-player-label {
-    font-size: 7px;
-    height: 10px;
-  }
-  .cf-initiative {
-    font-size: 6px;
-    padding: 0 2px;
   }
   .cf-stat {
     min-width: 16px;
@@ -2863,5 +2976,41 @@ button.cf-pile:hover {
   }
   .cf-inspection-thumbnails {
     flex-wrap: wrap;
+  }
+}
+
+/* Keep consent beneath the hand count, outside the interactive card fan. */
+.cf-hand-reveal {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  padding-block: 4px;
+  color: #b9d4a8;
+  font-size: 10px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+.cf-hand-reveal:has(:disabled) {
+  cursor: default;
+  opacity: 0.6;
+}
+.cf-hand-reveal [role='checkbox'] {
+  border-color: currentColor;
+}
+
+@media (max-width: 600px), (max-width: 1000px) and (max-height: 500px) {
+  .cf-rail-label {
+    flex-basis: 94px;
+    font-size: 10px;
+  }
+  .cf-rail-label small {
+    font-size: 8px;
+  }
+  .cf-hand-reveal {
+    font-size: 9px;
+    margin-top: 2px;
+    padding-block: 2px;
   }
 }

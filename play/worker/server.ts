@@ -1,5 +1,5 @@
 import type { CrossfireExits } from '../../server/lib/crossfire/exits.ts';
-import type { ChatMessage } from '../view/chat.ts';
+import { retainChatMessages, type ChatMessage } from '../view/chat.ts';
 import { ChatError } from '../../server/lib/crossfire/chat.ts';
 import type { CrossfireChat } from '../../server/lib/crossfire/chat.ts';
 import type { CrossfirePractice } from '../../server/lib/crossfire/practice.ts';
@@ -14,7 +14,9 @@ import type {
   CrossfireConnections,
 } from '../../server/lib/crossfire/connections.ts';
 import {
+  HandRevealRateLimitError,
   submitConnectedConcession,
+  submitConnectedHandReveal,
   submitConnectedViewCommand,
 } from '../../server/lib/crossfire/commands.ts';
 import { IllegalInput } from '../engine/model.ts';
@@ -156,6 +158,12 @@ export function createGameServer(
             : error.code === 'undo-pending'
               ? 'undo-pending'
               : 'conflict',
+        ...(commandId ? { commandId } : {}),
+      });
+    } else if (error instanceof HandRevealRateLimitError) {
+      send(client, {
+        type: 'error',
+        code: 'hand-reveal-rate-limited',
         ...(commandId ? { commandId } : {}),
       });
     } else if (error instanceof WorkerError && error.code === 'capacity' && client.view) {
@@ -317,6 +325,22 @@ export function createGameServer(
     clearTimeout(client.deadline);
     return true;
   }
+  async function publishChat(gameId: string, entry: ChatMessage) {
+    await Promise.all(
+      [...(rooms.get(gameId) ?? [])].map(async viewer => {
+        // Player chat remains private; joining does not give spectators access to it.
+        if (
+          viewer.grant?.role === 'player' &&
+          viewer.grant.purpose === 'live' &&
+          (await authorized(viewer))
+        ) {
+          if (viewer.chatReady)
+            send(viewer, { type: 'chat', gameId, replace: false, messages: [entry] });
+          else viewer.chatBuffer = retainChatMessages([...(viewer.chatBuffer ?? []), entry]);
+        }
+      }),
+    );
+  }
   async function handle(client: Client, message: z.output<typeof clientMessageSchema>) {
     if (client.closed || !open) return;
     if (!client.grant) {
@@ -340,12 +364,36 @@ export function createGameServer(
       client.grant = grant;
       client.binding = binding;
       client.showRevealedHands = message.showRevealedHands;
+      let spectatorEvent: number | undefined;
       await binding.run(async host => {
         if (!(await authorized(client))) return;
         if (!joinRoom(client)) return;
+        if (
+          chat &&
+          grant.role === 'spectator' &&
+          ![...(rooms.get(client.gameId) ?? [])].some(
+            other =>
+              other !== client &&
+              other.grant?.purpose === 'live' &&
+              other.grant.role === 'spectator' &&
+              other.grant.userId === grant.userId,
+          )
+        ) {
+          spectatorEvent = host.state.facts.filter(f => f.audience === 'public').length;
+        }
         await publish(client, host.state, true);
         await publishUndo(client.gameId);
       });
+      if (chat && spectatorEvent !== undefined) {
+        // Chat storage must not hold the game's command queue or prevent admission.
+        try {
+          const entry = await chat.spectatorJoined(grant, spectatorEvent);
+          if (entry) await publishChat(client.gameId, entry);
+        } catch (error) {
+          if (error instanceof ConnectionError) failure(client, error);
+          else onFault('spectator-notice');
+        }
+      }
       if (chat && grant.role === 'player' && (await authorized(client))) {
         const messages = await chat.list(grant);
         if (await authorized(client)) {
@@ -376,24 +424,7 @@ export function createGameServer(
             )
           : undefined;
         const entry = await chat.send(client.grant, message.id, message.text, afterEvent);
-        await Promise.all(
-          [...(rooms.get(client.gameId) ?? [])].map(async viewer => {
-            if (
-              viewer.grant?.role === 'player' &&
-              viewer.grant.purpose === 'live' &&
-              (await authorized(viewer))
-            ) {
-              if (viewer.chatReady)
-                send(viewer, {
-                  type: 'chat',
-                  gameId: client.gameId,
-                  replace: false,
-                  messages: [entry],
-                });
-              else viewer.chatBuffer = [...(viewer.chatBuffer ?? []), entry].slice(-100);
-            }
-          }),
-        );
+        await publishChat(client.gameId, entry);
       } catch (error) {
         if (error instanceof ChatError)
           send(client, { type: 'chat-error', id: message.id, code: error.code });
@@ -474,7 +505,12 @@ export function createGameServer(
       return;
     }
     if (client.grant.purpose === 'replay') {
-      if (message.type === 'command' || message.type === 'concede' || message.type === 'undo')
+      if (
+        message.type === 'command' ||
+        message.type === 'concede' ||
+        message.type === 'set-hand-reveal' ||
+        message.type === 'undo'
+      )
         throw new StorageError('not-authorized');
       if (message.type === 'replay-seek') {
         if (client.latestSeek === message.requestId)
@@ -530,18 +566,30 @@ export function createGameServer(
           }
         } else await undo.dismiss(grant, message.id, message.action);
         await publishUndo(client.gameId, true);
-      } else if (message.type === 'command' || message.type === 'concede') {
+      } else if (
+        message.type === 'command' ||
+        message.type === 'concede' ||
+        message.type === 'set-hand-reveal'
+      ) {
         const committed =
-          message.type === 'concede'
-            ? await submitConnectedConcession(host, connections, client.grant!, message.commandId)
-            : await submitConnectedViewCommand(
+          message.type === 'set-hand-reveal'
+            ? await submitConnectedHandReveal(
                 host,
                 connections,
                 client.grant!,
-                client.projector!,
                 message.commandId,
-                message.command,
-              );
+                message.revealed,
+              )
+            : message.type === 'concede'
+              ? await submitConnectedConcession(host, connections, client.grant!, message.commandId)
+              : await submitConnectedViewCommand(
+                  host,
+                  connections,
+                  client.grant!,
+                  client.projector!,
+                  message.commandId,
+                  message.command,
+                );
         if (!committed.duplicate) replays?.committed(client.gameId);
         await Promise.all(
           [...(rooms.get(client.gameId) ?? [])].map(viewer =>
@@ -549,7 +597,16 @@ export function createGameServer(
               ? authorized(viewer).then(ok => {
                   if (ok && !committed.duplicate) send(viewer, { type: 'replay-live' });
                 })
-              : publish(viewer, committed.state),
+              : publish(
+                  viewer,
+                  committed.state,
+                  message.type === 'set-hand-reveal' &&
+                    !message.revealed &&
+                    !committed.duplicate &&
+                    viewer.grant?.role === 'player' &&
+                    viewer.grant.seat !== client.grant!.seat &&
+                    viewer.showRevealedHands,
+                ),
           ),
         );
 
@@ -595,7 +652,11 @@ export function createGameServer(
         failure(
           client,
           error,
-          message.type === 'command' || message.type === 'concede' ? message.commandId : undefined,
+          message.type === 'command' ||
+            message.type === 'concede' ||
+            message.type === 'set-hand-reveal'
+            ? message.commandId
+            : undefined,
         ),
       )
       .finally(() => {

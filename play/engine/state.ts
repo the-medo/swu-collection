@@ -638,6 +638,8 @@ export function startingHandSize(state: GameState, playerId: string): number {
   );
 }
 export function assertState(state: GameState): void {
+  if (Object.keys(state.disclosure.revealedHands ?? {}).some(id => !state.seats.includes(id)))
+    throw new Error('Invalid hand disclosure owner');
   if (
     state.playPayment &&
     (state.phase === 'ended' || !state.seats.includes(state.playPayment.playerId))

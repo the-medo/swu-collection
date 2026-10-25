@@ -69,7 +69,16 @@ const modules = z.strictObject({
       reason: z.enum(['base-defeat', 'concession', 'card-effect']),
     })
     .nullable(),
-  players: z.array(z.strictObject({ id, deckCount: count, handCount: count })).length(2),
+  players: z
+    .array(
+      z.strictObject({
+        id,
+        deckCount: count,
+        handCount: count,
+        handRevealed: z.boolean().optional(),
+      }),
+    )
+    .length(2),
   privateDeckTop: z.strictObject({ id: handle, face }).nullable(),
   scheduled: z.array(
     z.strictObject({
@@ -209,7 +218,7 @@ export const serverMessageSchema: z.ZodType<ServerMessage> = z.discriminatedUnio
     type: z.literal('chat'),
     gameId: id,
     replace: z.boolean(),
-    messages: z.array(chatMessageSchema).max(100),
+    messages: z.array(chatMessageSchema).max(120),
   }),
   z.strictObject({
     type: z.literal('chat-error'),
@@ -258,6 +267,7 @@ export const serverMessageSchema: z.ZodType<ServerMessage> = z.discriminatedUnio
       'conflict',
       'busy',
       'resync-required',
+      'hand-reveal-rate-limited',
       'unavailable',
     ]),
     commandId: z.string().uuid().optional(),

@@ -2,7 +2,7 @@
 
 The [connection controller](../../frontend/src/components/app/crossfire/connection.ts)
 owns one in-memory TanStack Store per mounted game and signed-in session. Its
-only Crossfire dependency is the browser-safe `play/view/types.ts` entrypoint.
+Crossfire dependencies stay within the browser-safe `play/view/` contracts.
 It never imports the engine, projects authoritative state, or persists tickets,
 hands, handles or pending intent in Query, localStorage or IndexedDB.
 
@@ -40,8 +40,10 @@ normal SWUBASE navigation without an additional page header and fills the
 available content width. Its search field accepts a SWUBASE deck link or UUID
 as well as ordinary search text. The deck detail's Play button beside Image
 opens `/crossfire?cfDeck=<deck-id>` with the Crossfire logo. `cfDeck` takes
-precedence over automatic selection; without it the page selects the last
-played accessible deck, falling back to the most recently created owned deck.
+precedence over automatic selection; when creating an invitation, the page otherwise
+selects the last played accessible deck, falling back to the most recently created
+owned deck. Responding to an invitation starts without a selected deck unless
+`cfDeck` is supplied, so the invitee deliberately chooses their matchup.
 Linked selections also appear as a selected deck row directly below search,
 with all accordion sources initially closed. Each row has a separate
 decklist-preview button to the left of the selection check that opens the existing
@@ -49,8 +51,13 @@ full deck contents (including large leader/base images) without
 changing the selected deck. The leader illustration uses a bounded
 crop flush to the upper-right corner beside the deck details to avoid enlarging the catalog image across the
 whole preview panel. Match length uses a Best of 1 / Best of 3 segmented radio
-group with keyboard navigation. Spectator and hand-reveal settings are directly
-available below it; disabling spectators also disables their hand-reveal option.
+group with keyboard navigation, defaulting to Best of 3. Spectators may see both
+hands by default; disabling spectators also disables that option. The former
+Play with open hands creation option is removed. Each player instead controls
+Reveal my hand below their hand count on the right during the game, independently of the
+opponent and spectator policy. New cards remain revealed until the player turns
+it off. The control waits for server confirmation and survives reconnects;
+it is unavailable in replay or games pinned before runtime 1.3.0.
 An orange Deck needs attention button sits beside Create invitation. Its Deck
 check dialog groups issues by reason and counts distinct affected cards, with
 deck-level issues counted separately; it describes practice support and
@@ -58,8 +65,13 @@ structure rather than claiming tournament legality.
 The readiness endpoint names unsupported cards before create/join; admission
 still rechecks the actual deck. Waiting `/crossfire/:lobbyId` links redirect to
 `/crossfire?cfInvite=<lobby-id>`, keeping normal navigation and the same deck
-accordion. Joining shows the host's immutable settings; the explicit Accept
-invitation and play button submits the selected deck and consent. The host sees
+accordion. Joining hides the running-games and invitations sidebar and shows the
+host's immutable settings. The invitation header pairs the host's public name
+with the shared leader portrait and base badge used in the deck picker, plus their
+names when disclosed. Step 1 highlights
+Choose your deck until a selected deck passes readiness checks; step 2 then
+highlights Review and play and the Accept invitation and play button. That explicit
+button submits the selected deck and consent. The host sees
 a waiting panel with the locked deck, share link and expiry countdown. Invalid,
 cancelled and expired links explain their status instead of permitting submission.
 Lobby queries have a fifteen-second fallback refresh while waiting; real-time
@@ -99,7 +111,17 @@ catalog image lookup. The match route uses the full window: space on the left,
 ground on the right, bases and leaders in the middle, hands along the outer
 edges and a separate game-log rail. The log opens in a focus-managed sheet on
 narrow screens. The waiting invitation retains its own back link; leaving the
-match restores the regular application navigation.
+match restores the regular application navigation. Player labels appear only on the
+right of the hands: You for the participant's own seat, the opponent's public
+display name for the other seat, and both public display names for spectators.
+Long names truncate with the full name available on hover.
+
+Initiative appears in the holder's ground arena: top-right on the lower player's
+side and bottom-right on the upper player's side. Before it is claimed this round,
+the marker is muted blue-grey without a glow. A claimed marker uses a bright gold
+fill and glow, a Claimed label and a brief pulse when it appears;
+reduced-motion preferences disable the pulse. The compact marker straddles the
+arena corner without reserving any card space, including on narrow screens.
 
 The live toolbar groups its controls at the right, starting with yellow Undo and blue Bookmark.
 Replay and the narrow-screen activity toggle follow; match/rematch, resync, the
@@ -169,6 +191,11 @@ related-card navigation and mobile touch inspection.
 Committed layout changes use Motion with the user's reduced-motion
 preference; animations never gate commands. Spectator hand preferences replace
 the projection, with controls shown only when the game permits disclosure.
+
+Only authenticated users with Crossfire access can spectate. A live spectator
+joining adds a system notice with their public display name to both players’
+chat; concurrent tabs and reconnects within 30 seconds share one notice.
+Spectators still do not receive or send player chat.
 
 Chat, concessions and replay browsing are implemented. Full catalog/rule coverage
 and scenario editing remain later work.
@@ -405,8 +432,11 @@ for the network. Other tabs receive the same server events.
 
 Pending incoming invitations appear in a nonmodal bottom-right dialog and in
 the Crossfire sidebar count. Dismissing a notice only hides that notice in the
-current tab. Incoming invitations remain in the page's primary-colored list
-until accepted, declined or expired. Teammates are selectable rows with the same
+current tab. The dialog uses the workspace theme with the same leader portrait and base badge,
+an expiry countdown and an Open invitation action. Opening an invitation hides its
+dialog and the page's sidebar while the recipient chooses a deck and accepts.
+Incoming invitations remain in the normal lobby's list until accepted, declined or
+expired. Teammates are selectable rows with the same
 highlighted border and circular check as decks. Selecting a row only chooses the
 recipient; selecting it again clears the choice. It never sends immediately,
 even when a deck is automatically suggested. The player can change the deck and
@@ -456,3 +486,40 @@ game score and the separately recorded match winner.
 closing it from the stopped screen, cross-account list updates, a BO3 current-game
 concession, a subsequent sideboarding forfeit, and leaving directly from home
 without a game socket. Its gallery includes desktop and mobile confirmations.
+
+## Player battlefields
+
+The play desk loads the signed-in user's saved Battlefields. With multiple
+layouts it offers a named selector and preview before creating or accepting an
+invitation. The active layout is the initial choice; one saved layout is used
+automatically. When neither player has a saved layout, the game keeps the
+standard board background.
+This selection does not change the user's profile Battlefield.
+
+The game fetches its immutable scenes once from
+`GET /api/crossfire/lobbies/:lobbyId/battlefields`. Each scene fills one player
+row continuously across the space arena, base area and ground arena. The two
+skies cover the entire board, crossfading through the center beneath the
+compact, translucent action menu. Planets and ships stay anchored to their player's row,
+with a soft fade at the center edge. A player without a saved scene gets a
+neutral sky when the other player uses a battlefield. The opponent's scene is
+mirrored across the top-left–bottom-right diagonal:
+normalized horizontal and vertical positions swap, while individual artwork
+is reflected without stretching. The current player's scene stays unchanged at
+the bottom. Decorative SVG layers ignore pointer events and leave card actions
+and targeting unchanged. Saved lighting is static during play. Spectators and
+replays use the same scenes, including when replay orientation changes.
+
+`play/browser/battlefields-smoke.ts` creates disposable local accounts, sample
+fleets and a real game. With `CROSSFIRE_TEST_DATABASE_URL` set to the running
+worktree's `DATABASE_URL`, run:
+
+```bash
+bun --env-file=.env --env-file=.env.worktree play/browser/battlefields-smoke.ts
+```
+
+It checks selection, automatic defaults, both player orientations, arena-spanning
+geometry, sky coverage beneath the action menu, real card interactions, reload,
+mobile, spectator, replay views and missing-layout fallbacks.
+Screenshots are saved to `.swubase/crossfire-battlefields/` and copied to the
+ignored `frontend/.swubase/crossfire-battlefields/` directory for local viewing.

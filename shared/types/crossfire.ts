@@ -1,4 +1,5 @@
 import type { CrossfireGameArtwork } from './crossfire-activity.ts';
+import type { BattlefieldScene } from './battlefield.ts';
 import { z } from 'zod';
 
 export const crossfirePolicySchema = z
@@ -13,15 +14,18 @@ export const crossfireLobbyParams = z.strictObject({ lobbyId: z.uuid() });
 export const crossfireCreateBody = z.strictObject({
   deckId: z.uuid(),
   policy: crossfirePolicySchema,
-  bestOf: z.union([z.literal(1), z.literal(3)]).default(1),
+  bestOf: z.union([z.literal(1), z.literal(3)]).default(3),
   showLeader: z.boolean().default(true),
   recipientId: z.string().min(1).max(128).optional(),
+  battlefieldId: z.uuid().optional(),
 });
 export const crossfireJoinBody = z.strictObject({
   deckId: z.uuid(),
   acceptedPolicy: crossfirePolicySchema,
   acceptedBestOf: z.union([z.literal(1), z.literal(3)]).default(1),
+  battlefieldId: z.uuid().optional(),
 });
+export type CrossfireBattlefields = Record<'p1' | 'p2', BattlefieldScene | null>;
 export const crossfireTicketBody = z.strictObject({
   role: z.enum(['player', 'spectator']),
   purpose: z.enum(['live', 'replay']).default('live'),
@@ -37,6 +41,7 @@ export type CrossfireLobby = {
   expiresAt?: string;
   showLeader?: boolean;
   host?: { name: string; leaderId?: string; baseId?: string };
+  playerNames?: Partial<Record<'p1' | 'p2', string>>;
   gameId: string | null;
   policy: CrossfirePolicy;
   seats: number;

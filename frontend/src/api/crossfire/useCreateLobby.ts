@@ -13,6 +13,7 @@ export function useCreateLobby(sessionId: string) {
       bestOf?: 1 | 3;
       showLeader?: boolean;
       recipientId?: string;
+      battlefieldId?: string;
     }) => {
       const response = await api.crossfire.lobbies.$post({ json });
       if (!response.ok) throw await createApiError(response, 'Could not create a game');

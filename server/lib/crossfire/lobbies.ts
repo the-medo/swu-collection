@@ -1,4 +1,8 @@
 import { hasCrossfireAccess } from '../../../shared/lib/auth/roles.ts';
+import { normalizeBattlefieldScene } from '../../../shared/battlefield/normalize.ts';
+import { publicBattlefieldScene } from '../../../shared/battlefield/layers.ts';
+import { battlefieldSceneSchema } from '../../../shared/types/battlefield.ts';
+import type { CrossfireBattlefields } from '../../../shared/types/crossfire.ts';
 import { isDeepStrictEqual } from 'node:util';
 import {
   initializeCardBundles,
@@ -46,6 +50,7 @@ export class AdmissionError extends Error {
       | 'forbidden'
       | 'unavailable'
       | 'deck-unavailable'
+      | 'battlefield-unavailable'
       | 'unsupported-deck'
       | 'policy-mismatch'
       | 'conflict'
@@ -103,7 +108,9 @@ async function view(
       row.recipient_user_id !== userId)
   )
     return null;
-  const seats = await tx`SELECT seat, user_id FROM play.participants WHERE lobby_id = ${lobbyId}`;
+  const seats = await tx`SELECT p.seat, p.user_id, coalesce(nullif(btrim(u.display_name), ''), 'Player') AS name
+    FROM play.participants p LEFT JOIN public."user" u ON u.id = p.user_id
+    WHERE p.lobby_id = ${lobbyId}`;
   return {
     id: row.id,
     compatible:
@@ -127,6 +134,7 @@ async function view(
     gameId: row.game_id,
     policy: policy(row),
     seats: seats.length,
+    playerNames: Object.fromEntries(seats.map(s => [s.seat, s.name])),
     mySeat: seats.find(s => s.user_id === userId)?.seat ?? null,
   };
 }
@@ -175,6 +183,42 @@ export class CrossfireLobbies {
     if (!result.ok) throw new AdmissionError('unsupported-deck');
     return result.snapshot;
   }
+  /** Freeze only the visible scene; editor names and hidden layers stay private. */
+  async #battlefield(tx: TransactionSql, userId: string, battlefieldId?: string) {
+    const [row] = await tx`SELECT scene FROM public.battlefield
+      WHERE user_id = ${userId} ${battlefieldId ? tx`AND id = ${battlefieldId}` : tx``}
+      ORDER BY active DESC, created_at, id LIMIT 1`;
+    if (!row) {
+      if (battlefieldId) throw new AdmissionError('battlefield-unavailable');
+      return null;
+    }
+    try {
+      const parsed = battlefieldSceneSchema.safeParse(normalizeBattlefieldScene(row.scene));
+      if (parsed.success) return publicBattlefieldScene(parsed.data);
+    } catch {
+      // A damaged legacy scene may fail normalization before schema validation.
+    }
+    // Decoration must not prevent a player with one saved layout from joining.
+    console.warn('Crossfire skipped an invalid saved battlefield');
+    return null;
+  }
+  async battlefields(raw: Principal, lobbyId: string): Promise<CrossfireBattlefields> {
+    z.uuid().parse(lobbyId);
+    return this.sql.begin('isolation level repeatable read read only', async tx => {
+      const principal = await requireSession(tx, raw);
+      const [lobby] =
+        await tx`SELECT status, allow_spectators FROM play.lobbies WHERE id = ${lobbyId}`;
+      if (lobby?.status !== 'started') throw new AdmissionError('unavailable');
+      const people =
+        await tx`SELECT seat, user_id, battlefield FROM play.participants WHERE lobby_id = ${lobbyId}`;
+      if (!lobby.allow_spectators && !people.some(p => p.user_id === principal.userId))
+        throw new AdmissionError('forbidden');
+      return {
+        p1: people.find(p => p.seat === 'p1')?.battlefield ?? null,
+        p2: people.find(p => p.seat === 'p2')?.battlefield ?? null,
+      };
+    });
+  }
   /** Advisory only; create/join freeze and validate the deck again. */
   async inspectDeck(raw: Principal, deckId: string): Promise<CrossfireDeckReadiness> {
     const principal = principalSchema.parse(raw);
@@ -193,11 +237,13 @@ export class CrossfireLobbies {
     bestOf: 1 | 3 = 1,
     showLeader = true,
     recipientId?: string,
+    battlefieldId?: string,
   ): Promise<LobbyView> {
     const principal = principalSchema.parse(raw);
     const proposed = policySchema.parse(rawPolicy);
     z.union([z.literal(1), z.literal(3)]).parse(bestOf);
     z.uuid().parse(deckId);
+    if (battlefieldId) z.uuid().parse(battlefieldId);
     await initializeCardBundles(this.sql);
     const id = randomUUID();
     const attempt = () =>
@@ -223,10 +269,11 @@ export class CrossfireLobbies {
         WHERE creator_user_id = ${principal.userId} AND status = 'waiting' AND expires_at > clock_timestamp()`;
         if (pending[0]!.count >= 10) throw new AdmissionError('conflict');
         const snapshot = await this.#snapshot(tx, principal, deckId);
+        const battlefield = await this.#battlefield(tx, principal.userId, battlefieldId);
         await tx`INSERT INTO play.lobbies (id, creator_user_id, versions, allow_spectators, hands_to_players, hands_to_spectators, best_of, show_leader)
         VALUES (${id}, ${principal.userId}, ${tx.json(snapshot.versions)}, ${proposed.allowSpectators}, ${proposed.handsToPlayers}, ${proposed.handsToSpectators}, ${bestOf}, ${showLeader})`;
-        await tx`INSERT INTO play.participants (lobby_id, seat, user_id, session_id, deck_snapshot)
-        VALUES (${id}, 'p1', ${principal.userId}, ${principal.sessionId}, ${tx.json(snapshot)})`;
+        await tx`INSERT INTO play.participants (lobby_id, seat, user_id, session_id, deck_snapshot, battlefield)
+        VALUES (${id}, 'p1', ${principal.userId}, ${principal.sessionId}, ${tx.json(snapshot)}, ${battlefield ? tx.json(battlefield) : null})`;
         if (recipientId) {
           await tx`INSERT INTO play.invitations (lobby_id, recipient_user_id) VALUES (${id}, ${recipientId})`;
           await createInvitationNotification(tx, recipientId, principal.userId, id);
@@ -260,11 +307,13 @@ export class CrossfireLobbies {
     deckId: string,
     acceptedPolicy: LobbyPolicy,
     acceptedBestOf: 1 | 3 = 1,
+    battlefieldId?: string,
   ): Promise<LobbyView> {
     const principal = principalSchema.parse(raw),
       accepted = policySchema.parse(acceptedPolicy);
     z.uuid().parse(lobbyId);
     z.uuid().parse(deckId);
+    if (battlefieldId) z.uuid().parse(battlefieldId);
     try {
       return await this.sql.begin('isolation level repeatable read', async tx => {
         await requireSession(tx, principal);
@@ -304,6 +353,7 @@ export class CrossfireLobbies {
         const catalog = await resolveCrossfireCatalog(this.catalogSource);
         const firstDeck = decodeDeckSnapshot(first.deck_snapshot, catalog);
         const secondDeck = await this.#snapshot(tx, principal, deckId, lobby.versions, catalog);
+        const battlefield = await this.#battlefield(tx, principal.userId, battlefieldId);
         const gameId = `game-${randomUUID()}`;
         const checkpoint = createInitialCheckpoint({
           gameId,
@@ -323,8 +373,8 @@ export class CrossfireLobbies {
           ],
         });
         await insertGame(tx, checkpoint);
-        await tx`INSERT INTO play.participants (lobby_id, seat, user_id, session_id, deck_snapshot)
-          VALUES (${lobbyId}, 'p2', ${principal.userId}, ${principal.sessionId}, ${tx.json(secondDeck)})`;
+        await tx`INSERT INTO play.participants (lobby_id, seat, user_id, session_id, deck_snapshot, battlefield)
+          VALUES (${lobbyId}, 'p2', ${principal.userId}, ${principal.sessionId}, ${tx.json(secondDeck)}, ${battlefield ? tx.json(battlefield) : null})`;
         const started = await tx`UPDATE play.lobbies SET status = 'started', game_id = ${gameId}
           WHERE id = ${lobbyId} AND expires_at > clock_timestamp() RETURNING id`;
         if (!started.length) throw new AdmissionError('unavailable');

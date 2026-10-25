@@ -1,4 +1,5 @@
 import { sql } from 'drizzle-orm';
+import type { BattlefieldScene } from '../../../shared/types/battlefield.ts';
 import { user } from './auth-schema.ts';
 import {
   bigint,
@@ -263,6 +264,7 @@ export const crossfireParticipant = playSchema.table(
     sessionId: text('session_id').notNull(),
     connectionEpoch: integer('connection_epoch').notNull().default(0),
     deckSnapshot: jsonb('deck_snapshot').notNull(),
+    battlefield: jsonb('battlefield').$type<BattlefieldScene>(),
     joinedAt: timestamp('joined_at', { withTimezone: true, mode: 'string' }).notNull().defaultNow(),
   },
   t => [
@@ -408,7 +410,8 @@ export const crossfireChatMessage = playSchema.table(
       .references(() => crossfireGame.id, { onDelete: 'cascade' }),
     sequence: integer('sequence').notNull(),
     id: text('id').notNull(),
-    seat: text('seat').notNull(),
+    seat: text('seat'),
+    spectatorUserId: text('spectator_user_id').references(() => user.id, { onDelete: 'set null' }),
     text: text('text').notNull(),
     afterEvent: integer('after_event'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
@@ -418,7 +421,7 @@ export const crossfireChatMessage = playSchema.table(
   t => [
     primaryKey({ columns: [t.gameId, t.sequence] }),
     uniqueIndex('chat_messages_receipt').on(t.gameId, t.id),
-    check('chat_messages_sequence', sql`${t.sequence} > 0 AND ${t.sequence} <= 500`),
+    check('chat_messages_sequence', sql`${t.sequence} > 0`),
     check('chat_messages_seat', sql`${t.seat} IN ('p1','p2')`),
     check('chat_messages_text', sql`length(${t.text}) BETWEEN 1 AND 1000`),
     check('chat_messages_after_event', sql`${t.afterEvent} IS NULL OR ${t.afterEvent} >= 0`),

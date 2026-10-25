@@ -1,3 +1,4 @@
+import { crossfireHomeStyles as styles } from './crossfireHomeStyles.ts';
 import { LeaveGameButton } from './LeaveGameButton.tsx';
 import { ActivityRow } from './ActivityRow.tsx';
 import { Link } from '@tanstack/react-router';
@@ -10,10 +11,12 @@ export function RunningGames({ sessionId }: { sessionId: string }) {
   const query = useGameHistory(sessionId, 'running');
   const games = query.data?.pages.flatMap(page => page.data) ?? [];
   return (
-    <section className="cf-home-card cf-running-games" aria-labelledby="cf-running-title">
-      <div className="cf-resume-label">
-        <span />
-        <h2 id="cf-running-title">Games in progress</h2>
+    <section className={`${styles.panel} cf-running-games`} aria-labelledby="cf-running-title">
+      <div className="mb-4 flex items-center gap-2">
+        <span className="size-1.5 rounded-full bg-primary" />
+        <h2 className={styles.heading} id="cf-running-title">
+          Games in progress
+        </h2>
       </div>
       {query.isPending ? (
         <p role="status">Loading games…</p>
@@ -25,12 +28,12 @@ export function RunningGames({ sessionId }: { sessionId: string }) {
           </Button>
         </div>
       ) : games.length ? (
-        <div className="cf-running-list">
+        <div className="cf-running-list grid max-h-96 gap-3 overflow-y-auto">
           {games.map(game => (
             <ActivityRow key={game.gameId} leaders={game.leaders} bases={game.bases}>
               <div>
-                <p className="cf-resume-opponent">vs. {game.opponent}</p>
-                <p className="cf-resume-meta">
+                <p className="text-xs font-semibold wrap-anywhere">vs. {game.opponent}</p>
+                <p className="mt-1 text-[10px] text-muted-foreground">
                   {game.exit?.status === 'pending'
                     ? 'Leaving… · '
                     : game.compatible === false
@@ -45,7 +48,7 @@ export function RunningGames({ sessionId }: { sessionId: string }) {
                 <Button
                   asChild
                   size="sm"
-                  className="cf-resume-button"
+                  className="cf-resume-button h-7 gap-1 px-2 text-xs"
                   aria-label={`Return to game against ${game.opponent}`}
                 >
                   <Link to="/crossfire/$lobbyId" params={{ lobbyId: game.lobbyId }}>
@@ -78,10 +81,10 @@ export function RunningGames({ sessionId }: { sessionId: string }) {
           )}
         </div>
       ) : (
-        <div className="cf-no-running">
-          <Swords size={28} />
-          <p>No game in progress.</p>
-          <small>Your next game will wait here if you step away.</small>
+        <div className={`${styles.empty} cf-no-running`}>
+          <Swords size={22} className="text-primary" />
+          <p className="font-medium text-foreground">Ready for your next matchup?</p>
+          <p>Games in progress appear here, so you can return whenever you’re ready.</p>
         </div>
       )}
     </section>

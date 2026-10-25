@@ -1,3 +1,4 @@
+import { crossfireHomeStyles as styles } from './crossfireHomeStyles.ts';
 import { ActivityRow } from './ActivityRow.tsx';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button.tsx';
@@ -14,12 +15,10 @@ export function PracticeInvitations({
   if (!embedded && !query.data?.length && !query.isError) return null;
   return (
     <section
-      className={
-        embedded ? 'cf-activity-panel space-y-4' : 'space-y-4 rounded-xl border bg-card p-5'
-      }
+      className={embedded ? 'cf-activity-panel space-y-4' : `${styles.panel} space-y-4`}
       aria-labelledby="cf-practice-title"
     >
-      <h2 className={embedded ? 'sr-only' : 'text-xl font-semibold'} id="cf-practice-title">
+      <h2 className={embedded ? 'sr-only' : styles.heading} id="cf-practice-title">
         Practice invitations
       </h2>
       <p className="text-sm text-muted-foreground">
@@ -35,7 +34,7 @@ export function PracticeInvitations({
       {(query.isError || decline.isError) && (
         <p role="alert">Could not update practice invitations.</p>
       )}
-      <div className="cf-game-list">
+      <div className="cf-game-list grid gap-3">
         {query.data?.map(request => (
           <ActivityRow key={request.id} leaders={request.leaders} bases={request.bases}>
             <div>

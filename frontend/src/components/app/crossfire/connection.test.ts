@@ -566,3 +566,68 @@ test('concession retries the same receipt after reconnect and works without a tu
   expect(h.client.store.state.pending).toBe(false);
   h.client.stop();
 });
+
+test('hand consent uses a durable own-seat command, survives retry and stays unavailable in replay', async () => {
+  const h = harness();
+  await h.connect();
+  const initial = view();
+  initial.decision = null;
+  initial.players[0]!.handRevealed = false;
+  h.sockets[0]!.receive(snapshot(initial));
+  h.client.revealHand(true);
+  const sent = JSON.parse(h.sockets[0]!.sent.at(-1)!);
+  expect(sent).toMatchObject({ type: 'set-hand-reveal', revealed: true });
+  expect(sent).not.toHaveProperty('playerId');
+  expect(h.client.store.state.pending).toBe(true);
+  h.sockets[0]!.disconnect();
+  await h.timer();
+  h.sockets[1]!.open();
+  h.sockets[1]!.receive(snapshot(initial));
+  expect(JSON.parse(h.sockets[1]!.sent.at(-1)!)).toEqual(sent);
+  h.sockets[1]!.receive({ type: 'ack', commandId: sent.commandId, duplicate: true });
+  expect(h.client.store.state.pending).toBe(false);
+  h.client.revealHand(false);
+  expect(JSON.parse(h.sockets[1]!.sent.at(-1)!)).toMatchObject({
+    type: 'set-hand-reveal',
+    revealed: false,
+  });
+  const r = harness(undefined, true);
+  await r.connect();
+  const before = r.sockets[0]!.sent.length;
+  r.client.revealHand(true);
+  expect(r.sockets[0]!.sent).toHaveLength(before);
+});
+
+test('spectator notices do not evict player chat from the live client or its reconnect history', async () => {
+  const f = harness();
+  await f.connect();
+  const socket = f.sockets[0]!;
+  const players = Array.from({ length: 100 }, (_, index) => ({
+    id: crypto.randomUUID(),
+    sequence: index + 1,
+    seat: 'p1',
+    text: 'Player conversation',
+    createdAt: '2026-09-13T12:00:00.000Z',
+  }));
+  socket.receive({ type: 'chat', gameId: 'game-browser', replace: true, messages: players });
+  const notices = Array.from({ length: 25 }, (_, index) => ({
+    id: crypto.randomUUID(),
+    sequence: index + 101,
+    seat: null,
+    text: 'Observer joined as a spectator.',
+    createdAt: '2026-09-13T12:00:00.000Z',
+  }));
+  socket.receive({ type: 'chat', gameId: 'game-browser', replace: false, messages: notices });
+  expect(f.client.store.state.chat.filter(message => message.seat !== null)).toEqual(players);
+  expect(f.client.store.state.chat.filter(message => message.seat === null)).toEqual(
+    notices.slice(5),
+  );
+  socket.receive({
+    type: 'chat',
+    gameId: 'game-browser',
+    replace: true,
+    messages: [...players, ...notices.slice(5)],
+  });
+  expect(f.client.store.state.chat).toHaveLength(120);
+  f.client.stop();
+});

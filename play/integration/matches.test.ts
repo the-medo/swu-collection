@@ -1,3 +1,4 @@
+import { defaultBattlefieldScene } from '../../shared/types/battlefield.ts';
 import { afterAll, beforeAll, expect, test } from 'bun:test';
 import { randomUUID } from 'node:crypto';
 import postgres from 'postgres';
@@ -108,6 +109,8 @@ test('sideboarding retains identities pinned before a preview leaves the active 
 });
 test('best-of-three consent, private sideboards, races, score and rematches survive new service instances', async () => {
   const root = await start();
+  const battlefield = defaultBattlefieldScene(randomUUID());
+  await sql`UPDATE play.participants SET battlefield=${sql.json(battlefield)} WHERE lobby_id=${root} AND seat='p1'`;
   expect(await matches.get(principal(c), root)).toBeNull();
   await expect(matches.ready(principal(c), root, ready())).rejects.toThrow('unavailable');
   await expect(matches.ready(principal(a), root, ready())).rejects.toThrow('conflict');
@@ -145,6 +148,7 @@ test('best-of-three consent, private sideboards, races, score and rematches surv
   const next = responses[0]!.currentLobbyId;
   expect(next).not.toBe(root);
   const nextLobby = (await lobbies.get(principal(a), next))!;
+  expect(await lobbies.battlefields(principal(a), next)).toEqual({ p1: battlefield, p2: null });
   const initial = decodeState((await store.load(nextLobby.gameId!)).checkpoint.checkpoint);
   expect(initial.execution.decision?.playerId).toBe('p1');
   expect(initial.execution.decision?.kind).toBe('initiative');
@@ -178,6 +182,10 @@ test('best-of-three consent, private sideboards, races, score and rematches surv
   ]);
   const rematchId = fresh.find(r => r.rematchLobbyId)!.rematchLobbyId!;
   const rematch = (await matches.get(principal(a), rematchId))!;
+  expect(await lobbies.battlefields(principal(b), rematchId)).toEqual({
+    p1: battlefield,
+    p2: null,
+  });
   expect(rematch.score).toEqual({ p1: 0, p2: 0 });
   expect(rematch.bestOf).toBe(3);
   expect(rematch.deck.mainboard).toEqual(main);

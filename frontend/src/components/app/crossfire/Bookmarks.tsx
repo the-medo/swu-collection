@@ -135,7 +135,7 @@ export function Bookmarks({
               Save positions from the board or a replay to revisit them here.
             </p>
           )}
-          <div className="cf-game-list">
+          <div className="cf-game-list grid gap-3">
             {query.data.map(bookmark => (
               <BookmarkRow key={bookmark.id} bookmark={bookmark} sessionId={sessionId} />
             ))}

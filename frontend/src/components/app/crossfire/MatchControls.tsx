@@ -1,11 +1,8 @@
 import { LeaveGameButton } from './LeaveGameButton.tsx';
 import { useRef, useState } from 'react';
-import { RotateCcw, Trophy } from 'lucide-react';
+import { ArrowRight, Layers, RotateCcw, Trophy } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
-import { useForm } from '@tanstack/react-form';
-import { useStore } from '@tanstack/react-store';
 import { useMatch, useMatchReady } from '@/api/crossfire/useMatch.ts';
-import { useCardList } from '@/api/lists/useCardList.ts';
 import { Button } from '@/components/ui/button.tsx';
 import {
   Dialog,
@@ -14,103 +11,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from './CrossfireDialog.tsx';
-import { Input } from '@/components/ui/input.tsx';
-import type { MatchView } from '../../../../../shared/types/crossfire-matches.ts';
-import { crossfireError, words } from './presentation.ts';
+import { crossfireError } from './presentation.ts';
 import { ToolbarButton } from './ToolbarButton.tsx';
-function Sideboard({ match, sessionId }: { match: MatchView; sessionId: string }) {
-  const mutation = useMatchReady(sessionId, match.currentLobbyId);
-  const { data: catalog } = useCardList();
-  const mine = match.ready[match.mySeat];
-  const form = useForm({
-    defaultValues: {
-      counts: Object.fromEntries(
-        match.deck.pool.map(r => [
-          r.cardId,
-          match.deck.mainboard.find(c => c.cardId === r.cardId)?.quantity ?? 0,
-        ]),
-      ),
-    },
-    onSubmit: async ({ value }) => {
-      try {
-        await mutation.mutateAsync({
-          kind: 'next',
-          ready: true,
-          mainboard: Object.entries(value.counts)
-            .filter(([, n]) => n > 0)
-            .map(([cardId, quantity]) => ({ cardId, quantity })),
-        });
-      } catch {
-        /* Mutation renders the error. */
-      }
-    },
-  });
-  const count = useStore(form.store, s =>
-    Object.values(s.values.counts).reduce((n, q) => n + q, 0),
-  );
-  return (
-    <form
-      className="space-y-4"
-      onSubmit={e => {
-        e.preventDefault();
-        void form.handleSubmit();
-      }}
-    >
-      <p className="text-sm text-muted-foreground">
-        Move cards between your deck and its submitted pool. Your leader and base stay fixed. Only
-        you can see these choices.
-      </p>
-      <p>
-        {count} cards in deck · Keep at least {match.deck.minimumMain}
-      </p>
-      <div className="max-h-[45vh] overflow-y-auto space-y-2">
-        {match.deck.pool.map(row => (
-          <form.Field key={row.cardId} name={`counts.${row.cardId}`}>
-            {field => (
-              <label className="grid grid-cols-[minmax(0,1fr)_5rem] items-center gap-3 rounded border p-2">
-                <span className="min-w-0">
-                  {catalog?.cards[row.cardId]?.name ?? words(row.cardId)}
-                  <small className="block text-muted-foreground">
-                    {row.quantity} in pool
-                    {match.deck.unsupported.includes(row.cardId) ? ' · Not yet supported' : ''}
-                  </small>
-                </span>
-                <Input
-                  className="w-20"
-                  type="number"
-                  min={0}
-                  max={row.quantity}
-                  step={1}
-                  aria-label={`Deck quantity: ${words(row.cardId)}`}
-                  disabled={
-                    mine || mutation.isPending || match.deck.unsupported.includes(row.cardId)
-                  }
-                  value={field.state.value}
-                  onChange={e => field.handleChange(Number(e.target.value))}
-                />
-              </label>
-            )}
-          </form.Field>
-        ))}
-      </div>
-      {mutation.error && <p role="alert">{crossfireError(mutation.error)}</p>}
-      {mine ? (
-        <Button
-          type="button"
-          variant="outline"
-          disabled={mutation.isPending}
-          onClick={() => mutation.mutate({ kind: 'next', ready: false })}
-        >
-          Change my deck
-        </Button>
-      ) : (
-        <Button disabled={mutation.isPending || count < match.deck.minimumMain || count > 120}>
-          Ready for next game
-        </Button>
-      )}
-    </form>
-  );
-}
+import { Sideboard } from './Sideboard.tsx';
+import './sideboarding.css';
 export function MatchControls({
   sessionId,
   lobbyId,
@@ -123,6 +27,7 @@ export function MatchControls({
   const query = useMatch(sessionId, lobbyId),
     mutation = useMatchReady(sessionId, lobbyId);
   const [opened, setOpened] = useState(false);
+  const [screen, setScreen] = useState<'result' | 'sideboard'>('result');
   const [dismissedResult, setDismissedResult] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
   const open = opened || (ended && !dismissedResult);
@@ -136,6 +41,8 @@ export function MatchControls({
   const nextId =
     match?.rematchLobbyId ??
     (match && match.currentLobbyId !== lobbyId ? match.currentLobbyId : null);
+  const sideboarding = match?.status === 'sideboarding' && !nextId;
+  const showSideboard = sideboarding && screen === 'sideboard';
   const game = match?.games.find(g => g.lobbyId === lobbyId);
   const matchComplete = match?.bestOf === 3 && match.status === 'complete';
   const winner =
@@ -163,20 +70,33 @@ export function MatchControls({
     match?.bestOf === 3 ? `Match ${match.score.p1}–${match.score.p2}` : 'Rematch';
   return (
     <>
-      <ToolbarButton
-        buttonRef={trigger}
-        label={controlLabel}
-        icon={match?.bestOf === 3 ? <Trophy size={17} /> : <RotateCcw size={17} />}
-        onClick={() => setOpen(true)}
-      >
-        {match?.bestOf === 3 ? `${match.score.p1}–${match.score.p2}` : null}
-      </ToolbarButton>
-      <Dialog open={open} onOpenChange={setOpen}>
+      {ended ? (
+        <Button
+          ref={trigger}
+          className="cf-postgame-trigger"
+          onClick={() => {
+            setScreen('result');
+            setOpen(true);
+          }}
+        >
+          <Trophy size={17} /> Post-game <ArrowRight size={16} />
+        </Button>
+      ) : (
+        <ToolbarButton
+          buttonRef={trigger}
+          label={controlLabel}
+          icon={match?.bestOf === 3 ? <Trophy size={17} /> : <RotateCcw size={17} />}
+          onClick={() => setOpen(true)}
+        >
+          {match?.bestOf === 3 ? `${match.score.p1}–${match.score.p2}` : null}
+        </ToolbarButton>
+      )}
+      <Dialog open={open && !showSideboard} onOpenChange={setOpen}>
         <DialogContent
           className="cf-match-dialog max-w-xl max-h-[90dvh] overflow-y-auto"
           onCloseAutoFocus={event => {
             event.preventDefault();
-            trigger.current?.focus();
+            if (!showSideboard) trigger.current?.focus();
           }}
         >
           <DialogHeader>
@@ -251,14 +171,30 @@ export function MatchControls({
                   Open {match.rematchLobbyId ? 'rematch' : 'next game'}
                 </Link>
               ) : match.status === 'sideboarding' ? (
-                <>
+                <div className="cf-sideboard-entry">
+                  <div className="flex items-center gap-2 font-semibold">
+                    <Layers size={20} /> Prepare for game {match.number + 1}
+                  </div>
                   <p>
-                    {match.ready[match.mySeat === 'p1' ? 'p2' : 'p1']
-                      ? 'Your opponent is ready.'
-                      : 'Waiting for your opponent to finish sideboarding.'}
+                    Swap cards between your main deck and sideboard, then confirm when you’re ready.
                   </p>
-                  <Sideboard key={match.number} match={match} sessionId={sessionId} />
-                </>
+                  <Button
+                    className="cf-sideboard-entry-button"
+                    onClick={() => setScreen('sideboard')}
+                  >
+                    Go to sideboarding <ArrowRight size={18} />
+                  </Button>
+                  <div className="cf-ready-summary">
+                    <span>
+                      {match.ready[match.mySeat] ? 'You’re ready' : 'You’re not ready yet'}
+                    </span>
+                    <span>
+                      {match.ready[match.mySeat === 'p1' ? 'p2' : 'p1']
+                        ? 'Opponent ready'
+                        : 'Opponent sideboarding'}
+                    </span>
+                  </div>
+                </div>
               ) : match.status === 'complete' ? (
                 <>
                   <p>
@@ -313,6 +249,21 @@ export function MatchControls({
           </div>
         </DialogContent>
       </Dialog>
+      {sideboarding && match && (
+        <Sideboard
+          key={`${match.id}:${match.number}`}
+          match={match}
+          sessionId={sessionId}
+          open={open && showSideboard}
+          onOpenChange={setOpen}
+          onResult={() => setScreen('result')}
+          onViewBoard={() => setOpen(false)}
+          returnFocus={() => {
+            // Moving back to the result keeps focus inside that dialog.
+            if (!open) trigger.current?.focus();
+          }}
+        />
+      )}
     </>
   );
 }

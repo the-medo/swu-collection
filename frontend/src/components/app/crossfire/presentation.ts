@@ -34,6 +34,8 @@ export function crossfireError(error: unknown) {
     'crossfire-unavailable': 'Crossfire is not enabled on this server yet.',
     unauthenticated: 'Sign in again to continue.',
     'deck-unavailable': 'This deck is unavailable. Choose your own deck or a shared deck.',
+    'battlefield-unavailable':
+      'This battlefield is unavailable. Choose another battlefield and try again.',
     'unsupported-deck': 'This deck is not supported yet. Check it again for details.',
     unavailable: 'This invitation is no longer available.',
     conflict: 'This invitation changed. Refresh to see its current state.',

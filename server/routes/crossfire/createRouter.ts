@@ -34,7 +34,15 @@ type Services = {
   matches: Pick<CrossfireMatches, 'get' | 'ready'>;
   lobbies: Pick<
     CrossfireLobbies,
-    'create' | 'get' | 'join' | 'cancel' | 'inspectDeck' | 'invitations' | 'teammates' | 'decline'
+    | 'create'
+    | 'get'
+    | 'join'
+    | 'cancel'
+    | 'inspectDeck'
+    | 'invitations'
+    | 'teammates'
+    | 'decline'
+    | 'battlefields'
   >;
   connections: Pick<CrossfireConnections, 'issue'>;
   history: Pick<CrossfireHistory, 'list'>;
@@ -78,7 +86,7 @@ export function createCrossfireRouter(config: {
             ? 401
             : error.code === 'forbidden'
               ? 403
-              : ['unavailable', 'deck-unavailable'].includes(error.code)
+              : ['unavailable', 'deck-unavailable', 'battlefield-unavailable'].includes(error.code)
                 ? 404
                 : error.code === 'unsupported-deck'
                   ? 422
@@ -286,16 +294,32 @@ export function createCrossfireRouter(config: {
       return c.body(null, 204);
     })
     .post('/lobbies', zValidator('json', crossfireCreateBody), async c => {
-      const { deckId, policy, bestOf, showLeader, recipientId } = c.req.valid('json');
+      const { deckId, policy, bestOf, showLeader, recipientId, battlefieldId } =
+        c.req.valid('json');
       return c.json(
         {
           data: await config
             .services()
-            .lobbies.create(principal(c), deckId, policy, bestOf, showLeader, recipientId),
+            .lobbies.create(
+              principal(c),
+              deckId,
+              policy,
+              bestOf,
+              showLeader,
+              recipientId,
+              battlefieldId,
+            ),
         },
         201,
       );
     })
+    .get('/lobbies/:lobbyId/battlefields', zValidator('param', crossfireLobbyParams), async c =>
+      c.json({
+        data: await config
+          .services()
+          .lobbies.battlefields(principal(c), c.req.valid('param').lobbyId),
+      }),
+    )
     .get('/lobbies/:lobbyId', zValidator('param', crossfireLobbyParams), async c => {
       const lobby = await config.services().lobbies.get(principal(c), c.req.valid('param').lobbyId);
       if (!lobby) return c.json({ error: 'unavailable' }, 404);
@@ -306,7 +330,7 @@ export function createCrossfireRouter(config: {
       zValidator('param', crossfireLobbyParams),
       zValidator('json', crossfireJoinBody),
       async c => {
-        const { deckId, acceptedPolicy, acceptedBestOf } = c.req.valid('json');
+        const { deckId, acceptedPolicy, acceptedBestOf, battlefieldId } = c.req.valid('json');
         return c.json({
           data: await config
             .services()
@@ -316,6 +340,7 @@ export function createCrossfireRouter(config: {
               deckId,
               acceptedPolicy,
               acceptedBestOf,
+              battlefieldId,
             ),
         });
       },

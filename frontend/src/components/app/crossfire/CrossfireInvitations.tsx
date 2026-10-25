@@ -4,7 +4,7 @@ import './invitations.css';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation } from '@tanstack/react-router';
 import { useQueryClient } from '@tanstack/react-query';
-import { X } from 'lucide-react';
+import { ArrowRight, Clock3, X } from 'lucide-react';
 import { hasCrossfireAccess } from '../../../../../shared/lib/auth/roles.ts';
 import { useSession } from '@/lib/auth-client.ts';
 import { invitationsKey, useInvitations } from '@/api/crossfire/useInvitations.ts';
@@ -12,7 +12,10 @@ import { crossfireKeys } from '@/api/crossfire/queryKeys.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { InvitationContext } from './invitationContext.ts';
 import { CrossfireLogo } from './CrossfireLogo.tsx';
-import { InvitationPortraits } from './InvitationPortraits.tsx';
+import { InvitationMatchup } from './InvitationMatchup.tsx';
+import { workspaceTheme } from '@/components/app/global/WorkspacePage/workspaceStyles.ts';
+import { crossfireHomeStyles as styles } from './crossfireHomeStyles.ts';
+import { cn } from '@/lib/utils.ts';
 
 export const invitationSoundUrl =
   'https://images.swubase.com/crossfire/audio/invitation-58d0bda22ed0.wav';
@@ -161,11 +164,16 @@ function MemberInvitations({ children }: { children: ReactNode }) {
           role="dialog"
           aria-modal="false"
           aria-label="Crossfire invitation"
-          className="cf-invitation-toast"
+          className={cn(
+            workspaceTheme,
+            'cf-invitation-toast fixed bottom-4 right-4 z-40 grid max-h-[calc(100dvh-2rem)] w-[min(380px,calc(100vw-2rem))] gap-4 overflow-y-auto rounded-2xl border border-[color:var(--workspace-border)] bg-card p-5 text-foreground shadow-2xl [&_p]:leading-[1.5]!',
+          )}
         >
           <div className="flex items-center gap-2">
-            <CrossfireLogo className="h-6 w-10" />
-            <strong>Crossfire invitation</strong>
+            <span className={styles.icon}>
+              <CrossfireLogo className="h-6 w-8" />
+            </span>
+            <span className={styles.eyebrow}>Crossfire invitation</span>
             <Button
               className="ml-auto h-7 w-7"
               variant="ghost"
@@ -181,14 +189,23 @@ function MemberInvitations({ children }: { children: ReactNode }) {
               <X size={15} />
             </Button>
           </div>
-          <p>
-            <strong>{newest.player.name}</strong> invited you to play.{' '}
-            <InvitationCountdown expiresAt={newest.expiresAt} />
-          </p>
-          <InvitationPortraits leaderId={newest.leaderId} baseId={newest.baseId} />
-          <Button asChild className="w-full">
+          <div className="space-y-1">
+            <p className="text-lg font-semibold tracking-tight wrap-anywhere">
+              {newest.player.name} invited you to play
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Pick your deck and meet them at the table.
+            </p>
+          </div>
+          <InvitationMatchup leaderId={newest.leaderId} baseId={newest.baseId} />
+          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <Clock3 className="size-3.5" aria-hidden />
+            Expires in <InvitationCountdown expiresAt={newest.expiresAt} />
+          </div>
+          <Button asChild className="h-11 w-full justify-between rounded-xl px-4 text-xs">
             <Link to="/crossfire" search={{ cfInvite: newest.lobbyId }}>
               Open invitation
+              <ArrowRight className="size-4" aria-hidden />
             </Link>
           </Button>
         </section>

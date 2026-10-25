@@ -11,6 +11,7 @@ export function useJoinLobby(sessionId: string, lobbyId: string) {
       deckId: string;
       acceptedPolicy: CrossfirePolicy;
       acceptedBestOf?: 1 | 3;
+      battlefieldId?: string;
     }) => {
       const response = await api.crossfire.lobbies[':lobbyId'].join.$post({
         param: { lobbyId },

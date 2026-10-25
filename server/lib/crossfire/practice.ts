@@ -131,7 +131,7 @@ export class CrossfirePractice {
       )
         throw new AdmissionError('incompatible');
       const seats =
-        await tx`SELECT p.seat,p.user_id,p.deck_snapshot,u.role FROM play.participants p JOIN "user" u ON u.id = p.user_id WHERE p.lobby_id = ${grant.lobbyId} AND u.banned IS DISTINCT FROM true FOR SHARE OF p,u`;
+        await tx`SELECT p.seat,p.user_id,p.deck_snapshot,p.battlefield,u.role FROM play.participants p JOIN "user" u ON u.id = p.user_id WHERE p.lobby_id = ${grant.lobbyId} AND u.banned IS DISTINCT FROM true FOR SHARE OF p,u`;
       if (
         seats.length !== 2 ||
         seats.some(s => !hasCrossfireAccess(s.role)) ||
@@ -150,8 +150,8 @@ export class CrossfirePractice {
       await tx`UPDATE play.games SET provenance = ${tx.json(provenance)} WHERE id = ${request.game_id}`;
       await tx`INSERT INTO play.lobbies (id,creator_user_id,game_id,status,versions) VALUES (${request.lobby_id},${request.requester_id},${request.game_id},'started',${tx.json(meta.versions)})`;
       for (const seat of seats)
-        await tx`INSERT INTO play.participants (lobby_id,seat,user_id,session_id,deck_snapshot)
-        VALUES (${request.lobby_id},${seat.seat},${seat.user_id},${'practice:' + id},${tx.json(seat.deck_snapshot)})`;
+        await tx`INSERT INTO play.participants (lobby_id,seat,user_id,session_id,deck_snapshot,battlefield)
+        VALUES (${request.lobby_id},${seat.seat},${seat.user_id},${'practice:' + id},${tx.json(seat.deck_snapshot)},${seat.battlefield ? tx.json(seat.battlefield) : null})`;
       await tx`UPDATE play.practice_requests SET status = 'accepted' WHERE id = ${id}`;
       return request.lobby_id as string;
     });
