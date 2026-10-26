@@ -12,7 +12,11 @@ import {
   cardDetailTabSchema,
   cardDetailVariantIdSchema,
 } from '@/components/app/cards/CardDetail/cardDetailSearchParams.ts';
-import SidebarTriggerButton from '@/components/app/navigation/TopMenu/SidebarTriggerButton.tsx';
+import {
+  MobileBottomTabs,
+  MobileHeader,
+} from '@/components/app/navigation/MobileNavigation/MobileNavigation.tsx';
+import { useMobileViewport } from '@/components/app/navigation/MobileNavigation/useMobileViewport.ts';
 import { DeckSortField } from '../../../types/ZDeck.ts';
 import { SwuAspect, SwuSet } from '../../../types/enums.ts';
 import CookieConsent from '@/components/app/pages/CookieConsent.tsx';
@@ -132,6 +136,7 @@ function RootShell() {
     !!matchRoute({ to: '/crossfire/reports/$reportId', fuzzy: false });
   const { streamId } = Route.useSearch();
   const { open, isMobile, setOpen, setOpenMobile } = useSidebar();
+  const { mainRef, bottomRef } = useMobileViewport(isMobile && !immersive);
   const collapseReason = streamId
     ? `stream:${streamId}`
     : battlefield
@@ -180,29 +185,38 @@ function RootShell() {
     collapsedForContext.current = context;
   }, [collapseReason, isMobile, open, setOpen, setOpenMobile]);
 
-  if (immersive)
-    return (
-      <main className="w-full min-w-0 h-dvh overflow-y-auto">
-        <Outlet />
-      </main>
-    );
-
   return (
     <>
-      <LeftSidebar />
-      <main
-        className={`w-full min-w-0 ${userProfile || teamProfile || userSettings || battlefield ? '' : 'p-2'} ${messenger ? 'h-dvh overflow-hidden' : 'h-screen max-h-screen overflow-y-scroll'}`}
-      >
-        <div
-          className={`flex w-full flex-col @container/main-body ${messenger ? 'h-full min-h-0' : ''}`}
+      {!immersive && <LeftSidebar />}
+      <div className="flex h-dvh min-w-0 flex-1 flex-col overflow-hidden">
+        {!immersive && <MobileHeader />}
+        <main
+          ref={mainRef}
+          className={`w-full min-h-0 min-w-0 flex-1 ${immersive || userProfile || teamProfile || userSettings || battlefield ? '' : 'p-2'} ${messenger ? 'overflow-hidden' : 'overflow-y-auto'}`}
         >
-          <Outlet />
-          <CardDetailDialog />
-          <TournamentDetailDialog />
+          {immersive ? (
+            <Outlet />
+          ) : (
+            <>
+              <div
+                className={`flex w-full flex-col @container/main-body ${messenger ? 'h-full min-h-0' : ''}`}
+              >
+                <Outlet />
+                <CardDetailDialog />
+                <TournamentDetailDialog />
+              </div>
+              {!messenger && <Footer />}
+            </>
+          )}
+        </main>
+        <div
+          ref={bottomRef}
+          className={immersive ? 'contents' : 'relative z-30 shrink-0 lg:contents'}
+        >
+          <CookieConsent mobileInline={!immersive} />
+          {!immersive && <MobileBottomTabs />}
         </div>
-        {!messenger && <Footer />}
-        <SidebarTriggerButton />
-      </main>
+      </div>
     </>
   );
 }
@@ -218,7 +232,6 @@ export const Route = createRootRoute({
           </SidebarProvider>
         </CrossfireInvitations>
       </AppRealtimeProvider>
-      <CookieConsent />
       <Toaster />
       <PriceFetcher />
       <UserSettingsLoader />

@@ -60,6 +60,7 @@ import {
   WantlistIcon,
 } from '@/components/app/global/icons/CardLibraryIcons.tsx';
 import { SidebarNavigationItem, type SidebarNavigationEntry } from './SidebarNavigationItem.tsx';
+import { MobileMoreMenu } from '../MobileNavigation/MobileMoreMenu.tsx';
 
 const getGroups = ({
   setOpenMobile,
@@ -343,6 +344,14 @@ export function LeftSidebar() {
 
   const swubaseLogo = theme === 'light' ? LogoLightTheme : LogoDarkTheme;
 
+  if (isMobile) {
+    return (
+      <Sidebar mobileSide="bottom" mobileLabel="More on SWUBASE" mobileId="mobile-more-menu">
+        <MobileMoreMenu groups={groups} />
+      </Sidebar>
+    );
+  }
+
   return (
     <Sidebar collapsible="icon" variant="sidebar">
       <div
@@ -486,10 +495,16 @@ export function LeftSidebar() {
               </SidebarGroupContent>
             </SidebarGroup>
           ))}
+          <SidebarGroup className="py-0">
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarComparer setOpenMobile={setOpenMobile} />
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
         </SidebarContent>
-        <div className="px-2 pb-2">
-          <SidebarComparer setOpenMobile={setOpenMobile} />
-        </div>
         <div className="border-t border-border/70 px-1 py-1 group-data-[collapsible=icon]:px-0">
           <SocialLinks />
         </div>

@@ -189,7 +189,7 @@ const TournamentDeckKeyFloater: React.FC<TournamentDeckKeyFloaterProps> = ({ rou
     route === MetaRoute || route === RootRoute || route === PlanetaryQualifiersRoute;
 
   return (
-    <Card className="fixed bottom-4 right-4 z-30 w-[300px] max-w-[calc(100vw-2rem)] rounded-2xl border shadow-lg">
+    <Card className="fixed bottom-[calc(var(--app-bottom-inset,0px)+1rem)] right-4 z-30 w-[300px] max-w-[calc(100vw-2rem)] rounded-2xl border shadow-lg">
       <CardHeader className="p-4 pb-0">
         <div className="w-full flex gap-4 justify-between items-center">
           {labelRenderer(key, metaInfo, 'compact', 'left')}

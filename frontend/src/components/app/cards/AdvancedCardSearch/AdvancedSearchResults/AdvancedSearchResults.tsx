@@ -121,7 +121,7 @@ const AdvancedSearchResults: React.FC<AdvancedSearchResultsProps> = ({
           <>
             <ScrollArea
               className={cn(
-                'h-[calc(100vh-90px)]',
+                'h-[calc(var(--app-content-height,100vh)-90px)]',
                 fillAvailableHeight &&
                   '@[1080px]/main-body:h-auto @[1080px]/main-body:min-h-0 @[1080px]/main-body:flex-1',
               )}

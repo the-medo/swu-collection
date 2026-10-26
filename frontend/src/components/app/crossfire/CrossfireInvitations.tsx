@@ -166,7 +166,7 @@ function MemberInvitations({ children }: { children: ReactNode }) {
           aria-label="Crossfire invitation"
           className={cn(
             workspaceTheme,
-            'cf-invitation-toast fixed bottom-4 right-4 z-40 grid max-h-[calc(100dvh-2rem)] w-[min(380px,calc(100vw-2rem))] gap-4 overflow-y-auto rounded-2xl border border-[color:var(--workspace-border)] bg-card p-5 text-foreground shadow-2xl [&_p]:leading-[1.5]!',
+            'cf-invitation-toast fixed bottom-[calc(var(--app-bottom-inset,0px)+1rem)] right-4 z-40 grid max-h-[calc(100dvh-var(--app-bottom-inset,0px)-2rem)] w-[min(380px,calc(100vw-2rem))] gap-4 overflow-y-auto rounded-2xl border border-[color:var(--workspace-border)] bg-card p-5 text-foreground shadow-2xl [&_p]:leading-[1.5]!',
           )}
         >
           <div className="flex items-center gap-2">

@@ -148,11 +148,13 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
 
   return (
     <div
+      role="region"
+      aria-label="Card search filters"
       id={onClose ? 'card-home-filters' : undefined}
       className={cn(
         'overflow-hidden w-full md:border-r max-md:border-b p-2',
         compact &&
-          'shrink-0 border-[var(--workspace-border)] bg-card @[580px]/main-body:flex @[580px]/main-body:h-[calc(100dvh-1rem)] @[580px]/main-body:flex-col',
+          'shrink-0 border-[var(--workspace-border)] bg-card @[580px]/main-body:flex @[580px]/main-body:h-[calc(var(--app-content-height,100dvh)-1rem)] @[580px]/main-body:flex-col',
         mobileCollapsible && 'max-lg:!w-full max-lg:!max-w-none max-lg:border-b lg:shrink-0',
         {
           'md:w-[50px]': !filtersExpanded,
@@ -266,7 +268,9 @@ const AdvancedSearchFilters: React.FC<AdvancedSearchFiltersProps> = ({
         >
           <ScrollArea
             className={cn(
-              footerElement ? 'h-[calc(100vh-215px)]' : 'h-[calc(100vh-165px)]',
+              footerElement
+                ? 'h-[calc(var(--app-content-height,100vh)-215px)]'
+                : 'h-[calc(var(--app-content-height,100vh)-165px)]',
               compact &&
                 'h-[55dvh] @[580px]/main-body:h-auto @[580px]/main-body:min-h-0 @[580px]/main-body:flex-1',
             )}

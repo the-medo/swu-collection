@@ -42,7 +42,7 @@ export default function DeckSelectionBar({
     <div
       role="region"
       aria-label="Selected decks"
-      className="fixed bottom-4 left-1/2 z-30 flex w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-col gap-x-6 gap-y-3 rounded-xl border bg-background/95 px-4 py-3 shadow-lg backdrop-blur sm:w-max sm:flex-row sm:flex-wrap sm:items-center sm:justify-center"
+      className="fixed bottom-[calc(var(--app-bottom-inset,0px)+1rem)] left-1/2 z-30 flex w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-col gap-x-6 gap-y-3 rounded-xl border bg-background/95 px-4 py-3 shadow-lg backdrop-blur sm:w-max sm:flex-row sm:flex-wrap sm:items-center sm:justify-center"
     >
       <div className="flex items-center justify-between gap-3">
         <span className="text-sm font-semibold">
