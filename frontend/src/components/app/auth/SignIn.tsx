@@ -15,6 +15,9 @@ import { useSidebar } from '@/components/ui/sidebar.tsx';
 import { ArrowRight, Loader2, LogIn } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState, type ReactElement } from 'react';
 import swubaseLogo from '@/assets/logo-dark-theme.svg';
+import { EmailAuthForm } from './EmailAuthForm.tsx';
+import { useEmailAuthConfig } from '@/api/auth/useEmailAuthConfig.ts';
+import { safeAuthReturnTo } from '../../../../../shared/auth.ts';
 
 const providers = [
   {
@@ -32,6 +35,8 @@ const providers = [
 type Provider = (typeof providers)[number]['id'];
 
 interface SignInProps {
+  defaultOpen?: boolean;
+  returnTo?: string;
   isLeftSidebar?: boolean;
   // Custom label for the trigger button
   buttonText?: string;
@@ -41,6 +46,8 @@ interface SignInProps {
 }
 
 export default function SignIn({
+  defaultOpen = false,
+  returnTo,
   isLeftSidebar,
   buttonText,
   forceTextButton = false,
@@ -48,48 +55,55 @@ export default function SignIn({
 }: SignInProps) {
   const { open } = useSidebar();
   const session = useSession();
+  const emailAuth = useEmailAuthConfig();
+  const [emailPending, setEmailPending] = useState(false);
   const [pendingProvider, setPendingProvider] = useState<Provider | null>(null);
   const [signInError, setSignInError] = useState<string | null>(null);
   const redirectStarted = useRef(false);
+  const emailRedirectStarted = useRef(false);
 
   useEffect(() => {
     // Back from the provider may restore this page without remounting React.
     const handlePageShow = () => {
       redirectStarted.current = false;
+      emailRedirectStarted.current = false;
       setPendingProvider(null);
+      setEmailPending(false);
     };
     window.addEventListener('pageshow', handlePageShow);
     return () => window.removeEventListener('pageshow', handlePageShow);
   }, []);
 
-  const handleSignIn = useCallback(async (provider: Provider) => {
-    redirectStarted.current = false;
-    setPendingProvider(provider);
-    setSignInError(null);
-    try {
-      sessionStorage.setItem('needsSettingsSync', '1');
-      const { data, error } = await signIn.social({
-        provider,
-        // Return to the current page, except a completed sign-in must leave
-        // the error page (including sign-ins from the sidebar).
-        callbackURL:
-          window.location.pathname === '/auth/error'
-            ? '/'
-            : window.location.pathname + window.location.search + window.location.hash,
-        errorCallbackURL: '/auth/error',
-      });
-      if (error) {
-        setSignInError('We couldn’t start sign-in. Please try again.');
+  const handleSignIn = useCallback(
+    async (provider: Provider) => {
+      redirectStarted.current = false;
+      setPendingProvider(provider);
+      setSignInError(null);
+      try {
+        sessionStorage.setItem('needsSettingsSync', '1');
+        const { data, error } = await signIn.social({
+          provider,
+          // Return to the current page, except a completed sign-in must leave
+          // the error page (including sign-ins from the sidebar).
+          callbackURL: safeAuthReturnTo(
+            returnTo ?? window.location.pathname + window.location.search + window.location.hash,
+          ),
+          errorCallbackURL: '/auth/error',
+        });
+        if (error) {
+          setSignInError('We couldn’t start sign-in. Please try again.');
+        }
+        // Better Auth starts navigation before resolving. Keep both providers
+        // disabled until we leave, unless the response did not start a redirect.
+        redirectStarted.current = !error && !!data?.redirect && !!data.url;
+        if (!redirectStarted.current) setPendingProvider(null);
+      } catch {
+        setSignInError('We couldn’t connect. Check your connection and try again.');
+        setPendingProvider(null);
       }
-      // Better Auth starts navigation before resolving. Keep both providers
-      // disabled until we leave, unless the response did not start a redirect.
-      redirectStarted.current = !error && !!data?.redirect && !!data.url;
-      if (!redirectStarted.current) setPendingProvider(null);
-    } catch {
-      setSignInError('We couldn’t connect. Check your connection and try again.');
-      setPendingProvider(null);
-    }
-  }, []);
+    },
+    [returnTo],
+  );
 
   if (session.data && isLeftSidebar) {
     return <NavUser />;
@@ -97,9 +111,14 @@ export default function SignIn({
 
   return (
     <Dialog
+      defaultOpen={defaultOpen}
       onOpenChange={isOpen => {
         if (!isOpen) return;
         setSignInError(null);
+        if (emailRedirectStarted.current) {
+          emailRedirectStarted.current = false;
+          setEmailPending(false);
+        }
         // Allow a fresh attempt if the user stopped the provider navigation.
         // An API request still in flight must continue to disable both buttons.
         if (redirectStarted.current) {
@@ -159,7 +178,7 @@ export default function SignIn({
                     ? 'border-transparent bg-foreground text-background hover:bg-foreground/90 hover:text-background'
                     : 'bg-card hover:bg-muted/50',
                 )}
-                disabled={pendingProvider !== null}
+                disabled={pendingProvider !== null || emailPending}
                 onClick={() => handleSignIn(provider.id)}
               >
                 {pendingProvider === provider.id ? (
@@ -189,9 +208,31 @@ export default function SignIn({
               {signInError}
             </p>
           )}
-          <p className="mt-5 text-xs leading-5! text-muted-foreground">
-            New here? Signing in creates your free account.
-          </p>
+          {emailAuth.data?.enabled && (
+            <>
+              <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
+                <span className="h-px flex-1 bg-border" />
+                or use email
+                <span className="h-px flex-1 bg-border" />
+              </div>
+              <EmailAuthForm
+                returnTo={safeAuthReturnTo(
+                  returnTo ??
+                    window.location.pathname + window.location.search + window.location.hash,
+                )}
+                disabled={pendingProvider !== null || emailPending}
+                onPendingChange={setEmailPending}
+                onNavigate={() => {
+                  emailRedirectStarted.current = true;
+                }}
+              />
+            </>
+          )}
+          {!emailAuth.data?.enabled && (
+            <p className="mt-5 text-xs leading-5! text-muted-foreground">
+              New here? Signing in creates your free account.
+            </p>
+          )}
         </div>
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-border bg-muted/20 px-6 py-3 sm:px-8">
           <span className="text-xs text-muted-foreground">Just looking around?</span>

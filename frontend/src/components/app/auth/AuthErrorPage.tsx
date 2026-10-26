@@ -56,7 +56,9 @@ export default function AuthErrorPage({ error }: { error?: string }) {
                         ? 'Sign-in was blocked by an account restriction. Sign in again to check its current status and any end date.'
                         : error === 'access_denied'
                           ? 'Sign-in was cancelled or permission was declined. You can try again when you are ready.'
-                          : 'We could not complete your sign-in. Please try again.'}
+                          : error === 'account_not_linked'
+                            ? 'If you registered with email, verify that address before signing in with Google or GitHub. You can request a fresh verification email below.'
+                            : 'We could not complete your sign-in. Please try again.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
@@ -90,6 +92,11 @@ export default function AuthErrorPage({ error }: { error?: string }) {
                   onClick={() => restriction.refetch()}
                 >
                   {restriction.isFetching ? 'Checking…' : 'Check again'}
+                </Button>
+              )}
+              {error === 'account_not_linked' && (
+                <Button asChild variant="outline">
+                  <Link to="/auth/verify">Verify your email</Link>
                 </Button>
               )}
               <Button asChild variant="ghost">

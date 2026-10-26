@@ -119,6 +119,26 @@ try {
     await verifyOAuthQueryParams(started.request().postDataJSON().oauth_query, authContext.secret),
   ).toBe(true);
 
+  if (process.env.AUTH_EMAIL_MODE === 'capture') {
+    // Email login must preserve the provider's consent redirect, not return to
+    // /mcp/login after creating the session.
+    await page.waitForURL(url => url.hostname === 'accounts.google.com');
+    const password = 'mcp-browser-fixture-password-123';
+    const passwordHash = await authContext.password.hash(password);
+    await sql`insert into account (id, account_id, provider_id, user_id, password, created_at, updated_at)
+      values (${crypto.randomUUID()}, ${id}, 'credential', ${id}, ${passwordHash}, now(), now())`;
+    await page.goto(login.location.href);
+    await page.getByRole('button', { name: 'Sign in to continue', exact: true }).click();
+    const dialog = page.getByRole('dialog');
+    await dialog.getByLabel('Email', { exact: true }).fill(`${id}@invalid.local`);
+    await dialog.getByLabel('Password', { exact: true }).fill(password);
+    await dialog.getByRole('button', { name: 'Sign in', exact: true }).click();
+    await page.waitForURL(url => url.pathname === '/mcp/consent');
+    await expect(page.getByRole('button', { name: 'Allow access', exact: true })).toBeEnabled();
+    await checkBrowserSignature();
+    console.log('MCP email sign-in reaches signed consent.');
+  }
+
   // A synthetic signed session represents the completed external provider login.
   const sessionToken = crypto.randomUUID();
   await sql`insert into session (id, user_id, token, expires_at, created_at, updated_at)

@@ -159,6 +159,14 @@ BEGIN
   END IF;
 END
 $mcp$;
+-- Auth email payloads, recipient fingerprints, and delivery history are private.
+DO $auth_email$
+BEGIN
+  IF to_regclass('public.auth_email_outbox') IS NOT NULL THEN
+    TRUNCATE TABLE auth_email_outbox;
+  END IF;
+END
+$auth_email$;
 TRUNCATE TABLE user_notification;
 -- Private conversations are never part of contributor data, regardless of opt-in.
 TRUNCATE TABLE direct_message, direct_conversation;
@@ -616,6 +624,12 @@ BEGIN
 
   IF EXISTS (SELECT 1 FROM user_profile) THEN
     RAISE EXCEPTION 'Profile preferences remain in the contributor dump.';
+  END IF;
+
+  IF to_regclass('public.auth_email_outbox') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM auth_email_outbox) THEN
+      RAISE EXCEPTION 'Private auth emails remain in the contributor dump.';
+    END IF;
   END IF;
 
   IF EXISTS (SELECT 1 FROM battlefield) THEN

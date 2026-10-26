@@ -49,6 +49,9 @@ import { Route as CollectionsYourRouteImport } from './routes/collections/your'
 import { Route as CollectionsPublicRouteImport } from './routes/collections/public'
 import { Route as CardsSearchRouteImport } from './routes/cards/search'
 import { Route as CardsPromosRouteImport } from './routes/cards/promos'
+import { Route as AuthVerifyRouteImport } from './routes/auth.verify'
+import { Route as AuthSignInRouteImport } from './routes/auth.sign-in'
+import { Route as AuthResetPasswordRouteImport } from './routes/auth.reset-password'
 import { Route as AuthErrorRouteImport } from './routes/auth.error'
 import { Route as ArtistsArtistKeyRouteImport } from './routes/artists/$artistKey'
 import { Route as AuthenticatedShopRouteImport } from './routes/_authenticated/shop'
@@ -308,6 +311,21 @@ const CardsSearchRoute = CardsSearchRouteImport.update({
 const CardsPromosRoute = CardsPromosRouteImport.update({
   id: '/cards/promos',
   path: '/cards/promos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthVerifyRoute = AuthVerifyRouteImport.update({
+  id: '/auth/verify',
+  path: '/auth/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSignInRoute = AuthSignInRouteImport.update({
+  id: '/auth/sign-in',
+  path: '/auth/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/auth/reset-password',
+  path: '/auth/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthErrorRoute = AuthErrorRouteImport.update({
@@ -707,6 +725,9 @@ export interface FileRoutesByFullPath {
   '/shop': typeof AuthenticatedShopRoute
   '/artists/$artistKey': typeof ArtistsArtistKeyRoute
   '/auth/error': typeof AuthErrorRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/verify': typeof AuthVerifyRoute
   '/cards/promos': typeof CardsPromosRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -811,6 +832,9 @@ export interface FileRoutesByTo {
   '/shop': typeof AuthenticatedShopRoute
   '/artists/$artistKey': typeof ArtistsArtistKeyRoute
   '/auth/error': typeof AuthErrorRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/verify': typeof AuthVerifyRoute
   '/cards/promos': typeof CardsPromosRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -915,6 +939,9 @@ export interface FileRoutesById {
   '/_authenticated/shop': typeof AuthenticatedShopRoute
   '/artists/$artistKey': typeof ArtistsArtistKeyRoute
   '/auth/error': typeof AuthErrorRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/verify': typeof AuthVerifyRoute
   '/cards/promos': typeof CardsPromosRoute
   '/cards/search': typeof CardsSearchRoute
   '/collections/public': typeof CollectionsPublicRoute
@@ -1024,6 +1051,9 @@ export interface FileRouteTypes {
     | '/shop'
     | '/artists/$artistKey'
     | '/auth/error'
+    | '/auth/reset-password'
+    | '/auth/sign-in'
+    | '/auth/verify'
     | '/cards/promos'
     | '/cards/search'
     | '/collections/public'
@@ -1128,6 +1158,9 @@ export interface FileRouteTypes {
     | '/shop'
     | '/artists/$artistKey'
     | '/auth/error'
+    | '/auth/reset-password'
+    | '/auth/sign-in'
+    | '/auth/verify'
     | '/cards/promos'
     | '/cards/search'
     | '/collections/public'
@@ -1231,6 +1264,9 @@ export interface FileRouteTypes {
     | '/_authenticated/shop'
     | '/artists/$artistKey'
     | '/auth/error'
+    | '/auth/reset-password'
+    | '/auth/sign-in'
+    | '/auth/verify'
     | '/cards/promos'
     | '/cards/search'
     | '/collections/public'
@@ -1333,6 +1369,9 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   ArtistsArtistKeyRoute: typeof ArtistsArtistKeyRoute
   AuthErrorRoute: typeof AuthErrorRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
+  AuthSignInRoute: typeof AuthSignInRoute
+  AuthVerifyRoute: typeof AuthVerifyRoute
   CardsPromosRoute: typeof CardsPromosRoute
   CardsSearchRoute: typeof CardsSearchRoute
   CollectionsPublicRoute: typeof CollectionsPublicRoute
@@ -1658,6 +1697,27 @@ declare module '@tanstack/react-router' {
       path: '/cards/promos'
       fullPath: '/cards/promos'
       preLoaderRoute: typeof CardsPromosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/verify': {
+      id: '/auth/verify'
+      path: '/auth/verify'
+      fullPath: '/auth/verify'
+      preLoaderRoute: typeof AuthVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/sign-in': {
+      id: '/auth/sign-in'
+      path: '/auth/sign-in'
+      fullPath: '/auth/sign-in'
+      preLoaderRoute: typeof AuthSignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/reset-password': {
+      id: '/auth/reset-password'
+      path: '/auth/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/error': {
@@ -2320,6 +2380,9 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   ArtistsArtistKeyRoute: ArtistsArtistKeyRoute,
   AuthErrorRoute: AuthErrorRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
+  AuthSignInRoute: AuthSignInRoute,
+  AuthVerifyRoute: AuthVerifyRoute,
   CardsPromosRoute: CardsPromosRoute,
   CardsSearchRoute: CardsSearchRoute,
   CollectionsPublicRoute: CollectionsPublicRoute,
