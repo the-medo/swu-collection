@@ -1,4 +1,5 @@
 export const comparerTableStyles = {
+  withSidebar: 'grid min-w-0 items-start gap-3 xl:grid-cols-[minmax(0,1fr)_240px]',
   table: 'w-max border-separate border-spacing-0 text-xs tabular-nums [&_th]:font-medium',
   name: 'sticky left-0 z-20 box-border w-[var(--comparer-name-width)] min-w-[var(--comparer-name-width)] max-w-[var(--comparer-name-width)] border-r border-[var(--workspace-border)] bg-card px-2 py-1 text-left',
   reference:

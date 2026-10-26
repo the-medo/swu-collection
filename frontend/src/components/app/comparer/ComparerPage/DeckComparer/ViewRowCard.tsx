@@ -1,4 +1,5 @@
 import * as React from 'react';
+import type { AverageDeckEditor } from './averageDeckDraft.ts';
 import { useState } from 'react';
 import { cn } from '@/lib/utils.ts';
 import ComparisonTable from './ComparisonTable.tsx';
@@ -15,7 +16,8 @@ import { DeckData } from '../../../../../../../types/Deck.ts';
 import { CardGroupData } from '@/components/app/collections/CollectionContents/CollectionGroups/lib/collectionGroupsLib.ts';
 import { DeckCard } from '../../../../../../../types/ZDeckCard.ts';
 
-interface ViewRowCardProps {
+export interface ViewRowCardProps {
+  averageDeck?: AverageDeckEditor;
   mainDeckId: string;
   mainDeckData: DeckData | undefined;
   otherDeckEntries: ComparerEntry[];
@@ -45,6 +47,7 @@ const ViewRowCard: React.FC<ViewRowCardProps> = ({
   groupedCards,
   groupTotals,
   settings,
+  averageDeck,
 }) => {
   // State for tracking hovered row and column
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
@@ -55,8 +58,8 @@ const ViewRowCard: React.FC<ViewRowCardProps> = ({
       <table
         className={cn(styles.table, 'w-full table-fixed')}
         style={{
-          width: `min(100%, calc(var(--comparer-name-width) + ${(otherDeckEntries.length + 1) * 100 + 96}px))`,
-          minWidth: `calc(var(--comparer-name-width) + ${(otherDeckEntries.length + 1) * 80 + 96}px)`,
+          width: `min(100%, calc(var(--comparer-name-width) + ${(otherDeckEntries.length + 1) * 100 + 96 + (averageDeck ? 120 : 0)}px))`,
+          minWidth: `calc(var(--comparer-name-width) + ${(otherDeckEntries.length + 1) * 80 + 96 + (averageDeck ? 120 : 0)}px)`,
         }}
       >
         <caption className="sr-only">Card quantities and differences by deck</caption>
@@ -64,6 +67,7 @@ const ViewRowCard: React.FC<ViewRowCardProps> = ({
           <col style={{ width: 'var(--comparer-name-width)' }} />
           <col span={otherDeckEntries.length + 1} />
           <col style={{ width: 96 }} />
+          {averageDeck && <col style={{ width: 120 }} />}
         </colgroup>
         <thead className="sticky top-0 z-30 bg-card">
           <tr>
@@ -117,10 +121,21 @@ const ViewRowCard: React.FC<ViewRowCardProps> = ({
             >
               Average
             </th>
+            {averageDeck && (
+              <th
+                scope="col"
+                className="border-b border-l border-[var(--workspace-border)] bg-[var(--workspace-soft)] px-2 text-center text-[var(--workspace-accent)]"
+              >
+                Deck count
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
-          <CardRowSectionTitleRow title="Main Deck" columnCount={otherDeckEntries.length + 3} />
+          <CardRowSectionTitleRow
+            title="Main Deck"
+            columnCount={otherDeckEntries.length + 3 + (averageDeck ? 1 : 0)}
+          />
 
           {groupedCards?.mainDeck.sortedIds?.map(groupName => {
             const group = groupedCards.mainDeck.groups[groupName];
@@ -161,6 +176,7 @@ const ViewRowCard: React.FC<ViewRowCardProps> = ({
                 setHoveredRow={setHoveredRow}
                 hoveredColumn={hoveredColumn}
                 setHoveredColumn={setHoveredColumn}
+                averageDeck={averageDeck}
                 preComputedTotals={preComputedTotals}
               />
             );
@@ -172,7 +188,10 @@ const ViewRowCard: React.FC<ViewRowCardProps> = ({
             return group && group.cards.length > 0;
           }) && (
             <>
-              <CardRowSectionTitleRow title="Sideboard" columnCount={otherDeckEntries.length + 3} />
+              <CardRowSectionTitleRow
+                title="Sideboard"
+                columnCount={otherDeckEntries.length + 3 + (averageDeck ? 1 : 0)}
+              />
 
               {groupedCards?.sideboard.sortedIds?.map(groupName => {
                 const group = groupedCards.sideboard.groups[groupName];
@@ -213,6 +232,7 @@ const ViewRowCard: React.FC<ViewRowCardProps> = ({
                     setHoveredRow={setHoveredRow}
                     hoveredColumn={hoveredColumn}
                     setHoveredColumn={setHoveredColumn}
+                    averageDeck={averageDeck}
                     preComputedTotals={preComputedTotals}
                   />
                 );

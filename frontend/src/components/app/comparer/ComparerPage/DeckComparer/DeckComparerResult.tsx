@@ -1,5 +1,11 @@
 import * as React from 'react';
-import { useMemo } from 'react';
+import AverageDeckView from './AverageDeckView.tsx';
+import AverageDeckLauncher from './AverageDeckLauncher.tsx';
+import { combinePreviewCardIds } from './combinePreviewCards.ts';
+import { comparerTableStyles } from './comparerTableStyles.ts';
+import type { AverageDeckDraft } from './averageDeckDraft.ts';
+import { Button } from '@/components/ui/button.tsx';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useComparerStore } from '@/components/app/comparer/useComparerStore.ts';
 import { useQueries, useQueryClient } from '@tanstack/react-query';
 import { useCardList } from '@/api/lists/useCardList.ts';
@@ -24,6 +30,8 @@ import { DeckGroupBy, ViewMode } from '../../../../../../../types/enums.ts';
 import { useSession } from '@/lib/auth-client.ts';
 
 interface DeckComparerResultProps {
+  averageDeck?: boolean;
+  onAverageDeckChange: (enabled: boolean) => void;
   mainDeckId: string;
   otherDeckEntries: ReturnType<typeof useComparerStore>['entries'];
 }
@@ -34,7 +42,27 @@ interface DeckComparerResultProps {
 const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
   mainDeckId,
   otherDeckEntries,
+  averageDeck = false,
+  onAverageDeckChange,
 }) => {
+  // Retain edits while switching between the comparison and its average-deck editor.
+  // ComparerPage keys this component by the selected decks, so a new comparison starts fresh.
+  const [averageDraft, setAverageDraft] = useState<AverageDeckDraft>({ entries: {} });
+  const launcherButton = useRef<HTMLButtonElement>(null);
+  const restoreLauncherFocus = useRef(false);
+  const closeAverageDeck = () => {
+    restoreLauncherFocus.current = true;
+    onAverageDeckChange(false);
+  };
+  useEffect(() => {
+    if (!averageDeck && restoreLauncherFocus.current && launcherButton.current) {
+      launcherButton.current.focus();
+      restoreLauncherFocus.current = false;
+    }
+  }, [averageDeck]);
+  const focusLoadingMessage = useCallback((element: HTMLDivElement | null) => {
+    element?.focus();
+  }, []);
   // Get settings from the comparer store
   const { settings } = useComparerStore();
   const session = useSession();
@@ -52,7 +80,8 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
   const mainDeckCards = mainDeck.isError || mainCards.isError ? undefined : mainCards.data;
 
   // Get card list data
-  const { data: cardListData } = useCardList();
+  const cardList = useCardList();
+  const cardListData = cardList.data;
 
   // Create a map of all cards across all decks
   const cardComparisonMap = useMemo(() => {
@@ -296,8 +325,24 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
     };
   }, [groupedCards, cardComparisons, otherDeckEntries, cardListData]);
 
+  const withLauncher = (table: React.ReactNode) => (
+    <div className={comparerTableStyles.withSidebar}>
+      <AverageDeckLauncher
+        buttonRef={launcherButton}
+        deckCount={otherDeckEntries.length + 1}
+        leader={cardListData?.cards[mainDeckData?.deck.leaderCardId1 ?? '']}
+        cards={combinePreviewCardIds(
+          cardComparisons,
+          otherDeckEntries.map(entry => entry.id),
+        ).map(id => cardListData?.cards[id])}
+        onStart={() => onAverageDeckChange(true)}
+      />
+      {table}
+    </div>
+  );
+
   // Render based on view mode
-  if (settings.viewMode === ViewMode.ROW_DECK) {
+  if (!averageDeck && settings.viewMode === ViewMode.ROW_DECK) {
     // Create an array of all decks (main deck + other decks)
     const allDecks: DeckComparerDeck[] = [
       { id: mainDeckId, name: mainDeckData?.deck?.name || 'Main Deck', isMain: true },
@@ -324,7 +369,7 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
       })),
     ];
 
-    return (
+    return withLauncher(
       <ViewRowDeck
         allDecks={allDecks}
         allCardGroups={allCardGroups}
@@ -333,12 +378,61 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
         groupTotals={groupTotals}
         deckTotals={deckTotals}
         settings={settings}
+      />,
+    );
+  }
+
+  if (averageDeck) {
+    const queries = [cardList, mainDeck, mainCards, ...otherCards];
+    const failed = queries.some(query => query.isError);
+    if (failed || !cardListData || !mainDeckData || queries.some(query => !query.isSuccess)) {
+      return (
+        <div
+          ref={focusLoadingMessage}
+          tabIndex={-1}
+          role={failed ? 'alert' : 'status'}
+          className="rounded-lg border border-[var(--workspace-border)] bg-card p-4 text-sm text-muted-foreground"
+        >
+          {failed
+            ? 'Load every compared deck before building a combined deck.'
+            : 'Loading all deck cards…'}
+          {failed && (
+            <Button
+              className="ml-2"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                void Promise.all(queries.map(query => query.refetch()));
+              }}
+            >
+              Retry
+            </Button>
+          )}
+          <Button variant="ghost" size="sm" onClick={closeAverageDeck}>
+            Back to comparison
+          </Button>
+        </div>
+      );
+    }
+    return (
+      <AverageDeckView
+        onClose={closeAverageDeck}
+        draftState={averageDraft}
+        setDraftState={setAverageDraft}
+        mainDeckId={mainDeckId}
+        mainDeckData={mainDeckData}
+        otherDeckEntries={otherDeckEntries}
+        cardListData={cardListData}
+        cardComparisons={cardComparisons}
+        groupedCards={groupedCards}
+        groupTotals={groupTotals}
+        settings={settings}
       />
     );
   }
 
   // Default view: ViewMode.ROW_CARD
-  return (
+  return withLauncher(
     <ViewRowCard
       mainDeckId={mainDeckId}
       mainDeckData={mainDeckData}
@@ -348,7 +442,7 @@ const DeckComparerResult: React.FC<DeckComparerResultProps> = ({
       groupedCards={groupedCards}
       groupTotals={groupTotals}
       settings={settings}
-    />
+    />,
   );
 };
 

@@ -27,6 +27,7 @@ import { decksBulkDeletePostRoute } from './decks/bulk-delete/post.ts';
 import { decksForCardGetRoute } from './decks/card/_cardId/get.ts';
 import { deckImportSource as deckImportSourceTable } from '../db/schema/deck_import_source.ts';
 import { deckDiscussionRoute } from './decks/discussion.ts';
+import { decksFromListPostRoute } from './decks/from-list/post.ts';
 
 export const selectDeck = getTableColumns(deckTable);
 export const selectDeckInformation = getTableColumns(deckInformationTable);
@@ -35,6 +36,7 @@ export const selectDeckImportSource = getTableColumns(deckImportSourceTable);
 export const deckRoute = new Hono<AuthExtension>()
   .route('/', deckGetRoute)
   .route('/', deckPostRoute)
+  .route('/from-list', decksFromListPostRoute)
   .route('/card/:cardId', decksForCardGetRoute)
   .route('/bulk-delete', decksBulkDeletePostRoute)
   .route('/:id', deckIdGetRoute)

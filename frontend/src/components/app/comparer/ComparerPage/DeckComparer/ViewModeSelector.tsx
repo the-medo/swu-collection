@@ -13,6 +13,7 @@ import { viewModeArray, viewModeObj } from '../../../../../../../types/iterableE
 import { ViewMode } from '../../../../../../../types/enums.ts';
 
 interface ViewModeSelectorProps {
+  disabled?: boolean;
   value: ViewMode | undefined;
   onChange: (viewMode: ViewMode) => void;
 }
@@ -23,6 +24,7 @@ interface ViewModeSelectorProps {
 const ViewModeSelector: React.FC<ViewModeSelectorProps> = ({
   value = ViewMode.ROW_CARD,
   onChange,
+  disabled = false,
 }) => {
   const onValueChange = useCallback(
     (v: string) => {
@@ -35,7 +37,12 @@ const ViewModeSelector: React.FC<ViewModeSelectorProps> = ({
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="h-8 max-w-full gap-2 text-xs justify-between">
+        <Button
+          disabled={disabled}
+          title={disabled ? 'Combined decks use cards in rows' : undefined}
+          variant="outline"
+          className="h-8 max-w-full gap-2 text-xs justify-between"
+        >
           <span className="text-xs text-muted-foreground">View mode:</span>{' '}
           {viewModeObj[value]?.title}
           <LayoutGrid className="h-4 w-4 ml-2" />

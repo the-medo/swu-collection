@@ -1,4 +1,6 @@
 import * as React from 'react';
+import type { AverageDeckEditor } from '../averageDeckDraft.ts';
+import AverageDeckCountCell from '../AverageDeckCountCell.tsx';
 import type { CardListResponse } from '@/api/lists/useCardList.ts';
 import { comparerTableStyles as styles } from '../comparerTableStyles.ts';
 import QuantityValue from '../QuantityValue.tsx';
@@ -11,6 +13,7 @@ import AverageQuantityCell from './AverageQuantityCell.tsx';
 import { DiffDisplayMode } from '../../../../../../../../types/enums.ts';
 
 interface CardTypeGroupProps {
+  averageDeck?: AverageDeckEditor;
   groupName: string;
   cards: CardComparisonData[];
   cardListData: CardListResponse | undefined;
@@ -42,6 +45,7 @@ const CardTypeGroup: React.FC<CardTypeGroupProps> = ({
   hoveredColumn,
   setHoveredColumn,
   preComputedTotals,
+  averageDeck,
 }) => {
   if (!cards.length) return null;
 
@@ -104,6 +108,7 @@ const CardTypeGroup: React.FC<CardTypeGroupProps> = ({
             average
           />
         </td>
+        {averageDeck && <td className="border-l border-[var(--workspace-border)]" />}
       </tr>
 
       {/* Card rows */}
@@ -149,6 +154,13 @@ const CardTypeGroup: React.FC<CardTypeGroupProps> = ({
             onMouseEnter={() => setHoveredColumn(otherDeckEntries.length + 1)}
             onMouseLeave={() => setHoveredColumn(null)}
           />
+          {averageDeck && (
+            <AverageDeckCountCell
+              card={card}
+              cardName={cardListData?.cards[card.cardId]?.name ?? card.cardId}
+              editor={averageDeck}
+            />
+          )}
         </tr>
       ))}
     </React.Fragment>
