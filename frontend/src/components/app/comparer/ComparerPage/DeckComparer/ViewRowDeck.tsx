@@ -1,4 +1,6 @@
 import * as React from 'react';
+import ComparisonTable from './ComparisonTable.tsx';
+import { comparerTableStyles as styles } from './comparerTableStyles.ts';
 import { useState } from 'react';
 import { ComparerSettings } from '@/components/app/comparer/useComparerStore.ts';
 import { CardComparisonData } from '../types.ts';
@@ -42,8 +44,9 @@ const ViewRowDeck: React.FC<ViewRowDeckProps> = ({
   const [hoveredColumn, setHoveredColumn] = useState<number | null>(null);
 
   return (
-    <div className="overflow-auto max-h-[80vh]">
-      <table className="border-collapse relative">
+    <ComparisonTable deckCount={allDecks.length}>
+      <table className={styles.table}>
+        <caption className="sr-only">Deck quantities and differences by card</caption>
         <ViewRowDeckHeader
           allCardGroups={allCardGroups}
           cardListData={cardListData}
@@ -82,7 +85,7 @@ const ViewRowDeck: React.FC<ViewRowDeckProps> = ({
           />
         </tbody>
       </table>
-    </div>
+    </ComparisonTable>
   );
 };
 

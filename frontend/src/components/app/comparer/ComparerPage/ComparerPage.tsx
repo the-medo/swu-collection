@@ -12,7 +12,7 @@ import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { useComparerStoreActions } from '@/components/app/comparer/useComparerStore';
 import { CollectionCard } from '../../../../../../types/CollectionCard';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ComparerInstructions from '@/components/app/comparer/ComparerPage/ComparerInstructions.tsx';
 import ItemTypeBadge from './ItemTypeBadge';
 import ComparerResult from './ComparerResult';
@@ -31,6 +31,7 @@ import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspace
 import { cn } from '@/lib/utils.ts';
 
 const ComparerPage: React.FC = () => {
+  const [averageDeck, setAverageDeck] = useState(false);
   const { entries, mainId, mode } = useComparerStore();
   const { setMainId, removeComparerEntry, addComparerEntry, setMode, clearComparerEntries } =
     useComparerStoreActions();
@@ -128,6 +129,11 @@ const ComparerPage: React.FC = () => {
   }, [mainCollection]);
 
   const hasMultipleEntryTypes = collectionsEntries.length > 0 && deckEntries.length > 0;
+
+  // Leaving a deck comparison also closes its editor and restores the view selector.
+  if (averageDeck && (mainEntry?.dataType !== 'deck' || otherDeckEntries.length === 0)) {
+    setAverageDeck(false);
+  }
 
   return (
     <div className={cn(workspaceStyles.theme, 'flex w-full flex-col gap-2 p-2')}>
@@ -292,7 +298,7 @@ const ComparerPage: React.FC = () => {
             </Alert>
           ) : mainEntry.dataType === 'deck' ? (
             <>
-              <DeckComparerSettings />
+              <DeckComparerSettings averageDeck={averageDeck} />
               {isLoadingDecks ? (
                 <div
                   role="status"
@@ -307,6 +313,11 @@ const ComparerPage: React.FC = () => {
               ) : otherDeckEntries.length > 0 ? (
                 <div className="min-w-0 overflow-x-auto">
                   <DeckComparerResult
+                    key={[mainEntry.id, ...otherDeckEntries.map(entry => entry.id).sort()].join(
+                      '|',
+                    )}
+                    averageDeck={averageDeck}
+                    onAverageDeckChange={setAverageDeck}
                     mainDeckId={mainEntry.id}
                     otherDeckEntries={otherDeckEntries}
                   />

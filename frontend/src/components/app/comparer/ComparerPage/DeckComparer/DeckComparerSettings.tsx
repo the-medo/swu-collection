@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   useComparerStore,
   useComparerStoreActions,
@@ -11,7 +10,7 @@ import { DeckGroupBy, DiffDisplayMode, ViewMode } from '../../../../../../../typ
 /**
  * Component for managing deck comparer settings
  */
-const DeckComparerSettings: React.FC = () => {
+const DeckComparerSettings = ({ averageDeck }: { averageDeck: boolean }) => {
   const { settings } = useComparerStore();
   const { updateSettings } = useComparerStoreActions();
 
@@ -34,7 +33,11 @@ const DeckComparerSettings: React.FC = () => {
       className="flex flex-wrap items-center gap-2 rounded-lg border border-[var(--workspace-border)] bg-card p-2 [&>button]:h-8 [&>button]:max-w-full [&>button]:border-[var(--workspace-border)]"
     >
       <GroupBySelector value={settings.groupBy} onChange={handleGroupByChange} />
-      <ViewModeSelector value={settings.viewMode} onChange={handleViewModeChange} />
+      <ViewModeSelector
+        value={averageDeck ? ViewMode.ROW_CARD : settings.viewMode}
+        onChange={handleViewModeChange}
+        disabled={averageDeck}
+      />
       <DiffDisplaySelector
         value={settings.diffDisplayMode}
         onChange={handleDiffDisplayModeChange}
