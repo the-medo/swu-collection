@@ -11,12 +11,13 @@ import { selectDefaultVariant } from '../../../../../../../server/lib/cards/sele
 interface DeckColumnMenuProps {
   deckId: string;
   isMainDeck: boolean;
+  deckName?: string;
 }
 
 /**
  * Popover menu for deck columns in the comparer
  */
-const DeckColumnMenu: React.FC<DeckColumnMenuProps> = ({ deckId, isMainDeck }) => {
+const DeckColumnMenu: React.FC<DeckColumnMenuProps> = ({ deckId, isMainDeck, deckName }) => {
   const { setMainId, removeComparerEntry } = useComparerStoreActions();
   const { data: cardList } = useCardList();
 
@@ -50,9 +51,9 @@ const DeckColumnMenu: React.FC<DeckColumnMenuProps> = ({ deckId, isMainDeck }) =
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+        <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 p-0">
           <MoreHorizontal className="h-4 w-4" />
-          <span className="sr-only">Open menu</span>
+          <span className="sr-only">Actions for {deckName || deckData?.deck?.name || 'deck'}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">

@@ -1,7 +1,10 @@
 import * as React from 'react';
+import type { CardListResponse } from '@/api/lists/useCardList.ts';
+import { comparerTableStyles as styles } from '../comparerTableStyles.ts';
+import QuantityValue from '../QuantityValue.tsx';
 import { cn } from '@/lib/utils.ts';
 import { CardComparisonData } from '../../types.ts';
-import { calculateGroupTotals, calculateAndRenderGroupAverage } from './lib.ts';
+import { calculateGroupTotals, calculateAverage } from './lib.ts';
 import CardNameCell from './CardNameCell.tsx';
 import QuantityDifferenceCell from './QuantityDifferenceCell.tsx';
 import AverageQuantityCell from './AverageQuantityCell.tsx';
@@ -10,7 +13,7 @@ import { DiffDisplayMode } from '../../../../../../../../types/enums.ts';
 interface CardTypeGroupProps {
   groupName: string;
   cards: CardComparisonData[];
-  cardListData: any;
+  cardListData: CardListResponse | undefined;
   mainDeckId: string;
   otherDeckEntries: { id: string }[];
   diffDisplayMode?: DiffDisplayMode;
@@ -57,23 +60,22 @@ const CardTypeGroup: React.FC<CardTypeGroupProps> = ({
     <React.Fragment>
       {/* Group header row */}
       <tr
-        className="border-t bg-accent"
+        className={styles.group}
         onMouseEnter={() => setHoveredRow(`group-${groupName}`)}
         onMouseLeave={() => setHoveredRow(null)}
       >
         <td
-          className="p-1 font-medium pt-8 sticky left-0 z-10 bg-accent"
+          className={cn(styles.name, styles.group, 'border-b border-[var(--workspace-border)]')}
           onMouseEnter={() => setHoveredColumn(-1)}
           onMouseLeave={() => setHoveredColumn(null)}
         >
           {groupName}
         </td>
         <td
-          className="text-center text-lg bg-accent font-semibold pt-8 sticky min-w-[55px] left-[180px] md:left-[250px] z-10"
+          className={cn(styles.number, styles.reference)}
           onMouseEnter={() => setHoveredColumn(0)}
           onMouseLeave={() => setHoveredColumn(null)}
         >
-          <div className="absolute right-0 top-0 bottom-0 w-[2px] bg-border"></div>
           {mainDeckTotal}
         </td>
 
@@ -86,30 +88,21 @@ const CardTypeGroup: React.FC<CardTypeGroupProps> = ({
             isHovered={hoveredRow === `group-${groupName}` || hoveredColumn === index + 1}
             onMouseEnter={() => setHoveredColumn(index + 1)}
             onMouseLeave={() => setHoveredColumn(null)}
-            className="pt-8"
+            className="font-semibold"
           />
         ))}
 
         <td
-          className="p-1 text-center w-20 font-semibold pt-8 bg-accent relative"
+          className={cn(styles.number, styles.summary)}
           onMouseEnter={() => setHoveredColumn(otherDeckEntries.length + 1)}
           onMouseLeave={() => setHoveredColumn(null)}
         >
-          <div className="absolute top-0 left-0 bottom-0 w-[2px] bg-border"> </div>
-          {(() => {
-            const { formattedAvgTotal, hasDiff, textColorClass, formattedDiff } =
-              calculateAndRenderGroupAverage(mainDeckTotal, allTotals);
-
-            if (!hasDiff) {
-              return <span>{formattedAvgTotal}</span>;
-            }
-
-            return (
-              <span className={`${textColorClass} font-medium`}>
-                {formattedAvgTotal} <span className="text-xs">({formattedDiff})</span>
-              </span>
-            );
-          })()}
+          <QuantityValue
+            quantity={calculateAverage(allTotals).avg}
+            mainQuantity={mainDeckTotal}
+            mode={diffDisplayMode}
+            average
+          />
         </td>
       </tr>
 
@@ -117,9 +110,7 @@ const CardTypeGroup: React.FC<CardTypeGroupProps> = ({
       {cards.map(card => (
         <tr
           key={card.cardId}
-          className={cn('border-t', {
-            'bg-accent': hoveredRow === card.cardId,
-          })}
+          className={hoveredRow === card.cardId ? styles.hover : 'even:bg-muted/20'}
           onMouseEnter={() => setHoveredRow(card.cardId)}
           onMouseLeave={() => setHoveredRow(null)}
         >
@@ -132,11 +123,10 @@ const CardTypeGroup: React.FC<CardTypeGroupProps> = ({
           />
 
           <td
-            className="text-center text-lg bg-accent font-semibold sticky left-[180px] md:left-[250px] z-10"
+            className={cn(styles.number, styles.reference)}
             onMouseEnter={() => setHoveredColumn(0)}
             onMouseLeave={() => setHoveredColumn(null)}
           >
-            <div className="absolute right-0 top-0 bottom-0 w-[2px] bg-border"></div>
             {card.mainDeckQuantity}
           </td>
 

@@ -1,4 +1,7 @@
 import * as React from 'react';
+import { Crown } from 'lucide-react';
+import QuantityValue from '../QuantityValue.tsx';
+import { comparerTableStyles as styles } from '../comparerTableStyles.ts';
 import { cn } from '@/lib/utils.ts';
 import { CardComparisonData } from '../../types.ts';
 import DeckColumnMenu from '@/components/app/comparer/ComparerPage/DeckComparer/DeckColumnMenu.tsx';
@@ -41,196 +44,77 @@ const ViewRowDeckRow: React.FC<ViewRowDeckRowProps> = ({
   setHoveredColumn,
   diffDisplayMode = DiffDisplayMode.COUNT_AND_DIFF,
 }) => {
-  let lastGroupBoard = 0;
-
   return (
     <tr
-      className={cn('border-t', {
-        'bg-accent': hoveredRow === deck.id || deck.isMain,
-        'font-semibold': deck.isMain,
-      })}
+      className={hoveredRow === deck.id || deck.isMain ? styles.hover : 'even:bg-muted/20'}
       onMouseEnter={() => setHoveredRow(deck.id)}
       onMouseLeave={() => setHoveredRow(null)}
     >
-      {/* Deck name cell */}
-      <td
-        className={cn('p-2 sticky left-0 z-10 bg-background', {
-          'bg-accent': hoveredRow === deck.id,
-          'font-semibold': deck.isMain,
-        })}
+      <th
+        scope="row"
+        className={cn(
+          styles.name,
+          'border-b border-border/40',
+          deck.isMain && styles.group,
+          hoveredRow === deck.id && styles.hover,
+        )}
         onMouseEnter={() => setHoveredColumn(-1)}
         onMouseLeave={() => setHoveredColumn(null)}
       >
-        <div className="flex items-center justify-between gap-2 max-w-[172px] md:max-w-[242px] overflow-hidden">
-          <span className="truncate">{deck.name}</span>
-          {deck.isMain && <span className="text-xs text-muted-foreground">(Main)</span>}
+        <div className="flex items-center gap-1.5">
+          {deck.isMain && (
+            <Crown
+              className="size-3 shrink-0 text-[var(--workspace-accent)]"
+              aria-label="Main deck"
+            />
+          )}
+          <span className="min-w-0 flex-1 truncate" title={deck.name}>
+            {deck.name}
+          </span>
+          <DeckColumnMenu deckId={deck.id} isMainDeck={deck.isMain} deckName={deck.name} />
         </div>
-      </td>
-
-      {/* Card quantity cells for each group */}
+      </th>
       {allCardGroups.map((group, groupIndex) => {
-        // Get unique card IDs for this group
-        const groupCardIds = Array.from(new Set(group.cards.map(card => card.cardId)));
-
-        if (groupCardIds.length === 0) return null;
-        const displayMainOrSideColumn = lastGroupBoard !== group.board;
-        lastGroupBoard = group.board;
-
-        // Use pre-computed group totals
-        const groupTotal = deck.isMain
-          ? groupTotals?.[group.board === 1 ? 'mainDeck' : 'sideboard']?.[group.id]
-              ?.mainDeckTotal || 0
-          : groupTotals?.[group.board === 1 ? 'mainDeck' : 'sideboard']?.[group.id]
-              ?.otherDeckTotals?.[deck.id] || 0;
-
+        const cardIds = [...new Set(group.cards.map(card => card.cardId))];
+        if (!cardIds.length) return null;
+        const totals = groupTotals?.[group.board === 1 ? 'mainDeck' : 'sideboard']?.[group.id];
+        const mainTotal = totals?.mainDeckTotal || 0;
+        const total = deck.isMain ? mainTotal : totals?.otherDeckTotals[deck.id] || 0;
         return (
-          <React.Fragment key={`${deck.id}-${group.board}-${group.id}`}>
-            {displayMainOrSideColumn && (
-              <td className="p-0 bg-background relative sticky left-[180px] md:left-[258px] z-50">
-                <div className="p-1 bg-primary/20 flex items-center justify-center">
-                  <DeckColumnMenu deckId={deck.id} isMainDeck={deck.isMain} />
-                </div>
-              </td>
-            )}
-            {/* Group divider cell */}
+          <React.Fragment key={`${group.board}-${group.id}`}>
             <td
-              className="p-1 bg-accent text-center relative"
-              onMouseLeave={() => setHoveredColumn(null)}
+              className={cn(styles.number, styles.summary)}
+              onMouseEnter={() => setHoveredColumn(null)}
             >
-              {/* Group total for this deck */}
-              {(() => {
-                // If it's the main deck, just show the total
-                if (deck.isMain) {
-                  return groupTotal;
-                }
-
-                // Use pre-computed main deck group total
-                const mainDeckGroupTotal =
-                  groupTotals?.[group.board === 1 ? 'mainDeck' : 'sideboard']?.[group.id]
-                    ?.mainDeckTotal || 0;
-
-                // Calculate the difference
-                const diff = groupTotal - mainDeckGroupTotal;
-
-                // If there's no difference, just show the total
-                if (diff === 0) {
-                  return groupTotal;
-                }
-
-                // Determine text color based on diff
-                const textColorClass = diff > 0 ? 'text-green-600' : 'text-red-600';
-
-                // Format the diff with a + sign if positive
-                const formattedDiff = diff > 0 ? `+${diff}` : `${diff}`;
-
-                // Render based on display mode
-                if (diffDisplayMode === DiffDisplayMode.COUNT_ONLY) {
-                  return <span className={cn('font-medium', textColorClass)}>{groupTotal}</span>;
-                } else if (diffDisplayMode === DiffDisplayMode.DIFF_ONLY) {
-                  return <span className={cn('font-medium', textColorClass)}>{formattedDiff}</span>;
-                } else {
-                  // Default: COUNT_AND_DIFF
-                  return (
-                    <span className={cn('font-medium', textColorClass)}>
-                      {groupTotal} <span className="text-xs">({formattedDiff})</span>
-                    </span>
-                  );
-                }
-              })()}
+              <QuantityValue quantity={total} mainQuantity={mainTotal} mode={diffDisplayMode} />
             </td>
-
-            {/* Card quantity cells */}
-            {groupCardIds.map((cardId, cardIndex) => {
+            {cardIds.map((cardId, cardIndex) => {
               const columnIndex = groupIndex * 100 + cardIndex + 1;
-
-              // Find card comparison data
-              const cardComparisonData = cardComparisons.find(
+              const card = cardComparisons.find(
                 c => c.cardId === cardId && c.board === group.board,
               );
-
-              if (!cardComparisonData) {
-                return (
-                  <td
-                    key={`${deck.id}-${group.id}-${cardId}`}
-                    className={cn('p-1 text-center min-w-[55px]', {
-                      'bg-accent': hoveredRow === deck.id || hoveredColumn === columnIndex,
-                    })}
-                    onMouseEnter={() => setHoveredColumn(columnIndex)}
-                    onMouseLeave={() => setHoveredColumn(null)}
-                  >
-                    0
-                  </td>
-                );
-              }
-
-              const mainQty = cardComparisonData.mainDeckQuantity;
-              const otherQty = deck.isMain
-                ? mainQty
-                : cardComparisonData.otherDecksQuantities[deck.id] || 0;
-              const diff = otherQty - mainQty;
-
-              // If there's no difference or it's the main deck, just show the quantity
-              if (diff === 0 || deck.isMain) {
-                return (
-                  <td
-                    key={`${deck.id}-${group.id}-${cardId}`}
-                    className={cn('p-1 text-center min-w-[55px]', {
-                      'bg-accent': hoveredRow === deck.id || hoveredColumn === columnIndex,
-                    })}
-                    onMouseEnter={() => setHoveredColumn(columnIndex)}
-                    onMouseLeave={() => setHoveredColumn(null)}
-                  >
-                    {otherQty}
-                  </td>
-                );
-              }
-
-              // Determine text color based on diff
-              const textColorClass = diff > 0 ? 'text-green-600' : 'text-red-600';
-
-              // Format the diff with a + sign if positive
-              const formattedDiff = diff > 0 ? `+${diff}` : `${diff}`;
-
-              // Render based on display mode
-              let content;
-              if (diffDisplayMode === DiffDisplayMode.COUNT_ONLY) {
-                content = <span className={cn('font-medium', textColorClass)}>{otherQty}</span>;
-              } else if (diffDisplayMode === DiffDisplayMode.DIFF_ONLY) {
-                content = (
-                  <span className={cn('font-medium', textColorClass)}>{formattedDiff}</span>
-                );
-              } else {
-                // Default: COUNT_AND_DIFF
-                content = (
-                  <span className={cn('font-medium', textColorClass)}>
-                    {otherQty} <span className="text-xs">({formattedDiff})</span>
-                  </span>
-                );
-              }
-
+              const mainQty = card?.mainDeckQuantity || 0;
+              const quantity = deck.isMain ? mainQty : card?.otherDecksQuantities[deck.id] || 0;
               return (
                 <td
-                  key={`${deck.id}-${group.id}-${cardId}`}
-                  className={cn('p-1 text-center min-w-[55px]', {
-                    'bg-accent': hoveredRow === deck.id || hoveredColumn === columnIndex,
-                  })}
+                  key={cardId}
+                  className={cn(styles.number, hoveredColumn === columnIndex && styles.hover)}
                   onMouseEnter={() => setHoveredColumn(columnIndex)}
                   onMouseLeave={() => setHoveredColumn(null)}
                 >
-                  {content}
+                  <QuantityValue
+                    quantity={quantity}
+                    mainQuantity={mainQty}
+                    mode={diffDisplayMode}
+                  />
                 </td>
               );
             })}
           </React.Fragment>
         );
       })}
-
-      {/* Total cell */}
-      <td
-        className="p-1 text-center bg-accent relative"
-        onMouseLeave={() => setHoveredColumn(null)}
-      >
-        {deck.isMain ? deckTotals?.mainDeckTotal || 0 : deckTotals?.otherDeckTotals?.[deck.id] || 0}
+      <td className={cn(styles.number, styles.summary)} onMouseEnter={() => setHoveredColumn(null)}>
+        {deck.isMain ? deckTotals?.mainDeckTotal || 0 : deckTotals?.otherDeckTotals[deck.id] || 0}
       </td>
     </tr>
   );

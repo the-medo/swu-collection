@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { cn } from '@/lib/utils.ts';
+import { comparerTableStyles as styles } from '../comparerTableStyles.ts';
 import DeckCardHoverImage from '@/components/app/decks/DeckContents/DeckCards/DeckLayout/DeckCardHoverImage.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { selectDefaultVariant } from '../../../../../../../../server/lib/cards/selectDefaultVariant.ts';
@@ -16,84 +18,100 @@ const ViewRowDeckHeader: React.FC<ViewRowDeckHeaderProps> = ({
   cardListData,
   setHoveredColumn,
 }) => {
-  let lastGroupBoard = 0;
+  const groups = allCardGroups.filter(group => group.cards.length > 0);
+  const boards = [...new Set(groups.map(group => group.board))];
 
   return (
-    <thead className="sticky top-0 z-30 bg-background">
+    <thead className="sticky top-0 z-30 bg-card">
       <tr>
-        {/* First column: empty cell above deck names */}
         <th
-          className="p-2 text-left w-40 sticky left-0 z-30 bg-background"
-          onMouseLeave={() => setHoveredColumn(null)}
+          scope="col"
+          rowSpan={3}
+          className={cn(styles.name, 'z-40 border-b align-bottom pb-2 text-muted-foreground')}
         >
-          Decks / Cards
+          Deck / card
         </th>
-
-        {/* Group columns with dividers */}
-        {allCardGroups.map((group, groupIndex) => {
-          // Get unique card IDs for this group
-          const groupCardIds = Array.from(new Set(group.cards.map(card => card.cardId)));
-
-          if (groupCardIds.length === 0) return null;
-          const displayMainOrSideColumn = lastGroupBoard !== group.board;
-          lastGroupBoard = group.board;
-
-          return (
-            <React.Fragment key={`${group.board}-${group.id}`}>
-              {displayMainOrSideColumn && (
-                <th className="p-0 bg-background text-center relative min-w-[40px] sticky left-[180px] md:left-[258px] z-50">
-                  <div className=" h-[150px] w-full flex items-center justify-center bg-primary/20">
-                    <div className="transform -rotate-90 origin-center whitespace-nowrap absolute font-semibold">
-                      {lastGroupBoard === 1 ? 'Main Deck' : 'Sideboard'}
-                    </div>
-                  </div>
-                </th>
+        {boards.map(board => (
+          <th
+            key={board}
+            scope="colgroup"
+            colSpan={groups
+              .filter(group => group.board === board)
+              .reduce(
+                (count, group) => count + new Set(group.cards.map(card => card.cardId)).size + 1,
+                0,
               )}
-              {/* Group divider column with rotated group name */}
-              <th
-                className="p-0 bg-accent text-center relative min-w-[80px]"
-                onMouseLeave={() => setHoveredColumn(null)}
-              >
-                <div className="h-full flex items-center justify-center">
-                  <div className="transform -rotate-90 origin-center whitespace-nowrap absolute">
-                    <span className="font-semibold">{group.label}</span>
-                  </div>
-                </div>
-              </th>
-
-              {/* Card columns for this group */}
-              {groupCardIds.map((cardId, cardIndex) => {
-                const cardData = cardListData?.cards[cardId];
-                const columnIndex = groupIndex * 100 + cardIndex + 1;
-
-                return (
-                  <th
-                    key={`${group.id}-${cardId}`}
-                    className="p-2 text-center min-w-[75px] relative"
-                    onMouseEnter={() => setHoveredColumn(columnIndex)}
-                    onMouseLeave={() => setHoveredColumn(null)}
-                  >
-                    <DeckCardHoverImage card={cardData}>
-                      <div className="flex flex-col items-center">
-                        <CardImage
-                          card={cardData}
-                          cardVariantId={cardData ? selectDefaultVariant(cardData) : undefined}
-                          size="w75"
-                        />
-                        <span className="text-xs truncate max-w-[75px]">{cardData?.name}</span>
-                      </div>
-                    </DeckCardHoverImage>
-                  </th>
-                );
-              })}
-            </React.Fragment>
-          );
-        })}
-
-        {/* Total column */}
-        <th className="bg-background p-2 text-center" onMouseLeave={() => setHoveredColumn(null)}>
+            className="border-b border-r border-[var(--workspace-border)] bg-[var(--workspace-soft)] py-1 text-left text-[10px] uppercase tracking-wider text-[var(--workspace-accent)]"
+          >
+            <span className="sticky left-[var(--comparer-name-width)] inline-block px-2">
+              {board === 1 ? 'Main deck' : 'Sideboard'}
+            </span>
+          </th>
+        ))}
+        <th
+          scope="col"
+          rowSpan={3}
+          className="min-w-20 border-b border-l border-[var(--workspace-border)] bg-muted px-2 align-bottom pb-2"
+        >
           Total
         </th>
+      </tr>
+      <tr>
+        {groups.map(group => (
+          <th
+            key={`${group.board}-${group.id}`}
+            scope="colgroup"
+            colSpan={new Set(group.cards.map(card => card.cardId)).size + 1}
+            className="border-b border-r border-[var(--workspace-border)] bg-muted/50 py-1 text-left text-[11px]"
+          >
+            <span className="sticky left-[var(--comparer-name-width)] inline-block px-2">
+              {group.label}
+            </span>
+          </th>
+        ))}
+      </tr>
+      <tr>
+        {groups.map(group => (
+          <React.Fragment key={`${group.board}-${group.id}`}>
+            <th
+              scope="col"
+              className="min-w-20 border-b border-[var(--workspace-border)] bg-muted/50 px-1.5 align-bottom pb-2 text-[10px] text-muted-foreground"
+            >
+              Subtotal
+            </th>
+            {[...new Set(group.cards.map(card => card.cardId))].map((cardId, cardIndex) => {
+              const cardData = cardListData?.cards[cardId];
+              const columnIndex = allCardGroups.indexOf(group) * 100 + cardIndex + 1;
+              return (
+                <th
+                  key={cardId}
+                  scope="col"
+                  className="w-20 min-w-20 max-w-20 border-b border-r border-[var(--workspace-border)] px-1 py-1.5 align-bottom"
+                  onMouseEnter={() => setHoveredColumn(columnIndex)}
+                  onMouseLeave={() => setHoveredColumn(null)}
+                >
+                  <DeckCardHoverImage card={cardData}>
+                    <div
+                      className="flex flex-col items-center gap-1"
+                      title={
+                        [cardData?.name, cardData?.subtitle].filter(Boolean).join(' — ') || cardId
+                      }
+                    >
+                      <CardImage
+                        card={cardData}
+                        cardVariantId={cardData ? selectDefaultVariant(cardData) : undefined}
+                        size="w50"
+                      />
+                      <span className="line-clamp-2 h-7 w-full break-words text-[10px] leading-tight">
+                        {cardData?.name || cardId}
+                      </span>
+                    </div>
+                  </DeckCardHoverImage>
+                </th>
+              );
+            })}
+          </React.Fragment>
+        ))}
       </tr>
     </thead>
   );
