@@ -11,9 +11,10 @@ import { cn } from '@/lib/utils.ts';
 
 interface SidebarComparerProps {
   setOpenMobile: (open: boolean) => void;
+  buttonClassName?: string;
 }
 
-const SidebarComparer: React.FC<SidebarComparerProps> = ({ setOpenMobile }) => {
+const SidebarComparer: React.FC<SidebarComparerProps> = ({ setOpenMobile, buttonClassName }) => {
   const { entries, mainId } = useComparerStore();
   const { setMainId, removeComparerEntry } = useComparerStoreActions();
   const { open, isMobile } = useSidebar();
@@ -21,7 +22,7 @@ const SidebarComparer: React.FC<SidebarComparerProps> = ({ setOpenMobile }) => {
 
   return (
     <div>
-      <SidebarMenuButton asChild tooltip="Comparer">
+      <SidebarMenuButton asChild tooltip="Comparer" className={buttonClassName}>
         <Link
           to="/comparer"
           aria-label="Open comparer"
@@ -44,7 +45,11 @@ const SidebarComparer: React.FC<SidebarComparerProps> = ({ setOpenMobile }) => {
         </Link>
       </SidebarMenuButton>
       {expanded && entries.length > 0 && (
-        <div className="mt-1 flex max-h-24 flex-wrap gap-1 overflow-y-auto rounded-lg border border-border bg-card/60 p-1">
+        <div
+          role="group"
+          aria-label="Comparison entries"
+          className="mt-1 flex flex-wrap gap-1 rounded-lg border border-border bg-card/60 p-1"
+        >
           {entries
             .slice()
             .sort((a, b) => {

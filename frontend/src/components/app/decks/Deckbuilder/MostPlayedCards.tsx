@@ -160,7 +160,7 @@ function MostPlayedCardsResults({
           </p>
         </div>
       ) : (
-        <ScrollArea className="h-[calc(100vh-90px)] @[1080px]/main-body:h-auto @[1080px]/main-body:min-h-0 @[1080px]/main-body:flex-1">
+        <ScrollArea className="h-[calc(var(--app-content-height,100vh)-90px)] @[1080px]/main-body:h-auto @[1080px]/main-body:min-h-0 @[1080px]/main-body:flex-1">
           <SearchCardLayout
             searchResults={cardIds}
             onCardClick={(cardId, variantId) =>

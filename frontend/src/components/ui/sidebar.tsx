@@ -149,6 +149,9 @@ const Sidebar = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<'div'> & {
     side?: 'left' | 'right';
+    mobileSide?: 'left' | 'right' | 'bottom';
+    mobileLabel?: string;
+    mobileId?: string;
     variant?: 'sidebar' | 'floating' | 'inset';
     collapsible?: 'offcanvas' | 'icon' | 'none';
   }
@@ -156,6 +159,9 @@ const Sidebar = React.forwardRef<
   (
     {
       side = 'left',
+      mobileSide = side,
+      mobileLabel = 'Navigation',
+      mobileId,
       variant = 'sidebar',
       collapsible = 'offcanvas',
       className,
@@ -188,7 +194,8 @@ const Sidebar = React.forwardRef<
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
-            aria-label="Navigation"
+            id={mobileId}
+            aria-label={mobileLabel}
             aria-labelledby={undefined}
             aria-describedby={undefined}
             onOpenAutoFocus={() => {
@@ -203,15 +210,20 @@ const Sidebar = React.forwardRef<
               }
               mobileReturnFocusRef.current = null;
             }}
-            className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+            className={cn(
+              'bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden motion-reduce:data-[state=open]:animate-none motion-reduce:data-[state=closed]:animate-none motion-reduce:transition-none',
+              mobileSide === 'bottom'
+                ? 'flex max-h-[min(85dvh,48rem)] flex-col overflow-hidden rounded-t-3xl'
+                : 'w-(--sidebar-width)',
+            )}
             style={
               {
                 '--sidebar-width': SIDEBAR_WIDTH_MOBILE,
               } as React.CSSProperties
             }
-            side={side}
+            side={mobileSide}
           >
-            <div className="flex h-full w-full flex-col">{children}</div>
+            <div className="flex h-full min-h-0 w-full flex-col">{children}</div>
           </SheetContent>
         </Sheet>
       );
@@ -220,7 +232,7 @@ const Sidebar = React.forwardRef<
     return (
       <div
         ref={ref}
-        className="group peer hidden md:block text-sidebar-foreground"
+        className="group peer hidden lg:block text-sidebar-foreground"
         data-state={state}
         data-collapsible={state === 'collapsed' ? collapsible : ''}
         data-variant={variant}
@@ -239,7 +251,7 @@ const Sidebar = React.forwardRef<
         />
         <div
           className={cn(
-            'duration-200 fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] ease-linear md:flex',
+            'duration-200 fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] ease-linear lg:flex',
             side === 'left'
               ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
               : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',

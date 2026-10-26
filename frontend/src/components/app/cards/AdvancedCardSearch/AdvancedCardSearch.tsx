@@ -105,7 +105,7 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
         <Helmet title="Card Search | SWUBase" />
         <div
           className={cn(
-            'flex flex-col lg:flex-row min-h-screen -m-2',
+            'flex flex-col lg:flex-row min-h-[var(--app-content-height,100vh)] -m-2',
             // sidebarOpen ? 'lg:flex-row' : 'md:flex-row',
           )}
         >
@@ -151,7 +151,7 @@ const AdvancedCardSearch: React.FC<AdvancedCardSearchProps> = ({
           'flex min-w-0',
           compact && workspaceStyles.theme,
           'flex-col @[580px]/main-body:flex-row',
-          'min-h-[500px] @[580px]/main-body:min-h-screen',
+          'min-h-[min(500px,var(--app-content-height,100vh))] @[580px]/main-body:min-h-[var(--app-content-height,100vh)]',
         )}
       >
         <AdvancedSearchFilters

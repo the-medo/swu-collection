@@ -109,7 +109,7 @@ const UserDecks: React.FC<UserDecksProps> = ({
       )}
 
       {bulkDeleteEnabled && selectedDecks.length > 0 && (
-        <div className="fixed bottom-4 left-1/2 z-30 flex w-fit max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-2 rounded-lg border bg-background/95 p-2 shadow-lg backdrop-blur">
+        <div className="fixed bottom-[calc(var(--app-bottom-inset,0px)+1rem)] left-1/2 z-30 flex w-fit max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-2 rounded-lg border bg-background/95 p-2 shadow-lg backdrop-blur">
           <span className="px-1 text-sm font-medium">
             {selectedDecks.length} {selectedDecks.length === 1 ? 'deck' : 'decks'} selected
           </span>
