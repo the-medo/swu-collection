@@ -1,6 +1,6 @@
 import { browseStyles } from '@/components/app/global/BrowsePage/browseStyles';
 import type { ComponentType, ReactNode } from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link, type LinkProps, type RegisteredRouter } from '@tanstack/react-router';
 import { cn } from '@/lib/utils.ts';
 
 export function BrowsePage({ children, className }: { children: ReactNode; className?: string }) {
@@ -45,14 +45,21 @@ export function BrowseTabs({
   items: {
     title: string;
     to: string;
+    search?: LinkProps<'a', RegisteredRouter, string, string>['search'];
     active: boolean;
     icon: ComponentType<{ className?: string }>;
   }[];
 }) {
   return (
     <nav className={browseStyles.tabs} aria-label={label}>
-      {items.map(({ title, to, active, icon: Icon }) => (
-        <Link key={to} to={to} aria-current={active ? 'page' : undefined}>
+      {items.map(({ title, to, search, active, icon: Icon }) => (
+        <Link<RegisteredRouter, string, string>
+          key={`${to}:${title}`}
+          to={to}
+          search={search}
+          activeOptions={{ exact: true }}
+          aria-current={active ? 'page' : undefined}
+        >
           <Icon className="size-4 shrink-0" />
           {title}
         </Link>

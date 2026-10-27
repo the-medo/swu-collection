@@ -18,8 +18,10 @@ import type { AuthExtension } from '../../auth/auth.ts';
 import { booleanPreprocessor } from '../../../shared/lib/zod/booleanPreprocessor.ts';
 import { entityPrice } from '../../db/schema/entity_price.ts';
 import { getSharedDeckFolder } from '../../lib/decks/deckFolders.ts';
+import { followsUser } from '../../lib/follows/predicates.ts';
 
 export const zDeckQueryParams = zPaginationParams.extend({
+  following: booleanPreprocessor.optional(),
   userId: z.string().optional(),
   excludeUserId: z.string().min(1).optional(),
   folderId: z.union([z.guid(), z.literal('unfiled')]).optional(),
@@ -60,6 +62,7 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
       folderId,
       sharedFolderId,
       favorite,
+      following,
       format,
       leaders: leaderIds,
       base,
@@ -73,6 +76,10 @@ export const deckGetRoute = new Hono<AuthExtension>().get(
 
     const filters = [];
     c.header('Cache-Control', 'private, no-store');
+    if (following) {
+      if (!user) return c.json({ message: 'Sign in to see decks from your follows.' }, 401);
+      filters.push(eq(deckTable.public, 1), followsUser(user.id, deckTable.userId));
+    }
 
     if (sharedFolderId) {
       const shared = await getSharedDeckFolder(sharedFolderId, user?.id);

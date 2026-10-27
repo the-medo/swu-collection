@@ -4,6 +4,7 @@ import DiscoveryPage from '@/components/app/creators/DiscoveryPage.tsx';
 import { discoverySchema } from '../../../../shared/creators/contracts.ts';
 export const Route = createFileRoute('/content/')({
   validateSearch: z.object({
+    following: discoverySchema.shape.following.catch(undefined),
     q: discoverySchema.shape.q.catch(undefined),
     tags: discoverySchema.shape.tags.catch(undefined),
     language: discoverySchema.shape.language.catch(undefined),

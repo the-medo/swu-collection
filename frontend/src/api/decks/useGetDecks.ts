@@ -38,6 +38,7 @@ export const useGetDecks = (props: GetDecksRequest, options: DeckListOptions = {
     folderId,
     sharedFolderId,
     favorite,
+    following,
     format,
     leaders,
     base,
@@ -59,7 +60,10 @@ export const useGetDecks = (props: GetDecksRequest, options: DeckListOptions = {
       excludeUserId,
       folderId,
       sharedFolderId,
-      ...(sharedFolderId || options.sessionScoped ? { viewerId: viewer?.id ?? 'anonymous' } : {}),
+      following,
+      ...(sharedFolderId || options.sessionScoped || following
+        ? { viewerId: viewer?.id ?? 'anonymous' }
+        : {}),
       format,
       leaders,
       base,
@@ -75,6 +79,7 @@ export const useGetDecks = (props: GetDecksRequest, options: DeckListOptions = {
     queryKey: qk,
     enabled:
       options.enabled !== false &&
+      (!following || !!viewer) &&
       (!sharedFolderId || !session.isPending) &&
       (!options.sessionScoped || (!session.isPending && !session.error)),
     queryFn: async ({ pageParam, signal }) => {
@@ -89,6 +94,7 @@ export const useGetDecks = (props: GetDecksRequest, options: DeckListOptions = {
             folderId,
             sharedFolderId,
             favorite: favorite ? 'true' : undefined,
+            following: following ? 'true' : undefined,
             format: format?.toString(),
             leaders: leadersParam,
             base,
@@ -112,7 +118,8 @@ export const useGetDecks = (props: GetDecksRequest, options: DeckListOptions = {
     },
     initialPageParam: 0,
     getNextPageParam: getNextDecksPageParam,
-    staleTime: options.staleTime ?? (sharedFolderId ? 0 : Infinity),
+    staleTime: options.staleTime ?? (sharedFolderId || following ? 0 : Infinity),
+    gcTime: following ? 0 : undefined,
     refetchOnMount: options.refetchOnMount,
     refetchInterval: sharedFolderId ? 30_000 : false,
   });

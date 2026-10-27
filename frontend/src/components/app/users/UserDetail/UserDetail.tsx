@@ -31,6 +31,7 @@ import { UserCalendarTab } from './UserCalendarTab.tsx';
 import { UserTournamentsTab } from './UserTournamentsTab.tsx';
 import { ReportUserButton } from '../ReportUserButton.tsx';
 import { ProfileWallet } from './ProfileWallet.tsx';
+import { ProfileFollowButton } from '@/components/app/follows/FollowButton.tsx';
 import { UserCurrenciesTab } from './UserCurrenciesTab.tsx';
 
 const routeApi = getRouteApi('/users/$userId/');
@@ -144,6 +145,12 @@ const UserDetail: React.FC = () => {
             }
           >
             {isOwner && <ProfileWallet key={userId} userId={userId} />}
+            <ProfileFollowButton kind="users" id={userId} name={user.displayName} />
+            {isOwner && (
+              <Button asChild variant="outline">
+                <Link to="/following">Your following</Link>
+              </Button>
+            )}
             {currentUser?.id === userId && (
               <Button asChild variant="outline">
                 <Link to="/settings" search={{ page: 'profile' }}>

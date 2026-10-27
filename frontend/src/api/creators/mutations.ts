@@ -31,6 +31,7 @@ export function usePublishCreation() {
   return useCreatorMutation(hubApi.publish, input => [
     keys.creation(input.id),
     keys.discoveries,
+    keys.followingDiscoveries,
     keys.collectionsRoot,
     keys.studios,
     keys.personalCounts,
@@ -49,6 +50,8 @@ export function useSaveCreatorProfile() {
       keys.directories,
       keys.profiles,
       keys.discoveries,
+      keys.followingDiscoveries,
+      ['follows', 'list'],
       keys.creations,
       keys.studios,
     ],

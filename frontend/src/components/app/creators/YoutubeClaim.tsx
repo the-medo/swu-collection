@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BadgeCheck, Youtube } from 'lucide-react';
-import { Button } from '@/components/ui/button.tsx';
+import { Button, type ButtonProps } from '@/components/ui/button.tsx';
+import { cn } from '@/lib/utils.ts';
 import { Badge } from '@/components/ui/badge.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import {
@@ -35,9 +36,13 @@ export function ClaimedBadge() {
 export function YoutubeClaimButton({
   creatorId,
   children = 'Connect YouTube',
+  variant = 'outline',
+  className,
 }: {
   creatorId?: string;
   children?: React.ReactNode;
+  variant?: ButtonProps['variant'];
+  className?: string;
 }) {
   const claim = useClaimYoutube();
   const [redirecting, setRedirecting] = useState(false);
@@ -49,9 +54,9 @@ export function YoutubeClaimButton({
   return (
     <div className="grid min-w-0 justify-items-start gap-2">
       <Button
-        variant="outline"
+        variant={variant}
         size="sm"
-        className="h-auto min-h-9 whitespace-normal text-left"
+        className={cn('h-auto min-h-9 whitespace-normal text-left', className)}
         disabled={claim.isPending || redirecting}
         onClick={() =>
           claim.mutate(creatorId, {

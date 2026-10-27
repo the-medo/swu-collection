@@ -101,7 +101,12 @@ export const hubApi = {
   discover: async (query: Partial<DiscoveryQuery>) =>
     data<DiscoveryResult>(
       await root.creations.$get({
-        query: { ...query, page: String(query.page ?? 1), limit: String(query.limit ?? 24) },
+        query: {
+          ...query,
+          following: query.following ? 'true' : undefined,
+          page: String(query.page ?? 1),
+          limit: String(query.limit ?? 24),
+        },
       }),
     ),
   decks: async (id: string, page = 1, limit = 12) =>

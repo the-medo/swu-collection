@@ -2,7 +2,19 @@ import { CONNECTION_TOURNAMENT_PAGE_SIZE } from '../../../shared/creators/contra
 import { user } from '../../db/schema/auth-schema.ts';
 import { db } from '../../db/index.ts';
 import type { Database } from './types.ts';
-import { and, asc, count, desc, eq, getTableColumns, inArray, sql, type SQL } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  getTableColumns,
+  inArray,
+  or,
+  sql,
+  type SQL,
+} from 'drizzle-orm';
+import { followsCreator, followsUser } from '../follows/predicates.ts';
 import {
   creation,
   creationTag,
@@ -81,8 +93,17 @@ export function createDiscoveryService(database: Database = db) {
       ]);
       return { ...media, decks: decks.count };
     },
-    async discover(query: DiscoveryQuery) {
+    async discover(query: DiscoveryQuery, viewerId?: string) {
       const filters: (SQL | undefined)[] = [publicCreation()];
+      if (query.following) {
+        if (!viewerId) throw new CreatorError('Sign in to see content from your follows.', 401);
+        filters.push(
+          or(
+            followsCreator(viewerId, creation.creatorId),
+            followsUser(viewerId, creation.ownerUserId),
+          ),
+        );
+      }
       if (query.q)
         filters.push(
           sql`(${creation.published}->>'title' ILIKE ${escapedSearch(query.q)} OR ${creation.published}->>'summary' ILIKE ${escapedSearch(query.q)})`,

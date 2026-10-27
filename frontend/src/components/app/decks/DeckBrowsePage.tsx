@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { Earth, Plus, Star } from 'lucide-react';
+import { Earth, Heart, Plus, Star } from 'lucide-react';
 import { AuthorizedRouteComponent } from '@/routes/_authenticated.tsx';
 import { useUser } from '@/hooks/useUser.ts';
 import { Button } from '@/components/ui/button.tsx';
@@ -31,9 +31,21 @@ const pages = {
   },
 };
 
-export default function DeckBrowsePage({ scope }: { scope: keyof typeof pages }) {
+export default function DeckBrowsePage({
+  scope,
+  following = false,
+}: {
+  scope: keyof typeof pages;
+  following?: boolean;
+}) {
   const user = useUser();
-  const info = pages[scope];
+  const isFollowing = scope === 'public' && following;
+  const info = isFollowing
+    ? {
+        title: 'Decks from your follows',
+        description: 'Explore public builds from the players you follow.',
+      }
+    : pages[scope];
   const page = (
     <BrowsePage>
       <BrowseHeader
@@ -54,13 +66,26 @@ export default function DeckBrowsePage({ scope }: { scope: keyof typeof pages })
       <BrowseTabs
         label="Deck library navigation"
         items={[
-          { title: 'Public decks', to: '/decks/public', active: scope === 'public', icon: Earth },
+          {
+            title: 'Public decks',
+            to: '/decks/public',
+            search: previous => ({ ...previous, deckFollowing: undefined }),
+            active: scope === 'public' && !following,
+            icon: Earth,
+          },
+          {
+            title: 'Following',
+            to: '/decks/public',
+            search: previous => ({ ...previous, deckFollowing: true }),
+            active: isFollowing,
+            icon: Heart,
+          },
           { title: 'Your decks', to: '/decks/your', active: scope === 'your', icon: DeckIcon },
           { title: 'Favorites', to: '/decks/favorite', active: scope === 'favorite', icon: Star },
         ]}
       />
       {scope === 'public' ? (
-        <PublicDecks />
+        <PublicDecks following={following} />
       ) : scope === 'favorite' ? (
         <FavoriteDecks loading={!user} />
       ) : (
@@ -70,7 +95,9 @@ export default function DeckBrowsePage({ scope }: { scope: keyof typeof pages })
   );
   return (
     <>
-      <Helmet title={`${scope === 'public' ? 'Public decks' : info.title} | SWUBase`} />
+      <Helmet
+        title={`${scope === 'public' && !following ? 'Public decks' : info.title} | SWUBase`}
+      />
       {scope === 'public' ? (
         page
       ) : (
