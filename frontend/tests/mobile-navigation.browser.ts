@@ -116,7 +116,10 @@ try {
   await expect(menu).toBeVisible();
   await expect(menu).toHaveCSS('animation-name', 'none');
   await expect(menu.locator('a[href="/decks/favorite"]')).toHaveCount(0);
-  const tournamentShortcuts = menu.getByRole('list', { name: 'Tournaments shortcuts', exact: true });
+  const tournamentShortcuts = menu.getByRole('list', {
+    name: 'Tournaments shortcuts',
+    exact: true,
+  });
   await expect(
     tournamentShortcuts.getByRole('link', { name: 'Planetary Qualifiers', exact: true }),
   ).toBeVisible();
@@ -240,6 +243,7 @@ try {
   }
   await expect(menu.getByRole('link', { name: 'Crossfire', exact: true })).toHaveCount(0);
   await expect(menu.getByRole('link', { name: /Creators/ })).toHaveCount(0);
+  await expect(menu.getByRole('link', { name: 'Following', exact: true })).toHaveCount(0);
   await menu.getByRole('button', { name: 'Add Deck', exact: true }).click();
   await expect(page.getByRole('tab', { name: 'Build a deck' })).toBeVisible();
   await page.keyboard.press('Escape');
@@ -269,6 +273,30 @@ try {
   await more.click();
   await expect(menu.getByRole('link', { name: 'Crossfire', exact: true })).toBeVisible();
   await expect(menu.getByRole('link', { name: 'Creators', exact: true })).toBeVisible();
+  await expect(menu.getByRole('link', { name: 'Creators', exact: true })).toHaveAttribute(
+    'href',
+    '/content',
+  );
+  await expect(menu.getByRole('link', { name: 'Following', exact: true })).toHaveCount(0);
+  await menu.getByRole('link', { name: 'Creators', exact: true }).click();
+  await expect(page).toHaveURL(url => url.pathname === '/content');
+  await expect(menu).toBeHidden();
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const desktopNavigation = page.getByRole('navigation', { name: 'Main navigation' });
+  await expect(desktopNavigation.getByRole('link', { name: /Creators/ })).toHaveAttribute(
+    'href',
+    '/content',
+  );
+  await expect(desktopNavigation.getByRole('link', { name: 'Following', exact: true })).toHaveCount(
+    0,
+  );
+  await page.goto(`${origin}/creators`);
+  await expect(desktopNavigation.getByRole('link', { name: /Creators/ })).toHaveAttribute(
+    'data-active',
+    'true',
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await more.click();
   await expect(menu.locator('a[href="/decks/favorite"]')).toHaveCount(0);
   await expect(menu.getByRole('link', { name: 'Tournament map', exact: true })).toHaveCount(1);
   await expect(

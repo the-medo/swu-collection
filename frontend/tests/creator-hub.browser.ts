@@ -607,7 +607,7 @@ try {
   ).toEqual([]);
   await publicPage.goto(`${origin}/content?language=bad_locale&after=not-a-date&page=invalid`);
   await expect(
-    publicPage.getByRole('heading', { name: 'Your next great game starts here.' }),
+    publicPage.getByRole('heading', { name: 'Discover the latest from SWU creators.' }),
   ).toBeVisible();
   // A query refresh must not silently advance the revision of an open profile editor.
   await page.getByRole('button', { name: 'Close', exact: true }).click();

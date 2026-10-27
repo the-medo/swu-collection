@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { booleanPreprocessor } from '../lib/zod/booleanPreprocessor.ts';
 import { postDocumentSchemas, type PostDocument } from '../posts/content.ts';
 import { isKnownTagId, normalizeTagIds, type CreationTag } from './taxonomy.ts';
 
@@ -192,6 +193,7 @@ export type Creation = {
   references?: ResolvedReference[];
 };
 export const discoverySchema = z.object({
+  following: booleanPreprocessor.optional(),
   q: z.string().trim().max(120).optional(),
   tags: z.string().max(2000).optional(),
   language: languageSchema.optional(),

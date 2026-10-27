@@ -297,7 +297,7 @@ export function createCreatorHubRoute(
         }),
     )
     .get('/creations', zValidator('query', discoverySchema), async c =>
-      c.json({ data: await service.discover(c.req.valid('query')) }),
+      c.json({ data: await service.discover(c.req.valid('query'), c.get('user')?.id) }),
     )
     .get('/creations/:id', zValidator('param', id), async c =>
       c.json({ data: await service.get(c.req.valid('param').id) }),

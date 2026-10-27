@@ -31,6 +31,11 @@ const channelIds = [0, 1].map(() => `UC${random().slice(0, 22)}`);
 const browser = await chromium.launch();
 const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
 const visitor = await browser.newContext();
+for (const current of [context, visitor])
+  await current.addInitScript(() => {
+    localStorage.setItem('cookie-consent', 'true');
+    localStorage.setItem('vite-ui-theme', 'light');
+  });
 const page = await context.newPage(),
   anonymous = await visitor.newPage();
 const expect = baseExpect.configure({ timeout: 20_000 });
@@ -95,8 +100,63 @@ try {
   await expect(anonymous.getByRole('heading', { name: profile.name })).toBeVisible();
   await expect(anonymous.getByRole('button', { name: 'Claim this profile' })).toHaveCount(0);
   await expect(anonymous.getByText('Claimed', { exact: true })).toHaveCount(0);
+  await anonymous.getByRole('link', { name: 'Is this your channel?' }).click();
+  await expect(anonymous).toHaveURL(`${origin}/creators/${profile.slug}/claim`);
+  await anonymous.reload();
+  await anonymous.getByRole('button', { name: 'Sign in to get started' }).click();
+  await expect(anonymous.getByRole('dialog', { name: 'Sign In', exact: true })).toBeVisible();
+  await anonymous.getByRole('button', { name: 'Close', exact: true }).click();
+  await expect(anonymous.getByRole('button', { name: 'Connect YouTube to claim' })).toHaveCount(0);
   await page.goto(`${origin}/creators/${profile.slug}`);
-  await expect(page.getByRole('button', { name: 'Claim this profile' })).toBeVisible();
+  const nav = page.getByRole('navigation', { name: 'Creator content', exact: true });
+  const claimLink = nav.getByRole('link', { name: 'Is this your channel?' });
+  await expect(claimLink).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Claim this profile' })).toHaveCount(0);
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await expect(claimLink).toBeInViewport();
+    const linkBox = (await claimLink.boundingBox())!;
+    const tabBox = (await nav
+      .getByRole('link', { name: 'All content', exact: true })
+      .boundingBox())!;
+    expect(Math.abs(linkBox.y + linkBox.height / 2 - tabBox.y - tabBox.height / 2)).toBeLessThan(2);
+  }
+  await claimLink.click();
+  await expect(page).toHaveURL(`${origin}/creators/${profile.slug}/claim`);
+  await page.goBack();
+  await expect(claimLink).toBeVisible();
+  await page.goForward();
+  await page.reload();
+  const claimButton = page.getByRole('button', { name: 'Connect YouTube to claim' });
+  await expect(claimButton).toBeEnabled();
+  for (const theme of ['light', 'dark']) {
+    await page.evaluate(value => {
+      document.documentElement.classList.toggle('dark', value === 'dark');
+      document.documentElement.classList.toggle('light', value === 'light');
+    }, theme);
+    for (const width of [1440, 390]) {
+      await page.setViewportSize({ width, height: 1000 });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+      await page
+        .locator('[data-creator-layout]')
+        .screenshot({ path: `${screenshots}/${theme}-claim-${width}.png` });
+    }
+  }
+  await page.route(
+    '**/api/creator-hub/youtube/claim',
+    route =>
+      route.fulfill({
+        status: 503,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Claim connection unavailable' }),
+      }),
+    { times: 1 },
+  );
+  await claimButton.click();
+  await expect(page.getByRole('alert')).toContainText('Claim connection unavailable');
+  await expect(claimButton).toBeEnabled();
   await page.route('https://accounts.google.com/**', route =>
     route.fulfill({ contentType: 'text/html', body: '<p>Mock Google account selector</p>' }),
   );
@@ -104,7 +164,7 @@ try {
     request =>
       request.url().endsWith('/api/creator-hub/youtube/claim') && request.method() === 'POST',
   );
-  await page.getByRole('button', { name: 'Claim this profile' }).click();
+  await claimButton.click();
   expect((await claimRequest).postDataJSON()).toEqual({ creatorId });
   await page.waitForURL('https://accounts.google.com/**');
   const authorize = new URL(page.url());
@@ -194,7 +254,19 @@ try {
   );
   await page.goto(`${origin}/creators/${owned.slug}`);
   await expect(page.getByText('Claimed', { exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Claim this profile' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Is this your channel?' })).toHaveCount(0);
+  await page.goto(`${origin}/creators/${owned.slug}/claim`);
+  await expect(page.getByRole('heading', { name: 'This profile is yours' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Open creator studio' })).toHaveAttribute(
+    'href',
+    `/creator-studio?creatorId=${owned.id}`,
+  );
+  await expect(page.getByRole('button', { name: 'Connect YouTube to claim' })).toHaveCount(0);
+  await anonymous.goto(`${origin}/creators/${owned.slug}/claim`);
+  await expect(
+    anonymous.getByRole('heading', { name: 'This profile is already claimed' }),
+  ).toBeVisible();
+  await expect(anonymous.getByRole('button', { name: 'Connect YouTube to claim' })).toHaveCount(0);
   await page.goto(`${origin}/creators`);
   await page.getByRole('textbox', { name: 'Find a creator' }).fill('My browser channel');
   await expect(page.getByText('Claimed', { exact: true })).toBeVisible();
@@ -204,7 +276,7 @@ try {
   ).toBeVisible();
   expect(errors).toEqual([]);
   console.log(
-    'Creator claim browser checks passed: authenticated claim button, OAuth initiation, create/cancel, expired state, onboarding, claimed badges, ownership errors and responsive themes.',
+    'Creator claim browser checks passed: claim-page navigation, sign-in, direct load/history, responsive themes, retry, OAuth initiation, create/cancel, expired state, onboarding, claimed badges and ownership errors.',
   );
 } catch (error) {
   await page.screenshot({ path: `${screenshots}/failure.png`, fullPage: true });

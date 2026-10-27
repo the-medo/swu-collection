@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router';
+import { Link, useLocation } from '@tanstack/react-router';
 import { ChevronRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
@@ -19,6 +19,7 @@ const menuLinkClassName =
 export function MobileMoreMenu({ groups }: { groups: NavigationGroup[] }) {
   const { setOpenMobile } = useSidebar();
   const user = useUser();
+  const pathname = useLocation({ select: location => location.pathname });
   const close = () => setOpenMobile(false);
 
   return (
@@ -50,10 +51,7 @@ export function MobileMoreMenu({ groups }: { groups: NavigationGroup[] }) {
         {groups.map(group => {
           // Primary destinations remain in the tab bar; retain personal deck actions here.
           const items = group.items
-            .filter(
-              item =>
-                item.url !== '/meta' && (user || item.url !== '/decks/public'),
-            )
+            .filter(item => item.url !== '/meta' && (user || item.url !== '/decks/public'))
             .map(item => ({
               ...item,
               // The map lives below Tournaments; favorites are omitted from More.
@@ -88,7 +86,12 @@ export function MobileMoreMenu({ groups }: { groups: NavigationGroup[] }) {
                         to={item.url}
                         onClick={close}
                         aria-label={item.label ?? item.title}
-                        className={menuLinkClassName}
+                        className={cn(
+                          menuLinkClassName,
+                          item.activePaths?.some(
+                            path => pathname === path || pathname.startsWith(`${path}/`),
+                          ) && 'bg-[var(--workspace-soft)]',
+                        )}
                       >
                         <item.icon
                           aria-hidden="true"

@@ -1,6 +1,8 @@
 import { ClaimedBadge } from './YoutubeClaim.tsx';
 import { LanguageFilter, LanguageFlag } from './CreatorLanguages.tsx';
 import { useState } from 'react';
+import { useFollowStatuses } from '@/api/follows';
+import { FollowButton } from '@/components/app/follows/FollowButton.tsx';
 import { Link } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
 import { ArrowRight, Search, Users } from 'lucide-react';
@@ -30,6 +32,7 @@ export function CreatorDirectory() {
     false,
     { keepPreviousData: true },
   );
+  const follows = useFollowStatuses('creators', query.data?.items.map(profile => profile.id) ?? []);
   return (
     <CreatorLayout>
       <Helmet title="Creators | SWUBASE" />
@@ -99,10 +102,8 @@ export function CreatorDirectory() {
       )}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {query.data?.items.map(profile => (
-          <Link
+          <article
             key={profile.id}
-            to="/creators/$slug"
-            params={{ slug: profile.slug }}
             className="group flex min-w-0 flex-col overflow-hidden rounded-[20px] border border-border bg-card transition-colors hover:border-[var(--creator-border)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <div className="h-28 bg-gradient-to-br from-[#17352e] via-[#2f5140] to-[#71866b]">
@@ -116,37 +117,58 @@ export function CreatorDirectory() {
                 />
               )}
             </div>
-            <div className="flex flex-1 flex-col gap-3 p-5 sm:p-6">
-              <CreatorAvatar name={profile.name} src={profile.avatarUrl} className="-mt-14" />
+            <div className="flex flex-1 flex-col gap-3 p-5 pt-2 sm:p-6 sm:pt-2">
+              <div className="flex items-start justify-between gap-3">
+                <CreatorAvatar name={profile.name} src={profile.avatarUrl} className="-mt-10" />
+                <div className="min-w-0 max-w-[60%] text-right">
+                  <FollowButton
+                    kind="creators"
+                    id={profile.id}
+                    name={profile.name}
+                    status={follows.data?.[profile.id]}
+                    loading={follows.isPending}
+                    error={follows.error}
+                    onRetry={() => void follows.refetch()}
+                  />
+                </div>
+              </div>
               <div className="flex flex-wrap items-center gap-2">
-                <h2 className={creatorHeading}>{profile.name}</h2>
+                <h2 className={creatorHeading}>
+                  <Link to="/creators/$slug" params={{ slug: profile.slug }}>
+                    {profile.name}
+                  </Link>
+                </h2>
+                {profile.languages.map(language => (
+                  <LanguageFlag key={language} code={language} />
+                ))}
                 {profile.ownerId && <ClaimedBadge />}
               </div>
               {profile.tagline && (
                 <p className={`${creatorDescription} line-clamp-3`}>{profile.tagline}</p>
               )}
-              <div className="flex flex-wrap gap-1">
-                {profile.languages.map(language => (
-                  <Badge key={language} variant="outline">
-                    <LanguageFlag code={language} />
-                  </Badge>
-                ))}
-                {profile.specialties.slice(0, 3).map(id => (
-                  <Badge key={id} variant="secondary">
-                    {creationTagMap.get(id)?.label}
-                  </Badge>
-                ))}
-              </div>
-              <span className="mt-auto flex items-center gap-2 pt-3 text-[11px] font-medium text-[var(--creator-accent)]">
+              {profile.specialties.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {profile.specialties.slice(0, 3).map(id => (
+                    <Badge key={id} variant="secondary">
+                      {creationTagMap.get(id)?.label}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              <Link
+                to="/creators/$slug"
+                params={{ slug: profile.slug }}
+                className="mt-auto flex items-center gap-2 pt-3 text-[11px] font-medium text-[var(--creator-accent)]"
+              >
                 Explore creator{' '}
                 <ArrowRight
                   size={14}
                   aria-hidden="true"
                   className="transition-transform group-hover:translate-x-1 motion-reduce:transform-none"
                 />
-              </span>
+              </Link>
             </div>
-          </Link>
+          </article>
         ))}
       </div>
       <div className={creatorPagination}>

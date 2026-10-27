@@ -1,4 +1,5 @@
 import { creatorHubRoute } from './routes/creator-hub.ts';
+import { followsRoute } from './routes/follows.ts';
 import { APIError } from 'better-auth/api';
 import { ProfanityError } from './lib/moderation/content.ts';
 import { battlefieldsRoute } from './routes/battlefields.ts';
@@ -219,6 +220,7 @@ const apiRoutes = app
   .route('/cards', cardsRoute)
   .route('/artists', artistsRoute)
   .route('/creator-hub', creatorHubRoute)
+  .route('/follows', followsRoute)
   .route('/card-groups', cardGroupsRoute)
   .route('/user', userRoute)
   .route('/battlefields', battlefieldsRoute)

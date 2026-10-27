@@ -34,6 +34,7 @@ export interface SidebarNavigationEntry extends SidebarNavigationLink {
   className?: string;
   items?: SidebarNavigationLink[];
   submenu?: 'always' | 'collapsed-only';
+  activePaths?: string[];
 }
 
 export function SidebarNavigationItem({ item }: { item: SidebarNavigationEntry }) {
@@ -44,7 +45,7 @@ export function SidebarNavigationItem({ item }: { item: SidebarNavigationEntry }
   const [flyoutOpen, setFlyoutOpen] = useState(false);
   const matches = (url: string) => pathname === url || pathname.startsWith(`${url}/`);
   const childActive = item.items?.some(link => matches(link.url)) ?? false;
-  const active = matches(item.url) || childActive;
+  const active = matches(item.url) || item.activePaths?.some(matches) || childActive;
   const hasChildren = Boolean(item.items?.length);
   const canCollapse = hasChildren && !item.submenu;
   const actionCount =

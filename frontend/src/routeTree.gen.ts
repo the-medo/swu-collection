@@ -54,6 +54,7 @@ import { Route as ArtistsArtistKeyRouteImport } from './routes/artists/$artistKe
 import { Route as AuthenticatedShopRouteImport } from './routes/_authenticated/shop'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
+import { Route as AuthenticatedFollowingRouteImport } from './routes/_authenticated/following'
 import { Route as AuthenticatedCreatorStudioRouteImport } from './routes/_authenticated/creator-studio'
 import { Route as AuthenticatedBattlefieldRouteImport } from './routes/_authenticated/battlefield'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
@@ -86,6 +87,7 @@ import { Route as TournamentsTournamentIdCardStatsRouteImport } from './routes/t
 import { Route as TeamsTeamIdEventsRouteImport } from './routes/teams/$teamId/events'
 import { Route as DecksFolderFolderIdRouteImport } from './routes/decks/folder/$folderId'
 import { Route as DecksDeckIdEditRouteImport } from './routes/decks/$deckId/edit'
+import { Route as CreatorsSlugClaimRouteImport } from './routes/creators/$slug/claim'
 import { Route as CreatorsSlugTabRouteImport } from './routes/creators/$slug/$tab'
 import { Route as CardsSetsSetCodeRouteImport } from './routes/cards/sets/$setCode'
 import { Route as CardsGroupsGroupIdRouteImport } from './routes/cards/groups/$groupId'
@@ -333,6 +335,11 @@ const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
   path: '/messages',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedFollowingRoute = AuthenticatedFollowingRouteImport.update({
+  id: '/following',
+  path: '/following',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedCreatorStudioRoute =
   AuthenticatedCreatorStudioRouteImport.update({
     id: '/creator-studio',
@@ -514,6 +521,11 @@ const DecksDeckIdEditRoute = DecksDeckIdEditRouteImport.update({
   path: '/decks/$deckId/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreatorsSlugClaimRoute = CreatorsSlugClaimRouteImport.update({
+  id: '/claim',
+  path: '/claim',
+  getParentRoute: () => CreatorsSlugRoute,
+} as any)
 const CreatorsSlugTabRoute = CreatorsSlugTabRouteImport.update({
   id: '/$tab',
   path: '/$tab',
@@ -682,6 +694,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/battlefield': typeof AuthenticatedBattlefieldRoute
   '/creator-studio': typeof AuthenticatedCreatorStudioRoute
+  '/following': typeof AuthenticatedFollowingRoute
   '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/shop': typeof AuthenticatedShopRoute
@@ -721,6 +734,7 @@ export interface FileRoutesByFullPath {
   '/cards/groups/$groupId': typeof CardsGroupsGroupIdRoute
   '/cards/sets/$setCode': typeof CardsSetsSetCodeRoute
   '/creators/$slug/$tab': typeof CreatorsSlugTabRoute
+  '/creators/$slug/claim': typeof CreatorsSlugClaimRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
   '/teams/$teamId/events': typeof TeamsTeamIdEventsRoute
@@ -783,6 +797,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/battlefield': typeof AuthenticatedBattlefieldRoute
   '/creator-studio': typeof AuthenticatedCreatorStudioRoute
+  '/following': typeof AuthenticatedFollowingRoute
   '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/shop': typeof AuthenticatedShopRoute
@@ -820,6 +835,7 @@ export interface FileRoutesByTo {
   '/cards/groups/$groupId': typeof CardsGroupsGroupIdRoute
   '/cards/sets/$setCode': typeof CardsSetsSetCodeRoute
   '/creators/$slug/$tab': typeof CreatorsSlugTabRoute
+  '/creators/$slug/claim': typeof CreatorsSlugClaimRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
   '/teams/$teamId/events': typeof TeamsTeamIdEventsRoute
@@ -884,6 +900,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/battlefield': typeof AuthenticatedBattlefieldRoute
   '/_authenticated/creator-studio': typeof AuthenticatedCreatorStudioRoute
+  '/_authenticated/following': typeof AuthenticatedFollowingRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/shop': typeof AuthenticatedShopRoute
@@ -924,6 +941,7 @@ export interface FileRoutesById {
   '/cards/groups/$groupId': typeof CardsGroupsGroupIdRoute
   '/cards/sets/$setCode': typeof CardsSetsSetCodeRoute
   '/creators/$slug/$tab': typeof CreatorsSlugTabRoute
+  '/creators/$slug/claim': typeof CreatorsSlugClaimRoute
   '/decks/$deckId/edit': typeof DecksDeckIdEditRoute
   '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
   '/teams/$teamId/events': typeof TeamsTeamIdEventsRoute
@@ -990,6 +1008,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/battlefield'
     | '/creator-studio'
+    | '/following'
     | '/messages'
     | '/notifications'
     | '/shop'
@@ -1029,6 +1048,7 @@ export interface FileRouteTypes {
     | '/cards/groups/$groupId'
     | '/cards/sets/$setCode'
     | '/creators/$slug/$tab'
+    | '/creators/$slug/claim'
     | '/decks/$deckId/edit'
     | '/decks/folder/$folderId'
     | '/teams/$teamId/events'
@@ -1091,6 +1111,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/battlefield'
     | '/creator-studio'
+    | '/following'
     | '/messages'
     | '/notifications'
     | '/shop'
@@ -1128,6 +1149,7 @@ export interface FileRouteTypes {
     | '/cards/groups/$groupId'
     | '/cards/sets/$setCode'
     | '/creators/$slug/$tab'
+    | '/creators/$slug/claim'
     | '/decks/$deckId/edit'
     | '/decks/folder/$folderId'
     | '/teams/$teamId/events'
@@ -1191,6 +1213,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/battlefield'
     | '/_authenticated/creator-studio'
+    | '/_authenticated/following'
     | '/_authenticated/messages'
     | '/_authenticated/notifications'
     | '/_authenticated/shop'
@@ -1231,6 +1254,7 @@ export interface FileRouteTypes {
     | '/cards/groups/$groupId'
     | '/cards/sets/$setCode'
     | '/creators/$slug/$tab'
+    | '/creators/$slug/claim'
     | '/decks/$deckId/edit'
     | '/decks/folder/$folderId'
     | '/teams/$teamId/events'
@@ -1657,6 +1681,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMessagesRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/following': {
+      id: '/_authenticated/following'
+      path: '/following'
+      fullPath: '/following'
+      preLoaderRoute: typeof AuthenticatedFollowingRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/creator-studio': {
       id: '/_authenticated/creator-studio'
       path: '/creator-studio'
@@ -1888,6 +1919,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DecksDeckIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/creators/$slug/claim': {
+      id: '/creators/$slug/claim'
+      path: '/claim'
+      fullPath: '/creators/$slug/claim'
+      preLoaderRoute: typeof CreatorsSlugClaimRouteImport
+      parentRoute: typeof CreatorsSlugRoute
+    }
     '/creators/$slug/$tab': {
       id: '/creators/$slug/$tab'
       path: '/$tab'
@@ -2084,6 +2122,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedBattlefieldRoute: typeof AuthenticatedBattlefieldRoute
   AuthenticatedCreatorStudioRoute: typeof AuthenticatedCreatorStudioRoute
+  AuthenticatedFollowingRoute: typeof AuthenticatedFollowingRoute
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedShopRoute: typeof AuthenticatedShopRoute
@@ -2101,6 +2140,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedBattlefieldRoute: AuthenticatedBattlefieldRoute,
   AuthenticatedCreatorStudioRoute: AuthenticatedCreatorStudioRoute,
+  AuthenticatedFollowingRoute: AuthenticatedFollowingRoute,
   AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedShopRoute: AuthenticatedShopRoute,
@@ -2168,11 +2208,13 @@ const StatisticsRouteWithChildren = StatisticsRoute._addFileChildren(
 
 interface CreatorsSlugRouteChildren {
   CreatorsSlugTabRoute: typeof CreatorsSlugTabRoute
+  CreatorsSlugClaimRoute: typeof CreatorsSlugClaimRoute
   CreatorsSlugIndexRoute: typeof CreatorsSlugIndexRoute
 }
 
 const CreatorsSlugRouteChildren: CreatorsSlugRouteChildren = {
   CreatorsSlugTabRoute: CreatorsSlugTabRoute,
+  CreatorsSlugClaimRoute: CreatorsSlugClaimRoute,
   CreatorsSlugIndexRoute: CreatorsSlugIndexRoute,
 }
 

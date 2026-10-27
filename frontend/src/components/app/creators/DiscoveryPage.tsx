@@ -1,4 +1,7 @@
 import { useId, useRef, useState } from 'react';
+import { useUser } from '@/hooks/useUser.ts';
+import SignInWrapper from '@/components/app/auth/SignInWrapper.tsx';
+import { FollowingContentStrip } from '@/components/app/follows/FollowingContentStrip.tsx';
 import { Link } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
 import { ArrowRight, BookOpen, Search, SlidersHorizontal } from 'lucide-react';
@@ -18,6 +21,7 @@ import {
   creatorLink,
   creatorPagination,
   creatorPanel,
+  creatorSelectedControl,
 } from './creatorStyles.ts';
 import { type DiscoveryQuery } from '../../../../../shared/creators/contracts.ts';
 export default function DiscoveryPage({
@@ -27,15 +31,16 @@ export default function DiscoveryPage({
   search: DiscoveryQuery;
   onChange: (patch: Partial<DiscoveryQuery>) => void;
 }) {
+  const user = useUser();
   const searchInput = useRef<HTMLInputElement>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const filtersId = useId();
   const [filterReset, setFilterReset] = useState(0);
   const query = useHubQuery(
-    creatorKeys.discovery(search),
+    search.following ? creatorKeys.followingDiscovery(search) : creatorKeys.discovery(search),
     () => hubApi.discover(search),
     true,
-    false,
+    !!search.following,
     {
       keepPreviousData: true,
     },
@@ -47,8 +52,8 @@ export default function DiscoveryPage({
       <Helmet title="Discover SWU content | SWUBASE" />
       <CreatorHeader
         eyebrow="SWUBASE · Creator hub"
-        title="Your next great game starts here."
-        description="Explore guides, gameplay and ideas from the Star Wars Unlimited community. Find the right content for your deck, format and next step."
+        title="Discover the latest from SWU creators."
+        description="Watch, read and listen to the Star Wars Unlimited community. Follow your favorite creators and keep up with their latest posts."
       >
         <Button asChild size="sm" className="rounded-lg">
           <Link to="/creators">
@@ -76,6 +81,7 @@ export default function DiscoveryPage({
                 setFilterReset(value => value + 1);
                 onChange({
                   q: undefined,
+                  following: undefined,
                   tags: undefined,
                   language: undefined,
                   freshness: undefined,
@@ -151,76 +157,119 @@ export default function DiscoveryPage({
             </Field>
           </div>
         </aside>
-        <section className="min-w-0 space-y-4" aria-label="Discover content">
-          <form
-            className="flex gap-2 rounded-[20px] border border-border bg-card p-3"
-            onSubmit={e => {
-              e.preventDefault();
-              change({
-                q: String(new FormData(e.currentTarget).get('q') ?? '').trim() || undefined,
-              });
-            }}
-          >
-            <Input
-              aria-label="Search content"
-              placeholder="Search titles and summaries…"
-              name="q"
-              ref={searchInput}
-              key={search.q ?? ''}
-              defaultValue={search.q ?? ''}
-              className="min-w-0 rounded-lg"
-            />
-            <Button type="submit" aria-label="Search" className="rounded-lg">
-              <Search size={18} />
-            </Button>
-          </form>
-          {search.entityType && search.entityId && (
-            <p className="text-sm text-muted-foreground">
-              Showing content connected to{' '}
-              {query.data?.subject?.id === search.entityId
-                ? query.data.subject.label
-                : `this ${search.entityType}`}
-              .{' '}
-              <button
-                className={creatorLink}
-                onClick={() => {
-                  setFilterReset(value => value + 1);
-                  change({ entityType: undefined, entityId: undefined });
+        <div className="min-w-0 space-y-4">
+          {user && <FollowingContentStrip />}
+          <section className="min-w-0 space-y-4" aria-label="Discover content">
+            <div
+              className="flex flex-wrap items-center gap-3 rounded-[20px] border border-border bg-card p-3"
+              role="search"
+              aria-label="Find content"
+            >
+              <div
+                className="flex shrink-0 items-center gap-1"
+                role="group"
+                aria-label="Content source"
+              >
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className={!search.following ? creatorSelectedControl : ''}
+                  aria-pressed={!search.following}
+                  onClick={() => change({ following: undefined })}
+                >
+                  All
+                </Button>
+                <SignInWrapper text="Sign in to see following">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className={search.following ? creatorSelectedControl : ''}
+                    aria-pressed={!!search.following}
+                    onClick={() => change({ following: true })}
+                  >
+                    Following
+                  </Button>
+                </SignInWrapper>
+              </div>
+              <form
+                className="flex min-w-0 flex-1 basis-56 gap-2"
+                onSubmit={e => {
+                  e.preventDefault();
+                  change({
+                    q: String(new FormData(e.currentTarget).get('q') ?? '').trim() || undefined,
+                  });
                 }}
               >
-                Show all subjects
-              </button>
-            </p>
-          )}
-          <Status loading={query.isPending} error={query.error} />
-          {query.data?.items.length === 0 && (
-            <div className={`${creatorEmpty} grid justify-items-center gap-3`}>
-              <BookOpen className="size-8 text-[var(--creator-accent)]" />
-              <h2 className={`${creatorHeading} text-foreground`}>Room for a new perspective</h2>
-              <p className={creatorDescription}>
-                No publications match these filters yet. Try a broader search or share your own.
-              </p>
+                <Input
+                  aria-label="Search content"
+                  placeholder="Search titles and summaries…"
+                  name="q"
+                  ref={searchInput}
+                  key={search.q ?? ''}
+                  defaultValue={search.q ?? ''}
+                  className="min-w-0 rounded-lg"
+                />
+                <Button type="submit" aria-label="Search" className="rounded-lg">
+                  <Search size={18} />
+                </Button>
+              </form>
             </div>
-          )}
-          {query.data && <CreationCards items={query.data.items} />}
-          <div className={creatorPagination}>
-            <Button
-              variant="outline"
-              disabled={search.page <= 1}
-              onClick={() => onChange({ page: search.page - 1 })}
-            >
-              Previous
-            </Button>
-            <span className="text-[12px] text-muted-foreground">Page {search.page}</span>
-            <Button
-              variant="outline"
-              disabled={!query.data?.hasMore}
-              onClick={() => onChange({ page: search.page + 1 })}
-            >
-              Next
-            </Button>
-          </div>
-        </section>
+            {search.entityType && search.entityId && (
+              <p className="text-sm text-muted-foreground">
+                Showing content connected to{' '}
+                {query.data?.subject?.id === search.entityId
+                  ? query.data.subject.label
+                  : `this ${search.entityType}`}
+                .{' '}
+                <button
+                  className={creatorLink}
+                  onClick={() => {
+                    setFilterReset(value => value + 1);
+                    change({ entityType: undefined, entityId: undefined });
+                  }}
+                >
+                  Show all subjects
+                </button>
+              </p>
+            )}
+            {search.following && !user ? (
+              <p className="text-sm text-muted-foreground">
+                Sign in to see publications from users and creators you follow.
+              </p>
+            ) : (
+              <Status loading={query.isPending} error={query.error} />
+            )}
+            {query.data?.items.length === 0 && (
+              <div className={`${creatorEmpty} grid justify-items-center gap-3`}>
+                <BookOpen className="size-8 text-[var(--creator-accent)]" />
+                <h2 className={`${creatorHeading} text-foreground`}>Room for a new perspective</h2>
+                <p className={creatorDescription}>
+                  {search.following
+                    ? 'No publications from your follows match these filters yet. Follow users or creators, or broaden your filters.'
+                    : 'No publications match these filters yet. Try a broader search or share your own.'}
+                </p>
+              </div>
+            )}
+            {query.data && <CreationCards items={query.data.items} />}
+            <div className={creatorPagination}>
+              <Button
+                variant="outline"
+                disabled={search.page <= 1}
+                onClick={() => onChange({ page: search.page - 1 })}
+              >
+                Previous
+              </Button>
+              <span className="text-[12px] text-muted-foreground">Page {search.page}</span>
+              <Button
+                variant="outline"
+                disabled={!query.data?.hasMore}
+                onClick={() => onChange({ page: search.page + 1 })}
+              >
+                Next
+              </Button>
+            </div>
+          </section>
+        </div>
       </div>
     </CreatorLayout>
   );

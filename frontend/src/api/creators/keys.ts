@@ -15,6 +15,9 @@ export const creatorKeys = {
   profiles: [...publicRoot, 'profile'] as const,
   profile: (slug: string) => [...publicRoot, 'profile', slug] as const,
   discoveries: [...publicRoot, 'discovery'] as const,
+  followingDiscoveries: [...privateRoot, 'following-discovery'] as const,
+  followingDiscovery: (query: Partial<DiscoveryQuery>) =>
+    [...privateRoot, 'following-discovery', query] as const,
   discovery: (query: Partial<DiscoveryQuery>) => [...publicRoot, 'discovery', query] as const,
   infiniteDiscoveries: infiniteDiscoveryRoot,
   infiniteDiscovery: (query: Partial<DiscoveryQuery>) => [...infiniteDiscoveryRoot, query] as const,

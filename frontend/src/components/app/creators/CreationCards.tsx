@@ -25,6 +25,59 @@ function videoDuration(seconds: number | null | undefined) {
     : `${minutes}:${remainder}`;
 }
 
+export function CompactCreationCard({ item }: { item: CreationSummary }) {
+  const doc = item.document;
+  const publisher = item.creator?.name ?? item.author?.name ?? 'Deleted user';
+  const Icon =
+    doc.medium === 'article'
+      ? BookOpen
+      : doc.medium === 'video'
+        ? Play
+        : doc.medium === 'audio'
+          ? Headphones
+          : ArrowUpRight;
+  const duration = doc.medium === 'video' ? videoDuration(doc.durationSeconds) : null;
+  return (
+    <article className="group h-24 w-72 shrink-0 snap-start overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-[var(--creator-border)] sm:w-80">
+      <Link
+        to="/content/$creationId"
+        params={{ creationId: item.id }}
+        aria-label={`${doc.title} by ${publisher}`}
+        className="flex h-full min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+      >
+        <div className="relative flex w-24 shrink-0 items-center justify-center overflow-hidden bg-[var(--creator-soft)] sm:w-28">
+          {doc.coverUrl ? (
+            <img
+              src={doc.coverUrl}
+              alt=""
+              loading="lazy"
+              referrerPolicy="no-referrer"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <Icon
+              className="size-7 text-[var(--creator-accent)]"
+              strokeWidth={1.4}
+              aria-hidden="true"
+            />
+          )}
+          {duration && (
+            <span className="absolute bottom-1.5 right-1.5 rounded bg-black/75 px-1 text-[10px] tabular-nums text-white">
+              {duration}
+            </span>
+          )}
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5 px-3 py-2">
+          <h3 className="m-0! line-clamp-2 border-0! p-0! text-[13px]! font-semibold! leading-snug! tracking-[-0.015em]! group-hover:text-[var(--creator-accent)]">
+            {doc.title}
+          </h3>
+          <span className="truncate text-[11px] text-muted-foreground">{publisher}</span>
+        </div>
+      </Link>
+    </article>
+  );
+}
+
 export function CreationCards({ items }: { items: CreationSummary[] }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">

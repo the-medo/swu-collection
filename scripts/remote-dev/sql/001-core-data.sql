@@ -104,11 +104,19 @@ BEGIN
   IF to_regclass('public.creator_claimed_deck') IS NOT NULL THEN
     TRUNCATE TABLE creator_claimed_deck;
   END IF;
+  IF to_regclass('public.user_follow') IS NOT NULL THEN
+    TRUNCATE TABLE user_follow;
+  END IF;
   IF to_regclass('public.creator_channel_resolution') IS NOT NULL THEN
     TRUNCATE TABLE creator_channel_resolution;
   END IF;
   IF to_regclass('public.creator_profile') IS NOT NULL THEN
-    IF to_regclass('public.creator_publishing_request') IS NOT NULL THEN
+    IF to_regclass('public.creator_follow') IS NOT NULL THEN
+      TRUNCATE TABLE creator_follow, creator_publishing_request, creation_report, creator_video_job, creator_video_spend, creator_imported_deck,
+        creation_reference, creation_tag, creation_revision, creation,
+        creator_member, creator_oauth_state, creator_youtube, creator_channel,
+        creator_youtube_channel, creator_profile;
+    ELSIF to_regclass('public.creator_publishing_request') IS NOT NULL THEN
       TRUNCATE TABLE creator_publishing_request, creation_report, creator_video_job, creator_video_spend, creator_imported_deck,
         creation_reference, creation_tag, creation_revision, creation,
         creator_member, creator_oauth_state, creator_youtube, creator_channel,
@@ -589,6 +597,17 @@ BEGIN
 
   IF EXISTS (SELECT 1 FROM user_notification) THEN
     RAISE EXCEPTION 'Private user notifications remain in the contributor dump.';
+  END IF;
+
+  IF to_regclass('public.user_follow') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM user_follow) THEN
+      RAISE EXCEPTION 'Private user follows remain in the contributor dump.';
+    END IF;
+  END IF;
+  IF to_regclass('public.creator_follow') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM creator_follow) THEN
+      RAISE EXCEPTION 'Private creator follows remain in the contributor dump.';
+    END IF;
   END IF;
 
   IF EXISTS (SELECT 1 FROM user_avatar) THEN

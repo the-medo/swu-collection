@@ -149,7 +149,8 @@ const getGroups = ({
           ? [
               {
                 title: 'Creators',
-                url: '/creators',
+                url: '/content',
+                activePaths: ['/creators'],
                 icon: Radio,
                 className: sidebarStyles.creators,
                 badge: <span className={sidebarStyles.preview}>Preview</span>,
