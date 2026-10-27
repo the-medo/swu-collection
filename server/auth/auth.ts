@@ -29,6 +29,8 @@ export const mcpResourceUrl = process.env.MCP_RESOURCE_URL
   : undefined;
 
 export const auth = betterAuth({
+  // Session checks run on every request; avoid emitting internal auth spans for each one.
+  experimental: { instrumentation: { enabled: false } },
   onAPIError: { errorURL: '/auth/error' },
   databaseHooks: {
     user: {
