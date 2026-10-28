@@ -90,6 +90,8 @@ formatData.forEach(format => {
 });
 
 export const PREMIER_FORMAT_ID = 1;
+export const limitedFormatIds = [3, 4] as const;
+export const isLimitedFormat = (formatId: number) => limitedFormatIds.some(id => id === formatId);
 export const dailySnapshotAdditionalFormatIds: number[] = [3, 4, 6];
 
 export type DailySnapshotFormatBadge = 'E' | 'L';

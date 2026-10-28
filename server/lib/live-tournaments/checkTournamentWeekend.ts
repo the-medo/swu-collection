@@ -1,7 +1,8 @@
-import { and, eq, inArray, isNotNull, isNull, ne, or, sql } from 'drizzle-orm';
+import { and, eq, inArray, isNotNull, isNull, ne, notExists, or, sql } from 'drizzle-orm';
 import { db } from '../../db';
 import { tournament as tournamentTable } from '../../db/schema/tournament.ts';
 import {
+  tournamentImport,
   tournamentWeekend,
   tournamentWeekendTournament,
 } from '../../db/schema/tournament_weekend.ts';
@@ -9,6 +10,7 @@ import { liveTournamentCheck } from './liveTournamentCheck.ts';
 import { meleeDecklistFormatIds } from './tournamentFormat.ts';
 import { getLiveTournamentWeekend } from './tournamentWeekendMaintenance.ts';
 import type { LiveTournamentCheckResult } from './types.ts';
+import { limitedFormatIds } from '../../../types/Format.ts';
 
 const serializeError = (error: unknown) => {
   if (error instanceof Error) {
@@ -50,6 +52,16 @@ export async function checkTournamentWeekend(weekendId: string) {
         eq(tournamentWeekendTournament.isLiveCheckEnabled, true),
         or(
           ne(tournamentWeekendTournament.status, 'finished'),
+          and(
+            inArray(tournamentTable.format, [...limitedFormatIds]),
+            eq(tournamentTable.imported, false),
+            notExists(
+              db
+                .select({ tournamentId: tournamentImport.tournamentId })
+                .from(tournamentImport)
+                .where(eq(tournamentImport.tournamentId, tournamentTable.id)),
+            ),
+          ),
           and(
             inArray(tournamentTable.format, [...meleeDecklistFormatIds]),
             or(

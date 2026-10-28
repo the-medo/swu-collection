@@ -393,7 +393,10 @@ export async function fetchDeckMatchesWithMeleeDeckIds(
  * Fetches raw Melee match rows for a round. This is shared by the finished
  * tournament import and the live tournament checker.
  */
-export async function fetchRoundMatches(roundId: number): Promise<any[]> {
+export async function fetchRoundMatches(
+  roundId: number,
+  { requireComplete = false }: { requireComplete?: boolean } = {},
+): Promise<any[]> {
   let recordsTotal = -1;
   const matchesData = [];
   const url = `https://melee.gg/Match/GetRoundMatches/${roundId}`;
@@ -412,11 +415,25 @@ export async function fetchRoundMatches(roundId: number): Promise<any[]> {
       });
 
       if (!response.ok) {
+        if (requireComplete) {
+          throw new Error(
+            `Failed to fetch round ${roundId}: ${response.status} ${response.statusText}`,
+          );
+        }
         console.warn(`Failed to fetch round matches: ${response.status} ${response.statusText}`);
         return [];
       }
 
       const res = await response.json();
+      if (
+        requireComplete &&
+        (!Array.isArray(res.data) ||
+          !Number.isInteger(res.recordsTotal) ||
+          res.recordsTotal < 0 ||
+          (res.data.length === 0 && matchesData.length < res.recordsTotal))
+      ) {
+        throw new Error(`Incomplete match response for round ${roundId}`);
+      }
       matchesData.push(...res.data);
       recordsTotal = res.recordsTotal;
       start += 500;

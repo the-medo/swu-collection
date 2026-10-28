@@ -81,6 +81,9 @@ export const adminTournamentIdRoundApplyMatchesPostRoute = new Hono<AuthExtensio
 
       const increments = new Map<string, StandingIncrement>();
       for (const match of matches) {
+        if (!match.p1DeckId) {
+          return { type: 'missing-deck' as const };
+        }
         if (!addResult(increments, match.p1DeckId, match.result)) {
           return { type: 'invalid-match-result' as const, matchId: match.id };
         }
@@ -144,6 +147,10 @@ export const adminTournamentIdRoundApplyMatchesPostRoute = new Hono<AuthExtensio
 
     if (result.type === 'invalid-match-result') {
       return c.json({ message: `Match ${result.matchId} has an unsupported result value` }, 409);
+    }
+
+    if (result.type === 'missing-deck') {
+      return c.json({ message: 'Deckless matches cannot be applied to deck standings.' }, 409);
     }
 
     if (result.type === 'missing-standings') {

@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils.ts';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
 import UpcomingBadge from './UpcomingBadge';
 import { DISCORD_LINK } from '../../../../../../shared/consts/constants.ts';
+import { isLimitedFormat } from '../../../../../../types/Format.ts';
 
 interface NoTournamentDataProps {
   tournamentId: string;
@@ -23,6 +24,7 @@ const NoTournamentData: React.FC<NoTournamentDataProps> = ({ tournamentId, compa
   }
 
   const tournament = data.tournament;
+  if (tournament.imported && isLimitedFormat(tournament.format)) return null;
 
   // Check if tournament is in the future
   const tournamentDate = new Date(tournament.date);

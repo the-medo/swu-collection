@@ -95,7 +95,7 @@ export const tournamentIdClearDataPostRoute = new Hono<AuthExtension>().post('/'
           ),
         );
       matchesUsingLinkedDecks.forEach(({ p1DeckId, p2DeckId }) => {
-        deckIdsUsedByOtherTournaments.add(p1DeckId);
+        if (p1DeckId) deckIdsUsedByOtherTournaments.add(p1DeckId);
         if (p2DeckId) deckIdsUsedByOtherTournaments.add(p2DeckId);
       });
     }

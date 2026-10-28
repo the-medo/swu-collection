@@ -61,7 +61,7 @@ const BracketRounds: React.FC<BracketRoundsProps> = ({
         {bracketData.map((round, roundIndex) => (
           <div
             key={roundIndex}
-            className="flex flex-col w-[150px] @[510px]/bracket-detail:w-[200px] @[810px]/bracket-detail:w-[260px]"
+            className="flex shrink-0 flex-col w-[150px] @[510px]/bracket-detail:w-[200px] @[810px]/bracket-detail:w-[260px]"
           >
             <h4 className="text-center font-medium mb-4 text-muted-foreground">
               {getRoundName(roundIndex, top, rounds, roundIndex === bracketData.length - 1)}
@@ -81,7 +81,8 @@ const BracketRounds: React.FC<BracketRoundsProps> = ({
                       <div className="flex flex-col gap-1 absolute top-1/2 -translate-y-1/2 transform">
                         <BracketPlayer
                           deck={match.player1}
-                          isWinner={match.winner === match.player1}
+                          username={match.p1Username}
+                          isWinner={match.winnerUsername === match.p1Username}
                           showScore={true}
                           gameWins={match.gameWins}
                           isHighlighted={highlightedPlayer === match.p1Username}
@@ -94,7 +95,10 @@ const BracketRounds: React.FC<BracketRoundsProps> = ({
                         {/*<div className="h-px bg-muted-foreground/30 mx-2"></div>*/}
                         <BracketPlayer
                           deck={match.player2}
-                          isWinner={match.winner === match.player2}
+                          username={match.p2Username}
+                          isWinner={
+                            !!match.winnerUsername && match.winnerUsername === match.p2Username
+                          }
                           showScore={true}
                           gameWins={match.gameLosses}
                           isHighlighted={highlightedPlayer === match.p2Username}

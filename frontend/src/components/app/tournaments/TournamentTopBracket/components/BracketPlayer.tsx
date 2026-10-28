@@ -7,6 +7,7 @@ import DeckAvatar from '@/components/app/global/DeckAvatar/DeckAvatar.tsx';
 
 interface BracketPlayerProps {
   deck: TournamentDeckResponse | null;
+  username?: string | null;
   isWinner?: boolean;
   showScore?: boolean;
   gameWins?: number;
@@ -18,6 +19,7 @@ interface BracketPlayerProps {
 
 const BracketPlayer: React.FC<BracketPlayerProps> = ({
   deck,
+  username: matchUsername,
   isWinner = false,
   showScore = false,
   gameWins = 0,
@@ -26,7 +28,8 @@ const BracketPlayer: React.FC<BracketPlayerProps> = ({
   onClick,
   isHighlighted = false,
 }) => {
-  if (!deck) {
+  const username = matchUsername || deck?.tournamentDeck.meleePlayerUsername;
+  if (!username) {
     return (
       <div className="h-16 rounded-md bg-muted/30 flex items-center justify-center text-muted-foreground px-4">
         TBD
@@ -34,12 +37,14 @@ const BracketPlayer: React.FC<BracketPlayerProps> = ({
     );
   }
 
-  const username = deck.tournamentDeck.meleePlayerUsername || 'Unknown';
+  const hasArtwork = !!(deck?.deck?.leaderCardId1 || deck?.deck?.baseCardId);
 
   return (
     <div
       className={cn(
-        'flex p-2 border rounded-md gap-2 transition-colors duration-200 min-w-[100px]',
+        'flex min-h-16 p-2 border rounded-md gap-2 transition-colors duration-200 min-w-[100px]',
+        !hasArtwork &&
+          'w-[150px] @[510px]/bracket-detail:w-[200px] @[810px]/bracket-detail:w-[260px]',
         ' @[510px]/bracket-detail:min-w-[170px] @[810px]/bracket-detail:min-w-[250px]',
         isWinner ? 'border-primary bg-primary/5' : 'border-muted-foreground/20',
         isHighlighted ? 'bg-amber-500/20 border-amber-500' : '',
@@ -48,23 +53,33 @@ const BracketPlayer: React.FC<BracketPlayerProps> = ({
       onMouseLeave={onMouseLeave}
       onClick={onClick}
     >
-      <div className="flex gap-1 shrink-0">
-        <DeckAvatar
-          leaderCardId={deck.deck?.leaderCardId1}
-          baseCardId={deck.deck?.baseCardId}
-          size="40"
-        />
-      </div>
-      <div className="flex flex-col justify-center overflow-hidden hidden @[510px]/bracket-detail:flex">
+      {hasArtwork && (
+        <div className="flex gap-1 shrink-0">
+          <DeckAvatar
+            leaderCardId={deck?.deck?.leaderCardId1}
+            baseCardId={deck?.deck?.baseCardId}
+            size="40"
+          />
+        </div>
+      )}
+      <div
+        className={cn(
+          'flex min-w-0 flex-col justify-center overflow-hidden',
+          hasArtwork && 'hidden @[510px]/bracket-detail:flex',
+        )}
+      >
         <div
           className={cn(
-            'font-medium whitespace-nowrap text-sm overflow-hidden text-ellipsis max-w-16 @[810px]/bracket-detail:max-w-32',
+            'font-medium text-sm overflow-hidden',
+            hasArtwork
+              ? 'whitespace-nowrap text-ellipsis max-w-16 @[810px]/bracket-detail:max-w-32'
+              : 'break-words',
             isHighlighted ? 'text-amber-700 dark:text-amber-300' : '',
           )}
         >
           {username}
         </div>
-        {deck.deck && deck.deck.name && (
+        {deck?.deck?.name && (
           <div className="text-xs text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis max-w-16 @[810px]/bracket-detail:max-w-32">
             {extractDeckNameFromBrackets(deck.deck.name)}
           </div>
@@ -82,7 +97,7 @@ const BracketPlayer: React.FC<BracketPlayerProps> = ({
           {gameWins}
         </div>
       )}
-      {isWinner && deck.tournamentDeck.placement === 1 && !showScore && (
+      {isWinner && deck?.tournamentDeck.placement === 1 && !showScore && (
         <Trophy className="h-4 w-4 text-amber-500 ml-auto shrink-0" />
       )}
     </div>

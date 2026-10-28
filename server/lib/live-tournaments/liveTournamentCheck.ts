@@ -9,7 +9,7 @@ import { mergeLiveTournamentAdditionalData } from './additionalData.ts';
 import { publishLiveTournamentChecked } from './liveTournamentEvents.ts';
 import { liveTournamentProgressCheck } from './liveTournamentProgressCheck.ts';
 import { fetchLiveTournamentDetailFromMelee } from './melee.ts';
-import { tournamentExpectsMeleeDecklists } from './tournamentFormat.ts';
+import { tournamentCanImportResults, tournamentExpectsMeleeDecklists } from './tournamentFormat.ts';
 import { recomputeTournamentWeekendCounters } from './tournamentWeekendMaintenance.ts';
 import type { LiveTournamentCheckInput, LiveTournamentCheckResult } from './types.ts';
 
@@ -104,8 +104,7 @@ export async function liveTournamentCheck(
   let queuedImport = false;
   if (
     detail.status === 'finished' &&
-    expectsDecklists &&
-    detail.hasDecklists &&
+    tournamentCanImportResults(row.tournament, detail.hasDecklists) &&
     !row.tournament.imported
   ) {
     const inserted = await db
