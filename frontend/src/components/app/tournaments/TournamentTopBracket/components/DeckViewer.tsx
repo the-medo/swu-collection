@@ -1,28 +1,35 @@
 import React from 'react';
 import { Button } from '@/components/ui/button.tsx';
-import { X } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import DeckContents from '@/components/app/decks/DeckContents/DeckContents.tsx';
 import { useSetDeckInfo } from '@/components/app/decks/DeckContents/useDeckInfoStore.ts';
-import { cn } from '@/lib/utils.ts';
 
 interface DeckViewerProps {
   selectedDeckId: string;
   setSelectedDeckId: (deckId: string | undefined) => void;
   compact?: boolean;
+  backLabel?: string;
 }
 
-const DeckViewer: React.FC<DeckViewerProps> = ({ selectedDeckId, setSelectedDeckId, compact }) => {
+const DeckViewer: React.FC<DeckViewerProps> = ({
+  selectedDeckId,
+  setSelectedDeckId,
+  compact,
+  backLabel = 'Back',
+}) => {
   useSetDeckInfo(selectedDeckId, false);
 
   return (
-    <div className={cn('flex-1 mt-8 lg:mt-0 relative')}>
+    <div className="min-w-0 flex-1">
       <Button
+        data-deck-back
+        aria-label={backLabel}
         variant="outline"
-        size="iconSmall"
-        className="absolute top-2 right-2 z-10"
+        size="sm"
+        className="mb-4"
         onClick={() => setSelectedDeckId(undefined)}
       >
-        <X />
+        <ArrowLeft className="size-4" /> {backLabel}
       </Button>
       <DeckContents deckId={selectedDeckId} setDeckId={setSelectedDeckId} compact={compact} />
     </div>

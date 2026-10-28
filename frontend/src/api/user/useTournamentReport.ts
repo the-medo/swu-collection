@@ -3,12 +3,20 @@ import { api } from '@/lib/api.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import { createApiError } from '@/api/errors.ts';
 import { userTournamentKeys } from './tournamentKeys.ts';
+import type { TournamentReport } from '../../../../shared/types/TournamentReport.ts';
+import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
 
-export function useTournamentReport(tournamentId?: string) {
+export function useTournamentReport(tournamentId?: string, meleeUserId?: string) {
   const userId = useUser()?.id;
-  return useQuery({
-    queryKey: userTournamentKeys.report(userId ?? '', tournamentId),
+  return useQuery<TournamentReport, Error & ErrorWithStatus>({
+    queryKey: [
+      ...userTournamentKeys.report(userId ?? '', tournamentId),
+      // A different linked Melee account must never reuse the previous player's results.
+      ...(meleeUserId ? [meleeUserId] : []),
+    ],
     staleTime: 60_000,
+    retry: (failureCount, error) =>
+      !(error.status && error.status >= 400 && error.status < 500) && failureCount < 3,
     queryFn:
       userId && tournamentId
         ? async () => {

@@ -25,6 +25,16 @@ type DeckImageBytes = {
 };
 
 async function clickWinningDeck(input: TournamentScreenshotCaptureInput) {
+  const standingsToggle = input.page
+    .getByRole('region', { name: 'Final standings', exact: true })
+    .getByRole('button', { name: 'Final standings', exact: true });
+  if (
+    (await standingsToggle.isVisible()) &&
+    (await standingsToggle.getAttribute('aria-expanded')) === 'false'
+  ) {
+    await standingsToggle.click();
+  }
+
   const placementSelector = screenshotTargetSelector(
     tournamentScreenshotDomTargets.topPlacementDeck,
   );
@@ -37,6 +47,10 @@ async function clickWinningDeck(input: TournamentScreenshotCaptureInput) {
   const deckId = await deckTrigger.getAttribute('data-deck-id');
   if (!deckId) {
     throw new Error('Winning deck row did not expose a deck id.');
+  }
+
+  if (await deckTrigger.getByRole('button').first().isDisabled()) {
+    throw new Error('Winning player does not have an available deck to screenshot.');
   }
 
   await deckTrigger.click({ position: { x: 12, y: 12 } });

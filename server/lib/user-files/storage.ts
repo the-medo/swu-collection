@@ -22,6 +22,14 @@ export function userFileObjectKeys(userId: string, id: string) {
 }
 
 export function createUserFileStorage(env = process.env): UserFileObjectStorage {
+  // Explicit local-preview/ fixtures can use a locally served, read-only image directory.
+  // All other keys and production environments retain the shared bucket behavior.
+  const previewBaseUrl =
+    env.ENVIRONMENT === 'local'
+      ? env.USER_FILES_PREVIEW_BASE_URL?.trim().replace(/\/+$/, '')
+      : undefined;
+  const previewPrefix = 'local-preview/';
+  const isPreviewKey = (key: string) => !!previewBaseUrl && key.startsWith(previewPrefix);
   const available = () => !!(env.R2_ENDPOINT && env.R2_ACCESS_KEY_ID && env.R2_SECRET_ACCESS_KEY);
   function client() {
     if (!available()) throw new UserFileError('Image storage is not configured.', 503);
@@ -37,8 +45,13 @@ export function createUserFileStorage(env = process.env): UserFileObjectStorage 
   return {
     available,
     // Reading public images never requires upload credentials or an API request.
-    publicUrl: key => `${publicBaseUrl}/${key.split('/').map(encodeURIComponent).join('/')}`,
+    publicUrl: key => {
+      const base = isPreviewKey(key) ? previewBaseUrl : publicBaseUrl;
+      const path = isPreviewKey(key) ? key.slice(previewPrefix.length) : key;
+      return `${base}/${path.split('/').map(encodeURIComponent).join('/')}`;
+    },
     async put(key, bytes) {
+      if (isPreviewKey(key)) throw new UserFileError('Preview images are read-only.', 403);
       const s3 = client();
       try {
         await s3.send(
@@ -58,6 +71,7 @@ export function createUserFileStorage(env = process.env): UserFileObjectStorage 
       }
     },
     async remove(key) {
+      if (isPreviewKey(key)) throw new UserFileError('Preview images are read-only.', 403);
       const s3 = client();
       try {
         await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }), {

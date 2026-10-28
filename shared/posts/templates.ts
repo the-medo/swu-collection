@@ -85,7 +85,7 @@ export function createArticleTemplate(
           event.name,
           event.date,
           event.format,
-          `${event.attendance} players`,
+          event.attendance > 0 ? `${event.attendance} players` : null,
           event.completed && event.placement ? `Finished #${event.placement}` : null,
           event.record ? `Record: ${event.record}` : null,
         ]

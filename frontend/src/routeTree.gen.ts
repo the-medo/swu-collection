@@ -83,6 +83,7 @@ import { Route as TournamentsTournamentIdMetaRouteImport } from './routes/tourna
 import { Route as TournamentsTournamentIdMatchupsRouteImport } from './routes/tournaments/$tournamentId/matchups'
 import { Route as TournamentsTournamentIdDetailsRouteImport } from './routes/tournaments/$tournamentId/details'
 import { Route as TournamentsTournamentIdDecksRouteImport } from './routes/tournaments/$tournamentId/decks'
+import { Route as TournamentsTournamentIdCommunityContentRouteImport } from './routes/tournaments/$tournamentId/community-content'
 import { Route as TournamentsTournamentIdCardStatsRouteImport } from './routes/tournaments/$tournamentId/card-stats'
 import { Route as TeamsTeamIdEventsRouteImport } from './routes/teams/$teamId/events'
 import { Route as DecksFolderFolderIdRouteImport } from './routes/decks/folder/$folderId'
@@ -500,6 +501,12 @@ const TournamentsTournamentIdDecksRoute =
     path: '/tournaments/$tournamentId/decks',
     getParentRoute: () => rootRouteImport,
   } as any)
+const TournamentsTournamentIdCommunityContentRoute =
+  TournamentsTournamentIdCommunityContentRouteImport.update({
+    id: '/tournaments/$tournamentId/community-content',
+    path: '/tournaments/$tournamentId/community-content',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const TournamentsTournamentIdCardStatsRoute =
   TournamentsTournamentIdCardStatsRouteImport.update({
     id: '/tournaments/$tournamentId/card-stats',
@@ -739,6 +746,7 @@ export interface FileRoutesByFullPath {
   '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
   '/teams/$teamId/events': typeof TeamsTeamIdEventsRoute
   '/tournaments/$tournamentId/card-stats': typeof TournamentsTournamentIdCardStatsRoute
+  '/tournaments/$tournamentId/community-content': typeof TournamentsTournamentIdCommunityContentRoute
   '/tournaments/$tournamentId/decks': typeof TournamentsTournamentIdDecksRoute
   '/tournaments/$tournamentId/details': typeof TournamentsTournamentIdDetailsRoute
   '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
@@ -840,6 +848,7 @@ export interface FileRoutesByTo {
   '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
   '/teams/$teamId/events': typeof TeamsTeamIdEventsRoute
   '/tournaments/$tournamentId/card-stats': typeof TournamentsTournamentIdCardStatsRoute
+  '/tournaments/$tournamentId/community-content': typeof TournamentsTournamentIdCommunityContentRoute
   '/tournaments/$tournamentId/decks': typeof TournamentsTournamentIdDecksRoute
   '/tournaments/$tournamentId/details': typeof TournamentsTournamentIdDetailsRoute
   '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
@@ -946,6 +955,7 @@ export interface FileRoutesById {
   '/decks/folder/$folderId': typeof DecksFolderFolderIdRoute
   '/teams/$teamId/events': typeof TeamsTeamIdEventsRoute
   '/tournaments/$tournamentId/card-stats': typeof TournamentsTournamentIdCardStatsRoute
+  '/tournaments/$tournamentId/community-content': typeof TournamentsTournamentIdCommunityContentRoute
   '/tournaments/$tournamentId/decks': typeof TournamentsTournamentIdDecksRoute
   '/tournaments/$tournamentId/details': typeof TournamentsTournamentIdDetailsRoute
   '/tournaments/$tournamentId/matchups': typeof TournamentsTournamentIdMatchupsRoute
@@ -1053,6 +1063,7 @@ export interface FileRouteTypes {
     | '/decks/folder/$folderId'
     | '/teams/$teamId/events'
     | '/tournaments/$tournamentId/card-stats'
+    | '/tournaments/$tournamentId/community-content'
     | '/tournaments/$tournamentId/decks'
     | '/tournaments/$tournamentId/details'
     | '/tournaments/$tournamentId/matchups'
@@ -1154,6 +1165,7 @@ export interface FileRouteTypes {
     | '/decks/folder/$folderId'
     | '/teams/$teamId/events'
     | '/tournaments/$tournamentId/card-stats'
+    | '/tournaments/$tournamentId/community-content'
     | '/tournaments/$tournamentId/decks'
     | '/tournaments/$tournamentId/details'
     | '/tournaments/$tournamentId/matchups'
@@ -1259,6 +1271,7 @@ export interface FileRouteTypes {
     | '/decks/folder/$folderId'
     | '/teams/$teamId/events'
     | '/tournaments/$tournamentId/card-stats'
+    | '/tournaments/$tournamentId/community-content'
     | '/tournaments/$tournamentId/decks'
     | '/tournaments/$tournamentId/details'
     | '/tournaments/$tournamentId/matchups'
@@ -1353,6 +1366,7 @@ export interface RootRouteChildren {
   DecksDeckIdEditRoute: typeof DecksDeckIdEditRoute
   DecksFolderFolderIdRoute: typeof DecksFolderFolderIdRoute
   TournamentsTournamentIdCardStatsRoute: typeof TournamentsTournamentIdCardStatsRoute
+  TournamentsTournamentIdCommunityContentRoute: typeof TournamentsTournamentIdCommunityContentRoute
   TournamentsTournamentIdDecksRoute: typeof TournamentsTournamentIdDecksRoute
   TournamentsTournamentIdDetailsRoute: typeof TournamentsTournamentIdDetailsRoute
   TournamentsTournamentIdMatchupsRoute: typeof TournamentsTournamentIdMatchupsRoute
@@ -1891,6 +1905,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TournamentsTournamentIdDecksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tournaments/$tournamentId/community-content': {
+      id: '/tournaments/$tournamentId/community-content'
+      path: '/tournaments/$tournamentId/community-content'
+      fullPath: '/tournaments/$tournamentId/community-content'
+      preLoaderRoute: typeof TournamentsTournamentIdCommunityContentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tournaments/$tournamentId/card-stats': {
       id: '/tournaments/$tournamentId/card-stats'
       path: '/tournaments/$tournamentId/card-stats'
@@ -2332,6 +2353,8 @@ const rootRouteChildren: RootRouteChildren = {
   DecksDeckIdEditRoute: DecksDeckIdEditRoute,
   DecksFolderFolderIdRoute: DecksFolderFolderIdRoute,
   TournamentsTournamentIdCardStatsRoute: TournamentsTournamentIdCardStatsRoute,
+  TournamentsTournamentIdCommunityContentRoute:
+    TournamentsTournamentIdCommunityContentRoute,
   TournamentsTournamentIdDecksRoute: TournamentsTournamentIdDecksRoute,
   TournamentsTournamentIdDetailsRoute: TournamentsTournamentIdDetailsRoute,
   TournamentsTournamentIdMatchupsRoute: TournamentsTournamentIdMatchupsRoute,

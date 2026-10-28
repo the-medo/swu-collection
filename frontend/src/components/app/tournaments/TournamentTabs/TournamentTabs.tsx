@@ -28,7 +28,7 @@ interface TabLinkProps {
 
 const TabLink: React.FC<TabLinkProps> = ({ tournamentId, tab, isActive, mode }) => {
   const commonClass = cn(
-    'flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium transition-all',
+    'flex min-w-0 items-center justify-center rounded-md px-3 py-1.5 text-center text-sm font-medium transition-all',
     isActive
       ? 'bg-background text-foreground shadow-xs'
       : 'text-muted-foreground hover:text-foreground',
@@ -75,17 +75,25 @@ const TournamentTabs: React.FC<TournamentTabsProps> = ({
   activeTab = 'details',
   mode = 'tournament-page',
 }) => {
+  const visibleTabs =
+    mode === 'tournament-page'
+      ? [
+          ...tabs,
+          { key: 'community-content', label: 'Community content', path: 'community-content' },
+        ]
+      : tabs;
   return (
     <div className={cn('w-full', className)}>
       <div
         className={cn(
-          'mb-2 grid grid-cols-3 rounded-lg bg-muted p-1 md:grid-cols-5',
+          'mb-2 grid grid-cols-3 rounded-lg bg-muted p-1',
+          mode === 'tournament-page' ? 'lg:grid-cols-6' : 'md:grid-cols-5',
           competitionStyles.tabs,
         )}
         role="navigation"
         aria-label="Tournament details"
       >
-        {tabs.map(tab => (
+        {visibleTabs.map(tab => (
           <TabLink
             key={tab.key}
             tournamentId={tournamentId}

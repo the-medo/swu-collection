@@ -46,6 +46,7 @@ test.skipIf(process.env.USER_ALBUMS_DB_TEST !== '1')(
           id,
           name: 'Event photographer',
           displayName: id,
+          image: 'https://images.example.com/avatar.webp',
           email: `${id}@invalid.local`,
           emailVerified: false,
           currency: 'USD',
@@ -228,7 +229,14 @@ test.skipIf(process.env.USER_ALBUMS_DB_TEST !== '1')(
       expect(feed.albums[0].cover.fileId).toBe(files[0]);
       expect(feed.albums[0]).not.toHaveProperty('images');
       expect(feed.albums[0].imageCount).toBe(8);
-      expect(feed.albums[0].owner).toEqual({ id: owners[0], displayName: owners[0] });
+      expect(feed.albums[0].owner).toEqual({
+        id: owners[0],
+        displayName: owners[0],
+        image: 'https://images.example.com/avatar.webp',
+      });
+      const publicAlbum = await request(`/${album.id}`);
+      expect(publicAlbum.status).toBe(200);
+      expect((await publicAlbum.json()).data.owner).toEqual(feed.albums[0].owner);
       expect(JSON.stringify(feed)).not.toMatch(
         /private-name|imageKey|thumbnailKey|quotaBytes|usedBytes|@invalid.local/,
       );

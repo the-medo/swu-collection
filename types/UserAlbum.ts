@@ -88,7 +88,7 @@ export interface AlbumTournamentOptions {
   hasMore: boolean;
 }
 export interface TournamentAlbum extends UserAlbum {
-  owner: { id: string; displayName: string };
+  owner: { id: string; displayName: string; image: string | null };
 }
 export interface TournamentAlbumList extends Omit<UserAlbumList, 'albums'> {
   albums: TournamentAlbum[];
@@ -112,7 +112,7 @@ export interface UserAlbum {
 }
 export interface UserAlbumPage {
   album: UserAlbum;
-  owner: { id: string; displayName: string };
+  owner: { id: string; displayName: string; image: string | null };
   images: UserAlbumImage[];
   hasMore: boolean;
 }
