@@ -3,12 +3,10 @@ import fs from 'fs';
 import { mergeParsedCardAndVariants } from './mergeParsedCardAndVariants.ts';
 import { transformToId } from './transformToId.ts';
 import { delay } from './delay.ts';
-import { processVariantWithoutImages } from './processVariantWithoutImages.ts';
-import { mergeVariantsWithoutImages } from './mergeVariantsWithoutImages.ts';
+import { processPrintings } from './processPrintings.ts';
 import { processVariantImages } from './processVariantImages.ts';
 import { downloadAndTransformVariantImages } from './downloadAndTransformVariantImages.ts';
-import type { CardVariant, ParsedCardData } from '../types.ts';
-import { setInfo } from '../set-info.ts';
+import type { ParsedCardData } from '../types.ts';
 import type { SwuSet } from '../../../types/enums.ts';
 import { fetchWithRetry } from './fetchWithRetry.ts';
 
@@ -89,24 +87,15 @@ export async function processCard(card: any, skipExisting = true): Promise<Proce
     const variants = (await variantsResponse.json()) as any;
     await delay(500);
 
-    let allVariants: CardVariant[] = [
-      processVariantWithoutImages(variants.data.original),
-      ...variants.data.printings.map((x: any) => processVariantWithoutImages(x)),
-    ];
-
-    allVariants = mergeVariantsWithoutImages(allVariants);
-
-    let newestSet = parsedCard.set;
-    for (const p of allVariants) {
+    const printings = processPrintings(variants.data, parsedCard.set);
+    parsedCard.cardUid = [...new Set([...parsedCard.cardUid, ...printings.cardUid])];
+    for (const p of printings.variants) {
       await processVariantImages(p);
       await downloadAndTransformVariantImages(p, parsedCard.cardId);
-      if ((setInfo[p.set]?.sortValue ?? 0) > (setInfo[newestSet]?.sortValue ?? 0)) {
-        newestSet = p.set;
-      }
     }
-    parsedCard.set = newestSet;
+    parsedCard.set = printings.set;
 
-    const finalObject = mergeParsedCardAndVariants(allVariants, parsedCard);
+    const finalObject = mergeParsedCardAndVariants(printings.variants, parsedCard);
 
     filename = transformToId(parsedCard.cardId);
     dirpath = path.resolve(`./lib/swu-resources/output/cards`);

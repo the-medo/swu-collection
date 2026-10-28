@@ -158,7 +158,8 @@ export function getSetPrintings(
 }
 
 // Fixed artwork. ASH and older picks were chosen once using stored Cardmarket prices.
-const featuredCardSelections: Record<SwuSet, [string, string, string]> = {
+const featuredCardSelections: Record<SwuSet, readonly string[]> = {
+  [SwuSet.IC27]: ['i-ve-got-a-bad-feeling', 'jar-jar-binks--bumbling-representative'],
   [SwuSet.HMW]: [
     'nightbrother--maul-s-gauntlet',
     'sando-aqua-monster',
@@ -210,9 +211,9 @@ export function getCardHomeSets(cards: CardList) {
     const all = getSetPrintings(printings, code, 'all');
     if (!all.length) return [];
     const leaders = getSetPrintings(printings, code, 'leaders');
-    // These supplemental sets have no Hyperspace printings; use their themed Standard cards.
+    // Use Standard artwork for these supplemental sets.
     const artworkPrintings =
-      code === SwuSet.TS26 || code === SwuSet.IBH
+      code === SwuSet.TS26 || code === SwuSet.IBH || code === SwuSet.IC27
         ? all
         : getSetPrintings(printings, code, 'all', 'hyperspace').filter(
             p => p.card.rarity === SwuRarity.LEGENDARY,

@@ -157,7 +157,7 @@ test('card home chooses newest available sets and group resolution keeps multipl
   expect(sets[0].code).toBe(
     setArraySorted.find(code => getSetPrintings(printings, code, 'all').length > 0)!,
   );
-  expect(sets[0].leaders.length).toBeGreaterThan(0);
+  expect(sets[0].leaders).toEqual(getSetPrintings(printings, sets[0].code, 'leaders'));
   const card = printings.find(p => Object.keys(p.card.variants).length > 1)!.card;
   const ids = Object.keys(card.variants).slice(0, 2).reverse();
   expect(
@@ -182,13 +182,13 @@ test('fresh and layout-only visits show home; submitted searches and filter URLs
   expect(hasCardSearchRequest({ cost: '0-0' })).toBe(true);
 });
 
-test('set tiles show three distinct cards from that set, with Hyperspace legendaries for main sets', () => {
+test('set tiles show up to three distinct cards from that set, with Hyperspace legendaries for main sets', () => {
   for (const set of getCardHomeSets(cardList)) {
-    expect(set.featured.length).toBe(3);
+    expect(set.featured.length).toBe(Math.min(3, set.counts.all));
     expect(new Set(set.featured.map(p => p.card.cardId)).size).toBe(set.featured.length);
     for (const { card, variant } of set.featured) {
       expect(variant.set).toBe(set.code);
-      if ([SwuSet.IBH, SwuSet.TS26].includes(set.code)) {
+      if ([SwuSet.IBH, SwuSet.TS26, SwuSet.IC27].includes(set.code)) {
         expect(variant.variantName).toBe('Standard');
         continue;
       }
@@ -197,6 +197,26 @@ test('set tiles show three distinct cards from that set, with Hyperspace legenda
       expect(!variant.hasFoil || variant.hasNonfoil).toBe(true);
     }
   }
+});
+
+test('partially imported Icons galleries and artwork include only available standard printings', () => {
+  const badFeeling = cardList['i-ve-got-a-bad-feeling']!;
+  const jarJar = cardList['jar-jar-binks--bumbling-representative']!;
+  const set = getCardHomeSets({
+    [badFeeling.cardId]: badFeeling,
+    [jarJar.cardId]: jarJar,
+  }).find(set => set.code === SwuSet.IC27)!;
+  expect(set.counts.all).toBe(2);
+  expect(set.leaders).toEqual([]);
+  expect(set.featured.map(p => p.card.cardId)).toEqual([
+    'i-ve-got-a-bad-feeling',
+    'jar-jar-binks--bumbling-representative',
+  ]);
+  const partialSet = getCardHomeSets({ [jarJar.cardId]: jarJar });
+  expect(partialSet).toHaveLength(1);
+  expect(partialSet[0].code).toBe(SwuSet.IC27);
+  expect(partialSet[0].counts.all).toBe(1);
+  expect(partialSet[0].featured.map(p => p.card.cardId)).toEqual([jarJar.cardId]);
 });
 
 test('Twin Suns features exclusive rares and Intro Battle features Hoth cards', () => {

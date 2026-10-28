@@ -43538,7 +43538,7 @@
   },
   "redemption--medical-frigate": {
     "cardId": "redemption--medical-frigate",
-    "updatedAt": "2024-07-15T17:48:58.638Z",
+    "updatedAt": "2026-10-27T16:01:57.373Z",
     "name": "Redemption, Medical Frigate",
     "title": "Redemption",
     "subtitle": "Medical Frigate",
@@ -43573,6 +43573,44 @@
       "Capital Ship"
     ],
     "variants": {
+      "redemption--medical-frigate-244-2026-promo": {
+        "variantId": "redemption--medical-frigate-244-2026-promo",
+        "swuId": 68748,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 244,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Stephen Zavala",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "redemption--medical-frigate-244-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "redemption--medical-frigate-256-2026-promo": {
+        "variantId": "redemption--medical-frigate-256-2026-promo",
+        "swuId": 68808,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 256,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Stephen Zavala",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "redemption--medical-frigate-256-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "redemption--medical-frigate-52-spark-of-rebellion": {
         "swuId": 326,
         "set": "sor",
@@ -43608,7 +43646,9 @@
     },
     "set": "sor",
     "cardUid": [
-      "3896582249"
+      "3896582249",
+      "0754190122",
+      "6820685371"
     ]
   },
   "regional-governor": {
@@ -157138,11 +157178,30 @@
   },
   "captain-rex--into-the-firefight": {
     "cardId": "captain-rex--into-the-firefight",
-    "updatedAt": "2025-10-31T16:14:23.573Z",
+    "updatedAt": "2026-10-27T16:02:45.385Z",
     "name": "Captain Rex, Into the Firefight",
     "title": "Captain Rex",
     "subtitle": "Into the Firefight",
     "variants": {
+      "captain-rex--into-the-firefight-286-2026-promo": {
+        "variantId": "captain-rex--into-the-firefight-286-2026-promo",
+        "swuId": 68943,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 286,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "RQ Top 8",
+        "artist": "Takeshi Amano",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "captain-rex--into-the-firefight-286-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "captain-rex--into-the-firefight-48-secrets-of-power": {
         "variantId": "captain-rex--into-the-firefight-48-secrets-of-power",
         "swuId": 39615,
@@ -157252,7 +157311,8 @@
     ],
     "set": "sec",
     "cardUid": [
-      "1768040578"
+      "1768040578",
+      "1814972550"
     ]
   },
   "cassian-andor--climb-": {
@@ -165200,13 +165260,33 @@
     "cardId": "boba-fett--for-a-price",
     "cardUid": [
       "7507522991",
-      "2562671677"
+      "2562671677",
+      "1020890584"
     ],
-    "updatedAt": "2026-08-12T19:19:10.195Z",
+    "updatedAt": "2026-10-27T16:02:47.711Z",
     "name": "Boba Fett, For a Price",
     "title": "Boba Fett",
     "subtitle": "For a Price",
     "variants": {
+      "boba-fett--for-a-price-288-2026-promo": {
+        "variantId": "boba-fett--for-a-price-288-2026-promo",
+        "swuId": 68953,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 288,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "RQ Finalist",
+        "artist": "Iveta Kirstukaite",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "boba-fett--for-a-price-288-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "boba-fett--for-a-price-214-a-lawless-time": {
         "variantId": "boba-fett--for-a-price-214-a-lawless-time",
         "swuId": 47122,
@@ -172623,13 +172703,33 @@
     "cardId": "maul--master-of-the-shadow-collective",
     "cardUid": [
       "1748161899",
-      "7615680141"
+      "7615680141",
+      "2721289629"
     ],
-    "updatedAt": "2026-04-13T21:19:45.665Z",
+    "updatedAt": "2026-10-27T16:02:44.221Z",
     "name": "Maul, Master of the Shadow Collective",
     "title": "Maul",
     "subtitle": "Master of the Shadow Collective",
     "variants": {
+      "maul--master-of-the-shadow-collective-285-2026-promo": {
+        "variantId": "maul--master-of-the-shadow-collective-285-2026-promo",
+        "swuId": 68938,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 285,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "RQ Day Two",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "maul--master-of-the-shadow-collective-285-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "maul--master-of-the-shadow-collective-54-a-lawless-time": {
         "variantId": "maul--master-of-the-shadow-collective-54-a-lawless-time",
         "swuId": 46322,
@@ -175345,13 +175445,33 @@
   "shadow-of-stygeon-prime": {
     "cardId": "shadow-of-stygeon-prime",
     "cardUid": [
-      "3645451698"
+      "3645451698",
+      "6919050249"
     ],
-    "updatedAt": "2026-01-30T17:29:42.543Z",
+    "updatedAt": "2026-10-27T16:02:38.190Z",
     "name": "Shadow of Stygeon Prime",
     "title": "Shadow of Stygeon Prime",
     "subtitle": null,
     "variants": {
+      "shadow-of-stygeon-prime-280-2026-promo": {
+        "variantId": "shadow-of-stygeon-prime-280-2026-promo",
+        "swuId": 68913,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 280,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "RQ Event Pack",
+        "artist": "Johnny Morrow",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "shadow-of-stygeon-prime-280-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "shadow-of-stygeon-prime-77-a-lawless-time": {
         "variantId": "shadow-of-stygeon-prime-77-a-lawless-time",
         "swuId": 46437,
@@ -185198,13 +185318,33 @@
     "cardId": "k-2so--locking-the-vault",
     "cardUid": [
       "1622153405",
-      "6386443776"
+      "6386443776",
+      "3456122161"
     ],
-    "updatedAt": "2026-04-01T23:24:13.882Z",
+    "updatedAt": "2026-10-27T16:02:39.385Z",
     "name": "K-2SO, Locking the Vault",
     "title": "K-2SO",
     "subtitle": "Locking the Vault",
     "variants": {
+      "k-2so--locking-the-vault-281-2026-promo": {
+        "variantId": "k-2so--locking-the-vault-281-2026-promo",
+        "swuId": 68918,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 281,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "RQ Event Pack",
+        "artist": "Joshua Cairos",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "k-2so--locking-the-vault-281-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "k-2so--locking-the-vault-79-a-lawless-time": {
         "variantId": "k-2so--locking-the-vault-79-a-lawless-time",
         "swuId": 46447,
@@ -190772,13 +190912,33 @@
     "cardId": "the-stranger--no-survivors",
     "cardUid": [
       "2102741558",
-      "4725429312"
+      "4725429312",
+      "9120005499"
     ],
-    "updatedAt": "2026-04-13T21:24:55.995Z",
+    "updatedAt": "2026-10-27T16:02:46.550Z",
     "name": "The Stranger, No Survivors",
     "title": "The Stranger",
     "subtitle": "No Survivors",
     "variants": {
+      "the-stranger--no-survivors-287-2026-promo": {
+        "variantId": "the-stranger--no-survivors-287-2026-promo",
+        "swuId": 68948,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 287,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "RQ Top 4",
+        "artist": "Robynn Frauhn",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "the-stranger--no-survivors-287-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "the-stranger--no-survivors-86-a-lawless-time": {
         "variantId": "the-stranger--no-survivors-86-a-lawless-time",
         "swuId": 46482,
@@ -193631,13 +193791,53 @@
   "gar-saxon--sundari-pillager": {
     "cardId": "gar-saxon--sundari-pillager",
     "cardUid": [
-      "1102418753"
+      "1102418753",
+      "1711294647",
+      "7946218632"
     ],
-    "updatedAt": "2026-02-11T19:00:53.269Z",
+    "updatedAt": "2026-10-27T16:01:55.106Z",
     "name": "Gar Saxon, Sundari Pillager",
     "title": "Gar Saxon",
     "subtitle": "Sundari Pillager",
     "variants": {
+      "gar-saxon--sundari-pillager-242-2026-promo": {
+        "variantId": "gar-saxon--sundari-pillager-242-2026-promo",
+        "swuId": 68738,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 242,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Miki Montlló",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gar-saxon--sundari-pillager-242-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "gar-saxon--sundari-pillager-254-2026-promo": {
+        "variantId": "gar-saxon--sundari-pillager-254-2026-promo",
+        "swuId": 68798,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 254,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Miki Montlló",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "gar-saxon--sundari-pillager-254-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "gar-saxon--sundari-pillager-21-2026-twin-suns": {
         "variantId": "gar-saxon--sundari-pillager-21-2026-twin-suns",
         "swuId": 50957,
@@ -196241,13 +196441,53 @@
   "maul--one-last-lesson": {
     "cardId": "maul--one-last-lesson",
     "cardUid": [
-      "0211565206"
+      "0211565206",
+      "0827435024",
+      "4032020989"
     ],
-    "updatedAt": "2026-04-13T20:47:30.906Z",
+    "updatedAt": "2026-10-27T16:01:52.793Z",
     "name": "Maul, One Last Lesson",
     "title": "Maul",
     "subtitle": "One Last Lesson",
     "variants": {
+      "maul--one-last-lesson-240-2026-promo": {
+        "variantId": "maul--one-last-lesson-240-2026-promo",
+        "swuId": 68728,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 240,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Wu Shenyou",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "maul--one-last-lesson-240-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "maul--one-last-lesson-252-2026-promo": {
+        "variantId": "maul--one-last-lesson-252-2026-promo",
+        "swuId": 68788,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 252,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Wu Shenyou",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "maul--one-last-lesson-252-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "maul--one-last-lesson-30-2026-twin-suns": {
         "variantId": "maul--one-last-lesson-30-2026-twin-suns",
         "swuId": 51002,
@@ -197406,13 +197646,53 @@
   "take-cover": {
     "cardId": "take-cover",
     "cardUid": [
-      "3088628219"
+      "3088628219",
+      "8221842511",
+      "9835152031"
     ],
-    "updatedAt": "2026-04-13T20:47:46.730Z",
+    "updatedAt": "2026-10-27T16:01:58.494Z",
     "name": "Take Cover",
     "title": "Take Cover",
     "subtitle": null,
     "variants": {
+      "take-cover-245-2026-promo": {
+        "variantId": "take-cover-245-2026-promo",
+        "swuId": 68753,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 245,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "take-cover-245-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "take-cover-257-2026-promo": {
+        "variantId": "take-cover-257-2026-promo",
+        "swuId": 68813,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 257,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "take-cover-257-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "take-cover-47-2026-twin-suns": {
         "variantId": "take-cover-47-2026-twin-suns",
         "swuId": 51087,
@@ -205459,13 +205739,33 @@
   "boba-fett-s-rancor--emotionally-complex-creature": {
     "cardId": "boba-fett-s-rancor--emotionally-complex-creature",
     "cardUid": [
-      "2424880043"
+      "2424880043",
+      "7784267304"
     ],
-    "updatedAt": "2026-07-21T20:56:15.555Z",
+    "updatedAt": "2026-10-27T16:02:43.006Z",
     "name": "Boba Fett's Rancor, Emotionally Complex Creature",
     "title": "Boba Fett's Rancor",
     "subtitle": "Emotionally Complex Creature",
     "variants": {
+      "boba-fett-s-rancor--emotionally-complex-creature-284-2026-promo": {
+        "variantId": "boba-fett-s-rancor--emotionally-complex-creature-284-2026-promo",
+        "swuId": 68933,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 284,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "RQ Participation",
+        "artist": "Reno",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "boba-fett-s-rancor--emotionally-complex-creature-284-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "boba-fett-s-rancor--emotionally-complex-creature-179-ashes-of-the-empire": {
         "variantId": "boba-fett-s-rancor--emotionally-complex-creature-179-ashes-of-the-empire",
         "swuId": 52576,
@@ -214212,13 +214512,33 @@
   "jabba-the-hutt--eminence-of-tatooine": {
     "cardId": "jabba-the-hutt--eminence-of-tatooine",
     "cardUid": [
-      "7317430733"
+      "7317430733",
+      "5381588468"
     ],
-    "updatedAt": "2026-07-21T20:55:06.459Z",
+    "updatedAt": "2026-10-27T16:02:40.601Z",
     "name": "Jabba the Hutt, Eminence of Tatooine",
     "title": "Jabba the Hutt",
     "subtitle": "Eminence of Tatooine",
     "variants": {
+      "jabba-the-hutt--eminence-of-tatooine-282-2026-promo": {
+        "variantId": "jabba-the-hutt--eminence-of-tatooine-282-2026-promo",
+        "swuId": 68923,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 282,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "RQ Event Pack",
+        "artist": "Manos Sparakis",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "jabba-the-hutt--eminence-of-tatooine-282-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "jabba-the-hutt--eminence-of-tatooine-42-ashes-of-the-empire": {
         "variantId": "jabba-the-hutt--eminence-of-tatooine-42-ashes-of-the-empire",
         "swuId": 51892,
@@ -218752,13 +219072,33 @@
   "operation-cinder": {
     "cardId": "operation-cinder",
     "cardUid": [
-      "6062959089"
+      "6062959089",
+      "4242275970"
     ],
-    "updatedAt": "2026-07-21T20:56:01.092Z",
+    "updatedAt": "2026-10-27T16:02:27.318Z",
     "name": "Operation Cinder",
     "title": "Operation Cinder",
     "subtitle": null,
     "variants": {
+      "operation-cinder-268-2026-promo": {
+        "variantId": "operation-cinder-268-2026-promo",
+        "swuId": 68868,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 268,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Event Pack",
+        "artist": "Stephen Zavala",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "operation-cinder-268-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "operation-cinder-151-ashes-of-the-empire": {
         "variantId": "operation-cinder-151-ashes-of-the-empire",
         "swuId": 52436,
@@ -219281,13 +219621,33 @@
   "paz-vizsla--for-a-brighter-future": {
     "cardId": "paz-vizsla--for-a-brighter-future",
     "cardUid": [
-      "7107655724"
+      "7107655724",
+      "4104366416"
     ],
-    "updatedAt": "2026-07-21T20:54:45.090Z",
+    "updatedAt": "2026-10-27T16:02:37.044Z",
     "name": "Paz Vizsla, For a Brighter Future",
     "title": "Paz Vizsla",
     "subtitle": "For a Brighter Future",
     "variants": {
+      "paz-vizsla--for-a-brighter-future-279-2026-promo": {
+        "variantId": "paz-vizsla--for-a-brighter-future-279-2026-promo",
+        "swuId": 68908,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 279,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "RQ Event Pack",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "paz-vizsla--for-a-brighter-future-279-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "paz-vizsla--for-a-brighter-future-28-ashes-of-the-empire": {
         "variantId": "paz-vizsla--for-a-brighter-future-28-ashes-of-the-empire",
         "swuId": 51822,
@@ -221670,13 +222030,53 @@
   "red-leader--strike-the-reactor": {
     "cardId": "red-leader--strike-the-reactor",
     "cardUid": [
-      "0770708432"
+      "0770708432",
+      "2347357965",
+      "9549559838"
     ],
-    "updatedAt": "2026-06-03T19:01:43.598Z",
+    "updatedAt": "2026-10-27T16:02:01.011Z",
     "name": "Red Leader, Strike the Reactor",
     "title": "Red Leader",
     "subtitle": "Strike the Reactor",
     "variants": {
+      "red-leader--strike-the-reactor-247-2026-promo": {
+        "variantId": "red-leader--strike-the-reactor-247-2026-promo",
+        "swuId": 68763,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 247,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "red-leader--strike-the-reactor-247-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "red-leader--strike-the-reactor-259-2026-promo": {
+        "variantId": "red-leader--strike-the-reactor-259-2026-promo",
+        "swuId": 68823,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 259,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "red-leader--strike-the-reactor-259-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "red-leader--strike-the-reactor-37-ashes-of-the-empire": {
         "variantId": "red-leader--strike-the-reactor-37-ashes-of-the-empire",
         "swuId": 51867,
@@ -225217,13 +225617,33 @@
     "cardId": "the-cyborg-mech--mysterious-threat",
     "cardUid": [
       "7270609176",
-      "4156019795"
+      "4156019795",
+      "8139340863"
     ],
-    "updatedAt": "2026-06-26T18:32:02.802Z",
+    "updatedAt": "2026-10-27T16:02:41.815Z",
     "name": "The Cyborg Mech, Mysterious Threat",
     "title": "The Cyborg Mech",
     "subtitle": "Mysterious Threat",
     "variants": {
+      "the-cyborg-mech--mysterious-threat-283-2026-promo": {
+        "variantId": "the-cyborg-mech--mysterious-threat-283-2026-promo",
+        "swuId": 68928,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 283,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "RQ Event Pack",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "the-cyborg-mech--mysterious-threat-283-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "the-cyborg-mech--mysterious-threat-147-ashes-of-the-empire": {
         "variantId": "the-cyborg-mech--mysterious-threat-147-ashes-of-the-empire",
         "swuId": 52416,
@@ -225563,13 +225983,33 @@
   "the-mandalorian--devoted-rescuer": {
     "cardId": "the-mandalorian--devoted-rescuer",
     "cardUid": [
-      "1288292674"
+      "1288292674",
+      "7180079682"
     ],
-    "updatedAt": "2026-07-21T20:55:10.016Z",
+    "updatedAt": "2026-10-27T16:02:48.871Z",
     "name": "The Mandalorian, Devoted Rescuer",
     "title": "The Mandalorian",
     "subtitle": "Devoted Rescuer",
     "variants": {
+      "the-mandalorian--devoted-rescuer-289-2026-promo": {
+        "variantId": "the-mandalorian--devoted-rescuer-289-2026-promo",
+        "swuId": 68958,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 289,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "RQ Champion",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "the-mandalorian--devoted-rescuer-289-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "the-mandalorian--devoted-rescuer-62-ashes-of-the-empire": {
         "variantId": "the-mandalorian--devoted-rescuer-62-ashes-of-the-empire",
         "swuId": 51992,
@@ -227372,13 +227812,33 @@
     "cardId": "wicket--yub-nub-",
     "cardUid": [
       "2317484591",
-      "4800098984"
+      "4800098984",
+      "3051229731"
     ],
-    "updatedAt": "2026-07-21T20:54:58.130Z",
+    "updatedAt": "2026-10-27T16:02:34.763Z",
     "name": "Wicket, Yub Nub!",
     "title": "Wicket",
     "subtitle": "Yub Nub!",
     "variants": {
+      "wicket--yub-nub--274-2026-promo": {
+        "variantId": "wicket--yub-nub--274-2026-promo",
+        "swuId": 68898,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 274,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Finalist",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "wicket--yub-nub--274-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "wicket--yub-nub--34-ashes-of-the-empire": {
         "variantId": "wicket--yub-nub--34-ashes-of-the-empire",
         "swuId": 51852,
@@ -229224,13 +229684,53 @@
   "garnac--let-the-hunt-begin-": {
     "cardId": "garnac--let-the-hunt-begin-",
     "cardUid": [
-      "2004981626"
+      "2004981626",
+      "8596335991",
+      "2362560295"
     ],
-    "updatedAt": "2026-09-16T22:36:15.527Z",
+    "updatedAt": "2026-10-27T16:01:59.759Z",
     "name": "Garnac, Let the Hunt Begin!",
     "title": "Garnac",
     "subtitle": "Let the Hunt Begin!",
     "variants": {
+      "garnac--let-the-hunt-begin--246-2026-promo": {
+        "variantId": "garnac--let-the-hunt-begin--246-2026-promo",
+        "swuId": 68758,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 246,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Tomas Oleksak",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "garnac--let-the-hunt-begin--246-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "garnac--let-the-hunt-begin--258-2026-promo": {
+        "variantId": "garnac--let-the-hunt-begin--258-2026-promo",
+        "swuId": 68818,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 258,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Tomas Oleksak",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "garnac--let-the-hunt-begin--258-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "garnac--let-the-hunt-begin--104-homeworlds": {
         "variantId": "garnac--let-the-hunt-begin--104-homeworlds",
         "swuId": 59213,
@@ -229669,13 +230169,53 @@
   "victor-squadron--in-attack-formation": {
     "cardId": "victor-squadron--in-attack-formation",
     "cardUid": [
-      "8195968327"
+      "8195968327",
+      "5581851269",
+      "1510027908"
     ],
-    "updatedAt": "2026-09-16T22:38:15.655Z",
+    "updatedAt": "2026-10-27T16:02:04.602Z",
     "name": "Victor Squadron, In Attack Formation",
     "title": "Victor Squadron",
     "subtitle": "In Attack Formation",
     "variants": {
+      "victor-squadron--in-attack-formation-250-2026-promo": {
+        "variantId": "victor-squadron--in-attack-formation-250-2026-promo",
+        "swuId": 68778,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 250,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "victor-squadron--in-attack-formation-250-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "victor-squadron--in-attack-formation-262-2026-promo": {
+        "variantId": "victor-squadron--in-attack-formation-262-2026-promo",
+        "swuId": 68838,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 262,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "victor-squadron--in-attack-formation-262-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "victor-squadron--in-attack-formation-203-homeworlds": {
         "variantId": "victor-squadron--in-attack-formation-203-homeworlds",
         "swuId": 59708,
@@ -233848,13 +234388,33 @@
   "verdant-fortress": {
     "cardId": "verdant-fortress",
     "cardUid": [
-      "5665291544"
+      "5665291544",
+      "3638086741"
     ],
-    "updatedAt": "2026-09-16T22:36:41.639Z",
+    "updatedAt": "2026-10-27T16:02:26.140Z",
     "name": "Verdant Fortress",
     "title": "Verdant Fortress",
     "subtitle": null,
     "variants": {
+      "verdant-fortress-267-2026-promo": {
+        "variantId": "verdant-fortress-267-2026-promo",
+        "swuId": 68863,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 267,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Event Pack",
+        "artist": "Ignacio Bazan-Lazcano",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "verdant-fortress-267-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "verdant-fortress-126-homeworlds": {
         "variantId": "verdant-fortress-126-homeworlds",
         "swuId": 59323,
@@ -234116,13 +234676,33 @@
   "chewbacca--resourceful-wookiee": {
     "cardId": "chewbacca--resourceful-wookiee",
     "cardUid": [
-      "8860453492"
+      "8860453492",
+      "0720297446"
     ],
-    "updatedAt": "2026-09-16T22:36:30.386Z",
+    "updatedAt": "2026-10-27T16:02:35.929Z",
     "name": "Chewbacca, Resourceful Wookiee",
     "title": "Chewbacca",
     "subtitle": "Resourceful Wookiee",
     "variants": {
+      "chewbacca--resourceful-wookiee-275-2026-promo": {
+        "variantId": "chewbacca--resourceful-wookiee-275-2026-promo",
+        "swuId": 68903,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 275,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Champion",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "chewbacca--resourceful-wookiee-275-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "chewbacca--resourceful-wookiee-117-homeworlds": {
         "variantId": "chewbacca--resourceful-wookiee-117-homeworlds",
         "swuId": 59278,
@@ -236584,13 +237164,33 @@
   "mae--kill-the-dream": {
     "cardId": "mae--kill-the-dream",
     "cardUid": [
-      "3192928418"
+      "3192928418",
+      "3010511422"
     ],
-    "updatedAt": "2026-09-16T22:35:18.066Z",
+    "updatedAt": "2026-10-27T16:02:29.790Z",
     "name": "Mae, Kill the Dream",
     "title": "Mae",
     "subtitle": "Kill the Dream",
     "variants": {
+      "mae--kill-the-dream-270-2026-promo": {
+        "variantId": "mae--kill-the-dream-270-2026-promo",
+        "swuId": 68878,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 270,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Participation",
+        "artist": "EJ Dela Cruz",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "mae--kill-the-dream-270-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "mae--kill-the-dream-55-homeworlds": {
         "variantId": "mae--kill-the-dream-55-homeworlds",
         "swuId": 58968,
@@ -240919,13 +241519,53 @@
   "luke-skywalker--dreaming-farmboy": {
     "cardId": "luke-skywalker--dreaming-farmboy",
     "cardUid": [
-      "3854292375"
+      "3854292375",
+      "0611456277",
+      "7191544115"
     ],
-    "updatedAt": "2026-09-16T22:38:21.522Z",
+    "updatedAt": "2026-10-27T16:02:05.750Z",
     "name": "Luke Skywalker, Dreaming Farmboy",
     "title": "Luke Skywalker",
     "subtitle": "Dreaming Farmboy",
     "variants": {
+      "luke-skywalker--dreaming-farmboy-251-2026-promo": {
+        "variantId": "luke-skywalker--dreaming-farmboy-251-2026-promo",
+        "swuId": 68783,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 251,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luke-skywalker--dreaming-farmboy-251-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "luke-skywalker--dreaming-farmboy-263-2026-promo": {
+        "variantId": "luke-skywalker--dreaming-farmboy-263-2026-promo",
+        "swuId": 68843,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 263,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Kaihound Studios",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luke-skywalker--dreaming-farmboy-263-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "luke-skywalker--dreaming-farmboy-208-homeworlds": {
         "variantId": "luke-skywalker--dreaming-farmboy-208-homeworlds",
         "swuId": 59733,
@@ -242780,13 +243420,33 @@
   "boba-fett--family-found": {
     "cardId": "boba-fett--family-found",
     "cardUid": [
-      "9784392862"
+      "9784392862",
+      "1593912350"
     ],
-    "updatedAt": "2026-09-16T22:38:43.380Z",
+    "updatedAt": "2026-10-27T16:02:32.441Z",
     "name": "Boba Fett, Family Found",
     "title": "Boba Fett",
     "subtitle": "Family Found",
     "variants": {
+      "boba-fett--family-found-272-2026-promo": {
+        "variantId": "boba-fett--family-found-272-2026-promo",
+        "swuId": 68888,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 272,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Top 8",
+        "artist": "Wu Shenyou",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "boba-fett--family-found-272-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "boba-fett--family-found-225-homeworlds": {
         "variantId": "boba-fett--family-found-225-homeworlds",
         "swuId": 59818,
@@ -242879,13 +243539,33 @@
   "ima-gun-di--holding-out-for-resupply": {
     "cardId": "ima-gun-di--holding-out-for-resupply",
     "cardUid": [
-      "6561074658"
+      "6561074658",
+      "5930751253"
     ],
-    "updatedAt": "2026-09-16T22:35:04.835Z",
+    "updatedAt": "2026-10-27T16:02:22.409Z",
     "name": "Ima-Gun Di, Holding Out For Resupply",
     "title": "Ima-Gun Di",
     "subtitle": "Holding Out For Resupply",
     "variants": {
+      "ima-gun-di--holding-out-for-resupply-264-2026-promo": {
+        "variantId": "ima-gun-di--holding-out-for-resupply-264-2026-promo",
+        "swuId": 68848,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 264,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Event Pack",
+        "artist": "EJ Dela Cruz",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "ima-gun-di--holding-out-for-resupply-264-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "ima-gun-di--holding-out-for-resupply-44-homeworlds": {
         "variantId": "ima-gun-di--holding-out-for-resupply-44-homeworlds",
         "swuId": 58913,
@@ -244528,13 +245208,33 @@
   "luminara-unduli--besieged-general": {
     "cardId": "luminara-unduli--besieged-general",
     "cardUid": [
-      "5858234021"
+      "5858234021",
+      "4421690918"
     ],
-    "updatedAt": "2026-09-16T22:36:39.364Z",
+    "updatedAt": "2026-10-27T16:02:31.125Z",
     "name": "Luminara Unduli, Besieged General",
     "title": "Luminara Unduli",
     "subtitle": "Besieged General",
     "variants": {
+      "luminara-unduli--besieged-general-271-2026-promo": {
+        "variantId": "luminara-unduli--besieged-general-271-2026-promo",
+        "swuId": 68883,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 271,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Day Two",
+        "artist": "Miki Montlló",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "luminara-unduli--besieged-general-271-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "luminara-unduli--besieged-general-124-homeworlds": {
         "variantId": "luminara-unduli--besieged-general-124-homeworlds",
         "swuId": 59313,
@@ -249241,13 +249941,53 @@
   "fett-s-firespray--settling-the-score": {
     "cardId": "fett-s-firespray--settling-the-score",
     "cardUid": [
-      "0941615068"
+      "0941615068",
+      "7824602799",
+      "6676235042"
     ],
-    "updatedAt": "2026-09-16T22:35:15.661Z",
+    "updatedAt": "2026-10-27T16:01:53.951Z",
     "name": "Fett's Firespray, Settling the Score",
     "title": "Fett's Firespray",
     "subtitle": "Settling the Score",
     "variants": {
+      "fett-s-firespray--settling-the-score-241-2026-promo": {
+        "variantId": "fett-s-firespray--settling-the-score-241-2026-promo",
+        "swuId": 68733,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 241,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "fett-s-firespray--settling-the-score-241-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "fett-s-firespray--settling-the-score-253-2026-promo": {
+        "variantId": "fett-s-firespray--settling-the-score-253-2026-promo",
+        "swuId": 68793,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 253,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "fett-s-firespray--settling-the-score-253-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "fett-s-firespray--settling-the-score-53-homeworlds": {
         "variantId": "fett-s-firespray--settling-the-score-53-homeworlds",
         "swuId": 58958,
@@ -250338,13 +251078,53 @@
   "adamant-ewoks": {
     "cardId": "adamant-ewoks",
     "cardUid": [
-      "2238339364"
+      "2238339364",
+      "4579142583",
+      "0186776035"
     ],
-    "updatedAt": "2026-09-16T22:37:44.414Z",
+    "updatedAt": "2026-10-27T16:02:03.406Z",
     "name": "Adamant Ewoks",
     "title": "Adamant Ewoks",
     "subtitle": null,
     "variants": {
+      "adamant-ewoks-249-2026-promo": {
+        "variantId": "adamant-ewoks-249-2026-promo",
+        "swuId": 68773,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 249,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "adamant-ewoks-249-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "adamant-ewoks-261-2026-promo": {
+        "variantId": "adamant-ewoks-261-2026-promo",
+        "swuId": 68833,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 261,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "adamant-ewoks-261-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "adamant-ewoks-177-homeworlds": {
         "variantId": "adamant-ewoks-177-homeworlds",
         "swuId": 59578,
@@ -257928,13 +258708,33 @@
   "nuvo-vindi--blue-shadow-perfected": {
     "cardId": "nuvo-vindi--blue-shadow-perfected",
     "cardUid": [
-      "9689400738"
+      "9689400738",
+      "1066885366"
     ],
-    "updatedAt": "2026-09-16T22:35:26.117Z",
+    "updatedAt": "2026-10-27T16:02:23.629Z",
     "name": "Nuvo Vindi, Blue Shadow Perfected",
     "title": "Nuvo Vindi",
     "subtitle": "Blue Shadow Perfected",
     "variants": {
+      "nuvo-vindi--blue-shadow-perfected-265-2026-promo": {
+        "variantId": "nuvo-vindi--blue-shadow-perfected-265-2026-promo",
+        "swuId": 68853,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 265,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Event Pack",
+        "artist": "Miki Montlló",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "nuvo-vindi--blue-shadow-perfected-265-2026-promo-front.webp",
+          "back": null
+        }
+      },
       "nuvo-vindi--blue-shadow-perfected-62-homeworlds": {
         "variantId": "nuvo-vindi--blue-shadow-perfected-62-homeworlds",
         "swuId": 59003,
@@ -258019,6 +258819,390 @@
     "keywords": [],
     "traits": [
       "Separatist"
+    ]
+  },
+  "grand-inquisitor--how-the-mighty-will-fall": {
+    "cardId": "grand-inquisitor--how-the-mighty-will-fall",
+    "cardUid": [
+      "7949660930",
+      "9000780599",
+      "4369298974"
+    ],
+    "updatedAt": "2026-10-27T16:02:02.230Z",
+    "name": "Grand Inquisitor, How the Mighty Will Fall",
+    "title": "Grand Inquisitor",
+    "subtitle": "How the Mighty Will Fall",
+    "variants": {
+      "grand-inquisitor--how-the-mighty-will-fall-248-2026-promo": {
+        "variantId": "grand-inquisitor--how-the-mighty-will-fall-248-2026-promo",
+        "swuId": 68768,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 248,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "grand-inquisitor--how-the-mighty-will-fall-248-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "grand-inquisitor--how-the-mighty-will-fall-260-2026-promo": {
+        "variantId": "grand-inquisitor--how-the-mighty-will-fall-260-2026-promo",
+        "swuId": 68828,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 260,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Kyle Petchock",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "grand-inquisitor--how-the-mighty-will-fall-260-2026-promo-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 4,
+    "hp": 6,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "While this unit is damaged, he gains Raid 3 and Saboteur.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "set": "ic27",
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Aggression",
+      "Villainy"
+    ],
+    "keywords": [
+      "Raid",
+      "Saboteur"
+    ],
+    "traits": [
+      "Force",
+      "Imperial",
+      "Inquisitor"
+    ]
+  },
+  "i-ve-got-a-bad-feeling": {
+    "cardId": "i-ve-got-a-bad-feeling",
+    "cardUid": [
+      "5653144707",
+      "6468588697"
+    ],
+    "updatedAt": "2026-10-27T16:02:28.544Z",
+    "name": "I've Got A Bad Feeling",
+    "title": "I've Got A Bad Feeling",
+    "subtitle": null,
+    "variants": {
+      "i-ve-got-a-bad-feeling-166-icons-2027-edition": {
+        "variantId": "i-ve-got-a-bad-feeling-166-icons-2027-edition",
+        "swuId": 66713,
+        "set": "ic27",
+        "fullSetName": "Icons 2027 Edition",
+        "cardNo": 166,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "David Buisán",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "i-ve-got-a-bad-feeling-166-icons-2027-edition-front.webp",
+          "back": null
+        }
+      },
+      "i-ve-got-a-bad-feeling-269-2026-promo": {
+        "variantId": "i-ve-got-a-bad-feeling-269-2026-promo",
+        "swuId": 68873,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 269,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Event Pack",
+        "artist": "Wu Shenyou",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "i-ve-got-a-bad-feeling-269-2026-promo-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Event",
+    "rarity": "Uncommon",
+    "cost": 4,
+    "hp": null,
+    "power": null,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Return a non–leader unit to its owner's hand.\nGive a Shield token to a friendly unit.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "set": "ic27",
+    "arenas": [],
+    "aspects": [
+      "Cunning",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Innate"
+    ]
+  },
+  "admiral-holdo--we-are-the-spark": {
+    "cardId": "admiral-holdo--we-are-the-spark",
+    "cardUid": [
+      "5883053949",
+      "1700178112"
+    ],
+    "updatedAt": "2026-10-27T16:02:25.000Z",
+    "name": "Admiral Holdo, We Are the Spark",
+    "title": "Admiral Holdo",
+    "subtitle": "We Are the Spark",
+    "variants": {
+      "admiral-holdo--we-are-the-spark-266-2026-promo": {
+        "variantId": "admiral-holdo--we-are-the-spark-266-2026-promo",
+        "swuId": 68858,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 266,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Event Pack",
+        "artist": "Ignacio Bazan-Lazcano",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "admiral-holdo--we-are-the-spark-266-2026-promo-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 5,
+    "hp": 7,
+    "power": 3,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Draw 1 more card during the regroup phase.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "set": "ic27",
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Resistance",
+      "Official"
+    ]
+  },
+  "jar-jar-binks--bumbling-representative": {
+    "cardId": "jar-jar-binks--bumbling-representative",
+    "cardUid": [
+      "0533948424",
+      "5969823765"
+    ],
+    "updatedAt": "2026-10-27T16:02:33.602Z",
+    "name": "Jar Jar Binks, Bumbling Representative",
+    "title": "Jar Jar Binks",
+    "subtitle": "Bumbling Representative",
+    "variants": {
+      "jar-jar-binks--bumbling-representative-187-icons-2027-edition": {
+        "variantId": "jar-jar-binks--bumbling-representative-187-icons-2027-edition",
+        "swuId": 66818,
+        "set": "ic27",
+        "fullSetName": "Icons 2027 Edition",
+        "cardNo": 187,
+        "baseSet": true,
+        "hasNonfoil": true,
+        "hasFoil": false,
+        "variantName": "Standard",
+        "artist": "Aitor Prieto",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "jar-jar-binks--bumbling-representative-187-icons-2027-edition-front.webp",
+          "back": null
+        }
+      },
+      "jar-jar-binks--bumbling-representative-273-2026-promo": {
+        "variantId": "jar-jar-binks--bumbling-representative-273-2026-promo",
+        "swuId": 68893,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 273,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Top 4",
+        "artist": "Miki Montlló",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "jar-jar-binks--bumbling-representative-273-2026-promo-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 2,
+    "hp": 5,
+    "power": 1,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "On Attack: Discard a card from your deck. If it costs 6 or more, this unit gets +4/+0 for this attack.",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "set": "ic27",
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Heroism"
+    ],
+    "keywords": [],
+    "traits": [
+      "Republic",
+      "Gungan",
+      "Official"
+    ]
+  },
+  "captain-rex--staunch-advocate": {
+    "cardId": "captain-rex--staunch-advocate",
+    "cardUid": [
+      "9703210918",
+      "3094612218",
+      "0382017405"
+    ],
+    "updatedAt": "2026-10-27T16:01:56.267Z",
+    "name": "Captain Rex, Staunch Advocate",
+    "title": "Captain Rex",
+    "subtitle": "Staunch Advocate",
+    "variants": {
+      "captain-rex--staunch-advocate-243-2026-promo": {
+        "variantId": "captain-rex--staunch-advocate-243-2026-promo",
+        "swuId": 68743,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 243,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "captain-rex--staunch-advocate-243-2026-promo-front.webp",
+          "back": null
+        }
+      },
+      "captain-rex--staunch-advocate-255-2026-promo": {
+        "variantId": "captain-rex--staunch-advocate-255-2026-promo",
+        "swuId": 68803,
+        "set": "p26",
+        "fullSetName": "2026 Promo",
+        "cardNo": 255,
+        "baseSet": true,
+        "hasNonfoil": false,
+        "hasFoil": false,
+        "variantName": "SQ Prize Wall",
+        "artist": "Envar Entertainment",
+        "front": {
+          "horizontal": false
+        },
+        "image": {
+          "front": "captain-rex--staunch-advocate-255-2026-promo-front.webp",
+          "back": null
+        }
+      }
+    },
+    "type": "Unit",
+    "rarity": "Rare",
+    "cost": 7,
+    "hp": 5,
+    "power": 7,
+    "upgradeHp": null,
+    "upgradePower": null,
+    "deployBox": null,
+    "epicAction": "",
+    "rules": null,
+    "text": "Sentinel\nShielded\nRestore 3",
+    "front": {
+      "horizontal": false
+    },
+    "back": null,
+    "set": "ic27",
+    "arenas": [
+      "Ground"
+    ],
+    "aspects": [
+      "Vigilance",
+      "Heroism"
+    ],
+    "keywords": [
+      "Sentinel",
+      "Shielded",
+      "Restore"
+    ],
+    "traits": [
+      "Republic",
+      "Clone",
+      "Trooper"
     ]
   }
 }

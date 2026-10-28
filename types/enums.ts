@@ -28,6 +28,7 @@ export enum SwuSet {
   TS26 = 'ts26',
   ASH = 'ash',
   HMW = 'hmw',
+  IC27 = 'ic27',
 }
 
 export enum SwuAspect {
