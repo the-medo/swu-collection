@@ -28,7 +28,7 @@ test('text user IDs stay in one folder and public URLs address the exact stored 
   }
 });
 
-test('every environment uses the existing R2 bucket domain without a storage-mode option', () => {
+test('default image reads use the existing R2 bucket domain in every environment', () => {
   for (const environment of ['local', 'development', 'test', 'production', undefined]) {
     const storage = createUserFileStorage({ ...credentials, ENVIRONMENT: environment });
     expect(storage.available()).toBe(true);
@@ -45,4 +45,34 @@ test('missing R2 credentials disable writes without falling back to local storag
     await expect(storage.put(imageKey, new Uint8Array(1))).rejects.toMatchObject({ status: 503 });
     await expect(storage.remove(imageKey)).rejects.toMatchObject({ status: 503 });
   }
+});
+
+test('an explicit local preview only changes fixture keys and rejects writes to them', async () => {
+  const storage = createUserFileStorage({
+    ...credentials,
+    ENVIRONMENT: 'local',
+    USER_FILES_PREVIEW_BASE_URL: 'https://preview.example.test/demo-images/',
+  });
+  expect(storage.publicUrl('local-preview/album/a photo.png')).toBe(
+    'https://preview.example.test/demo-images/album/a%20photo.png',
+  );
+  expect(storage.publicUrl(imageKey)).toBe(`https://images.swubase.com/${imageKey}`);
+  expect(storage.available()).toBe(true);
+  await expect(storage.put('local-preview/photo.png', new Uint8Array(1))).rejects.toMatchObject({
+    status: 403,
+  });
+  await expect(storage.remove('local-preview/photo.png')).rejects.toMatchObject({ status: 403 });
+});
+
+test('a preview override cannot change production image URLs or availability', () => {
+  const storage = createUserFileStorage({
+    ...credentials,
+    ENVIRONMENT: 'production',
+    USER_FILES_PREVIEW_BASE_URL: 'https://preview.example.test/demo-images',
+  });
+  expect(storage.publicUrl(imageKey)).toBe(`https://images.swubase.com/${imageKey}`);
+  expect(storage.publicUrl('local-preview/photo.png')).toBe(
+    'https://images.swubase.com/local-preview/photo.png',
+  );
+  expect(storage.available()).toBe(true);
 });

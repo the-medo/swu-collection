@@ -269,7 +269,10 @@ export function createUserAlbumService(
           );
           if (!page.albums.length) return { ...page, albums: [] };
           const owners = await tx
-            .select({ albumId: albums.id, owner: { id: user.id, displayName: user.displayName } })
+            .select({
+              albumId: albums.id,
+              owner: { id: user.id, displayName: user.displayName, image: user.image },
+            })
             .from(albums)
             .innerJoin(user, eq(albums.userId, user.id))
             .where(
@@ -303,7 +306,7 @@ export function createUserAlbumService(
             throw missing();
           if (revision !== undefined && revision !== album.revision) throw conflict();
           const [owner] = await tx
-            .select({ id: user.id, displayName: user.displayName })
+            .select({ id: user.id, displayName: user.displayName, image: user.image })
             .from(user)
             .where(eq(user.id, album.userId));
           const rows = await tx

@@ -1,107 +1,73 @@
-import React from 'react';
+import type { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks';
+import { LeaderBaseArtwork } from '@/components/app/global/LeaderBaseArtwork';
+import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Trophy } from 'lucide-react';
-import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks';
-import { extractDeckNameFromBrackets } from '../../lib/extractDeckNameFromBrackets';
-import DeckAvatar from '@/components/app/global/DeckAvatar/DeckAvatar.tsx';
 
 interface BracketPlayerProps {
-  deck: TournamentDeckResponse | null;
-  username?: string | null;
-  isWinner?: boolean;
-  showScore?: boolean;
-  gameWins?: number;
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
-  onClick?: () => void;
-  isHighlighted?: boolean;
+  deck?: TournamentDeckResponse | null;
+  focusKey: string;
+  username: string | null;
+  score: number;
+  isWinner: boolean;
+  isHighlighted: boolean;
+  setHighlightedPlayer: (username: string | null) => void;
+  setSelectedDeckId: (deckId: string | undefined) => void;
 }
-
-const BracketPlayer: React.FC<BracketPlayerProps> = ({
+export default function BracketPlayer({
   deck,
-  username: matchUsername,
-  isWinner = false,
-  showScore = false,
-  gameWins = 0,
-  onMouseEnter,
-  onMouseLeave,
-  onClick,
-  isHighlighted = false,
-}) => {
-  const username = matchUsername || deck?.tournamentDeck.meleePlayerUsername;
-  if (!username) {
-    return (
-      <div className="h-16 rounded-md bg-muted/30 flex items-center justify-center text-muted-foreground px-4">
-        TBD
-      </div>
-    );
-  }
-
-  const hasArtwork = !!(deck?.deck?.leaderCardId1 || deck?.deck?.baseCardId);
-
+  focusKey,
+  username,
+  score,
+  isWinner,
+  isHighlighted,
+  setHighlightedPlayer,
+  setSelectedDeckId,
+}: BracketPlayerProps) {
+  const name = username || 'Unknown player';
   return (
-    <div
+    <button
+      type="button"
+      data-bracket-deck-trigger={focusKey}
+      disabled={!deck?.deck}
+      aria-label={`${name}, ${score} game wins${isWinner ? ', match winner' : ''}${deck?.deck ? '. View deck' : '. Deck unavailable'}`}
+      title={name}
+      onClick={() => deck?.deck && setSelectedDeckId(deck.deck.id)}
+      onMouseEnter={() => setHighlightedPlayer(username)}
+      onMouseLeave={() => setHighlightedPlayer(null)}
+      onFocus={() => setHighlightedPlayer(username)}
+      onBlur={() => setHighlightedPlayer(null)}
       className={cn(
-        'flex min-h-16 p-2 border rounded-md gap-2 transition-colors duration-200 min-w-[100px]',
-        !hasArtwork &&
-          'w-[150px] @[510px]/bracket-detail:w-[200px] @[810px]/bracket-detail:w-[260px]',
-        ' @[510px]/bracket-detail:min-w-[170px] @[810px]/bracket-detail:min-w-[250px]',
-        isWinner ? 'border-primary bg-primary/5' : 'border-muted-foreground/20',
-        isHighlighted ? 'bg-amber-500/20 border-amber-500' : '',
+        'flex min-h-16 w-full items-center gap-2 px-2.5 py-2 text-left transition-colors focus-visible:relative focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-ring focus-visible:-outline-offset-2 enabled:cursor-pointer enabled:hover:bg-primary/10',
+        isWinner && 'bg-primary/5',
+        isHighlighted && 'bg-primary/15',
       )}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      onClick={onClick}
     >
-      {hasArtwork && (
-        <div className="flex gap-1 shrink-0">
-          <DeckAvatar
-            leaderCardId={deck?.deck?.leaderCardId1}
-            baseCardId={deck?.deck?.baseCardId}
-            size="40"
-          />
-        </div>
+      {(deck?.deck?.leaderCardId1 || deck?.deck?.baseCardId) && (
+        <LeaderBaseArtwork
+          leaderId={deck.deck.leaderCardId1}
+          baseKey={deck.deck.baseCardId}
+          size="compact"
+        />
       )}
-      <div
+      <span className="min-w-0 flex-1">
+        <span
+          className={cn(
+            'block truncate text-xs',
+            isWinner ? 'font-semibold text-foreground' : 'font-medium text-muted-foreground',
+          )}
+        >
+          {name}
+        </span>
+      </span>
+      {isWinner && <Check className="size-3 shrink-0 text-primary" aria-label="Winner" />}
+      <span
         className={cn(
-          'flex min-w-0 flex-col justify-center overflow-hidden',
-          hasArtwork && 'hidden @[510px]/bracket-detail:flex',
+          'flex size-7 shrink-0 items-center justify-center rounded-md font-mono text-sm font-bold tabular-nums',
+          isWinner ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
         )}
       >
-        <div
-          className={cn(
-            'font-medium text-sm overflow-hidden',
-            hasArtwork
-              ? 'whitespace-nowrap text-ellipsis max-w-16 @[810px]/bracket-detail:max-w-32'
-              : 'break-words',
-            isHighlighted ? 'text-amber-700 dark:text-amber-300' : '',
-          )}
-        >
-          {username}
-        </div>
-        {deck?.deck?.name && (
-          <div className="text-xs text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis max-w-16 @[810px]/bracket-detail:max-w-32">
-            {extractDeckNameFromBrackets(deck.deck.name)}
-          </div>
-        )}
-      </div>
-      {showScore && (
-        <div
-          className={cn(
-            'ml-auto px-2 py-1 flex items-center justify-center rounded-md text-lg font-bold shrink-0 min-w-8 self-stretch flex items-center justify-center',
-            isWinner
-              ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'
-              : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
-          )}
-        >
-          {gameWins}
-        </div>
-      )}
-      {isWinner && deck?.tournamentDeck.placement === 1 && !showScore && (
-        <Trophy className="h-4 w-4 text-amber-500 ml-auto shrink-0" />
-      )}
-    </div>
+        {score}
+      </span>
+    </button>
   );
-};
-
-export default BracketPlayer;
+}

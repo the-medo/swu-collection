@@ -51,7 +51,7 @@ export function LeaderBaseArtwork({
   className,
   portraitClassName,
 }: LeaderBaseArtworkProps) {
-  const { data } = useCardList();
+  const { data, isError } = useCardList();
   const leader = data?.cards[leaderId ?? ''];
   const base = baseKey ? processBase(baseKey, data?.cards) : undefined;
   const baseCard = data?.cards[baseKey ?? ''] ?? base?.baseCard;
@@ -69,6 +69,7 @@ export function LeaderBaseArtwork({
   return (
     <div
       className={cn(artworkVariants({ size }), className)}
+      data-artwork-ready={!!data || isError}
       role="img"
       aria-label={label}
       title={label}

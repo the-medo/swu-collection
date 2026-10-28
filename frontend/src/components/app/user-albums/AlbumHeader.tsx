@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Images } from 'lucide-react';
+import { cn } from '@/lib/utils.ts';
 
 export function AlbumHeader({
   eyebrow,
@@ -10,6 +11,7 @@ export function AlbumHeader({
   actions,
   cover,
   heading = 'h2',
+  compact = false,
 }: {
   eyebrow: string;
   title: string;
@@ -19,6 +21,7 @@ export function AlbumHeader({
   actions?: ReactNode;
   cover?: string;
   heading?: 'h1' | 'h2';
+  compact?: boolean;
 }) {
   const Heading = heading;
   return (
@@ -36,30 +39,47 @@ export function AlbumHeader({
         )}
         <div className="absolute inset-0 bg-gradient-to-r from-[#17352e] via-[#17352e]/60 to-[#17352e]/20" />
       </div>
-      <div className="space-y-5 p-6 sm:p-8">
-        <p className="m-0! text-[10px]! font-semibold uppercase tracking-[0.2em] text-[#dce7a0]">
-          {eyebrow}
-        </p>
-        <div className="space-y-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <Heading className="m-0! min-w-0 break-words border-0! p-0! text-[28px]! font-semibold! leading-tight! tracking-[-0.04em]! sm:text-[36px]!">
-              {title}
-            </Heading>
-            {titleAction}
-          </div>
-          {metadata && (
-            <div className="flex flex-wrap items-center gap-2 text-xs text-[#fffaf0]/75 [overflow-wrap:anywhere]">
-              {metadata}
+      <div
+        className={cn(
+          'p-6 sm:p-8',
+          compact ? 'flex flex-wrap items-center justify-between gap-5 sm:p-6' : 'space-y-5',
+        )}
+      >
+        <div className={cn(compact ? 'min-w-0 flex-1 basis-72 space-y-2' : 'space-y-5')}>
+          <p className="m-0! text-[10px]! font-semibold uppercase tracking-[0.2em] text-[#dce7a0]">
+            {eyebrow}
+          </p>
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <Heading
+                className={cn(
+                  'm-0! min-w-0 break-words border-0! p-0! text-[28px]! font-semibold! leading-tight! tracking-[-0.04em]!',
+                  !compact && 'sm:text-[36px]!',
+                )}
+              >
+                {title}
+              </Heading>
+              {titleAction}
             </div>
-          )}
-          {description && (
-            <p className="m-0! max-w-2xl whitespace-pre-wrap break-words text-sm! leading-relaxed! text-[#fffaf0]/80">
-              {description}
-            </p>
-          )}
+            {metadata && (
+              <div className="flex flex-wrap items-center gap-2 text-xs text-[#fffaf0]/75 [overflow-wrap:anywhere]">
+                {metadata}
+              </div>
+            )}
+            {description && (
+              <p className="m-0! max-w-2xl whitespace-pre-wrap break-words text-sm! leading-relaxed! text-[#fffaf0]/80">
+                {description}
+              </p>
+            )}
+          </div>
         </div>
         {actions && (
-          <div className="flex flex-wrap items-center gap-2 border-t border-white/10 pt-5">
+          <div
+            className={cn(
+              'flex shrink-0 flex-wrap items-center gap-2',
+              compact ? 'ml-auto' : 'border-t border-white/10 pt-5',
+            )}
+          >
             {actions}
           </div>
         )}

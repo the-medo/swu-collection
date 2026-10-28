@@ -1,21 +1,19 @@
-import React, { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Trophy } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Link } from '@tanstack/react-router';
-import {
-  TournamentDeckResponse,
-  useGetTournamentDecks,
-} from '@/api/tournaments/useGetTournamentDecks';
+import { useGetTournamentDecks } from '@/api/tournaments/useGetTournamentDecks';
 import { useGetTournamentMatches } from '@/api/tournaments/useGetTournamentMatches';
 import { useGetTournament } from '@/api/tournaments/useGetTournament';
-import { useCardList } from '@/api/lists/useCardList';
+import { workspaceStyles } from '@/components/app/global/WorkspacePage/workspaceStyles';
+import { cn } from '@/lib/utils';
 import { BracketInfo } from '../../../../../../types/enums.ts';
-import { isLimitedFormat } from '../../../../../../types/Format.ts';
+import { isLimitedFormat } from '../../../../../../types/Format';
+import { bracketSize, buildBracket } from './bracketModel';
 import BracketRounds from './components/BracketRounds';
 import TournamentPlacements from './components/TournamentPlacements';
 import DeckViewer from './components/DeckViewer';
-
-import { buildBracket, bracketInfoToNumber } from './buildBracket.ts';
+import { TournamentNoBracket } from './components/TournamentNoBracket';
 
 interface TournamentTopBracketProps {
   tournamentId: string;
@@ -23,121 +21,181 @@ interface TournamentTopBracketProps {
   className?: string;
   compact?: boolean;
 }
-
-const TournamentTopBracket: React.FC<TournamentTopBracketProps> = ({
+export default function TournamentTopBracket({
   tournamentId,
   top = BracketInfo.TOP8,
   compact,
-}) => {
-  const { data: decksData, isLoading: isLoadingDecks } = useGetTournamentDecks(tournamentId);
-  const { data: matchesData, isLoading: isLoadingMatches } = useGetTournamentMatches(tournamentId);
+  className,
+}: TournamentTopBracketProps) {
+  const panelRef = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const returnFocusKey = useRef<string | null>(null);
+  const decksQuery = useGetTournamentDecks(tournamentId);
+  const matchesQuery = useGetTournamentMatches(tournamentId);
   const { data: tournamentData } = useGetTournament(tournamentId);
   const limited = isLimitedFormat(tournamentData?.tournament.format ?? 0);
-  const { data: cardListData } = useCardList();
   const [highlightedPlayer, setHighlightedPlayer] = useState<string | null>(null);
   const [selectedDeckId, setSelectedDeckId] = useState<string>();
-
-  // Extract top placements
-  const topDecks = useMemo(() => {
-    if (!decksData || !('data' in decksData)) return [];
-
-    const sortedDecks: TournamentDeckResponse[] = [...decksData.data]
-      .filter(
-        d =>
-          d.tournamentDeck.placement !== null &&
-          d.tournamentDeck.placement <= bracketInfoToNumber[top],
-      )
-      .sort((a, b) => (a.tournamentDeck.placement || 99) - (b.tournamentDeck.placement || 99));
-
-    return sortedDecks;
-  }, [decksData, top]);
-
-  const rounds = useMemo(
-    () => [...new Set(matchesData?.data.map(match => match.round) ?? [])].sort((a, b) => b - a),
-    [matchesData],
+  const [contentMinHeight, setContentMinHeight] = useState<number>();
+  const topDecks = useMemo(
+    () =>
+      (decksQuery.data?.data ?? [])
+        .filter(
+          d =>
+            d.tournamentDeck.placement !== null &&
+            d.tournamentDeck.placement > 0 &&
+            d.tournamentDeck.placement <= bracketSize[top],
+        )
+        .sort((a, b) => a.tournamentDeck.placement! - b.tournamentDeck.placement!),
+    [decksQuery.data, top],
   );
-  const bracketData = useMemo(
-    () => buildBracket(matchesData?.data ?? [], decksData?.data ?? [], top, limited),
-    [matchesData, decksData, top, limited],
+  const bracket = useMemo(
+    () => buildBracket(matchesQuery.data?.data ?? [], decksQuery.data?.data ?? [], top, limited),
+    [matchesQuery.data, decksQuery.data, top, limited],
   );
+  const hasBracket = bracket.some(round => round.length);
+  const champion = topDecks.find(deck => deck.tournamentDeck.placement === 1);
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) return;
+    if (selectedDeckId) {
+      const back = panel.querySelector<HTMLButtonElement>('[data-deck-back]');
+      back?.focus({ preventScroll: true });
+    } else if (returnFocusKey.current) {
+      const trigger = [
+        ...panel.querySelectorAll<HTMLButtonElement>('[data-bracket-deck-trigger]'),
+      ].find(button => button.dataset.bracketDeckTrigger === returnFocusKey.current);
+      trigger?.focus({ preventScroll: true });
+      returnFocusKey.current = null;
+    }
+  }, [selectedDeckId]);
 
-  if (isLoadingDecks || isLoadingMatches) {
+  const selectDeck = (deckId: string | undefined) => {
+    // Keep the tallest viewed content height until Back so loading or switching cannot pull the page up.
+    if (deckId) setContentMinHeight(contentRef.current?.getBoundingClientRect().height);
+    if (deckId)
+      returnFocusKey.current =
+        document.activeElement?.getAttribute('data-bracket-deck-trigger') ?? null;
+    setHighlightedPlayer(null);
+    setSelectedDeckId(deckId);
+  };
+  const interaction = { highlightedPlayer, setHighlightedPlayer, setSelectedDeckId: selectDeck };
+
+  if (decksQuery.isLoading || matchesQuery.isLoading)
     return (
-      <div className="w-full p-8">
-        <Skeleton className="h-64 w-full" />
+      <div className="rounded-xl border p-5" role="status">
+        <span className="sr-only">Loading tournament results…</span>
+        <Skeleton className="mb-4 h-10 w-60" />
+        <Skeleton className="h-80 w-full" />
+      </div>
+    );
+  if (decksQuery.isError)
+    return (
+      <div role="alert" className="rounded-xl border p-6 text-sm">
+        Unable to load tournament standings.{' '}
+        <Button
+          variant="outline"
+          size="sm"
+          className="ml-2"
+          onClick={() => void decksQuery.refetch()}
+        >
+          Try again
+        </Button>
+      </div>
+    );
+  if (!topDecks.length && !hasBracket && !matchesQuery.isError) {
+    if (limited) return null;
+    return (
+      <div className="rounded-xl border p-6 text-sm text-muted-foreground">
+        Final standings are not available yet.
       </div>
     );
   }
 
-  if (!topDecks.length && !bracketData) {
-    return null;
-  }
-
   return (
-    <div
-      className="bg-card rounded-md border shadow-xs p-3"
+    <section
+      ref={panelRef}
+      className={cn(workspaceStyles.panel, '@container/bracket p-4 @xl:p-5', className)}
       data-screenshot-target="tournament-bracket"
       data-tournament-id={tournamentId}
+      aria-label="Tournament results"
     >
-      <div className="flex flex-col lg:flex-row gap-4 justify-around flex-1">
-        {selectedDeckId ? (
-          <DeckViewer
-            selectedDeckId={selectedDeckId}
-            setSelectedDeckId={setSelectedDeckId}
-            compact={compact}
-          />
-        ) : top === BracketInfo.NONE ? (
-          // For "none" bracket type, show a message with a button to meta analysis
-          <div className="flex flex-1 flex-col items-center justify-center p-6 bg-accent rounded-lg">
-            <p className="text-center mb-8 italic">There is no TOP bracket for this tournament.</p>
-            <p className="text-center mb-2">You can check full meta analysis instead:</p>
-            <div className="flex flex-wrap gap-4 justify-center">
-              <Button asChild>
-                <Link to={`/tournaments/$tournamentId/meta`} params={{ tournamentId }}>
-                  Meta analysis
-                </Link>
-              </Button>
-              <Button asChild>
-                <Link to={`/tournaments/$tournamentId/matchups`} params={{ tournamentId }}>
-                  Matchups
-                </Link>
-              </Button>
-              <Button asChild>
-                <Link to={`/tournaments/$tournamentId/decks`} params={{ tournamentId }}>
-                  All decks
-                </Link>
-              </Button>
-              <Button asChild>
-                <Link to={`/tournaments/$tournamentId/card-stats`} params={{ tournamentId }}>
-                  Card statistics
-                </Link>
-              </Button>
-            </div>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h2
+          className={cn(
+            workspaceStyles.heading,
+            'flex items-center gap-2 text-[length:0.6875rem]! uppercase tracking-[0.14em]! text-muted-foreground',
+          )}
+        >
+          <Trophy className="size-3.5 text-primary" /> Tournament results{' '}
+          {top !== BracketInfo.NONE && (
+            <span className="rounded border px-1.5 py-0.5 tracking-normal">
+              Top {bracketSize[top]}
+            </span>
+          )}
+        </h2>
+        {champion && top !== BracketInfo.NONE && (
+          <div className="flex min-w-0 items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-xs">
+            <Trophy className="size-4 shrink-0 text-primary" />
+            <span className="text-muted-foreground">Champion</span>
+            <span
+              className="truncate font-semibold"
+              title={champion.tournamentDeck.meleePlayerUsername ?? undefined}
+            >
+              {champion.tournamentDeck.meleePlayerUsername ?? 'Unknown player'}
+            </span>
           </div>
-        ) : (
-          <BracketRounds
-            bracketData={bracketData}
-            rounds={rounds}
-            top={top}
-            highlightedPlayer={highlightedPlayer}
-            setHighlightedPlayer={setHighlightedPlayer}
-            setSelectedDeckId={setSelectedDeckId}
-          />
-        )}
-        {topDecks.length > 0 && (
-          <TournamentPlacements
-            topDecks={topDecks}
-            top={top}
-            highlightedPlayer={highlightedPlayer}
-            setHighlightedPlayer={setHighlightedPlayer}
-            selectedDeckId={selectedDeckId}
-            setSelectedDeckId={setSelectedDeckId}
-            cardListData={cardListData}
-          />
         )}
       </div>
-    </div>
+      <div
+        className={cn(
+          'grid items-start gap-4',
+          topDecks.length > 0 && '@[900px]/bracket:grid-cols-[276px_minmax(0,1fr)]',
+        )}
+      >
+        {topDecks.length > 0 && (
+          <TournamentPlacements
+            hasTopCut={top !== BracketInfo.NONE}
+            topDecks={topDecks}
+            selectedDeckId={selectedDeckId}
+            {...interaction}
+          />
+        )}
+        <div
+          ref={contentRef}
+          className="min-w-0"
+          style={{ minHeight: selectedDeckId ? contentMinHeight : undefined }}
+        >
+          {selectedDeckId ? (
+            <DeckViewer
+              backLabel="Back to tournament results"
+              selectedDeckId={selectedDeckId}
+              setSelectedDeckId={selectDeck}
+              compact={compact}
+            />
+          ) : top === BracketInfo.NONE ? (
+            <TournamentNoBracket tournamentId={tournamentId} />
+          ) : matchesQuery.isError ? (
+            <div role="alert" className="rounded-xl border p-6 text-sm">
+              Unable to load match results.{' '}
+              <Button
+                size="sm"
+                variant="outline"
+                className="ml-2"
+                onClick={() => void matchesQuery.refetch()}
+              >
+                Try again
+              </Button>
+            </div>
+          ) : hasBracket ? (
+            <BracketRounds bracket={bracket} {...interaction} />
+          ) : (
+            <p className="rounded-xl border bg-muted/20 p-8 text-center text-sm text-muted-foreground">
+              Match results are not available. You can still explore the final standings.
+            </p>
+          )}
+        </div>
+      </div>
+    </section>
   );
-};
-
-export default TournamentTopBracket;
+}

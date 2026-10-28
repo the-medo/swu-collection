@@ -1,126 +1,99 @@
-import React from 'react';
-import { BracketInfo } from '../../../../../../../types/enums.ts';
-import { MatchData } from '@/components/app/tournaments/lib/tournamentLib.ts';
-import BracketPlayer from './BracketPlayer';
+import { MoveHorizontal, Trophy } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { roundName, winnerUsername, type BracketMatch } from '../bracketModel';
+import BracketMatchCard, { type BracketInteractionProps } from './BracketMatchCard';
 
-// Function to get round name based on round index and bracket type
-const getRoundName = (
-  roundIndex: number,
-  top: BracketInfo,
-  rounds: number[],
-  isLastRound: boolean,
-): string => {
-  // If it's the last round, it's always the Finals
-  if (isLastRound) {
-    return 'Finals';
-  }
-
-  // Define round names based on bracket type and round index
-  const roundNames: Record<BracketInfo, Record<number, string>> = {
-    [BracketInfo.TOP16]: {
-      0: 'Round of 16',
-      1: 'Quarterfinals',
-      2: 'Semifinals',
-    },
-    [BracketInfo.TOP8]: {
-      0: 'Quarterfinals',
-      1: 'Semifinals',
-    },
-    [BracketInfo.TOP4]: {
-      0: 'Semifinals',
-    },
-    [BracketInfo.NONE]: {},
-  };
-
-  // Return the round name if it exists in the mapping, otherwise use the default format
-  return roundNames[top]?.[roundIndex] || `Round ${rounds[roundIndex]}`;
-};
-
-interface BracketRoundsProps {
-  bracketData: MatchData[][] | null;
-  rounds: number[];
-  top: BracketInfo;
-  highlightedPlayer: string | null;
-  setHighlightedPlayer: (username: string | null) => void;
-  setSelectedDeckId: (deckId: string | undefined) => void;
-}
-
-const BracketRounds: React.FC<BracketRoundsProps> = ({
-  bracketData,
-  rounds,
-  top,
-  highlightedPlayer,
-  setHighlightedPlayer,
-  setSelectedDeckId,
-}) => {
-  if (!bracketData) return null;
-
+const gap = 24;
+const rowHeight = 176;
+export default function BracketRounds({
+  bracket,
+  ...interaction
+}: BracketInteractionProps & { bracket: BracketMatch[][] }) {
+  const columnWidth = 250;
+  const height = Math.max(
+    ...bracket.map((round, i) => round.length * 2 ** i * rowHeight),
+    rowHeight,
+  );
+  const width = bracket.length * columnWidth + (bracket.length - 1) * gap;
+  const hasDecks = bracket.some(round =>
+    round.some(entry => entry.player1?.deck || entry.player2?.deck),
+  );
   return (
-    <div className="flex-1 max-w-[850px] overflow-x-auto">
-      <div className="flex min-w-max gap-4 @container/bracket-detail">
-        {bracketData.map((round, roundIndex) => (
-          <div
-            key={roundIndex}
-            className="flex shrink-0 flex-col w-[150px] @[510px]/bracket-detail:w-[200px] @[810px]/bracket-detail:w-[260px]"
+    <div className="min-w-0">
+      <p className="mb-3 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+        <MoveHorizontal className="size-3.5 shrink-0" /> Scroll to explore rounds
+        {hasDecks && ' · Select a player to view their deck'}
+      </p>
+      <div
+        className="overflow-x-auto rounded-xl border bg-muted/20 p-3"
+        tabIndex={0}
+        role="region"
+        aria-label="Elimination bracket, scroll horizontally for later rounds"
+      >
+        <div className="relative mx-auto" style={{ width }}>
+          <svg
+            className="pointer-events-none absolute left-0 top-9 text-border"
+            width={width}
+            height={height}
+            aria-hidden="true"
           >
-            <h4 className="text-center font-medium mb-4 text-muted-foreground">
-              {getRoundName(roundIndex, top, rounds, roundIndex === bracketData.length - 1)}
-            </h4>
-
-            <div className="flex flex-col">
-              {round.map((match, matchIndex) => {
-                const matchHeight = 2 ** roundIndex * 150; // Progressively increase the height
-
+            {bracket.slice(0, -1).flatMap((round, r) =>
+              round.map((entry, m) => {
+                const winner = winnerUsername(entry);
+                const next = winner
+                  ? bracket[r + 1].findIndex(
+                      e => e.match.p1Username === winner || e.match.p2Username === winner,
+                    )
+                  : -1;
+                if (next < 0) return null;
+                const x = r * (columnWidth + gap) + columnWidth;
+                const y = (m + 0.5) * 2 ** r * rowHeight;
+                const nextY = (next + 0.5) * 2 ** (r + 1) * rowHeight;
                 return (
-                  <div
-                    key={matchIndex}
-                    className="flex flex-col relative"
-                    style={{ height: matchHeight }}
-                  >
-                    <div className="flex items-center h-full">
-                      <div className="flex flex-col gap-1 absolute top-1/2 -translate-y-1/2 transform">
-                        <BracketPlayer
-                          deck={match.player1}
-                          username={match.p1Username}
-                          isWinner={match.winnerUsername === match.p1Username}
-                          showScore={true}
-                          gameWins={match.gameWins}
-                          isHighlighted={highlightedPlayer === match.p1Username}
-                          onMouseEnter={() => setHighlightedPlayer(match.p1Username)}
-                          onMouseLeave={() => setHighlightedPlayer(null)}
-                          onClick={() =>
-                            match.player1 && setSelectedDeckId(match.player1.tournamentDeck.deckId)
-                          }
-                        />
-                        {/*<div className="h-px bg-muted-foreground/30 mx-2"></div>*/}
-                        <BracketPlayer
-                          deck={match.player2}
-                          username={match.p2Username}
-                          isWinner={
-                            !!match.winnerUsername && match.winnerUsername === match.p2Username
-                          }
-                          showScore={true}
-                          gameWins={match.gameLosses}
-                          isHighlighted={highlightedPlayer === match.p2Username}
-                          onMouseEnter={() =>
-                            match.p2Username && setHighlightedPlayer(match.p2Username)
-                          }
-                          onMouseLeave={() => setHighlightedPlayer(null)}
-                          onClick={() =>
-                            match.player2 && setSelectedDeckId(match.player2.tournamentDeck.deckId)
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
+                  <path
+                    key={entry.match.id}
+                    d={`M ${x} ${y} H ${x + gap / 2} V ${nextY} H ${x + gap}`}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={interaction.highlightedPlayer === winner ? 2 : 1.5}
+                    className={cn(interaction.highlightedPlayer === winner && 'text-primary')}
+                  />
                 );
-              })}
-            </div>
+              }),
+            )}
+          </svg>
+          <div className="relative flex" style={{ gap }}>
+            {bracket.map((round, r) => (
+              <section key={r} style={{ width: columnWidth }} className="shrink-0">
+                <div className="flex h-9 items-start justify-between">
+                  <span className="flex items-center gap-2 text-xs font-semibold">
+                    {r === bracket.length - 1 && <Trophy className="size-3.5 text-primary" />}
+                    {roundName(r, bracket.length)}
+                  </span>
+                  <span className="font-mono text-[10px] text-muted-foreground">
+                    {String(r + 1).padStart(2, '0')}
+                  </span>
+                </div>
+                {round.length ? (
+                  round.map(entry => (
+                    <div
+                      key={entry.match.id}
+                      className="flex items-center"
+                      style={{ height: 2 ** r * rowHeight }}
+                    >
+                      <BracketMatchCard entry={entry} {...interaction} className="w-full" />
+                    </div>
+                  ))
+                ) : (
+                  <p className="py-10 text-center text-xs text-muted-foreground">
+                    Round data unavailable
+                  </p>
+                )}
+              </section>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );
-};
-
-export default BracketRounds;
+}

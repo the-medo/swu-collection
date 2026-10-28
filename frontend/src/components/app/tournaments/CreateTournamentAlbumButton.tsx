@@ -5,15 +5,22 @@ import { useUser } from '@/hooks/useUser.ts';
 import { Button } from '@/components/ui/button.tsx';
 import SignIn from '@/components/app/auth/SignIn.tsx';
 import { AlbumForm } from '@/components/app/user-albums/AlbumForm.tsx';
+import { cn } from '@/lib/utils.ts';
 
 export function CreateTournamentAlbumButton({
   tournamentId,
   tournamentName,
   compact = false,
+  appearance = 'album',
+  label = 'Create album',
+  className,
 }: {
   tournamentId: string;
   tournamentName: string;
   compact?: boolean;
+  appearance?: 'album' | 'primary';
+  label?: string;
+  className?: string;
 }) {
   const viewer = useUser();
   const navigate = useNavigate();
@@ -24,14 +31,16 @@ export function CreateTournamentAlbumButton({
       ref={createButton}
       variant={compact ? 'outline' : 'default'}
       size={compact ? 'sm' : 'default'}
-      className={
-        compact
-          ? 'h-8 w-full gap-1.5 text-xs'
-          : 'rounded-xl bg-[#dce7a0] text-[#17352e] shadow-none hover:bg-[#edf3c5]'
-      }
+      className={cn(
+        compact ? 'h-8 w-full gap-1.5 text-xs' : 'rounded-xl',
+        !compact &&
+          appearance === 'album' &&
+          'bg-[#dce7a0] text-[#17352e] shadow-none hover:bg-[#edf3c5]',
+        className,
+      )}
       onClick={viewer ? () => setCreating(true) : undefined}
     >
-      <Plus className={compact ? 'size-3.5' : 'size-4'} /> Create album
+      <Plus className={compact ? 'size-3.5' : 'size-4'} aria-hidden="true" /> {label}
     </Button>
   );
   return (
