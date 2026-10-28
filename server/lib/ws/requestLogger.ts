@@ -1,5 +1,6 @@
 import type { MiddlewareHandler } from 'hono';
 import { logger } from 'hono/logger';
+import { isSensitiveAuthUrl } from '../../../shared/auth.ts';
 
 function websocketEndpoint(path: string) {
   if (/^\/api\/ws\/events\/?$/.test(path)) return 'app-events';
@@ -20,6 +21,12 @@ export function requestLogger({
   let timer: ReturnType<typeof setTimeout> | undefined;
 
   return async (c, next) => {
+    // Both token query parameters and /reset-password/:token paths are secrets.
+    if (isSensitiveAuthUrl(c.req.path)) {
+      await next();
+      print(`[auth] ${c.req.method} ${c.res.status}`);
+      return;
+    }
     const endpoint = websocketEndpoint(c.req.path);
     if (
       !endpoint ||

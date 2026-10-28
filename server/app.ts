@@ -64,6 +64,7 @@ import { timeout } from 'hono/timeout';
 import fs from 'fs';
 import path from 'path';
 import * as Sentry from '@sentry/bun';
+import { isSensitiveAuthUrl } from '../shared/auth.ts';
 
 Sentry.init({
   environment: process.env.ENVIRONMENT,
@@ -71,7 +72,27 @@ Sentry.init({
   tracesSampleRate: 1.0,
   ignoreTransactions: [/\/api\/calendar(?:\/|$)/, /\/api\/auth(?:\/|$)/, /\/mcp(?:\/|$)/],
   enableLogs: process.env.ENVIRONMENT !== 'local',
+  beforeSendLog(log) {
+    return isSensitiveAuthUrl(JSON.stringify(log)) ? null : log;
+  },
+  beforeBreadcrumb(breadcrumb) {
+    const detail = JSON.stringify(breadcrumb);
+    return isSensitiveAuthUrl(detail) || detail.includes('api.resend.com') ? null : breadcrumb;
+  },
   beforeSend(event) {
+    if (event.tags?.auth_redacted === true) {
+      // Keep outage alerts without retaining request integrations, user context,
+      // breadcrumbs or action URLs attached by the SDK.
+      return {
+        event_id: event.event_id,
+        timestamp: event.timestamp,
+        level: 'error',
+        message: 'Authentication request failed.',
+        tags: { area: 'authentication' },
+        environment: process.env.ENVIRONMENT,
+      };
+    }
+    if (isSensitiveAuthUrl(event.request?.url)) return null;
     if (
       event.request?.url?.includes('/api/creator-hub') ||
       event.request?.url?.includes('/api/admin/creator-imports') ||
@@ -94,7 +115,8 @@ Sentry.init({
     return event;
   },
   beforeSendTransaction(event) {
-    return event.request?.url?.includes('/api/creator-hub') ||
+    return isSensitiveAuthUrl(event.request?.url) ||
+      event.request?.url?.includes('/api/creator-hub') ||
       event.request?.url?.includes('/api/admin/creator-imports') ||
       isCalendarFeedRequest(event.request?.url) ||
       /\/(?:api\/auth|api\/mcp|mcp)(?:[/?#]|$)/.test(event.request?.url ?? '') ||
@@ -114,6 +136,8 @@ Sentry.init({
 
 const app = new Hono<AuthExtension>().onError((err, c) => {
   if (err instanceof ProfanityError) return err.getResponse();
+  if (isSensitiveAuthUrl(c.req.path))
+    return c.json({ message: 'Authentication request failed.' }, 500);
   Sentry.withScope(scope => {
     scope.setTransactionName((c.req as any).routePath || c.req.path);
     const user = c.get('user');
@@ -132,6 +156,16 @@ app.get('/.well-known/oauth-authorization-server/api/auth', c =>
     ? oauthProviderAuthServerMetadata(auth)(c.req.raw)
     : c.json({ message: 'MCP is not enabled.' }, 404),
 );
+app.use('/auth/*', async (c, next) => {
+  await next();
+  c.header('Referrer-Policy', 'no-referrer');
+  c.header('Cache-Control', 'no-store');
+});
+app.use('/api/auth/*', async (c, next) => {
+  await next();
+  c.header('Referrer-Policy', 'no-referrer');
+  c.header('Cache-Control', 'no-store');
+});
 const logRequest = requestLogger();
 app.use('*', async (c, next) => {
   if (
@@ -172,7 +206,13 @@ app.use('*', async (c, next) => {
 app.use('*', async (c, next) => {
   await next();
   if (c.res.status >= 500) {
-    Sentry.captureMessage(`${c.res.status}: ${c.req.method} ${c.req.path} `, 'error');
+    if (isSensitiveAuthUrl(c.req.path))
+      Sentry.captureEvent({
+        level: 'error',
+        message: 'Authentication request failed.',
+        tags: { auth_redacted: true },
+      });
+    else Sentry.captureMessage(`${c.res.status}: ${c.req.method} ${c.req.path} `, 'error');
   }
 });
 

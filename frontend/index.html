@@ -3,18 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./src/assets/logo_icon.svg" />
-      <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,1&display=swap" rel="stylesheet">
+    <link
+      href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,1&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="referrer" content="no-referrer" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>SWU Base</title>
     <meta property="og:title" content="SWU Base - All-in-one SWU Tool" />
-    <meta property="og:description" content="Create your SWU decks, track your card collection, and manage wantlists..." />
+    <meta
+      property="og:description"
+      content="Create your SWU decks, track your card collection, and manage wantlists..."
+    />
     <meta property="og:image" content="https://images.swubase.com/discord-logo.png" />
     <meta property="og:url" content="https://swubase.com" />
     <meta property="og:type" content="website" />
-    <script src="https://cdn.amplitude.com/script/765bba355a5778baad5eb2ba8c58fa6a.js"></script>
+
     <script>
-      if (location.hostname !== 'localhost') {
-        window.amplitude.init('765bba355a5778baad5eb2ba8c58fa6a', {"fetchRemoteConfig": true, "autocapture": true});
+      // Auth pages contain private action URLs and must never initialize analytics.
+      if (location.hostname !== 'localhost' && !/^\/auth(?:\/|$)/.test(location.pathname)) {
+        const analyticsScript = document.createElement('script');
+        analyticsScript.src =
+          'https://cdn.amplitude.com/script/765bba355a5778baad5eb2ba8c58fa6a.js';
+        analyticsScript.onload = () => {
+          window.amplitude.add({
+            name: 'exclude-private-auth',
+            type: 'enrichment',
+            execute: async event => {
+              if (
+                document.querySelector('[data-auth-private]') ||
+                /\/(?:api\/)?auth(?:[/?#]|$)/.test(JSON.stringify(event)) ||
+                /^\/auth(?:\/|$)/.test(location.pathname)
+              )
+                return undefined;
+              return event;
+            },
+          });
+          window.amplitude.init('765bba355a5778baad5eb2ba8c58fa6a', {
+            fetchRemoteConfig: true,
+            autocapture: true,
+          });
+        };
+        document.head.appendChild(analyticsScript);
       }
     </script>
   </head>

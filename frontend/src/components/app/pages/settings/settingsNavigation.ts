@@ -8,12 +8,14 @@ import {
   PanelLeft,
   Plug,
   SlidersHorizontal,
+  ShieldCheck,
   UserRound,
   Users,
 } from 'lucide-react';
 
 export const settingsItems = [
   { id: 'profile', label: 'Profile', icon: UserRound },
+  { id: 'security', label: 'Sign-in & security', icon: ShieldCheck },
   { id: 'uploads', label: 'Uploads', icon: Images },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'collections-and-wantlists', label: 'Collections and wantlists', icon: BookOpen },

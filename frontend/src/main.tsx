@@ -12,6 +12,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { TooltipProvider } from '@/components/ui/tooltip.tsx';
 import * as Sentry from '@sentry/react';
 import { isSensitiveMcpUrl } from '@/lib/mcpPrivacy.ts';
+import { isSensitiveAuthUrl } from '../../shared/auth.ts';
 
 const router = createRouter({ routeTree });
 
@@ -26,20 +27,47 @@ Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_FRONTEND_DSN,
   environment: import.meta.env.VITE_ENVIRONMENT,
   enableLogs: true,
-  integrations: [Sentry.consoleLoggingIntegration({ levels: ['warn', 'error'] })],
-  beforeSend: event =>
-    isSensitiveMcpUrl(window.location.href) || isSensitiveMcpUrl(event.request?.url) ? null : event,
-  beforeSendTransaction: event =>
-    isSensitiveMcpUrl(window.location.href) || isSensitiveMcpUrl(event.request?.url) ? null : event,
-  beforeSendLog: log => (isSensitiveMcpUrl(window.location.href) ? null : log),
-  beforeBreadcrumb: breadcrumb => {
+  beforeSendLog(log) {
     if (
       isSensitiveMcpUrl(window.location.href) ||
-      [breadcrumb.data?.url, breadcrumb.data?.from, breadcrumb.data?.to].some(isSensitiveMcpUrl)
+      isSensitiveAuthUrl(window.location.href) ||
+      document.querySelector('[data-auth-private]') ||
+      isSensitiveAuthUrl(JSON.stringify(log))
+    )
+      return null;
+    return log;
+  },
+  beforeBreadcrumb(breadcrumb) {
+    if (
+      isSensitiveMcpUrl(window.location.href) ||
+      [breadcrumb.data?.url, breadcrumb.data?.from, breadcrumb.data?.to].some(isSensitiveMcpUrl) ||
+      isSensitiveAuthUrl(window.location.href) ||
+      isSensitiveAuthUrl(JSON.stringify(breadcrumb))
     )
       return null;
     return breadcrumb;
   },
+  beforeSend(event) {
+    if (
+      isSensitiveMcpUrl(window.location.href) ||
+      isSensitiveMcpUrl(event.request?.url) ||
+      isSensitiveAuthUrl(window.location.href) ||
+      isSensitiveAuthUrl(event.request?.url)
+    )
+      return null;
+    return event;
+  },
+  beforeSendTransaction(event) {
+    if (
+      isSensitiveMcpUrl(window.location.href) ||
+      isSensitiveMcpUrl(event.request?.url) ||
+      isSensitiveAuthUrl(window.location.href) ||
+      isSensitiveAuthUrl(event.request?.url)
+    )
+      return null;
+    return event;
+  },
+  integrations: [Sentry.consoleLoggingIntegration({ levels: ['warn', 'error'] })],
 });
 
 createRoot(document.getElementById('root')!).render(

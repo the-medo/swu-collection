@@ -666,6 +666,13 @@
       "when": 1793198889384,
       "tag": "0094_limited_matches_without_decks",
       "breakpoints": true
+    },
+    {
+      "idx": 95,
+      "version": "7",
+      "when": 1793224189790,
+      "tag": "0095_auth_email_outbox",
+      "breakpoints": true
     }
   ]
 }

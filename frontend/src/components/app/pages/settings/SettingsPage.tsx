@@ -1,3 +1,4 @@
+import SecuritySettings from './SecuritySettings.tsx';
 import NotificationSettings from './NotificationSettings.tsx';
 import CollectionAndWantlistSettings from './CollectionAndWantlistSettings.tsx';
 import UserSettings from './UserSettings.tsx';
@@ -83,6 +84,7 @@ export function SettingsPage() {
               {page === 'uploads' && <UploadsSettings />}
               {page === 'collections-and-wantlists' && <CollectionAndWantlistSettings />}
               {page === 'profile' && <UserSettings />}
+              {page === 'security' && <SecuritySettings />}
               {page === 'integrations' && <IntegrationsSettings />}
               {page === 'watched-players' && <WatchedPlayersSettings />}
               {page === 'calendar' && <CalendarWeekStart />}
