@@ -23,6 +23,8 @@ import { parseTextToSwubase } from '../decks/deckConverterService.tsx';
 import { cardList } from '../../db/lists.ts';
 import { updateDeckInformation } from '../decks/updateDeckInformation.ts';
 import { batchArray } from '../utils/batch.ts';
+import { isLimitedFormat } from '../../../types/Format.ts';
+import { importLimitedTournamentMatches } from './limitedTournamentImport.ts';
 
 export async function runTournamentImport(
   tournamentId: string,
@@ -44,6 +46,13 @@ export async function runTournamentImport(
   let roundId: number | undefined;
 
   const tournamentView = await fetchTournamentView(meleeTournamentId);
+  if (isLimitedFormat(t.format)) {
+    await importLimitedTournamentMatches(t, tournamentView?.rounds ?? [], {
+      forcedRoundId,
+      rounds: selectedRoundNumbers,
+    });
+    return;
+  }
   if (forcedRoundId && forcedRoundId !== '') {
     roundId = parseInt(forcedRoundId);
     console.log('Forced round id: ', roundId);

@@ -6,6 +6,7 @@ import {
   type TournamentScreenshotTarget,
 } from '../../../types/Screenshotter.ts';
 import { db } from '../../db';
+import { isLimitedFormat } from '../../../types/Format.ts';
 import { screenshotter } from '../../db/schema/screenshotter.ts';
 import { tournament } from '../../db/schema/tournament.ts';
 import {
@@ -243,6 +244,19 @@ export async function sendTournamentResultsDiscordMessage({
   config,
   fetchFn,
 }: SendTournamentResultsDiscordMessageOptions): Promise<TournamentResultsDiscordResult> {
+  const [event] = await db
+    .select({ format: tournament.format })
+    .from(tournament)
+    .where(eq(tournament.id, tournamentId))
+    .limit(1);
+  if (event && isLimitedFormat(event.format)) {
+    return {
+      status: 'skipped',
+      tournamentId,
+      reason: 'Discord result notifications are disabled for limited tournaments.',
+    };
+  }
+
   const resolvedConfig =
     config ?? getTournamentResultsDiscordConfig({ requireConfigured: !dryRun });
   const identity = getTournamentResultsDiscordNotificationIdentity(tournamentId);

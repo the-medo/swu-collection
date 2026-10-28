@@ -15,13 +15,11 @@ export const tournamentMatch = pgTable(
     round: integer('round').notNull(),
 
     p1Username: varchar('p1_username', { length: 255 }).notNull(),
-    p1DeckId: uuid('p1_deck_id')
-      .notNull()
-      .references(() => deck.id), // references decks table
+    p1DeckId: uuid('p1_deck_id').references(() => deck.id), // optional for limited matches
     p1Points: integer('p1_points').notNull(),
 
     p2Username: varchar('p2_username', { length: 255 }), //nullable because of BYE
-    p2DeckId: uuid('p2_deck_id').references(() => deck.id), // references decks table, nullable because of BYE
+    p2DeckId: uuid('p2_deck_id').references(() => deck.id), // optional for limited matches and byes
     p2Points: integer('p2_points'), //nullable because of BYE
 
     gameWin: integer('game_win').notNull(),

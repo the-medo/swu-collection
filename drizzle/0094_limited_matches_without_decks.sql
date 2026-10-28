@@ -1,0 +1,1 @@
+ALTER TABLE "tournament_match" ALTER COLUMN "p1_deck_id" DROP NOT NULL;

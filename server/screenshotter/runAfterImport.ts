@@ -1,5 +1,9 @@
 import { createTournamentScreenshotterScope } from '../../types/Screenshotter.ts';
 import { captureScreenshots } from './captureScreenshots.ts';
+import { eq } from 'drizzle-orm';
+import { db } from '../db';
+import { tournament } from '../db/schema/tournament.ts';
+import { isLimitedFormat } from '../../types/Format.ts';
 
 export type ScreenshotterAfterImportResult =
   | {
@@ -49,8 +53,23 @@ export async function runTournamentScreenshotterAfterImport(
   try {
     console.log(`[screenshotter after import] Starting for tournament ${tournamentId}.`);
 
+    const [event] = await db
+      .select({ format: tournament.format, bracketInfo: tournament.bracketInfo })
+      .from(tournament)
+      .where(eq(tournament.id, tournamentId))
+      .limit(1);
+    const limited = event && isLimitedFormat(event.format);
+    if (limited && (!event.bracketInfo || event.bracketInfo === 'none')) {
+      return {
+        status: 'skipped',
+        tournamentId,
+        reason: 'Limited tournament has no top-cut bracket to capture.',
+      };
+    }
+
     const result = await captureScreenshots({
       scope: createTournamentScreenshotterScope(tournamentId),
+      targets: limited ? ['bracket'] : undefined,
     });
 
     const success = result.manifest.results.filter(item => item.ok).length;
