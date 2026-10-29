@@ -286,6 +286,21 @@ test.skipIf(process.env.CREATOR_HUB_DB_TEST !== '1')(
         incomplete: true,
       });
       expect(uploadCalls).toHaveLength(3);
+      // Missing playlists preserve the empty/incomplete API response and manual cooldown.
+      for (const missingPage of [0, 1]) {
+        await resetCooldown();
+        let pages = 0;
+        onUpload = async () => {
+          if (pages++ === missingPage) throw new WorkerError('youtube_http_404', false);
+        };
+        const response = await request(owner, 'fetch');
+        expect(response.status).toBe(200);
+        expect((await response.json()).data).toEqual({
+          enqueued: 0,
+          incomplete: missingPage > 0,
+        });
+        expect((await request(owner, 'fetch')).status).toBe(429);
+      }
       // Provider failures are safe, retryable UI errors; they retain the per-channel cooldown.
       await resetCooldown();
       onUpload = async () => {

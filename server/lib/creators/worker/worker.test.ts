@@ -224,7 +224,7 @@ test('provider requests never follow redirects, expose keys in URLs or return ra
   }
 });
 
-test('stale directory links are reported without turning every successful tick into a crash', async () => {
+test('stale directory links and missing playlists are reported without failing a successful tick', async () => {
   const calls: string[] = [];
   const code = await monitoredWorkerCommand(
     async () => ({
@@ -235,6 +235,7 @@ test('stale directory links are reported without turning every successful tick i
         incomplete: [],
         unresolvedHandles: ['handle'],
         missingChannels: ['gone'],
+        unavailablePlaylists: [{ channelId: 'empty', playlistId: 'missing' }],
       },
     }),
     {

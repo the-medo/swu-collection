@@ -354,6 +354,11 @@ from the HTTP request. An incomplete scan is reported explicitly; provider
 failures preserve already queued pages. A database-locked five-minute cooldown
 per channel also applies to failed attempts. Fetching requires the worker's
 YouTube and Gemini configuration; it does not install or start a schedule.
+An uploads-playlist HTTP 404 on the first page is treated as no available uploads,
+so manual fetching succeeds with zero queued videos. A 404 on a later page marks
+the scan incomplete and preserves queued videos. The studio uses these existing
+empty/incomplete results. Scheduled scans record affected channel and playlist IDs
+in their logs.
 
 `creator_youtube_channel.auto_import_enabled` defaults to true and survives
 OAuth reconnection and curated-association synchronization. Paused channels are
@@ -576,7 +581,12 @@ scheduler. `tick` runs maintenance first, then scans the previous seven days; af
 to 100 processed videos (10 by default). The Sentry monitor slug is
 `creator-video-worker`; maintenance failures, processing failures and truncated discovery scans produce
 a nonzero exit. Stale directory links are reported without failing the entire
-tick. The process flushes
+tick. Missing uploads playlists (HTTP 404) are listed in `discovery.unavailablePlaylists`
+with channel and playlist IDs; discovery continues with other channels and the
+worker still processes queued videos. A missing first page does not fail the tick;
+a missing later page also marks the channel incomplete and produces a nonzero exit
+after processing. Channels are retried on the next scan. Other YouTube errors,
+including channel-lookup 404s, still fail the tick. The process flushes
 check-ins before exiting. Logs contain fixed error categories rather than keys,
 provider error bodies or database query parameters.
 
@@ -606,6 +616,32 @@ before changing the model/rates. Keep the Google project spend cap as an additio
 backstop; this ledger covers this worker in one database, not other callers or
 independent development databases. Sanitized contributor dumps remove its usage
 and jobs, so do not use such a dump to reset a production spending ledger.
+
+#### Recovering videos missed during an outage
+
+After deploying an importer fix, the normal `tick` scans the previous seven days
+and queues missing uploads from eligible, unpaused channels. It processes ten
+videos per run by default, so a backlog can take several scheduled runs to clear.
+Rediscovery does not duplicate existing jobs or creations, and recovered videos
+retain their original YouTube upload dates.
+
+To explicitly recover the October 26, 2026 outage, including if deployment occurs
+after those uploads leave the seven-day window, run these commands from the
+deployed application's root with its production worker configuration. `--since`
+uses UTC midnight; start a day before the outage to overlap timezone boundaries
+and delayed playlist updates safely:
+
+```bash
+bun run server/crons/creator-video-worker.ts discover --since 2026-10-25
+bun run server/crons/creator-video-worker.ts run --limit 100
+bun run server/crons/creator-video-worker.ts status
+```
+
+`discover` only queues work; the next scheduled ticks can process the backlog
+instead of the manual `run`. Check `incomplete` and the status report for remaining
+work or errors. Queued jobs remain eligible after their upload dates leave the
+discovery window. Existing spending limits and retry rules still apply; recovery
+does not reset the ledger or revive deliberately skipped/unpublished videos.
 
 ### Metadata and authorization maintenance
 

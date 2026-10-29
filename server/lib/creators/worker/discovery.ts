@@ -31,13 +31,24 @@ export function createVideoDiscovery(
     const playlists = await api.playlists([...channels.keys()]);
     let enqueued = 0;
     const incomplete: string[] = [];
+    const unavailablePlaylists: { channelId: string; playlistId: string }[] = [];
     // Bound interactive requests to 150 uploads; scheduled discovery can scan 1,000.
     const maxPages = manual ? 3 : 20;
     for (const { channelId, playlistId } of playlists) {
       if (!channels.has(channelId)) continue;
       let pageToken: string | undefined;
       for (let page = 0; page < maxPages; page++) {
-        const result = await api.uploads(playlistId, pageToken);
+        let result: Awaited<ReturnType<typeof api.uploads>>;
+        try {
+          result = await api.uploads(playlistId, pageToken);
+        } catch (error) {
+          // YouTube can advertise an uploads playlist that does not exist for an
+          // empty channel. Report it, then let other channels and queued jobs run.
+          if (!(error instanceof WorkerError) || error.code !== 'youtube_http_404') throw error;
+          unavailablePlaylists.push({ channelId, playlistId });
+          if (page > 0) incomplete.push(channelId);
+          break;
+        }
         // Recheck disconnect/ownership/pause after provider latency. Processing checks again.
         const current = await eligibleChannels(database);
         if (current.channels.get(channelId) !== channels.get(channelId))
@@ -68,6 +79,7 @@ export function createVideoDiscovery(
       enqueued,
       conflicts: eligible.conflicts,
       incomplete,
+      unavailablePlaylists,
       unresolvedHandles,
       missingChannels: [...channels.keys()].filter(id => !playlists.some(p => p.channelId === id)),
     };
