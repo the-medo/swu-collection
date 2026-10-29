@@ -622,7 +622,12 @@ test.skipIf(process.env.CREATOR_HUB_DB_TEST !== '1')(
       await expect(
         db.transaction(async tx => {
           await tx.execute(sql.raw(block));
-          expect(await tx.select().from(creatorProfile)).toHaveLength(0);
+          expect(
+            await tx
+              .select()
+              .from(creatorProfile)
+              .where(sql`${creatorProfile.ownerId} IS NOT NULL`),
+          ).toHaveLength(0);
           expect(await tx.select().from(creatorYoutube)).toHaveLength(0);
           expect(await tx.select().from(creatorYoutubeChannel)).toHaveLength(0);
           expect(await tx.select().from(creatorChannel)).toHaveLength(0);

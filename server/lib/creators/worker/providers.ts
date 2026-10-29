@@ -89,15 +89,29 @@ export function youtubeClient(key: string, signal?: AbortSignal) {
                 title: z.string(),
                 thumbnails: z.record(z.string(), z.object({ url: z.string() })).optional(),
               }),
+              statistics: z
+                .object({
+                  subscriberCount: z
+                    .string()
+                    .regex(/^\d+$/)
+                    .transform(Number)
+                    .pipe(z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER))
+                    .optional(),
+                  hiddenSubscriberCount: z.boolean().optional(),
+                })
+                .optional(),
             }),
           ),
         })
-        .parse(await get('channels', { part: 'snippet', id: ids.join(',') }));
+        .parse(await get('channels', { part: 'snippet,statistics', id: ids.join(',') }));
       return result.items.map(channel => ({
         channelId: channel.id,
         title: channel.snippet.title,
         avatarUrl:
           channel.snippet.thumbnails?.high?.url ?? channel.snippet.thumbnails?.default?.url ?? '',
+        subscriberCount: channel.statistics?.hiddenSubscriberCount
+          ? null
+          : (channel.statistics?.subscriberCount ?? null),
       }));
     },
     async channelForHandle(handle: string): Promise<string | null> {

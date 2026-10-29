@@ -1,10 +1,12 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { z } from 'zod';
-import CreatorStudio from '@/components/app/creators/CreatorStudio.tsx';
+import { creatorStudioQuerySchema } from '../../../../shared/creators/contracts.ts';
 export const Route = createFileRoute('/_authenticated/creator-studio')({
   validateSearch: z.object({
     creatorId: z.uuid().optional().catch(undefined),
     page: z.coerce.number().int().min(1).max(1000).optional().catch(undefined),
+    q: creatorStudioQuerySchema.shape.q.catch(undefined),
+    status: creatorStudioQuerySchema.shape.status.catch(undefined),
     creationId: z.uuid().optional().catch(undefined),
     youtube: z.enum(['connected', 'failed', 'claimed', 'confirm']).optional().catch(undefined),
     youtubeClaimId: z
@@ -20,28 +22,5 @@ export const Route = createFileRoute('/_authenticated/creator-studio')({
       .optional()
       .catch(undefined),
   }),
-  component: Page,
+  component: Outlet,
 });
-function Page() {
-  const search = Route.useSearch(),
-    navigate = Route.useNavigate();
-  return (
-    <CreatorStudio
-      search={search}
-      onChange={patch => {
-        void navigate({
-          search: previous => ({
-            ...previous,
-            youtube: undefined,
-            youtubeChannelId: undefined,
-            youtubeClaimId: undefined,
-            youtubeError: undefined,
-            transferredDecks: undefined,
-            ...patch,
-          }),
-          resetScroll: false,
-        });
-      }}
-    />
-  );
-}

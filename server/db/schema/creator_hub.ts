@@ -3,6 +3,7 @@ import {
   text,
   uuid,
   integer,
+  bigint,
   timestamp,
   jsonb,
   primaryKey,
@@ -42,11 +43,16 @@ export const creatorProfile = pgTable(
     ownerId: text('owner_id').references(() => user.id, { onDelete: 'cascade' }),
     slug: text('slug').notNull().unique(),
     profile: jsonb('profile').$type<CreatorProfileInput>().notNull(),
+    followerCount: integer('follower_count').notNull().default(0),
     revision: integer('revision').notNull().default(1),
     createdAt: date('created_at').notNull().defaultNow(),
     updatedAt: date('updated_at').notNull().defaultNow(),
   },
-  t => [index('creator_profile_owner').on(t.ownerId)],
+  t => [
+    index('creator_profile_owner').on(t.ownerId),
+    index('creator_profile_followers').on(t.followerCount.desc(), t.slug),
+    check('creator_profile_followers_nonnegative', sql`${t.followerCount} >= 0`),
+  ],
 );
 export const creatorMember = pgTable(
   'creator_member',
@@ -178,6 +184,10 @@ export const creatorYoutubeChannel = pgTable('creator_youtube_channel', {
   channelId: text('channel_id').primaryKey(),
   title: text('title').notNull().default(''),
   avatarUrl: text('avatar_url').notNull().default(''),
+  // Public statistics have their own timestamp: OAuth identity refreshes must
+  // never extend the lifetime of a previously fetched subscriber count.
+  subscriberCount: bigint('subscriber_count', { mode: 'number' }),
+  subscribersUpdatedAt: date('subscribers_updated_at'),
   metadataUpdatedAt: date('metadata_updated_at'),
   metadataCheckedAt: date('metadata_checked_at'),
   metadataOrigin: text('metadata_origin').$type<'public' | 'oauth'>(),
@@ -225,8 +235,7 @@ export const creatorYoutube = pgTable(
 );
 export const creatorOauthState = pgTable('creator_oauth_state', {
   hash: text('hash').primaryKey(),
-  creatorId: uuid('creator_id')
-    .references(() => creatorProfile.id, { onDelete: 'cascade' }),
+  creatorId: uuid('creator_id').references(() => creatorProfile.id, { onDelete: 'cascade' }),
   userId: text('user_id')
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),

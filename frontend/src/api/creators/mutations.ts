@@ -109,6 +109,24 @@ export function useTransferArticles() {
   return useCreatorMutation(hubApi.transferArticles, () => [keys.all]);
 }
 
+export function useDeleteCreatorProfile(onDeleted: (alreadyMissing: boolean) => void) {
+  const query = useQueryClient();
+  const finish = async (alreadyMissing = false) => {
+    onDeleted(alreadyMissing);
+    // Remove inactive public/private snapshots as well as refreshing mounted
+    // views, so browser Back cannot show deleted profiles or draft content.
+    await query.cancelQueries({ queryKey: keys.all });
+    query.removeQueries({ queryKey: keys.all, type: 'inactive' });
+    await query.resetQueries({ queryKey: keys.all, type: 'active' });
+    await query.invalidateQueries({ queryKey: ['follows'] });
+  };
+  const mutation = useMutation({
+    mutationFn: hubApi.deleteProfile,
+    onSuccess: () => finish(),
+  });
+  return { ...mutation, finish };
+}
+
 export function useReloadCreationDraft() {
   const query = useQueryClient();
   const user = useUser();

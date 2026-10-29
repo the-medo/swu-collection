@@ -1,3 +1,4 @@
+import { CreatorBackLink } from './creatorNavigation.tsx';
 import { ClaimedBadge } from './YoutubeClaim.tsx';
 import { lazy, Suspense } from 'react';
 import { ProfileFollowButton } from '@/components/app/follows/FollowButton.tsx';
@@ -82,7 +83,7 @@ export function CreatorPage({
   );
   if (!profile)
     return (
-      <CreatorLayout>
+      <CreatorLayout scrollReady={!query.isPending}>
         <Status error={query.error} loading={query.isPending} />
       </CreatorLayout>
     );
@@ -97,13 +98,15 @@ export function CreatorPage({
   const clearFilters = () => onChange({ q: undefined, language: undefined, tags: undefined });
   const hasLinks = profile.youtube.length > 0 || profile.links.length > 0;
   return (
-    <CreatorLayout>
+    <CreatorLayout
+      scrollReady={
+        !counts.isPending && (!showContent || (!content.isPending && !content.isPlaceholderData))
+      }
+    >
       <Helmet
         title={`${creatorTabs.find(item => item.value === tab)?.label} · ${profile.name} | SWUBASE`}
       />
-      <Link to="/creators" className={`${creatorLink} inline-flex items-center gap-2`}>
-        ← Meet the creators
-      </Link>
+      <CreatorBackLink returnTo={search.returnTo} fallback="creators" />
       <header className="overflow-hidden rounded-[20px] border border-border bg-card">
         <div className="h-36 bg-gradient-to-br from-[#17352e] via-[#2f5140] to-[#71866b] sm:h-48">
           {profile.bannerUrl && (

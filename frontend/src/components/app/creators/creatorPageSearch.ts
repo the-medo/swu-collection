@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { discoverySchema } from '../../../../../shared/creators/contracts.ts';
+import { creatorReturnToSchema } from './creatorNavigationSearch.ts';
 
 export const creatorTabSchema = z.enum([
   'videos',
@@ -11,6 +12,7 @@ export const creatorTabSchema = z.enum([
 ]);
 export type CreatorTab = 'all' | z.infer<typeof creatorTabSchema>;
 export const creatorPageSearchSchema = z.object({
+  returnTo: creatorReturnToSchema,
   language: discoverySchema.shape.language.catch(undefined),
   tags: discoverySchema.shape.tags.catch(undefined),
   series: discoverySchema.shape.series.catch(undefined),

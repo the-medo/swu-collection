@@ -8,7 +8,9 @@ import type { AuthExtension } from '../auth/auth.ts';
 import { createCreatorTemplatesRoute } from './creator-templates.ts';
 import {
   creatorProfileSchema,
+  creatorStudioQuerySchema,
   creatorOnboardingSchema,
+  creatorDeletionSchema,
   creationDocumentSchema,
   discoverySchema,
   entityTypes,
@@ -154,16 +156,17 @@ export function createCreatorHubRoute(
       if (!c.get('user')) return c.json({ message: 'Sign in to continue.' }, 401);
       return c.json({ data: await service.mine(c.get('user')!.id) });
     })
-    .get(
-      '/personal/articles',
-      zValidator('query', z.object({ page: z.coerce.number().int().min(1).max(1000).default(1) })),
-      async c => {
-        if (!c.get('user')) return c.json({ message: 'Sign in to continue.' }, 401);
-        return c.json({
-          data: await service.studio(null, c.get('user')!.id, c.req.valid('query').page),
-        });
-      },
-    )
+    .get('/personal/articles', zValidator('query', creatorStudioQuerySchema), async c => {
+      if (!c.get('user')) return c.json({ message: 'Sign in to continue.' }, 401);
+      return c.json({
+        data: await service.studio(
+          null,
+          c.get('user')!.id,
+          c.req.valid('query').page,
+          c.req.valid('query'),
+        ),
+      });
+    })
     .get('/personal/counts', async c => {
       if (!c.get('user')) return c.json({ message: 'Sign in to continue.' }, 401);
       return c.json({ data: await service.personalCounts(c.get('user')!.id) });
@@ -207,6 +210,25 @@ export function createCreatorHubRoute(
           ),
         }),
     )
+    .get('/creators/:id/deletion', zValidator('param', id), async c => {
+      if (!c.get('user')) return c.json({ message: 'Sign in to continue.' }, 401);
+      return c.json({
+        data: await service.deletionPreview(c.req.valid('param').id, c.get('user')!.id),
+      });
+    })
+    .delete(
+      '/creators/:id',
+      zValidator('param', id),
+      zValidator('json', creatorDeletionSchema),
+      async c =>
+        c.json({
+          data: await service.deleteProfile(
+            c.req.valid('param').id,
+            c.get('user')!.id,
+            c.req.valid('json'),
+          ),
+        }),
+    )
     .get('/creators/:id/members', zValidator('param', id), async c => {
       if (!c.get('user')) return c.json({ message: 'Sign in to continue.' }, 401);
       return c.json({ data: await service.members(c.req.valid('param').id, c.get('user')!.id) });
@@ -241,7 +263,7 @@ export function createCreatorHubRoute(
     .get(
       '/creators/:id/studio',
       zValidator('param', id),
-      zValidator('query', z.object({ page: z.coerce.number().int().min(1).max(1000).default(1) })),
+      zValidator('query', creatorStudioQuerySchema),
       async c => {
         if (!c.get('user')) return c.json({ message: 'Sign in to continue.' }, 401);
         return c.json({
@@ -249,6 +271,7 @@ export function createCreatorHubRoute(
             c.req.valid('param').id,
             c.get('user')!.id,
             c.req.valid('query').page,
+            c.req.valid('query'),
           ),
         });
       },

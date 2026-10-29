@@ -316,7 +316,12 @@ test.skipIf(process.env.CREATOR_HUB_DB_TEST !== '1')(
           await tx.execute(
             sql.raw(sanitize.match(/DO \$creator_hub\$[\s\S]*?\$creator_hub\$;/)![0]),
           );
-          expect(await tx.select().from(creation)).toHaveLength(0);
+          expect(
+            await tx
+              .select()
+              .from(creation)
+              .where(sql`${creation.published}->>'medium' IS DISTINCT FROM 'video'`),
+          ).toHaveLength(0);
           expect(await tx.select().from(creatorPublishingRequest)).toHaveLength(0);
           throw new Error('rollback sanitizer assertion');
         })

@@ -4,6 +4,7 @@ import { createOwnershipService } from './ownership.ts';
 import { createProfilesService } from './profiles.ts';
 import { createDiscoveryService } from './discovery.ts';
 import { createCreationsService } from './creations.ts';
+import { createDeletionService } from './deletion.ts';
 export { CreatorError } from './errors.ts';
 export { requireCreator } from './permissions.ts';
 export { resolveReference, resolveReferences } from './references.ts';
@@ -16,6 +17,7 @@ export function createCreatorService(database: Database = db) {
     ...createOwnershipService(database),
     ...createDiscoveryService(database),
     ...createCreationsService(database),
+    ...createDeletionService(database),
   };
 }
 export const creatorService = createCreatorService();

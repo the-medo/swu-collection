@@ -60,6 +60,17 @@ metadata, not classifications.
 Discovery lives at `/content`, the directory at `/creators`, creator profiles at
 `/creators/:slug`, publications at `/content/:creationId`, and the authenticated
 workspace at `/creator-studio`. The API is mounted at `/api/creator-hub`.
+Creator studio has top-level Overview, Articles (`/creator-studio/articles`) and
+Videos (`/creator-studio/videos`) navigation. Overview links to both sections and
+retains the complete library, including podcasts and external resources. Articles
+and Videos apply a validated `medium` filter on the server before pagination.
+Each section retains its title/status filters and draft URL on reload. Switching
+sections keeps the selected publishing profile and resets list filters/page.
+Videos exposes the owner's YouTube connection/import controls directly; personal
+publishing remains article-only. Legacy `/creator-studio?creationId=…` links and
+YouTube callbacks still work; callback URLs finish in Videos, preserving the
+connection/claim status. The selected section stays mounted during a new
+draft's first save so typing in flight is preserved.
 The creator hub, directory and studio links are hidden from the left sidebar
 during monitoring. Their direct routes remain available.
 Related content appears on existing card, deck and tournament pages. Articles
@@ -80,6 +91,24 @@ and About remain visible without counts. `GET /api/creator-hub/creators/:id/coun
 provides these totals and shares cache invalidation with creator collections.
 While totals load, only All content, About and the current section are shown. If
 the request fails, every section remains accessible without a count.
+
+The creator directory sorts by SWUBASE follower count descending, then by the
+largest eligible linked YouTube channel's subscriber count descending, then by
+creator address alphabetically. Sorting happens before pagination and applies
+with search, language and tag filters. Multiple channel counts are never summed;
+missing, hidden or expired subscriber counts rank as zero. Curated channel links
+must belong to an ownerless profile and use a stable ID or a handle resolved in
+the last 24 hours. Channels associated with multiple eligible creators are
+excluded until the conflict is resolved, matching the import rules.
+Follow/unfollow invalidates cached directory results for the
+next visit without moving the clicked card immediately.
+
+`creator_profile.follower_count` is backfilled from existing follows and kept in
+sync by PostgreSQL triggers for inserts, deletes, relationship changes and
+truncation, including account-deletion cascades. Directory and creator-follow
+status requests read this stored count. Public YouTube subscriber counts are
+stored per channel; directory requests read their maximum without fetching
+YouTube data or recounting followers.
 
 Creator content loads six publications at a time, preserving server-side pinned
 and series ordering. Scrolling loads another batch, with a keyboard-accessible
@@ -200,7 +229,7 @@ controls and revision history render independently of that lifecycle.
 
 ## Personal articles and creator transfers
 
-The authenticated `/creator-studio` is the writing studio. With no `creatorId`
+The authenticated `/creator-studio` is the Creator studio overview. With no `creatorId`
 search parameter it lists the user's personal articles. **Publish as** always
 includes Personal alongside owned creator profiles and profiles where the user
 is an editor. Personal publishing supports articles; linked media and YouTube
@@ -255,8 +284,8 @@ old requests idempotent; their foreign keys delete them with either owner.
 
 Deleting a personal owner deletes their personal articles. Transferred articles
 follow the creator's existing deletion behavior; losing the original author sets
-attribution to null. Contributor sanitization removes personal articles and
-publishing request receipts together with other creator data.
+attribution to null. Contributor sanitization removes all article snapshots and
+publishing request receipts, regardless of data-sharing opt-in.
 
 Focused acceptance checks:
 
@@ -588,6 +617,14 @@ Sentry monitor and returns a failing exit status for temporary provider errors.
 - Public video/channel metadata is due after seven days. Each run refreshes up to
   50 videos, 50 channel records and 50 connections by default (CLI maximum 100;
   channel requests remain capped at 50). Oldest attempted work runs first.
+- Channel refresh requests public `snippet,statistics` data and stores
+  `subscriber_count` with its own `subscribers_updated_at` timestamp. Missing
+  statistics are eligible for the next refresh, including after deployment.
+  Hidden/missing counts replace previous counts with null. OAuth identity refresh
+  does not renew public statistics, and disconnecting OAuth does not remove
+  independently fetched public counts. Counts expire after 28 days; the directory
+  excludes expired values before cleanup runs. YouTube supplies rounded public
+  counts, as described in its [channel statistics contract](https://developers.google.com/youtube/v3/docs/channels#statistics.subscriberCount).
 - OAuth refresh tokens are checked daily. Only confirmed `invalid_grant` or loss
   of the required scope triggers immediate revocation cleanup. Configuration,
   quota and network failures retry after an hour without immediately deleting
@@ -681,9 +718,26 @@ already migrated database or reset creator data to work around that history.
 The creator-hub worktree was reconciled separately; normal new deployments apply
 the single migration after the existing main-branch history.
 
-Contributor sanitization removes all creator profiles, creations, revisions,
-memberships, integration credentials, pending OAuth state, worker jobs, usage, channel identities/associations, channel-resolution cache, import mappings and deck claim records. Curated
-taxonomy rows remain. Creator API and admin-import request logging and error telemetry exclude sensitive
+Contributor sanitization retains published videos and the public profiles that own
+at least one retained video. Imported videos must have public API provenance,
+active source status and metadata newer than 28 days; manually published videos
+without an imported source ID also remain. Draft-only, unpublished, unavailable,
+expired and legacy OAuth-derived videos are removed, along with all articles,
+audio and external resources. Original publication dates, URLs and provider
+metadata timestamps are preserved; a dump does not renew the metadata lifetime.
+
+Each retained draft and its manual-edit flags are replaced with their published
+versions. Revision history, authorship and profile ownership are removed; local
+revision numbers reset to one. Discovery tags and references are rebuilt from
+that snapshot, keeping deck references only when the deck is public and survives
+the contributor opt-in cleanup. Profiles without a retained video are removed.
+Memberships, follows, integration credentials, pending OAuth state, worker jobs,
+usage, channel identities/associations, channel-resolution cache, import mappings
+and deck claim records are still removed, regardless of contributor opt-in. Follower
+counts reset to zero. Curated taxonomy rows remain. Backups predating provider
+provenance tracking retain no creator content.
+
+Creator API and admin-import request logging and error telemetry exclude sensitive
 payloads and OAuth query parameters. Unexpected errors emit only a fixed category,
 method, route pattern, allowlisted error type and database SQLSTATE to server logs. Subject resolution is batched per response;
 the legacy collections response bounds series and deck summaries at 200 entries.
@@ -691,9 +745,11 @@ The creator Decks subpage uses its dedicated paginated endpoint instead.
 Public API responses remain uncached by intermediaries so access changes are checked
 on each request.
 
-Sanitized dumps also remove curated directory profiles. Use the
-[admin JSON importer](creator-imports.md) to restore public directory data. New
-deployments start with an empty creator directory; migrations never populate it.
+The [admin JSON importer](creator-imports.md) can add further public directory
+data to a development database. New deployments start with an empty creator
+directory; migrations never populate it. Deploy the updated sanitizer separately
+and let it publish a new sanitized generation before refreshing a worktree;
+already-sanitized dumps cannot recover videos removed by the previous rules.
 
 ### Staff maintenance of unowned profiles
 
@@ -736,7 +792,47 @@ MCP installations must apply the main-app migrations and reapply
 article publisher needs read access to the claim table's `deck_id` column; it
 receives no claim or ownership mutation permissions.
 
-Staff correction and removal requests still go through
+### Deleting an owned creator profile
+
+An owner can open **Creator studio → select the creator → Edit profile → Delete
+creator profile**. Editors cannot delete profiles. A confirmation fetches an
+owner-only summary of content, connected channels and editor access, and requires
+the saved profile address to be typed before deletion.
+
+“Keep my articles in Personal” is selected by default. Eligible articles must
+have the owner as their original author, have no imported-video identity, and be
+articles in both the draft and any published version. This includes previously
+transferred personal articles. Ownership moves back to the user; IDs, public URLs,
+publication dates, published text, private changes and revision history stay.
+The ownership revision increases so an old editor must reload its publishing
+identity. Existing personal-publication rules apply to linked subjects.
+
+All remaining profile content is permanently deleted, including other authors'
+articles, videos, podcasts and external resources. Unchecking the preservation
+choice also deletes otherwise eligible articles. The confirmation shows the exact
+number of publications and drafts that will be removed. The user's SWUBASE account,
+existing personal library and saved decks remain; videos hosted on YouTube remain.
+
+`GET /api/creator-hub/creators/:id/deletion` returns the private summary and a
+snapshot. `DELETE /api/creator-hub/creators/:id` requires `{ confirmation, snapshot,
+keepMyArticles }`, the owner's session and the normal mutation-origin header.
+The preview uses a read-only, repeatable-read snapshot. Deletion locks the personal
+owner, then the profile and content. A changed summary
+returns 409 and requires a fresh review. An empty profile can also be deleted.
+If a profile is already gone when the dialog opens or confirms deletion (including
+a retry after a lost response), the API returns 404. The dialog offers a return to
+the studio and refreshes the cached profile list, without implying the stale
+dialog's preservation choice was applied.
+
+The transaction preserves chosen articles, runs the existing YouTube credential
+and OAuth-metadata cleanup, and deletes the profile. Cascades remove remaining
+creations/history, profile follows, editor access, channel associations, OAuth
+state and queued video jobs. It does not delete the user's decks or reset video
+analysis spending records. Public channel identities can remain for other profiles;
+imports for the deleted profile stop. Deletion does not revoke the user's Google
+account or modify YouTube-hosted videos.
+
+Staff correction and removal requests for unowned directory profiles go through
 [SWUBASE Discord](https://discord.gg/Stg45hRrZq). The following SQL accepts `psql`
 variables against an explicitly selected instance and is limited to ownerless
 profiles. Use the YouTube claim flow for ownership changes so decks and channel
@@ -773,6 +869,8 @@ bunx drizzle-kit check --config=drizzle.config.ts
 CREATOR_HUB_DB_TEST=1 CREATOR_WORKER_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test server/lib/creators
 CREATOR_HUB_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/creator-hub.browser.ts
 CREATOR_HUB_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/creator-claims.browser.ts
+CREATOR_HUB_DB_TEST=1 bun --env-file=.env --env-file=.env.worktree test server/lib/creators/deletion.db.test.ts
+CREATOR_DELETION_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/creator-deletion.browser.ts
 CREATOR_VIDEO_BROWSER_ORIGIN=https://your-worktree-origin bun frontend/tests/creator-video.browser.ts
 # After building, without account/database writes:
 CREATOR_BROWSING_BROWSER_TEST=1 bun frontend/tests/creator-browsing.browser.ts

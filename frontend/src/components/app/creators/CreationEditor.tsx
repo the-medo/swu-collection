@@ -26,13 +26,15 @@ export default function CreationEditor({
   initial,
   medium = 'article',
   onClose,
+  onCreated,
 }: {
   creatorId: string | null;
   initial?: Creation;
   medium?: CreationDocument['medium'];
   onClose: () => void;
+  onCreated?: (id: string) => void;
 }) {
-  const draft = useCreationDraft({ creatorId, initial, medium, onClose });
+  const draft = useCreationDraft({ creatorId, initial, medium, onClose, onCreated });
   const { document, id, error, busy, update, resolveConflict, restore, retry } = draft;
   const resolvedSubjects = useResolvedSubjects(
     document.references,
@@ -46,7 +48,7 @@ export default function CreationEditor({
     <div className="min-w-0 space-y-4">
       <CreationPublicationControls
         draft={draft}
-        editing={!!initial}
+        editing={!!id}
         preview={preview}
         setPreview={setPreview}
       />

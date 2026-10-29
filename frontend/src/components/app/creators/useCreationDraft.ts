@@ -45,11 +45,13 @@ export function useCreationDraft({
   initial,
   medium = 'article',
   onClose,
+  onCreated,
 }: {
   creatorId: string | null;
   initial?: Creation;
   medium?: CreationDocument['medium'];
   onClose: () => void;
+  onCreated?: (id: string) => void;
 }) {
   const identity = useRef({ creatorId, ownershipRevision: initial?.ownershipRevision ?? 1 });
   const [activeCreatorId, setActiveCreatorId] = useState(creatorId);
@@ -63,6 +65,18 @@ export function useCreationDraft({
     [busy, setBusy] = useState(false),
     [generation, setGeneration] = useState(0);
   const [published, setPublished] = useState(!!initial?.publishedAt);
+  const [publishedRevision, setPublishedRevision] = useState(
+    initial?.hasUnpublishedChanges ? -1 : initial?.revision,
+  );
+  const createdCallback = useRef(onCreated);
+  createdCallback.current = onCreated;
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
   const allowLeave = useRef(false);
   const saving = useRef(false),
     latest = useRef(document),
@@ -91,6 +105,7 @@ export function useCreationDraft({
     setBusy(true);
     // Compare the editor snapshot, not the schema-normalized key order.
     const snapshot = JSON.stringify(latest.current);
+    const creating = !draftId.current;
     try {
       const result = await saveFn.current({
         ...identity.current,
@@ -104,6 +119,7 @@ export function useCreationDraft({
       setRevision(result.revision);
       setSaved(snapshot);
       setError(undefined);
+      if (creating && mounted.current) createdCallback.current?.(result.id);
       return result;
     } catch (failure) {
       setError(failure instanceof Error ? failure : new Error('Could not save this draft.'));
@@ -147,6 +163,7 @@ export function useCreationDraft({
         ownershipRevision: identity.current.ownershipRevision,
       });
       setPublished(!unpublish);
+      setPublishedRevision(unpublish ? undefined : result.revision);
       setError(undefined);
     } catch (failure) {
       setError(failure as Error);
@@ -183,6 +200,7 @@ export function useCreationDraft({
       currentRevision.current = current.revision;
       setRevision(current.revision);
       setPublished(!!current.publishedAt);
+      setPublishedRevision(current.hasUnpublishedChanges ? -1 : current.revision);
       if (keepLocal) await save();
       else {
         setDocument(editableDocument(current.document));
@@ -221,6 +239,7 @@ export function useCreationDraft({
     busy,
     dirty,
     published,
+    hasUnpublishedChanges: published && (dirty || revision !== publishedRevision),
     generation,
     setGeneration,
     update,

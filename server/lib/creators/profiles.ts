@@ -1,8 +1,15 @@
 import { db } from '../../db/index.ts';
 import type { Database } from './types.ts';
 import { CreatorError } from './errors.ts';
-import { and, asc, eq, or, sql } from 'drizzle-orm';
-import { creatorTag, creatorProfile, creatorMember } from '../../db/schema/creator_hub.ts';
+import { and, asc, desc, eq, ne, notExists, or, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
+import {
+  creatorTag,
+  creatorProfile,
+  creatorMember,
+  creatorChannel,
+  creatorYoutubeChannel,
+} from '../../db/schema/creator_hub.ts';
 import { user } from '../../db/schema/auth-schema.ts';
 import type { CreatorProfileInput } from '../../../shared/creators/contracts.ts';
 import { requireCreator } from './permissions.ts';
@@ -10,6 +17,8 @@ import { createCreatorDtos } from './dto.ts';
 import { escapedSearch, groupDiscoveryTags, availableLanguages } from './filters.ts';
 import { now } from './types.ts';
 import { assertCreatorProfileAllowed } from './moderation.ts';
+import { eligibleChannelAssociation } from './channels.ts';
+import { METADATA_RETENTION_MS } from './youtube-lifecycle-policy.ts';
 
 export function createProfilesService(database: Database = db) {
   const { profileDto, profileDtos } = createCreatorDtos(database);
@@ -21,6 +30,38 @@ export function createProfilesService(database: Database = db) {
         .orderBy(asc(creatorTag.dimension), asc(creatorTag.position));
     },
     async profiles(q = '', page = 1, language?: string, tags?: string) {
+      const otherChannel = alias(creatorChannel, 'other_channel');
+      const otherProfile = alias(creatorProfile, 'other_profile');
+      // Compare stored statistics for the largest linked channel. Do not count
+      // follow rows or call YouTube while serving the directory.
+      const subscribers = database
+        .select({ count: sql<number>`max(${creatorYoutubeChannel.subscriberCount})` })
+        .from(creatorChannel)
+        .innerJoin(
+          creatorYoutubeChannel,
+          eq(creatorYoutubeChannel.channelId, creatorChannel.channelId),
+        )
+        .where(
+          and(
+            eq(creatorChannel.creatorId, creatorProfile.id),
+            eligibleChannelAssociation(),
+            // Conflicted channel associations cannot boost either profile's rank.
+            notExists(
+              database
+                .select({ id: otherChannel.creatorId })
+                .from(otherChannel)
+                .innerJoin(otherProfile, eq(otherProfile.id, otherChannel.creatorId))
+                .where(
+                  and(
+                    eq(otherChannel.channelId, creatorChannel.channelId),
+                    ne(otherChannel.creatorId, creatorChannel.creatorId),
+                    eligibleChannelAssociation(otherChannel, otherProfile),
+                  ),
+                ),
+            ),
+            sql`${creatorYoutubeChannel.subscribersUpdatedAt} > now() - (${METADATA_RETENTION_MS}::double precision * interval '1 millisecond')`,
+          ),
+        );
       const filters = [
         q ? sql`${creatorProfile.profile}->>'name' ILIKE ${escapedSearch(q)}` : undefined,
         ...groupDiscoveryTags(tags).map(ids =>
@@ -44,7 +85,11 @@ export function createProfilesService(database: Database = db) {
                 : undefined,
             ),
           )
-          .orderBy(asc(creatorProfile.slug))
+          .orderBy(
+            desc(creatorProfile.followerCount),
+            desc(sql`coalesce((${subscribers}), 0)`),
+            asc(creatorProfile.slug),
+          )
           .limit(25)
           .offset((page - 1) * 24),
         database

@@ -1,4 +1,5 @@
 import { useUser } from '@/hooks/useUser.ts';
+import { DeleteCreatorProfile } from './DeleteCreatorProfile.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { ImageField } from './ImageField.tsx';
 import { LanguagePicker } from './CreatorLanguages.tsx';
@@ -24,9 +25,11 @@ export default function ProfileEditor({
   onSaved,
   onCancel,
   personalCounts,
+  onDeleted,
 }: {
   profile?: CreatorProfile;
   personalCounts?: { total: number; drafts: number };
+  onDeleted: (alreadyMissing: boolean) => void;
   onSaved: (id: string) => void;
   onCancel: () => void;
 }) {
@@ -380,6 +383,16 @@ export default function ProfileEditor({
           {unconfirmed ? 'Back to studio' : 'Cancel'}
         </Button>
       </div>
+      {profile && profile.ownerId === user?.id && (
+        <DeleteCreatorProfile
+          profile={profile}
+          disabled={pending}
+          onDeleted={alreadyMissing => {
+            allowLeave.current = true;
+            onDeleted(alreadyMissing);
+          }}
+        />
+      )}
     </form>
   );
 }

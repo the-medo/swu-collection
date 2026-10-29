@@ -85,6 +85,8 @@ export function createYoutubeMaintenance(
       or(
         isNull(creatorYoutubeChannel.metadataUpdatedAt),
         lt(creatorYoutubeChannel.metadataUpdatedAt, before(METADATA_REFRESH_MS)),
+        isNull(creatorYoutubeChannel.subscribersUpdatedAt),
+        lt(creatorYoutubeChannel.subscribersUpdatedAt, before(METADATA_REFRESH_MS)),
       ),
     );
     const dueConnection = and(
@@ -158,6 +160,18 @@ export function createYoutubeMaintenance(
         .set({ title: '', avatarUrl: '', metadataOrigin: null, metadataUpdatedAt: null })
         .where(lt(creatorYoutubeChannel.metadataUpdatedAt, before(METADATA_RETENTION_MS)));
       await database
+        .update(creatorYoutubeChannel)
+        .set({ subscriberCount: null, subscribersUpdatedAt: null })
+        .where(
+          or(
+            lt(creatorYoutubeChannel.subscribersUpdatedAt, before(METADATA_RETENTION_MS)),
+            and(
+              isNull(creatorYoutubeChannel.subscribersUpdatedAt),
+              isNotNull(creatorYoutubeChannel.subscriberCount),
+            ),
+          ),
+        );
+      await database
         .delete(creatorChannelResolution)
         .where(lt(creatorChannelResolution.resolvedAt, before(METADATA_RETENTION_MS)));
       await database.delete(creatorOauthState).where(lt(creatorOauthState.expiresAt, at));
@@ -223,11 +237,14 @@ export function createYoutubeMaintenance(
                 metadataUpdatedAt: at,
                 metadataCheckedAt: at,
                 metadataOrigin: 'public',
+                subscriberCount: value?.subscriberCount ?? null,
+                subscribersUpdatedAt: at,
               })
               .where(
                 and(
                   eq(creatorYoutubeChannel.channelId, channel.channelId),
                   sql`${creatorYoutubeChannel.metadataUpdatedAt} IS NOT DISTINCT FROM ${channel.metadataUpdatedAt}`,
+                  sql`${creatorYoutubeChannel.subscribersUpdatedAt} IS NOT DISTINCT FROM ${channel.subscribersUpdatedAt}`,
                 ),
               );
             result.channelsRefreshed++;

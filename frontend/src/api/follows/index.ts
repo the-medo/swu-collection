@@ -107,6 +107,10 @@ export function useSetFollow(kind: FollowKind, id: string) {
       for (const snapshot of snapshots ?? []) update(snapshot.key, snapshot.status);
     },
     onSuccess: status => {
+      if (kind === 'creators') {
+        // Re-sort on the next visit, without moving a clicked card under the pointer.
+        void client.invalidateQueries({ queryKey: creatorKeys.directories, refetchType: 'none' });
+      }
       if (!status) return;
       for (const [key, statuses] of client.getQueriesData<FollowStatuses>(matchingStatuses)) {
         if (statuses?.[id]) update(key, status);

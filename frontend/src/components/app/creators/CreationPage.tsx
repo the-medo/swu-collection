@@ -1,3 +1,4 @@
+import { CreatorBackLink } from './creatorNavigation.tsx';
 import { CreationDate } from './CreationDate.tsx';
 import { ConnectionLink } from './ConnectionLink.tsx';
 import { ConnectionContent } from './ConnectionContent.tsx';
@@ -280,11 +281,11 @@ export function CreationBody({
     </div>
   );
 }
-export default function CreationPage({ id }: { id: string }) {
+export default function CreationPage({ id, returnTo }: { id: string; returnTo?: string }) {
   const query = useHubQuery(creatorKeys.creation(id), () => hubApi.get(id));
   if (!query.data)
     return (
-      <CreatorLayout>
+      <CreatorLayout scrollReady={!query.isPending}>
         <Status loading={query.isPending} error={query.error} />
       </CreatorLayout>
     );
@@ -333,9 +334,7 @@ export default function CreationPage({ id }: { id: string }) {
           isArticle && 'mx-auto max-w-5xl',
         )}
       >
-        <Link to="/content" className={`${creatorLink} inline-block`}>
-          ← Discover content
-        </Link>
+        <CreatorBackLink returnTo={returnTo} />
         {isArticle && <EditArticleButton creation={query.data} />}
       </div>
       <article

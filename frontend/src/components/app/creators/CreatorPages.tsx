@@ -1,6 +1,5 @@
 import { ClaimedBadge } from './YoutubeClaim.tsx';
 import { LanguageFilter, LanguageFlag } from './CreatorLanguages.tsx';
-import { useState } from 'react';
 import { useFollowStatuses } from '@/api/follows';
 import { FollowButton } from '@/components/app/follows/FollowButton.tsx';
 import { Link } from '@tanstack/react-router';
@@ -11,7 +10,9 @@ import { Input } from '@/components/ui/input.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 import { hubApi, creatorKeys, useHubQuery } from '@/api/creators';
 import { Status, TagPicker } from './CreatorControls.tsx';
-import { creationTagMap } from '../../../../../shared/creators/taxonomy.ts';
+import { useCreatorReturnTo } from './useCreatorReturnTo.ts';
+import type { CreatorDirectorySearch } from './creatorNavigationSearch.ts';
+import { creationTagMap, normalizeTagIds } from '../../../../../shared/creators/taxonomy.ts';
 import { CreatorAvatar, CreatorHeader, CreatorLayout } from './CreatorLayout.tsx';
 import {
   creatorDescription,
@@ -20,11 +21,16 @@ import {
   creatorPagination,
   creatorPanel,
 } from './creatorStyles.ts';
-export function CreatorDirectory() {
-  const [q, setQ] = useState(''),
-    [page, setPage] = useState(1),
-    [language, setLanguage] = useState(''),
-    [tags, setTags] = useState<string[]>([]);
+export function CreatorDirectory({
+  search,
+  onChange,
+}: {
+  search: CreatorDirectorySearch;
+  onChange: (patch: Partial<CreatorDirectorySearch>) => void;
+}) {
+  const { q = '', page, language = '' } = search;
+  const tags = normalizeTagIds(search.tags?.split(',').filter(Boolean) ?? []);
+  const returnTo = useCreatorReturnTo();
   const query = useHubQuery(
     creatorKeys.directory(q, page, language, tags),
     () => hubApi.creators(q, page, language || undefined, tags.join(',') || undefined),
@@ -34,7 +40,7 @@ export function CreatorDirectory() {
   );
   const follows = useFollowStatuses('creators', query.data?.items.map(profile => profile.id) ?? []);
   return (
-    <CreatorLayout>
+    <CreatorLayout scrollReady={!query.isPending && !query.isPlaceholderData}>
       <Helmet title="Creators | SWUBASE" />
       <CreatorHeader
         eyebrow="The SWU community"
@@ -50,19 +56,28 @@ export function CreatorDirectory() {
       <section className={`${creatorPanel} space-y-4`} aria-label="Find creators">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h2 className={creatorHeading}>Meet the community</h2>
-          <div className="w-full sm:max-w-sm">
+          <form
+            className="flex w-full gap-2 sm:max-w-sm"
+            onSubmit={event => {
+              event.preventDefault();
+              const q = String(new FormData(event.currentTarget).get('q') ?? '').trim();
+              onChange({ q: q || undefined, page: 1 });
+            }}
+          >
             <Input
+              key={q}
+              name="q"
               icon={Search}
               className="rounded-lg"
               aria-label="Find a creator"
               placeholder="Search creators…"
-              value={q}
-              onChange={e => {
-                setQ(e.target.value);
-                setPage(1);
-              }}
+              maxLength={120}
+              defaultValue={q}
             />
-          </div>
+            <Button type="submit" variant="outline" aria-label="Search creators">
+              Search
+            </Button>
+          </form>
         </div>
         <details className="border-t border-border pt-4">
           <summary className="cursor-pointer text-[12px] font-medium text-[var(--creator-accent)]">
@@ -73,15 +88,13 @@ export function CreatorDirectory() {
               available={query.data?.languages ?? []}
               value={language || undefined}
               onChange={value => {
-                setLanguage(value ?? '');
-                setPage(1);
+                onChange({ language: value, page: 1 });
               }}
             />
             <TagPicker
               selected={tags}
               onChange={value => {
-                setTags(value);
-                setPage(1);
+                onChange({ tags: value.join(',') || undefined, page: 1 });
               }}
               dimensions={['purpose', 'format', 'audience']}
               compact
@@ -100,7 +113,7 @@ export function CreatorDirectory() {
           </p>
         </div>
       )}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div data-creator-results className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {query.data?.items.map(profile => (
           <article
             key={profile.id}
@@ -134,7 +147,7 @@ export function CreatorDirectory() {
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className={creatorHeading}>
-                  <Link to="/creators/$slug" params={{ slug: profile.slug }}>
+                  <Link to="/creators/$slug" params={{ slug: profile.slug }} search={{ returnTo }}>
                     {profile.name}
                   </Link>
                 </h2>
@@ -158,6 +171,7 @@ export function CreatorDirectory() {
               <Link
                 to="/creators/$slug"
                 params={{ slug: profile.slug }}
+                search={{ returnTo }}
                 className="mt-auto flex items-center gap-2 pt-3 text-[11px] font-medium text-[var(--creator-accent)]"
               >
                 Explore creator{' '}
@@ -172,14 +186,14 @@ export function CreatorDirectory() {
         ))}
       </div>
       <div className={creatorPagination}>
-        <Button variant="outline" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
+        <Button variant="outline" disabled={page <= 1} onClick={() => onChange({ page: page - 1 })}>
           Previous
         </Button>
         <span className="text-[12px] text-muted-foreground">Page {page}</span>
         <Button
           variant="outline"
           disabled={!query.data?.hasMore}
-          onClick={() => setPage(p => p + 1)}
+          onClick={() => onChange({ page: page + 1 })}
         >
           Next
         </Button>
