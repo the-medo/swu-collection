@@ -4,7 +4,11 @@ import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx';
 import { cn } from '@/lib/utils.ts';
-import { creatorLanguages, languageInfo } from '../../../../../shared/creators/languages.ts';
+import {
+  creatorLanguages,
+  languageInfo,
+  uniqueLanguageCodes,
+} from '../../../../../shared/creators/languages.ts';
 import { creatorSelectedControl } from './creatorStyles.ts';
 
 export function LanguageFlag({ code }: { code: string }) {
@@ -43,6 +47,8 @@ export function LanguageFilter({
   compact?: boolean;
 }) {
   const buttonClass = cn(flagButton, compact && 'h-8 min-w-8');
+  const choices = uniqueLanguageCodes(available);
+  const selectedCode = value ? languageInfo(value).code : undefined;
   return (
     <fieldset className={cn('min-w-0', !compact && 'space-y-2')}>
       <legend className={compact ? 'sr-only' : 'text-[12px] font-semibold'}>Language</legend>
@@ -55,9 +61,9 @@ export function LanguageFilter({
         >
           All languages
         </button>
-        {available.map(code => {
+        {choices.map(code => {
           const info = languageInfo(code),
-            selected = code.toLowerCase() === value?.toLowerCase();
+            selected = code === selectedCode;
           return (
             <button
               type="button"
@@ -73,9 +79,9 @@ export function LanguageFilter({
           );
         })}
       </div>
-      {value && !available.some(code => code.toLowerCase() === value.toLowerCase()) && (
+      {selectedCode && !choices.includes(selectedCode) && (
         <button type="button" className="text-xs underline" onClick={() => onChange(undefined)}>
-          Clear {languageInfo(value).label} filter
+          Clear {languageInfo(selectedCode).label} filter
         </button>
       )}
     </fieldset>
@@ -94,10 +100,8 @@ export function LanguagePicker({
   const id = useId();
   const [open, setOpen] = useState(false),
     [search, setSearch] = useState('');
-  const values = [...new Set(selected.map(code => languageInfo(code).code))];
-  const choices = [
-    ...new Set([...creatorLanguages, ...values].map(code => languageInfo(code).code)),
-  ]
+  const values = uniqueLanguageCodes(selected);
+  const choices = uniqueLanguageCodes([...creatorLanguages, ...values])
     .map(languageInfo)
     .filter(info => `${info.code} ${info.label}`.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => a.label.localeCompare(b.label));

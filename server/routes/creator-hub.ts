@@ -15,7 +15,7 @@ import {
   discoverySchema,
   entityTypes,
   entityReferenceSchema,
-  languageSchema,
+  languageFilterSchema,
   youtubeChannelSchema,
   youtubeImportSettingsSchema,
 } from '../../shared/creators/contracts.ts';
@@ -138,7 +138,7 @@ export function createCreatorHubRoute(
         z.object({
           q: z.string().max(120).default(''),
           page: z.coerce.number().int().min(1).max(1000).default(1),
-          language: languageSchema.optional(),
+          language: languageFilterSchema.optional(),
           tags: z.string().max(2000).optional(),
         }),
       ),

@@ -1,5 +1,7 @@
 import { expect, test } from 'bun:test';
 import { creatorDirectorySearchSchema, creatorReturnToSchema } from './creatorNavigationSearch.ts';
+import { creatorPageSearchSchema } from './creatorPageSearch.ts';
+import { discoverySchema } from '../../../../../shared/creators/contracts.ts';
 
 test('return destinations preserve public filters and nested directory context', () => {
   for (const path of [
@@ -36,4 +38,12 @@ test('directory URLs retain query text and recover from invalid filters', () => 
   expect(
     creatorDirectorySearchSchema.parse({ page: -1, q: {}, language: 'invalid language!' }),
   ).toMatchObject({ page: 1, q: undefined, language: undefined });
+});
+
+test('regional language links select the whole language throughout creator browsing', () => {
+  for (const schema of [creatorDirectorySearchSchema, creatorPageSearchSchema, discoverySchema]) {
+    expect(schema.parse({ language: 'en-CA' }).language).toBe('en');
+    expect(schema.parse({ language: 'es-MX' }).language).toBe('es');
+    expect(schema.parse({ language: 'pt-BR' }).language).toBe('pt');
+  }
 });
