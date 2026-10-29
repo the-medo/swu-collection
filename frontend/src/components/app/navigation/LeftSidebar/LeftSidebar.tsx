@@ -68,7 +68,6 @@ const getGroups = ({
   authenticated,
   showLists,
   canCrossfire,
-  isAdmin,
   invitationCount,
 }: {
   setOpenMobile: (open: boolean) => void;
@@ -76,7 +75,6 @@ const getGroups = ({
   authenticated: boolean;
   showLists: boolean;
   canCrossfire: boolean;
-  isAdmin: boolean;
   invitationCount: number;
 }): { id: string; title: string; items: SidebarNavigationEntry[] }[] => {
   const teamsItem: SidebarNavigationEntry = {
@@ -145,18 +143,14 @@ const getGroups = ({
           items: authenticated ? undefined : [{ title: 'Favorite decks', url: '/decks/favorite' }],
           submenu: 'collapsed-only' as const,
         },
-        ...(isAdmin
-          ? [
-              {
-                title: 'Creators',
-                url: '/content',
-                activePaths: ['/creators'],
-                icon: Radio,
-                className: sidebarStyles.creators,
-                badge: <span className={sidebarStyles.preview}>Preview</span>,
-              },
-            ]
-          : []),
+        {
+          title: 'Creators',
+          url: '/content',
+          activePaths: ['/creators'],
+          icon: Radio,
+          className: sidebarStyles.creators,
+          badge: <span className={sidebarStyles.beta}>Beta</span>,
+        },
         ...(!authenticated ? publicLists : []),
       ],
     },
@@ -317,7 +311,6 @@ export function LeftSidebar() {
     (!sidebarSettingsPending && (sidebarSettings?.left_sidebar_collections_and_lists ?? true));
   const hasRole = useRole();
   const canCrossfire = hasRole('crossfire');
-  const isAdmin = hasRole('admin');
   const isCrossfire = useLocation({
     select: location => location.pathname.startsWith('/crossfire'),
   });
@@ -339,7 +332,6 @@ export function LeftSidebar() {
     authenticated: Boolean(user),
     showLists,
     canCrossfire,
-    isAdmin,
     invitationCount,
   });
 

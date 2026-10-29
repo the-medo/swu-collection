@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { booleanPreprocessor } from '../lib/zod/booleanPreprocessor.ts';
 import { postDocumentSchemas, type PostDocument } from '../posts/content.ts';
 import { isKnownTagId, normalizeTagIds, type CreationTag } from './taxonomy.ts';
+import { baseLanguageCode } from './languages.ts';
 
 export const safeUrl = z
   .string()
@@ -30,6 +31,7 @@ export const languageSchema = z
     }
   }, 'Use a language code such as en, fr, or pt-BR.')
   .transform(value => Intl.getCanonicalLocales(value)[0]);
+export const languageFilterSchema = languageSchema.transform(baseLanguageCode);
 const tagId = z.string().refine(isKnownTagId, 'Unknown classification.');
 export const creatorProfileSchema = z.object({
   slug: z
@@ -207,7 +209,7 @@ export const discoverySchema = z.object({
   following: booleanPreprocessor.optional(),
   q: z.string().trim().max(120).optional(),
   tags: z.string().max(2000).optional(),
-  language: languageSchema.optional(),
+  language: languageFilterSchema.optional(),
   creatorId: z.uuid().optional(),
   entityType: z.enum(entityTypes).optional(),
   entityId: z.string().max(255).optional(),

@@ -10,6 +10,7 @@ import { youtubeVideoId, youtubeChapters } from '../../../shared/creators/youtub
 import { emptyPostDocument } from '../../../shared/posts/content.ts';
 import { normalizeTagIds, toggleTagIds } from '../../../shared/creators/taxonomy.ts';
 import { languageInfo } from '../../../shared/creators/languages.ts';
+import { availableLanguages } from './filters.ts';
 
 test('discovery combines alternatives within dimensions and expands parent formats', () => {
   expect(groupDiscoveryTags('purpose:deck-guide,purpose:gameplay,format:limited')).toEqual([
@@ -62,17 +63,29 @@ test('old classifications collapse without duplicates and old filter URLs remain
   expect(groupDiscoveryTags('format:constructed')).toEqual([['format:premier', 'format:eternal']]);
   expect(() => groupDiscoveryTags('toString')).toThrow('Unknown');
 });
-test('language cues retain regional variants and valid canonical language codes', () => {
+test('language cues group regional variants under their base language', () => {
   expect(languageInfo('pt-br')).toMatchObject({
-    code: 'pt-BR',
-    label: 'Brazilian Portuguese',
+    code: 'pt',
+    label: 'Portuguese',
     flag: '🇧🇷',
   });
   expect(languageInfo('en')).toMatchObject({ flag: '🇬🇧', countryCode: 'gb' });
-  expect(languageInfo('en-US').countryCode).toBe('us');
+  for (const code of ['en', 'en-US', 'en-GB', 'en-CA'])
+    expect(languageInfo(code)).toEqual(languageInfo('en'));
+  for (const code of ['es-ES', 'es-MX', 'es-419'])
+    expect(languageInfo(code)).toEqual(languageInfo('es'));
   expect(languageInfo('pt-br').countryCode).toBe('br');
   expect(languageInfo('invalid_code').countryCode).toBeUndefined();
-  expect(languageInfo('zh-Hant').flag).toBe('🇹🇼');
+  expect(languageInfo('zh-Hant')).toEqual(languageInfo('zh'));
+});
+test('language facets offer one choice per language across imported regional variants', () => {
+  expect(
+    availableLanguages(
+      ['en', 'en-US', 'en-GB', 'EN-ca', 'es-ES', 'es-MX', 'pt-BR', 'pt-PT', 'invalid_code'].map(
+        language => ({ language }),
+      ),
+    ),
+  ).toEqual(['en', 'es', 'pt']);
 });
 test('existing full profiles remain editable after group expansion and canonicalize duplicate languages', () => {
   const specialties = [

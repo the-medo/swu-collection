@@ -80,8 +80,8 @@ export const sidebarStyles = {
     '[.left-sidebar_&[data-sidebar=menu-button].active]:border-[color:var(--nav-gold)]',
     '[.left-sidebar_&[data-sidebar=menu-button].active]:shadow-[inset_3px_0_var(--nav-gold)] [.left-sidebar_&>svg]:text-inherit',
   ].join(' '),
-  preview:
-    'sidebar-preview border border-[color:var(--nav-gold-border)] rounded-[5px] py-0.25 px-1 text-[length:9px] font-medium leading-[1.3]',
+  beta:
+    'sidebar-beta border border-[color:var(--nav-gold-border)] rounded-[5px] py-0.25 px-1 text-[length:9px] font-medium leading-[1.3]',
   itemActions: [
     'sidebar-item-actions absolute top-0.25 right-0.5 flex items-center gap-0.5 h-8',
     '[&_[data-sidebar=menu-action]]:relative [&_[data-sidebar=menu-action]]:top-auto',

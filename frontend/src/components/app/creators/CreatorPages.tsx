@@ -1,5 +1,6 @@
 import { ClaimedBadge } from './YoutubeClaim.tsx';
 import { LanguageFilter, LanguageFlag } from './CreatorLanguages.tsx';
+import { uniqueLanguageCodes } from '../../../../../shared/creators/languages.ts';
 import { useFollowStatuses } from '@/api/follows';
 import { FollowButton } from '@/components/app/follows/FollowButton.tsx';
 import { Link } from '@tanstack/react-router';
@@ -151,7 +152,7 @@ export function CreatorDirectory({
                     {profile.name}
                   </Link>
                 </h2>
-                {profile.languages.map(language => (
+                {uniqueLanguageCodes(profile.languages).map(language => (
                   <LanguageFlag key={language} code={language} />
                 ))}
                 {profile.ownerId && <ClaimedBadge />}

@@ -21,8 +21,8 @@ test.skipIf(process.env.CREATOR_HUB_DB_TEST !== '1')(
       const id = crypto.randomUUID();
       const profile = creatorProfileSchema.parse({
         slug: `browse-${id}`,
-        name: 'Browsing fixture',
-        languages: ['en', 'fr'],
+        name: `Browsing fixture ${id}`,
+        languages: ['en-US', 'en-CA', 'fr'],
         specialties: [],
         links: [],
         bio: emptyPostDocument(),
@@ -50,8 +50,8 @@ test.skipIf(process.env.CREATOR_HUB_DB_TEST !== '1')(
           await sql`INSERT INTO creation_tag (creation_id, tag_id) VALUES (${creationId}, ${tagId})`;
         return creationId;
       };
-      const first = await addCreation('video', 'en', 'purpose:meta-report');
-      const second = await addCreation('video', 'en', 'purpose:meta-report');
+      const first = await addCreation('video', 'en-US', 'purpose:meta-report');
+      const second = await addCreation('video', 'en-GB', 'purpose:meta-report');
       await sql`UPDATE creation SET published = jsonb_set(published, '{durationSeconds}', '754'::jsonb) WHERE id = ${first}`;
       const sourceVideoId = id.replaceAll('-', '').slice(0, 11);
       await sql`UPDATE creation SET source_video_id = ${sourceVideoId}, source_metadata_at = now(), source_status = 'active' WHERE id = ${second}`;
@@ -98,6 +98,26 @@ test.skipIf(process.env.CREATOR_HUB_DB_TEST !== '1')(
         language: 'en',
       });
       expect(filtered.items).toHaveLength(2);
+      const route = createCreatorHubRoute(service);
+      const regionalContent = await route.request(
+        `/creations?creatorId=${id}&language=en-CA&tags=medium:video`,
+      );
+      expect(regionalContent.status).toBe(200);
+      const regionalResults = (await regionalContent.json()).data;
+      expect(new Set(regionalResults.items.map((item: { id: string }) => item.id))).toEqual(
+        new Set([first, second]),
+      );
+      expect(regionalResults.languages).toEqual(['en', 'fr']);
+      const regionalDirectory = await route.request(
+        `/creators?q=${encodeURIComponent(profile.name)}&language=en-GB`,
+      );
+      expect(regionalDirectory.status).toBe(200);
+      const directoryResults = (await regionalDirectory.json()).data;
+      expect(directoryResults.items.map((item: { id: string }) => item.id)).toEqual([id]);
+      expect(directoryResults.languages).toEqual(['en', 'fr']);
+      // Browsing leaves the original imported metadata intact.
+      expect(directoryResults.items[0].languages).toEqual(['en-US', 'en-CA', 'fr']);
+      expect(filtered.items.find(item => item.id === first)?.document.language).toBe('en-US');
       expect(filtered.items.find(item => item.id === first)?.document.durationSeconds).toBe(754);
       expect(filtered.items.find(item => item.id === second)?.document.durationSeconds).toBe(3920);
       await sql`UPDATE creator_video_job SET metadata_fetched_at = now() - interval '29 days' WHERE video_id = ${sourceVideoId}`;
@@ -160,7 +180,6 @@ test.skipIf(process.env.CREATOR_HUB_DB_TEST !== '1')(
       await sql`UPDATE creation SET published = NULL WHERE id IN (${first}, ${second})`;
       expect((await service.decks(id, { page: 1, limit: 12 })).items).toEqual([]);
 
-      const route = createCreatorHubRoute(service);
       expect((await route.request(`/creators/${id}/decks?page=0`)).status).toBe(400);
       expect((await route.request(`/creators/${id}/decks?limit=25`)).status).toBe(400);
       expect((await route.request('/creators/not-an-id/decks')).status).toBe(400);

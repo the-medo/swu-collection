@@ -1,4 +1,5 @@
 import { creationTagMap, normalizeTagIds } from '../../../shared/creators/taxonomy.ts';
+import { uniqueLanguageCodes } from '../../../shared/creators/languages.ts';
 import { CreatorError } from './errors.ts';
 export const escapedSearch = (q: string) => `%${q.replace(/[\\%_]/g, '\\$&')}%`;
 
@@ -13,15 +14,5 @@ export function groupDiscoveryTags(tags = '') {
 }
 
 export function availableLanguages(rows: { language: string }[]) {
-  return [
-    ...new Set(
-      rows.flatMap(({ language }) => {
-        try {
-          return Intl.getCanonicalLocales(language);
-        } catch {
-          return [];
-        }
-      }),
-    ),
-  ].sort();
+  return uniqueLanguageCodes(rows.map(({ language }) => language)).sort();
 }

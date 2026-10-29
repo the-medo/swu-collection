@@ -138,7 +138,7 @@ test.skipIf(process.env.CREATOR_HUB_DB_TEST !== '1')(
       ).toHaveLength(1);
       expect(
         (await service.profiles(profile.name, 2, 'en', 'format:constructed')).languages,
-      ).toEqual(['pt-BR']);
+      ).toEqual(['pt']);
       expect(
         (await service.profiles(profile.name, 1, undefined, 'format:limited')).languages,
       ).toEqual([]);

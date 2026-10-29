@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils.ts';
 import { hubApi, creatorKeys, useHubQuery } from '@/api/creators';
 import { useCreatorFeed } from '@/api/creators/useCreatorFeed.ts';
 import { LanguageFilter, LanguageFlag } from './CreatorLanguages.tsx';
+import { uniqueLanguageCodes } from '../../../../../shared/creators/languages.ts';
 import { CreationCards } from './CreationCards.tsx';
 import { CreatorDecks } from './CreatorDecks.tsx';
 import { CreatorLoadMore } from './CreatorLoadMore.tsx';
@@ -137,7 +138,7 @@ export function CreatorPage({
               <div className="grid min-w-0 gap-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <h1 className={creatorTitle}>{profile.name}</h1>
-                  {profile.languages.map(language => (
+                  {uniqueLanguageCodes(profile.languages).map(language => (
                     <LanguageFlag key={language} code={language} />
                   ))}
                 </div>

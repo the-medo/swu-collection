@@ -4,11 +4,31 @@ const languageCodes =
 export const creatorLanguages = languageCodes.split(' ');
 const names = new Intl.DisplayNames(['en'], { type: 'language' });
 
+// Browsing and authoring offer one choice per language; imported metadata can
+// retain its full locale without creating separate regional choices.
+export function baseLanguageCode(code: string) {
+  return new Intl.Locale(code).language;
+}
+
+export function uniqueLanguageCodes(codes: string[]) {
+  return [
+    ...new Set(
+      codes.flatMap(code => {
+        try {
+          return [baseLanguageCode(code)];
+        } catch {
+          return [];
+        }
+      }),
+    ),
+  ];
+}
+
 export function languageInfo(code: string) {
   try {
-    const locale = new Intl.Locale(code);
-    // Flags are visual language cues; preserve an explicitly selected regional variant.
-    const region = locale.region ?? (locale.language === 'en' ? 'GB' : locale.maximize().region);
+    const locale = new Intl.Locale(baseLanguageCode(code));
+    // Flags are visual language cues, consistent across all regional variants.
+    const region = locale.language === 'en' ? 'GB' : locale.maximize().region;
     return {
       code: locale.toString(),
       label: names.of(locale.toString()) ?? code,
