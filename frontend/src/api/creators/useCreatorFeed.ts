@@ -33,6 +33,8 @@ export function useCreatorFeed(query: Partial<DiscoveryQuery>, enabled: boolean)
     },
     enabled,
     staleTime: 60_000,
+    // Keep loaded pages available while a reader spends time in an article.
+    gcTime: 30 * 60_000,
     retry: 1,
   });
 }
@@ -44,6 +46,7 @@ export function useCreatorDecks(id: string) {
     initialPageParam: 1,
     getNextPageParam: (last, _pages, page) => (last.hasMore && page < 1000 ? page + 1 : undefined),
     staleTime: 0,
+    gcTime: 30 * 60_000,
     retry: 1,
   });
 }

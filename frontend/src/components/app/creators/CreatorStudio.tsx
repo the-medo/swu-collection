@@ -2,8 +2,19 @@ import { useRef, useState } from 'react';
 import { YoutubeClaimButton, YoutubeClaimConfirmation } from './YoutubeClaim.tsx';
 import { Link } from '@tanstack/react-router';
 import { Helmet } from 'react-helmet-async';
-import { AlertCircle, ArrowUpRight, CheckCircle2, PenLine, Plus, Settings2 } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowRight,
+  ArrowUpRight,
+  CheckCircle2,
+  LayoutDashboard,
+  PenLine,
+  Plus,
+  Settings2,
+  Video,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
+import { Input } from '@/components/ui/input.tsx';
 import { Badge } from '@/components/ui/badge.tsx';
 import {
   DropdownMenu,
@@ -11,7 +22,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
-import type { CreationDocument } from '../../../../../shared/creators/contracts.ts';
+import type {
+  CreationDocument,
+  CreatorStudioFilters,
+} from '../../../../../shared/creators/contracts.ts';
 import { useUser } from '@/hooks/useUser.ts';
 import {
   hubApi,
@@ -34,8 +48,10 @@ import {
   creatorSubheading,
 } from './creatorStyles.ts';
 import { cn } from '@/lib/utils.ts';
+import { toast } from '@/hooks/use-toast.ts';
+import { studioPaths, type StudioSection } from './studioNavigation.ts';
 
-export type StudioSearch = {
+export type StudioSearch = Omit<CreatorStudioFilters, 'medium'> & {
   creatorId?: string;
   creationId?: string;
   page?: number;
@@ -48,9 +64,15 @@ export type StudioSearch = {
 export default function CreatorStudio({
   search,
   onChange,
+  onDraftCreated,
+  section,
+  onVideoImported,
 }: {
+  section: StudioSection;
   search: StudioSearch;
   onChange: (patch: Partial<StudioSearch>) => void;
+  onDraftCreated: (id: string) => void;
+  onVideoImported: (creatorId: string, creationId: string) => void;
 }) {
   const user = useUser();
   const displayName =
@@ -59,12 +81,20 @@ export default function CreatorStudio({
   const counts = useHubQuery(creatorKeys.personalCounts, hubApi.personalCounts, true, true);
   const [profileMode, setProfileMode] = useState<'new' | 'edit' | null>(null);
   const [newCreation, setNewCreation] = useState<CreationDocument['medium'] | null>(null);
+  const [newDraftId, setNewDraftId] = useState<string>();
+  const [previousCreationId, setPreviousCreationId] = useState(search.creationId);
   const [settings, setSettings] = useState(!!search.youtube);
   const profile = mine.data?.find(p => p.id === search.creatorId);
   const creatorId = search.creatorId ?? null;
+  const filters: CreatorStudioFilters = {
+    q: search.q,
+    status: search.status,
+    medium: section === 'articles' ? 'article' : section === 'videos' ? 'video' : undefined,
+  };
+  const filtered = !!search.q || !!search.status;
   const publications = useHubQuery(
-    creatorKeys.studio(creatorId, search.page ?? 1),
-    () => hubApi.studio(creatorId, search.page ?? 1),
+    creatorKeys.studio(creatorId, search.page ?? 1, filters),
+    () => hubApi.studio(creatorId, search.page ?? 1, filters),
     !creatorId || !!profile,
     true,
   );
@@ -74,8 +104,19 @@ export default function CreatorStudio({
     !!search.creationId,
     true,
   );
+  // Keep the new editor mounted when its first save adds the ID to the URL,
+  // but clear its local state before rendering a different editor or the library.
+  if (previousCreationId !== search.creationId) {
+    setPreviousCreationId(search.creationId);
+    if (newDraftId && search.creationId !== newDraftId) {
+      setNewDraftId(undefined);
+      setNewCreation(null);
+    }
+  }
   const editing = !!newCreation || !!search.creationId;
+  const EmptyIcon = section === 'videos' ? Video : PenLine;
   const finish = () => {
+    setNewDraftId(undefined);
     setNewCreation(null);
     onChange({
       creationId: undefined,
@@ -87,19 +128,21 @@ export default function CreatorStudio({
   };
   return (
     <CreatorLayout compact>
-      <Helmet title="Writing studio | SWUBASE" />
+      <Helmet
+        title={`${section === 'overview' ? '' : section === 'articles' ? 'Articles · ' : 'Videos · '}Creator studio | SWUBASE`}
+      />
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <span
             className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[var(--creator-soft)] text-[var(--creator-accent)]"
             aria-hidden="true"
           >
-            <PenLine size={20} />
+            <LayoutDashboard size={20} />
           </span>
           <div className="grid min-w-0 gap-1">
-            <h1 className={workspaceStyles.title}>Writing studio</h1>
+            <h1 className={workspaceStyles.title}>Creator studio</h1>
             <p className="text-xs text-muted-foreground">
-              Write as yourself or publish with a creator profile.
+              Write articles, share videos, and manage your creator profile.
             </p>
           </div>
         </div>
@@ -109,6 +152,30 @@ export default function CreatorStudio({
           </Link>
         </Button>
       </header>
+      <nav
+        aria-label="Studio sections"
+        className="flex flex-wrap gap-1 border-b border-border pb-2"
+      >
+        {(
+          [
+            ['overview', 'Overview', LayoutDashboard],
+            ['articles', 'Articles', PenLine],
+            ['videos', 'Videos', Video],
+          ] as const
+        ).map(([value, label, Icon]) => (
+          <Link
+            key={value}
+            to={studioPaths[value]}
+            activeOptions={{ exact: true, includeSearch: false }}
+            search={{ creatorId: search.creatorId }}
+            aria-current={section === value ? 'page' : undefined}
+            className={cn(workspaceStyles.tab, 'min-h-9')}
+          >
+            <Icon size={16} aria-hidden="true" />
+            {label}
+          </Link>
+        ))}
+      </nav>
       <Status compact loading={mine.isPending} error={mine.error} />
       {search.youtube === 'failed' && (
         <div
@@ -167,6 +234,23 @@ export default function CreatorStudio({
           key={profileMode === 'edit' ? profile?.id : 'new'}
           profile={profileMode === 'edit' ? profile : undefined}
           personalCounts={counts.data}
+          onDeleted={alreadyMissing => {
+            setProfileMode(null);
+            setSettings(false);
+            onChange({
+              creatorId: undefined,
+              creationId: undefined,
+              page: 1,
+              q: undefined,
+              status: undefined,
+            });
+            toast({
+              title: alreadyMissing
+                ? 'Creator profile no longer exists'
+                : 'Creator profile deleted',
+              description: 'Your personal library is ready.',
+            });
+          }}
           onSaved={id => {
             setProfileMode(null);
             onChange({ creatorId: id, creationId: undefined, page: 1 });
@@ -202,7 +286,7 @@ export default function CreatorStudio({
                 </select>
               </label>
               {profile && (
-                <Button asChild size="sm" variant="ghost">
+                <Button asChild size="sm" variant="ghost" className="text-foreground">
                   <Link to="/creators/$slug" params={{ slug: profile.slug }}>
                     View profile
                   </Link>
@@ -213,6 +297,7 @@ export default function CreatorStudio({
                   <Button
                     size="sm"
                     variant="ghost"
+                    className="text-foreground"
                     disabled={editing}
                     onClick={() => setProfileMode('edit')}
                   >
@@ -222,7 +307,7 @@ export default function CreatorStudio({
                     size="sm"
                     variant="ghost"
                     aria-expanded={settings && !editing}
-                    className={settings ? creatorSelectedControl : undefined}
+                    className={cn('text-foreground', settings && creatorSelectedControl)}
                     disabled={editing}
                     onClick={() => setSettings(value => !value)}
                   >
@@ -236,6 +321,7 @@ export default function CreatorStudio({
                 <Button
                   size="sm"
                   variant="ghost"
+                  className="text-foreground"
                   disabled={editing || counts.isFetching}
                   onClick={() => {
                     void counts.refetch().then(result => {
@@ -254,17 +340,57 @@ export default function CreatorStudio({
               </p>
             )}
             <Status compact error={counts.error} />
-            {!editing && profile && profile.ownerId === user?.id && !!counts.data?.total && (
-              <TransferArticles
-                key={profile.id}
-                creatorId={profile.id}
-                name={profile.name}
-                counts={counts.data}
-              />
+            {!editing && section === 'overview' && (
+              <div className="grid gap-3 sm:grid-cols-2" aria-label="Choose what to create">
+                {(
+                  [
+                    [
+                      'articles',
+                      'Articles',
+                      'Write, edit, and publish articles. Keep drafts private until they are ready.',
+                      PenLine,
+                    ],
+                    [
+                      'videos',
+                      'Videos',
+                      'Connect YouTube, import videos, and manage the videos on your creator profile.',
+                      Video,
+                    ],
+                  ] as const
+                ).map(([value, title, description, Icon]) => (
+                  <Link
+                    key={value}
+                    to={studioPaths[value]}
+                    search={{ creatorId: search.creatorId }}
+                    aria-label={`Open ${value}`}
+                    className={`${workspaceStyles.panel} group grid gap-2 p-4 transition-colors hover:border-[var(--creator-accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`}
+                  >
+                    <Icon size={22} className="text-[var(--creator-accent)]" aria-hidden="true" />
+                    <h2 className={creatorSubheading}>{title}</h2>
+                    <p className={creatorDescription}>{description}</p>
+                    <span className="mt-1 flex items-center gap-2 text-sm font-medium text-[var(--creator-accent)]">
+                      Open {value}
+                      <ArrowRight size={15} aria-hidden="true" />
+                    </span>
+                  </Link>
+                ))}
+              </div>
             )}
+            {!editing &&
+              section !== 'videos' &&
+              profile &&
+              profile.ownerId === user?.id &&
+              !!counts.data?.total && (
+                <TransferArticles
+                  key={`transfer:${profile.id}`}
+                  creatorId={profile.id}
+                  name={profile.name}
+                  counts={counts.data}
+                />
+              )}
             {settings && !editing && profile && profile.ownerId === user?.id && (
               <CreatorConnections
-                key={profile.id}
+                key={`connections:${profile.id}`}
                 id={profile.id}
                 connectedChannelId={
                   ['connected', 'claimed'].includes(search.youtube ?? '') &&
@@ -272,15 +398,30 @@ export default function CreatorStudio({
                     ? search.youtubeChannelId
                     : undefined
                 }
-                onImported={creationId => onChange({ creatorId: profile.id, creationId })}
+                onImported={creationId => onVideoImported(profile.id, creationId)}
               />
             )}
+            {section === 'videos' &&
+              !settings &&
+              !editing &&
+              profile?.ownerId === user?.id &&
+              profile && (
+                <YoutubeConnection
+                  key={`video-channel:${profile.id}`}
+                  creatorId={profile.id}
+                  onImported={creationId => onVideoImported(profile.id, creationId)}
+                />
+              )}
             {newCreation ? (
               <CreationEditor
                 key={`new:${creatorId ?? 'personal'}`}
                 creatorId={creatorId}
                 medium={newCreation}
                 onClose={finish}
+                onCreated={id => {
+                  setNewDraftId(id);
+                  onDraftCreated(id);
+                }}
               />
             ) : search.creationId ? (
               <>
@@ -299,9 +440,22 @@ export default function CreatorStudio({
                 <>
                   <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
                     <h2 className={creatorSubheading}>
-                      {profile ? 'Your creations' : 'My articles'}
+                      {section === 'videos'
+                        ? 'Videos'
+                        : section === 'articles'
+                          ? 'Articles'
+                          : profile
+                            ? 'Your creations'
+                            : 'My articles'}
                     </h2>
-                    {profile ? (
+                    {section === 'videos' ? (
+                      profile && (
+                        <Button size="sm" onClick={() => setNewCreation('video')}>
+                          <Plus size={15} aria-hidden="true" />
+                          Share a video
+                        </Button>
+                      )
+                    ) : section === 'overview' && profile ? (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button size="sm">
@@ -331,25 +485,91 @@ export default function CreatorStudio({
                       </Button>
                     )}
                   </div>
+                  <form
+                    className="flex flex-wrap items-end gap-2"
+                    onSubmit={event => {
+                      event.preventDefault();
+                      const q = String(new FormData(event.currentTarget).get('q') ?? '').trim();
+                      onChange({ q: q || undefined, page: 1 });
+                    }}
+                  >
+                    <label className="grid min-w-0 flex-1 basis-56 gap-1 text-xs font-medium">
+                      Search your creations
+                      <Input
+                        key={search.q ?? ''}
+                        name="q"
+                        type="search"
+                        maxLength={120}
+                        defaultValue={search.q ?? ''}
+                        placeholder="Search by title"
+                      />
+                    </label>
+                    <Button type="submit" variant="outline" aria-label="Search creations">
+                      Search
+                    </Button>
+                    <label className="grid gap-1 text-xs font-medium">
+                      Publication status
+                      <select
+                        className={selectClass}
+                        value={search.status ?? ''}
+                        onChange={event =>
+                          onChange({
+                            status: (event.target.value || undefined) as StudioSearch['status'],
+                            page: 1,
+                          })
+                        }
+                      >
+                        <option value="">All statuses</option>
+                        <option value="draft">Drafts</option>
+                        <option value="published">Published</option>
+                        <option value="changes">Unpublished changes</option>
+                      </select>
+                    </label>
+                    {filtered && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => onChange({ q: undefined, status: undefined, page: 1 })}
+                      >
+                        Clear filters
+                      </Button>
+                    )}
+                  </form>
                   <Status compact loading={publications.isPending} error={publications.error} />
                   {publications.data?.items.length === 0 && (
                     <div
                       className={`${workspaceStyles.panel} grid justify-items-center gap-2 px-4 py-8 text-center`}
                     >
-                      <PenLine
+                      <EmptyIcon
                         size={24}
                         className="mb-1 text-[var(--creator-accent)]"
                         aria-hidden="true"
                       />
-                      <h3 className={creatorSubheading}>Bring your first idea to the community</h3>
+                      <h3 className={creatorSubheading}>
+                        {filtered
+                          ? 'No creations match these filters.'
+                          : section === 'videos'
+                            ? profile
+                              ? 'Share your first video'
+                              : 'Choose a creator profile for your videos'
+                            : 'Bring your first idea to the community'}
+                      </h3>
                       <p className={`${creatorDescription} max-w-xl`}>
-                        {profile
-                          ? 'Write an article, share a video or podcast, or connect YouTube.'
-                          : 'Start writing with your personal profile. You can move your articles to a creator profile whenever you are ready.'}
+                        {filtered
+                          ? 'Try another title or clear the filters to see all your creations.'
+                          : section === 'videos'
+                            ? profile
+                              ? 'Share a video link or connect YouTube to import videos from your channel.'
+                              : 'Choose a creator profile using Publish as, or connect or claim a YouTube channel to get started. Personal publishing is for articles.'
+                            : section === 'articles'
+                              ? 'Write a new article and save a draft. Publish it when you are ready to share.'
+                              : profile
+                                ? 'Write an article, share a video or podcast, or connect YouTube.'
+                                : 'Start writing with your personal profile. You can move your articles to a creator profile whenever you are ready.'}
                       </p>
                     </div>
                   )}
-                  <div className="grid gap-2">
+                  <div className="grid gap-2" data-studio-results>
                     {publications.data?.items.map(item => (
                       <div
                         key={item.id}
@@ -357,7 +577,23 @@ export default function CreatorStudio({
                       >
                         <div className="min-w-0 flex-1 basis-56">
                           <h3 className={`${workspaceStyles.heading} break-words`}>
-                            {item.document.title}
+                            <Link
+                              to={studioPaths[section]}
+                              className="text-left hover:underline focus-visible:underline"
+                              search={previous => ({
+                                ...previous,
+                                youtube: undefined,
+                                youtubeChannelId: undefined,
+                                youtubeClaimId: undefined,
+                                youtubeError: undefined,
+                                transferredDecks: undefined,
+                                creatorId: item.creatorId ?? undefined,
+                                creationId: item.id,
+                              })}
+                              resetScroll={false}
+                            >
+                              {item.document.title}
+                            </Link>
                           </h3>
                           <div className="mt-1.5 flex flex-wrap items-center gap-2">
                             <Badge
@@ -372,6 +608,17 @@ export default function CreatorStudio({
                             <span className="text-xs text-muted-foreground">
                               {item.document.medium}
                             </span>
+                            <time
+                              dateTime={item.updatedAt}
+                              className="text-xs text-muted-foreground"
+                            >
+                              Edited{' '}
+                              {new Date(item.updatedAt).toLocaleDateString(undefined, {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })}
+                            </time>
                           </div>
                         </div>
                         <div className="flex gap-2">

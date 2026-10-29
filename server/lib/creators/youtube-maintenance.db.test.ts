@@ -57,13 +57,17 @@ test.skipIf(process.env.CREATOR_LIFECYCLE_DB_TEST !== '1')(
     let failVideos = false,
       authMode: 'success' | 'outage' | 'revoked' = 'success';
     let providerCalls = 0;
+    let subscribers: number | null = 123_000;
+    let failChannels = false;
     const youtube = {
       channels: async (ids: string[]) => {
         providerCalls++;
+        if (failChannels) throw new Error('temporary');
         return ids.map(channelId => ({
           channelId,
           title: 'Fresh channel',
           avatarUrl: 'https://example.com/fresh.png',
+          subscriberCount: subscribers,
         }));
       },
       video: async (videoId: string) => {
@@ -84,6 +88,13 @@ test.skipIf(process.env.CREATOR_LIFECYCLE_DB_TEST !== '1')(
       clock: () => time,
     });
     const creations = createCreationsService(db);
+    const channelRow = async () =>
+      (
+        await db
+          .select()
+          .from(creatorYoutubeChannel)
+          .where(eq(creatorYoutubeChannel.channelId, channelId))
+      )[0];
     async function addVideo(index: number, origin: 'public' | 'oauth' = 'public', age = 8) {
       const videoId = `life${String(index).padStart(7, '0')}`;
       const metadata: VideoMetadata = {
@@ -201,6 +212,8 @@ test.skipIf(process.env.CREATOR_LIFECYCLE_DB_TEST !== '1')(
       expect(await rowFor(normal)).toEqual(beforeDryRun);
       const result = await maintain();
       expect('failed' in result && result.failed).toBe(0);
+      expect((await channelRow()).subscriberCount).toBe(123_000);
+      expect(Date.parse((await channelRow()).subscribersUpdatedAt!)).toBe(time);
       const updated = await rowFor(normal);
       expect(updated.draft.title).toBe('My custom title');
       expect(updated.draft.summary).toBe('Unpublished custom summary');
@@ -285,6 +298,7 @@ test.skipIf(process.env.CREATOR_LIFECYCLE_DB_TEST !== '1')(
       const status = (await youtubeService.status(id, owner)).channels[0];
       expect(status.connected).toBe(false);
       expect(status.disconnectReason).toBe('revoked');
+      expect((await channelRow()).subscriberCount).toBe(123_000);
       const controls = createChannelImportsService();
       await controls.setAutoImport(id, owner, channelId, false);
       expect((await eligibleChannels()).paused.has(channelId)).toBe(true);
@@ -344,6 +358,10 @@ test.skipIf(process.env.CREATOR_LIFECYCLE_DB_TEST !== '1')(
       expect((await eligibleChannels()).channels.get(channelId)).toBe(id);
 
       // Reauthorization releases consent-removed drafts for public refresh, never auto-publication.
+      await db
+        .update(creatorYoutubeChannel)
+        .set({ subscribersUpdatedAt: date(8) })
+        .where(eq(creatorYoutubeChannel.channelId, channelId));
       const savedFetch = globalThis.fetch;
       try {
         globalThis.fetch = (async (url: string | URL | Request) => {
@@ -370,7 +388,12 @@ test.skipIf(process.env.CREATOR_LIFECYCLE_DB_TEST !== '1')(
         globalThis.fetch = savedFetch;
       }
       expect((await rowFor(expiredConsent)).sourceStatus).toBe('expired');
+      // OAuth identity metadata must not renew independent public statistics.
+      expect(Date.parse((await channelRow()).subscribersUpdatedAt!)).toBe(Date.parse(date(8)));
+      subscribers = 234_000;
       await maintain();
+      expect((await channelRow()).subscriberCount).toBe(234_000);
+      expect(Date.parse((await channelRow()).subscribersUpdatedAt!)).toBe(time);
       const recovered = await rowFor(expiredConsent);
       expect(recovered.sourceStatus).toBe('active');
       expect(recovered.sourceDataOrigin).toBe('public');
@@ -417,6 +440,34 @@ test.skipIf(process.env.CREATOR_LIFECYCLE_DB_TEST !== '1')(
       expect(restored.draft.title).toBe('Current title 1');
       expect(restored.published).toBeNull();
       await creations.publish(normal.id, owner, restored.revision);
+
+      // Hidden/missing counts replace an older known count. Outages preserve it only until expiry.
+      subscribers = null;
+      await db
+        .update(creatorYoutubeChannel)
+        .set({ subscribersUpdatedAt: date(8), metadataCheckedAt: date(8) })
+        .where(eq(creatorYoutubeChannel.channelId, channelId));
+      await maintain();
+      expect((await channelRow()).subscriberCount).toBeNull();
+      expect(Date.parse((await channelRow()).subscribersUpdatedAt!)).toBe(time);
+      failChannels = true;
+      await db
+        .update(creatorYoutubeChannel)
+        .set({
+          subscriberCount: 345_000,
+          subscribersUpdatedAt: date(8),
+          metadataCheckedAt: date(8),
+        })
+        .where(eq(creatorYoutubeChannel.channelId, channelId));
+      await maintain();
+      expect((await channelRow()).subscriberCount).toBe(345_000);
+      await db
+        .update(creatorYoutubeChannel)
+        .set({ subscribersUpdatedAt: date(29) })
+        .where(eq(creatorYoutubeChannel.channelId, channelId));
+      await maintain();
+      expect((await channelRow()).subscriberCount).toBeNull();
+      expect((await channelRow()).subscribersUpdatedAt).toBeNull();
 
       // Scheduler overlap returns without making requests; no provider or Gemini side effects.
       await db.transaction(async tx => {

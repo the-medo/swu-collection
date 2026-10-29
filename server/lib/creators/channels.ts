@@ -1,4 +1,4 @@
-import { and, eq, inArray, isNull, sql } from 'drizzle-orm';
+import { and, eq, inArray, isNull, sql, type SQLWrapper } from 'drizzle-orm';
 import { db } from '../../db/index.ts';
 import {
   creatorProfile,
@@ -134,6 +134,16 @@ export async function syncCuratedChannels(database: Database = db) {
   });
 }
 
+/** Curated links only apply to ownerless profiles and recently resolved handles. */
+export function eligibleChannelAssociation(
+  channel: { origin: SQLWrapper; resolvedAt: SQLWrapper } = creatorChannel,
+  profile: { ownerId: SQLWrapper } = creatorProfile,
+) {
+  return sql`((${channel.origin} IN ('oauth', 'public'))
+    OR (${channel.origin} = 'curated' AND ${profile.ownerId} IS NULL
+      AND (${channel.resolvedAt} IS NULL OR ${channel.resolvedAt} > now() - interval '24 hours')))`;
+}
+
 /** Curated associations grant import access only for ownerless profiles. */
 export async function eligibleChannels(database: Connection = db) {
   const candidates = await database
@@ -145,9 +155,7 @@ export async function eligibleChannels(database: Connection = db) {
     .from(creatorChannel)
     .innerJoin(creatorYoutubeChannel, eq(creatorYoutubeChannel.channelId, creatorChannel.channelId))
     .innerJoin(creatorProfile, eq(creatorProfile.id, creatorChannel.creatorId))
-    .where(sql`(${creatorChannel.origin} IN ('oauth', 'public'))
-      OR (${creatorChannel.origin} = 'curated' AND ${creatorProfile.ownerId} IS NULL
-        AND (${creatorChannel.resolvedAt} IS NULL OR ${creatorChannel.resolvedAt} > now() - interval '24 hours'))`);
+    .where(eligibleChannelAssociation());
   const channels = new Map<string, string>();
   const conflicts = new Set<string>();
   for (const candidate of candidates) {

@@ -192,6 +192,17 @@ export type Creation = {
   creator: { slug: string; name: string; avatarUrl: string } | null;
   references?: ResolvedReference[];
 };
+export const creatorStudioQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).max(1000).default(1),
+  q: z.string().trim().max(120).optional(),
+  status: z.enum(['draft', 'published', 'changes']).optional(),
+  medium: creationDocumentSchema.shape.medium.optional(),
+});
+export type CreatorStudioFilters = Pick<
+  z.infer<typeof creatorStudioQuerySchema>,
+  'q' | 'status' | 'medium'
+>;
+
 export const discoverySchema = z.object({
   following: booleanPreprocessor.optional(),
   q: z.string().trim().max(120).optional(),
@@ -254,6 +265,24 @@ export const creatorOnboardingSchema = z.object({
 export type CreatorOnboarding = z.infer<typeof creatorOnboardingSchema>;
 export type CreatorOnboardingResult = { id: string; slug: string; moved: number };
 export type PersonalArticleCounts = { total: number; drafts: number };
+
+export const creatorDeletionSchema = z.object({
+  confirmation: z.string().min(1).max(60),
+  snapshot: z.string().regex(/^[a-f0-9]{64}$/),
+  keepMyArticles: z.boolean(),
+});
+export type CreatorDeletion = z.infer<typeof creatorDeletionSchema>;
+export type CreatorDeletionPreview = {
+  name: string;
+  slug: string;
+  snapshot: string;
+  total: number;
+  drafts: number;
+  keepableArticles: number;
+  keepableDrafts: number;
+  channels: number;
+  editors: number;
+};
 
 export const creatorDeckQuerySchema = z.object({
   page: z.coerce.number().int().min(1).max(1000).default(1),

@@ -19,16 +19,22 @@ export function createFollowService(database = db) {
     const target = kind === 'users' ? userFollow.followedUserId : creatorFollow.creatorId;
     const targets =
       kind === 'users'
-        ? await database.select({ id: user.id }).from(user).where(inArray(user.id, ids))
+        ? await database
+            .select({ id: user.id, count: sql<number>`0` })
+            .from(user)
+            .where(inArray(user.id, ids))
         : await database
-            .select({ id: creatorProfile.id })
+            .select({ id: creatorProfile.id, count: creatorProfile.followerCount })
             .from(creatorProfile)
             .where(inArray(creatorProfile.id, ids));
-    const counts = await database
-      .select({ id: target, count: count() })
-      .from(relation)
-      .where(inArray(target, ids))
-      .groupBy(target);
+    const counts =
+      kind === 'users'
+        ? await database
+            .select({ id: userFollow.followedUserId, count: count() })
+            .from(userFollow)
+            .where(inArray(userFollow.followedUserId, ids))
+            .groupBy(userFollow.followedUserId)
+        : targets;
     const followed = viewerId
       ? await database
           .select({ id: target })

@@ -12,7 +12,11 @@ export function CreatorDecks({ creatorId }: { creatorId: string }) {
     ).values(),
   ];
   return (
-    <section className="min-w-0 space-y-4" aria-label="Creator decks">
+    <section
+      className="min-w-0 space-y-4"
+      aria-label="Creator decks"
+      data-creator-scroll-pending={query.isPending}
+    >
       <Status loading={query.isPending} error={!query.isFetchNextPageError ? query.error : null} />
       {query.isError && !query.data && (
         <Button variant="outline" onClick={() => void query.refetch()}>

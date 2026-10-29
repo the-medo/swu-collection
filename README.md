@@ -43,7 +43,7 @@ bun run screenshotter:tournament -- --tournament-id <uuid> --skip-upload --outpu
 
 The server-only [`create-sanitized-db-backup.sh`](scripts/remote-dev/create-sanitized-db-backup.sh) script creates a contributor-safe database dump from a Coolify backup. Its configuration belongs in the server's untracked `.env`; see `.env.example` for the required variables.
 
-Its reviewed baseline rules are in `scripts/remote-dev/sql/`; they remove credentials and sensitive integration fields, retain only opted-in user data, and fail the export if privacy assertions do not pass. Run it from the server with an explicit source:
+Its reviewed baseline rules are in `scripts/remote-dev/sql/`; they remove credentials and sensitive integration fields, retain only opted-in user data, and fail the export if privacy assertions do not pass. Published public videos and their public creator profiles also remain, with account ownership and private drafts removed; see the [creator retention rules](docs/creator-hub.md#persistence-and-development-data). Run it from the server with an explicit source:
 
 ```bash
 ./scripts/remote-dev/create-sanitized-db-backup.sh --source local --timestamp latest

@@ -1,4 +1,8 @@
-import type { DiscoveryQuery, EntityReference } from '../../../../shared/creators/contracts.ts';
+import type {
+  CreatorStudioFilters,
+  DiscoveryQuery,
+  EntityReference,
+} from '../../../../shared/creators/contracts.ts';
 const root = ['creator-hub'] as const;
 const publicRoot = [...root, 'public'] as const;
 const privateRoot = [...root, 'private'] as const;
@@ -30,9 +34,16 @@ export const creatorKeys = {
   personalCounts: [...privateRoot, 'personal-counts'] as const,
   youtubeClaim: (claimId: string) => [...privateRoot, 'youtube-claim', claimId] as const,
   mine: [...privateRoot, 'mine'] as const,
+  deletion: (id: string) => [...privateRoot, 'deletion', id] as const,
   studios: [...privateRoot, 'studio'] as const,
-  studio: (id?: string | null, page?: number) =>
-    [...privateRoot, 'studio', id, ...(page === undefined ? [] : [page])] as const,
+  studio: (id?: string | null, page?: number, filters?: CreatorStudioFilters) =>
+    [
+      ...privateRoot,
+      'studio',
+      id,
+      ...(page === undefined ? [] : [page]),
+      ...(filters === undefined ? [] : [filters]),
+    ] as const,
   draft: (id?: string) => [...privateRoot, 'draft', id] as const,
   revisions: (id?: string) => [...privateRoot, 'revisions', id] as const,
   youtube: (id: string) => [...privateRoot, 'youtube', id] as const,

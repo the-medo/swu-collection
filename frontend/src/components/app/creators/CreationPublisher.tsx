@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils.ts';
 import type { Creation } from '../../../../../shared/creators/contracts.ts';
 import { CreatorAvatar } from './CreatorLayout.tsx';
 import { creatorLink } from './creatorStyles.ts';
+import { useCreatorReturnTo } from './useCreatorReturnTo.ts';
 
 export function CreationPublisher({
   creation,
@@ -13,6 +14,7 @@ export function CreationPublisher({
   avatar?: boolean;
   compact?: boolean;
 }) {
+  const returnTo = useCreatorReturnTo();
   const identity = creation.creator ?? creation.author;
   if (!identity) return <span>Deleted user</span>;
   const content = (
@@ -38,7 +40,12 @@ export function CreationPublisher({
     compact && 'gap-2',
   );
   return creation.creator ? (
-    <Link to="/creators/$slug" params={{ slug: creation.creator.slug }} className={className}>
+    <Link
+      to="/creators/$slug"
+      params={{ slug: creation.creator.slug }}
+      search={{ returnTo }}
+      className={className}
+    >
       {content}
     </Link>
   ) : (

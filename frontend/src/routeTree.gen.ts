@@ -79,6 +79,7 @@ import { Route as CollectionsCollectionIdIndexRouteImport } from './routes/colle
 import { Route as AlbumsAlbumIdIndexRouteImport } from './routes/albums/$albumId/index'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedCrossfireIndexRouteImport } from './routes/_authenticated/crossfire/index'
+import { Route as AuthenticatedCreatorStudioIndexRouteImport } from './routes/_authenticated/creator-studio/index'
 import { Route as UsersUserIdTournamentsRouteImport } from './routes/users/$userId/tournaments'
 import { Route as UsersUserIdCalendarRouteImport } from './routes/users/$userId/calendar'
 import { Route as TournamentsTournamentIdPhotosRouteImport } from './routes/tournaments/$tournamentId/photos'
@@ -98,6 +99,8 @@ import { Route as CardsGroupsGroupIdRouteImport } from './routes/cards/groups/$g
 import { Route as CardsDetailCardIdRouteImport } from './routes/cards/detail/$cardId'
 import { Route as AuthenticatedMcpConsentRouteImport } from './routes/_authenticated/mcp/consent'
 import { Route as AuthenticatedCrossfireLobbyIdRouteImport } from './routes/_authenticated/crossfire/$lobbyId'
+import { Route as AuthenticatedCreatorStudioVideosRouteImport } from './routes/_authenticated/creator-studio/videos'
+import { Route as AuthenticatedCreatorStudioArticlesRouteImport } from './routes/_authenticated/creator-studio/articles'
 import { Route as TeamsTeamIdStatisticsIndexRouteImport } from './routes/teams/$teamId/statistics/index'
 import { Route as StatisticsStatisticsLayoutMetaIndexRouteImport } from './routes/statistics/_statisticsLayout/meta/index'
 import { Route as StatisticsStatisticsLayoutMatchupsIndexRouteImport } from './routes/statistics/_statisticsLayout/matchups/index'
@@ -479,6 +482,12 @@ const AuthenticatedCrossfireIndexRoute =
     path: '/crossfire/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedCreatorStudioIndexRoute =
+  AuthenticatedCreatorStudioIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedCreatorStudioRoute,
+  } as any)
 const UsersUserIdTournamentsRoute = UsersUserIdTournamentsRouteImport.update({
   id: '/users/$userId/tournaments',
   path: '/users/$userId/tournaments',
@@ -581,6 +590,18 @@ const AuthenticatedCrossfireLobbyIdRoute =
     id: '/crossfire/$lobbyId',
     path: '/crossfire/$lobbyId',
     getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedCreatorStudioVideosRoute =
+  AuthenticatedCreatorStudioVideosRouteImport.update({
+    id: '/videos',
+    path: '/videos',
+    getParentRoute: () => AuthenticatedCreatorStudioRoute,
+  } as any)
+const AuthenticatedCreatorStudioArticlesRoute =
+  AuthenticatedCreatorStudioArticlesRouteImport.update({
+    id: '/articles',
+    path: '/articles',
+    getParentRoute: () => AuthenticatedCreatorStudioRoute,
   } as any)
 const TeamsTeamIdStatisticsIndexRoute =
   TeamsTeamIdStatisticsIndexRouteImport.update({
@@ -718,7 +739,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/battlefield': typeof AuthenticatedBattlefieldRoute
-  '/creator-studio': typeof AuthenticatedCreatorStudioRoute
+  '/creator-studio': typeof AuthenticatedCreatorStudioRouteWithChildren
   '/following': typeof AuthenticatedFollowingRoute
   '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -756,6 +777,8 @@ export interface FileRoutesByFullPath {
   '/teams': typeof TeamsIndexRoute
   '/tools': typeof ToolsIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
+  '/creator-studio/articles': typeof AuthenticatedCreatorStudioArticlesRoute
+  '/creator-studio/videos': typeof AuthenticatedCreatorStudioVideosRoute
   '/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
   '/mcp/consent': typeof AuthenticatedMcpConsentRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
@@ -775,6 +798,7 @@ export interface FileRoutesByFullPath {
   '/tournaments/$tournamentId/photos': typeof TournamentsTournamentIdPhotosRoute
   '/users/$userId/calendar': typeof UsersUserIdCalendarRoute
   '/users/$userId/tournaments': typeof UsersUserIdTournamentsRoute
+  '/creator-studio/': typeof AuthenticatedCreatorStudioIndexRoute
   '/crossfire': typeof AuthenticatedCrossfireIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/albums/$albumId': typeof AlbumsAlbumIdIndexRoute
@@ -825,7 +849,6 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/battlefield': typeof AuthenticatedBattlefieldRoute
-  '/creator-studio': typeof AuthenticatedCreatorStudioRoute
   '/following': typeof AuthenticatedFollowingRoute
   '/messages': typeof AuthenticatedMessagesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -861,6 +884,8 @@ export interface FileRoutesByTo {
   '/teams': typeof TeamsIndexRoute
   '/tools': typeof ToolsIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
+  '/creator-studio/articles': typeof AuthenticatedCreatorStudioArticlesRoute
+  '/creator-studio/videos': typeof AuthenticatedCreatorStudioVideosRoute
   '/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
   '/mcp/consent': typeof AuthenticatedMcpConsentRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
@@ -880,6 +905,7 @@ export interface FileRoutesByTo {
   '/tournaments/$tournamentId/photos': typeof TournamentsTournamentIdPhotosRoute
   '/users/$userId/calendar': typeof UsersUserIdCalendarRoute
   '/users/$userId/tournaments': typeof UsersUserIdTournamentsRoute
+  '/creator-studio': typeof AuthenticatedCreatorStudioIndexRoute
   '/crossfire': typeof AuthenticatedCrossfireIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/albums/$albumId': typeof AlbumsAlbumIdIndexRoute
@@ -932,7 +958,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/battlefield': typeof AuthenticatedBattlefieldRoute
-  '/_authenticated/creator-studio': typeof AuthenticatedCreatorStudioRoute
+  '/_authenticated/creator-studio': typeof AuthenticatedCreatorStudioRouteWithChildren
   '/_authenticated/following': typeof AuthenticatedFollowingRoute
   '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
@@ -971,6 +997,8 @@ export interface FileRoutesById {
   '/teams/': typeof TeamsIndexRoute
   '/tools/': typeof ToolsIndexRoute
   '/tournaments/': typeof TournamentsIndexRoute
+  '/_authenticated/creator-studio/articles': typeof AuthenticatedCreatorStudioArticlesRoute
+  '/_authenticated/creator-studio/videos': typeof AuthenticatedCreatorStudioVideosRoute
   '/_authenticated/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
   '/_authenticated/mcp/consent': typeof AuthenticatedMcpConsentRoute
   '/cards/detail/$cardId': typeof CardsDetailCardIdRoute
@@ -990,6 +1018,7 @@ export interface FileRoutesById {
   '/tournaments/$tournamentId/photos': typeof TournamentsTournamentIdPhotosRoute
   '/users/$userId/calendar': typeof UsersUserIdCalendarRoute
   '/users/$userId/tournaments': typeof UsersUserIdTournamentsRoute
+  '/_authenticated/creator-studio/': typeof AuthenticatedCreatorStudioIndexRoute
   '/_authenticated/crossfire/': typeof AuthenticatedCrossfireIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/albums/$albumId/': typeof AlbumsAlbumIdIndexRoute
@@ -1082,6 +1111,8 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tools'
     | '/tournaments'
+    | '/creator-studio/articles'
+    | '/creator-studio/videos'
     | '/crossfire/$lobbyId'
     | '/mcp/consent'
     | '/cards/detail/$cardId'
@@ -1101,6 +1132,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/photos'
     | '/users/$userId/calendar'
     | '/users/$userId/tournaments'
+    | '/creator-studio/'
     | '/crossfire'
     | '/settings'
     | '/albums/$albumId'
@@ -1151,7 +1183,6 @@ export interface FileRouteTypes {
     | '/terms'
     | '/admin'
     | '/battlefield'
-    | '/creator-studio'
     | '/following'
     | '/messages'
     | '/notifications'
@@ -1187,6 +1218,8 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tools'
     | '/tournaments'
+    | '/creator-studio/articles'
+    | '/creator-studio/videos'
     | '/crossfire/$lobbyId'
     | '/mcp/consent'
     | '/cards/detail/$cardId'
@@ -1206,6 +1239,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/photos'
     | '/users/$userId/calendar'
     | '/users/$userId/tournaments'
+    | '/creator-studio'
     | '/crossfire'
     | '/settings'
     | '/albums/$albumId'
@@ -1296,6 +1330,8 @@ export interface FileRouteTypes {
     | '/teams/'
     | '/tools/'
     | '/tournaments/'
+    | '/_authenticated/creator-studio/articles'
+    | '/_authenticated/creator-studio/videos'
     | '/_authenticated/crossfire/$lobbyId'
     | '/_authenticated/mcp/consent'
     | '/cards/detail/$cardId'
@@ -1315,6 +1351,7 @@ export interface FileRouteTypes {
     | '/tournaments/$tournamentId/photos'
     | '/users/$userId/calendar'
     | '/users/$userId/tournaments'
+    | '/_authenticated/creator-studio/'
     | '/_authenticated/crossfire/'
     | '/_authenticated/settings/'
     | '/albums/$albumId/'
@@ -1916,6 +1953,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrossfireIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/creator-studio/': {
+      id: '/_authenticated/creator-studio/'
+      path: '/'
+      fullPath: '/creator-studio/'
+      preLoaderRoute: typeof AuthenticatedCreatorStudioIndexRouteImport
+      parentRoute: typeof AuthenticatedCreatorStudioRoute
+    }
     '/users/$userId/tournaments': {
       id: '/users/$userId/tournaments'
       path: '/users/$userId/tournaments'
@@ -2048,6 +2092,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/crossfire/$lobbyId'
       preLoaderRoute: typeof AuthenticatedCrossfireLobbyIdRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/creator-studio/videos': {
+      id: '/_authenticated/creator-studio/videos'
+      path: '/videos'
+      fullPath: '/creator-studio/videos'
+      preLoaderRoute: typeof AuthenticatedCreatorStudioVideosRouteImport
+      parentRoute: typeof AuthenticatedCreatorStudioRoute
+    }
+    '/_authenticated/creator-studio/articles': {
+      id: '/_authenticated/creator-studio/articles'
+      path: '/articles'
+      fullPath: '/creator-studio/articles'
+      preLoaderRoute: typeof AuthenticatedCreatorStudioArticlesRouteImport
+      parentRoute: typeof AuthenticatedCreatorStudioRoute
     }
     '/teams/$teamId/statistics/': {
       id: '/teams/$teamId/statistics/'
@@ -2199,10 +2257,30 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedCreatorStudioRouteChildren {
+  AuthenticatedCreatorStudioArticlesRoute: typeof AuthenticatedCreatorStudioArticlesRoute
+  AuthenticatedCreatorStudioVideosRoute: typeof AuthenticatedCreatorStudioVideosRoute
+  AuthenticatedCreatorStudioIndexRoute: typeof AuthenticatedCreatorStudioIndexRoute
+}
+
+const AuthenticatedCreatorStudioRouteChildren: AuthenticatedCreatorStudioRouteChildren =
+  {
+    AuthenticatedCreatorStudioArticlesRoute:
+      AuthenticatedCreatorStudioArticlesRoute,
+    AuthenticatedCreatorStudioVideosRoute:
+      AuthenticatedCreatorStudioVideosRoute,
+    AuthenticatedCreatorStudioIndexRoute: AuthenticatedCreatorStudioIndexRoute,
+  }
+
+const AuthenticatedCreatorStudioRouteWithChildren =
+  AuthenticatedCreatorStudioRoute._addFileChildren(
+    AuthenticatedCreatorStudioRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedBattlefieldRoute: typeof AuthenticatedBattlefieldRoute
-  AuthenticatedCreatorStudioRoute: typeof AuthenticatedCreatorStudioRoute
+  AuthenticatedCreatorStudioRoute: typeof AuthenticatedCreatorStudioRouteWithChildren
   AuthenticatedFollowingRoute: typeof AuthenticatedFollowingRoute
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
@@ -2220,7 +2298,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedBattlefieldRoute: AuthenticatedBattlefieldRoute,
-  AuthenticatedCreatorStudioRoute: AuthenticatedCreatorStudioRoute,
+  AuthenticatedCreatorStudioRoute: AuthenticatedCreatorStudioRouteWithChildren,
   AuthenticatedFollowingRoute: AuthenticatedFollowingRoute,
   AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,

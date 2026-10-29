@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
+import { useCreatorScrollRestoration } from './useCreatorScrollRestoration.ts';
 import { cn } from '@/lib/utils.ts';
 import { creatorTheme, creatorTitle } from './creatorStyles.ts';
 import { workspaceStyles } from '../global/WorkspacePage/workspaceStyles.ts';
@@ -7,13 +8,18 @@ export function CreatorLayout({
   children,
   fullWidth = false,
   compact = false,
+  scrollReady = true,
 }: {
   children: ReactNode;
   fullWidth?: boolean;
   compact?: boolean;
+  scrollReady?: boolean;
 }) {
+  const root = useRef<HTMLDivElement>(null);
+  useCreatorScrollRestoration(root, scrollReady);
   return (
     <div
+      ref={root}
       data-creator-layout
       className={cn(
         creatorTheme,
@@ -32,26 +38,50 @@ export function CreatorHeader({
   title,
   description,
   children,
+  compactMobile = false,
 }: {
   eyebrow: string;
   title: string;
   description?: string;
   children?: ReactNode;
+  compactMobile?: boolean;
 }) {
   return (
-    <header className="relative overflow-hidden rounded-[20px] border border-[#344c43] bg-[#17352e] px-6 py-8 text-[#fffaf0] sm:px-8 sm:py-10">
+    <header
+      className={cn(
+        'relative overflow-hidden rounded-[20px] border border-[#344c43] bg-[#17352e] px-6 py-8 text-[#fffaf0] sm:px-8 sm:py-10',
+        compactMobile && 'px-4 py-4 sm:py-8',
+      )}
+    >
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,#79936b30,transparent_65%)]"
       />
-      <div className="relative flex flex-wrap items-end justify-between gap-6">
+      <div
+        className={cn(
+          'relative flex flex-wrap items-end justify-between gap-6',
+          compactMobile && 'gap-3 sm:gap-6',
+        )}
+      >
         <div className="grid min-w-0 max-w-3xl gap-3">
-          <p className="m-0! text-[10px]! font-semibold uppercase leading-normal! tracking-[0.18em] text-[#dce7a0]">
+          <p
+            className={cn(
+              'm-0! text-[10px]! font-semibold uppercase leading-normal! tracking-[0.18em] text-[#dce7a0]',
+              compactMobile && 'hidden sm:block',
+            )}
+          >
             {eyebrow}
           </p>
-          <h1 className={creatorTitle}>{title}</h1>
+          <h1 className={cn(creatorTitle, compactMobile && 'text-[25px]! sm:text-[40px]!')}>
+            {title}
+          </h1>
           {description && (
-            <p className="m-0! max-w-2xl text-[13px]! leading-[1.8]! text-[#fffaf0]/80">
+            <p
+              className={cn(
+                'm-0! max-w-2xl text-[13px]! leading-[1.8]! text-[#fffaf0]/80',
+                compactMobile && 'hidden sm:block',
+              )}
+            >
               {description}
             </p>
           )}

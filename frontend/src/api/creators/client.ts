@@ -11,6 +11,7 @@ import { api } from '@/lib/api.ts';
 import { createApiError } from '@/api/errors.ts';
 import type {
   Creation,
+  CreatorStudioFilters,
   CreatorDeckList,
   CreatorSectionCounts,
   CreatorOnboarding,
@@ -18,6 +19,8 @@ import type {
   PersonalArticleCounts,
   CreationDocument,
   CreatorProfile,
+  CreatorDeletion,
+  CreatorDeletionPreview,
   CreatorProfileInput,
   CreatorRevision,
   DiscoveryQuery,
@@ -89,6 +92,12 @@ export const hubApi = {
   profile: async (slug: string) =>
     data<CreatorProfile>(await root.creators[':slug'].$get({ param: { slug } })),
   mine: async () => data<CreatorProfile[]>(await root.mine.$get()),
+  deletionPreview: async (id: string) =>
+    data<CreatorDeletionPreview>(await root.creators[':id'].deletion.$get({ param: { id } })),
+  deleteProfile: async (input: { id: string } & CreatorDeletion) =>
+    data<boolean>(
+      await root.creators[':id'].$delete({ param: { id: input.id }, json: input }, { headers }),
+    ),
   createProfile: async (profile: CreatorProfileInput) =>
     data<{ id: string; slug: string }>(await root.creators.$post({ json: profile }, { headers })),
   saveProfile: async (input: { id: string; revision: number; profile: CreatorProfileInput }) =>
@@ -134,11 +143,14 @@ export const hubApi = {
         { headers },
       ),
     ),
-  studio: async (id: string | null, page = 1) =>
+  studio: async (id: string | null, page = 1, filters: CreatorStudioFilters = {}) =>
     data<CreationList>(
       id
-        ? await root.creators[':id'].studio.$get({ param: { id }, query: { page: String(page) } })
-        : await root.personal.articles.$get({ query: { page: String(page) } }),
+        ? await root.creators[':id'].studio.$get({
+            param: { id },
+            query: { ...filters, page: String(page) },
+          })
+        : await root.personal.articles.$get({ query: { ...filters, page: String(page) } }),
     ),
   get: async (id: string) => data<Creation>(await root.creations[':id'].$get({ param: { id } })),
   draft: async (id: string) =>

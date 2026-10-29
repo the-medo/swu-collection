@@ -98,49 +98,134 @@ CREATE INDEX development_tournament_match_p2_deck_id_idx ON tournament_match (p2
 -- game-provider payloads. Opted-in integration rows remain for UI and schema
 -- testing, but their provider-specific identity, arbitrary provider metadata,
 -- and credentials are replaced below.
--- Creator identities, unpublished prose and provider credentials never enter public dumps.
+-- Keep the public video catalog, never account links, private drafts or provider
+-- authorization data. Older backups without metadata provenance remain empty.
 DO $creator_hub$
+DECLARE
+  private_table text;
+  private_tables text[] := ARRAY[
+    'creator_claimed_deck', 'user_follow', 'creator_follow',
+    'creator_channel_resolution', 'creator_publishing_request', 'creation_report',
+    'creator_video_job', 'creator_video_spend', 'creator_imported_deck',
+    'creation_revision', 'creator_member', 'creator_oauth_state', 'creator_youtube',
+    'creator_channel', 'creator_youtube_channel'
+  ];
+  truncate_tables text;
+  has_rows boolean;
 BEGIN
-  IF to_regclass('public.creator_claimed_deck') IS NOT NULL THEN
-    TRUNCATE TABLE creator_claimed_deck;
+  -- One statement includes referencing tables even when they are already empty.
+  -- The explicit allowlist also supports backups predating optional tables.
+  SELECT string_agg(format('public.%I', name), ', ')
+  INTO truncate_tables
+  FROM unnest(private_tables) AS tables(name)
+  WHERE to_regclass(format('public.%I', name)) IS NOT NULL;
+  IF truncate_tables IS NOT NULL THEN
+    EXECUTE 'TRUNCATE TABLE ' || truncate_tables;
   END IF;
-  IF to_regclass('public.user_follow') IS NOT NULL THEN
-    TRUNCATE TABLE user_follow;
-  END IF;
-  IF to_regclass('public.creator_channel_resolution') IS NOT NULL THEN
-    TRUNCATE TABLE creator_channel_resolution;
-  END IF;
+
   IF to_regclass('public.creator_profile') IS NOT NULL THEN
-    IF to_regclass('public.creator_follow') IS NOT NULL THEN
-      TRUNCATE TABLE creator_follow, creator_publishing_request, creation_report, creator_video_job, creator_video_spend, creator_imported_deck,
-        creation_reference, creation_tag, creation_revision, creation,
-        creator_member, creator_oauth_state, creator_youtube, creator_channel,
-        creator_youtube_channel, creator_profile;
-    ELSIF to_regclass('public.creator_publishing_request') IS NOT NULL THEN
-      TRUNCATE TABLE creator_publishing_request, creation_report, creator_video_job, creator_video_spend, creator_imported_deck,
-        creation_reference, creation_tag, creation_revision, creation,
-        creator_member, creator_oauth_state, creator_youtube, creator_channel,
-        creator_youtube_channel, creator_profile;
-    ELSIF to_regclass('public.creation_report') IS NOT NULL THEN
-      TRUNCATE TABLE creation_report, creator_video_job, creator_video_spend, creator_imported_deck,
-        creation_reference, creation_tag, creation_revision, creation,
-        creator_member, creator_oauth_state, creator_youtube, creator_channel,
-        creator_youtube_channel, creator_profile;
-    ELSIF to_regclass('public.creator_channel') IS NOT NULL THEN
-      TRUNCATE TABLE creator_video_job, creator_video_spend, creator_imported_deck,
-        creation_reference, creation_tag, creation_revision, creation,
-        creator_member, creator_oauth_state, creator_youtube, creator_channel,
-        creator_youtube_channel, creator_profile;
-    ELSIF to_regclass('public.creator_video_job') IS NOT NULL THEN
-      -- Include referencing tables in the same TRUNCATE; support older backups too.
-      TRUNCATE TABLE creator_video_job, creator_video_spend, creator_imported_deck,
-        creation_reference, creation_tag, creation_revision, creation,
-        creator_member, creator_oauth_state, creator_youtube, creator_profile;
+    IF EXISTS (
+      SELECT 1 FROM information_schema.columns
+      WHERE table_schema = 'public' AND table_name = 'creation'
+        AND column_name = 'source_data_origin'
+    ) THEN
+      -- Mirror publicCreation() and its 28-day metadata lifetime. Do not export
+      -- legacy OAuth-derived copies, or extend provider timestamps in a dump.
+      DELETE FROM creation
+      WHERE (creator_id IS NOT NULL
+        AND published IS NOT NULL AND published->>'medium' = 'video'
+        AND published_at IS NOT NULL
+        AND (source_video_id IS NULL OR (
+          source_data_origin = 'public'
+          AND coalesce(source_status, 'active') = 'active'
+          AND coalesce(source_metadata_at, created_at) > now() - interval '28 days'
+        ))) IS NOT TRUE;
+
+      -- Keep only public decks that survive the opt-in cleanup below. Use the
+      -- same retention rule so this block also works in isolated creator tests.
+      UPDATE creation c
+      SET published = jsonb_set(c.published, '{references}', coalesce((
+        SELECT jsonb_agg(ref ORDER BY position)
+        FROM jsonb_array_elements(coalesce(c.published->'references', '[]'::jsonb))
+          WITH ORDINALITY AS refs(ref, position)
+        WHERE ref->>'type' <> 'deck' OR EXISTS (
+          SELECT 1 FROM deck d
+          WHERE d.id = CASE
+            WHEN ref->>'id' ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+              THEN (ref->>'id')::uuid
+          END AND d.public = 1
+            AND (d.user_id = 'swubase' OR EXISTS (
+              SELECT 1 FROM user_settings us
+              WHERE us.user_id = d.user_id AND us.key = 'share_development_data'
+                AND us.value = 'true'
+            ))
+        )
+      ), '[]'::jsonb));
+
+      UPDATE creation
+      SET draft = published,
+        author_id = NULL,
+        revision = 1,
+        published_revision = 1,
+        manually_edited_fields = published_manually_edited_fields,
+        updated_at = coalesce(public_updated_at, published_at);
+
+      -- Rebuild discovery indexes from the retained publication, never its draft.
+      TRUNCATE TABLE creation_tag, creation_reference;
+      INSERT INTO creation_tag (creation_id, tag_id)
+      SELECT DISTINCT c.id, t.id
+      FROM creation c
+      CROSS JOIN LATERAL jsonb_array_elements_text(
+        coalesce(c.published->'tags', '[]'::jsonb) || '["medium:video"]'::jsonb
+      ) AS tags(id)
+      JOIN creator_tag t ON t.id = tags.id;
+      INSERT INTO creation_reference (creation_id, entity_type, entity_id)
+      SELECT DISTINCT c.id, ref->>'type', ref->>'id'
+      FROM creation c
+      CROSS JOIN LATERAL jsonb_array_elements(c.published->'references') AS refs(ref);
+
+      DELETE FROM creator_profile p
+      WHERE NOT EXISTS (SELECT 1 FROM creation c WHERE c.creator_id = p.id);
+      -- Preserve public branding without linking it to a production account.
+      -- This must precede the non-opted-in user deletion below (ON DELETE CASCADE).
+      UPDATE creator_profile SET owner_id = NULL, revision = 1;
+      IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'creator_profile'
+          AND column_name = 'follower_count'
+      ) THEN
+        UPDATE creator_profile SET follower_count = 0;
+      END IF;
+
+      IF EXISTS (
+        SELECT 1 FROM creation
+        WHERE draft IS DISTINCT FROM published OR author_id IS NOT NULL
+          OR manually_edited_fields IS DISTINCT FROM published_manually_edited_fields
+          OR published->>'medium' IS DISTINCT FROM 'video'
+          OR published_at IS NULL OR creator_id IS NULL
+          OR (source_video_id IS NOT NULL AND (
+            source_data_origin IS DISTINCT FROM 'public'
+            OR coalesce(source_status, 'active') <> 'active'
+            OR coalesce(source_metadata_at, created_at) <= now() - interval '28 days'
+          ))
+      ) OR EXISTS (SELECT 1 FROM creator_profile WHERE owner_id IS NOT NULL) THEN
+        RAISE EXCEPTION 'Private creator data remains after contributor-dump sanitization.';
+      END IF;
     ELSE
-      TRUNCATE TABLE creation_reference, creation_tag, creation_revision, creation,
-        creator_member, creator_oauth_state, creator_youtube, creator_profile;
+      -- Pre-lifecycle backups cannot establish public provider provenance.
+      DELETE FROM creation;
+      DELETE FROM creator_profile;
     END IF;
   END IF;
+
+  FOREACH private_table IN ARRAY private_tables LOOP
+    IF to_regclass(format('public.%I', private_table)) IS NOT NULL THEN
+      EXECUTE format('SELECT EXISTS (SELECT 1 FROM public.%I)', private_table) INTO has_rows;
+      IF has_rows THEN
+        RAISE EXCEPTION 'Private creator table % remains in the contributor dump.', private_table;
+      END IF;
+    END IF;
+  END LOOP;
 END
 $creator_hub$;
 -- The MCP migration adds these tables atomically; older backups have none.

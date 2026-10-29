@@ -3,14 +3,15 @@ import { user } from '../../db/schema/auth-schema.ts';
 import { lockPersonalOwner, personalArticles } from './ownership.ts';
 import type { Database } from './types.ts';
 import { CreatorError } from './errors.ts';
-import { and, desc, eq, lt, sql } from 'drizzle-orm';
+import { and, desc, eq, ilike, isNull, isNotNull, lt, sql } from 'drizzle-orm';
 import {
   creation,
   creationRevision,
   creatorProfile,
   creatorYoutube,
 } from '../../db/schema/creator_hub.ts';
-import type { CreationDocument } from '../../../shared/creators/contracts.ts';
+import type { CreationDocument, CreatorStudioFilters } from '../../../shared/creators/contracts.ts';
+import { escapedSearch } from './filters.ts';
 import { youtubeVideoId } from '../../../shared/creators/youtube.ts';
 import { createCreatorDtos } from './dto.ts';
 import { creationListSelection, publicCreation } from './list.ts';
@@ -18,6 +19,8 @@ import { requireCreator, requireCreationAccess } from './permissions.ts';
 import { writeCreatorPublication, removeCreatorPublication } from './publication.ts';
 import { now } from './types.ts';
 import { trackManualEdits } from './manual-edits.ts';
+const identityChanged =
+  'This article’s publishing identity changed. Reload it before saving; your edits are still here.';
 
 export function createCreationsService(
   database: Database,
@@ -26,14 +29,34 @@ export function createCreationsService(
 ) {
   const { publicDto } = createCreatorDtos(database, catalog);
   return {
-    async studio(creatorId: string | null, viewerId: string, page = 1) {
+    async studio(
+      creatorId: string | null,
+      viewerId: string,
+      page = 1,
+      filters: CreatorStudioFilters = {},
+    ) {
       if (creatorId) await requireCreator(database, creatorId, viewerId);
       const rows = await database
         .select(creationListSelection(true))
         .from(creation)
         .leftJoin(creatorProfile, eq(creation.creatorId, creatorProfile.id))
         .leftJoin(user, eq(creation.authorId, user.id))
-        .where(creatorId ? eq(creation.creatorId, creatorId) : personalArticles(viewerId))
+        .where(
+          and(
+            creatorId ? eq(creation.creatorId, creatorId) : personalArticles(viewerId),
+            filters.medium ? sql`${creation.draft}->>'medium' = ${filters.medium}` : undefined,
+            filters.q
+              ? ilike(sql`${creation.draft}->>'title'`, escapedSearch(filters.q))
+              : undefined,
+            filters.status === 'draft' ? isNull(creation.publishedAt) : undefined,
+            filters.status === 'published' || filters.status === 'changes'
+              ? isNotNull(creation.publishedAt)
+              : undefined,
+            filters.status === 'changes'
+              ? sql`${creation.revision} IS DISTINCT FROM ${creation.publishedRevision}`
+              : undefined,
+          ),
+        )
         .orderBy(desc(creation.updatedAt), desc(creation.id))
         .limit(25)
         .offset((page - 1) * 24);
@@ -73,8 +96,22 @@ export function createCreationsService(
       ownershipRevision = 1,
     ) {
       return database.transaction(async tx => {
-        if (creatorId) await requireCreator(tx, creatorId, viewerId, !!sourceChannelId, true);
-        else {
+        if (creatorId) {
+          try {
+            await requireCreator(tx, creatorId, viewerId, !!sourceChannelId, true);
+          } catch (error) {
+            // A profile deleted in another tab may have returned this article
+            // to Personal. Let its owner use the editor's conflict recovery.
+            if (id && error instanceof CreatorError && error.status === 404) {
+              const [moved] = await tx.select().from(creation).where(eq(creation.id, id));
+              if (moved && moved.creatorId !== creatorId) {
+                await requireCreationAccess(tx, moved, viewerId);
+                throw new CreatorError(identityChanged, 409);
+              }
+            }
+            throw error;
+          }
+        } else {
           await lockOwner(tx, viewerId);
           if (document.medium !== 'article' || sourceVideoId || sourceChannelId)
             throw new CreatorError('Personal publications must be articles.');
@@ -106,10 +143,7 @@ export function createCreationsService(
           if (!existing) throw new CreatorError('Publication not found.', 404);
           await requireCreationAccess(tx, existing, viewerId);
           if (existing.creatorId !== creatorId || existing.ownershipRevision !== ownershipRevision)
-            throw new CreatorError(
-              'This article moved to a creator profile. Reload its publishing identity before saving; your edits are still here.',
-              409,
-            );
+            throw new CreatorError(identityChanged, 409);
           if (
             existing?.sourceVideoId &&
             (document.medium !== 'video' ||

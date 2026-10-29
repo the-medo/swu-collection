@@ -200,7 +200,12 @@ await mkdir(output, { recursive: true });
 try {
   await page.goto(`${server.url}creators/${profile.slug}/videos`);
   const nav = page.getByRole('navigation', { name: 'Creator content' });
-  await expect(nav.getByRole('link')).toHaveText(['All content', 'Videos', 'About']);
+  await expect(nav.getByRole('link')).toHaveText([
+    'All content',
+    'Videos',
+    'About',
+    'Is this your channel?',
+  ]);
   await expect(nav.getByRole('link', { name: 'Videos', exact: true })).toHaveAttribute(
     'aria-current',
     'page',
@@ -218,6 +223,7 @@ try {
     'Decks (15)',
     'Series (1)',
     'About',
+    'Is this your channel?',
   ]);
   await expect(page.locator('[data-creator-layout] article')).toHaveCount(6);
   expect(requests[0].get('limit')).toBe('6');
@@ -385,7 +391,7 @@ try {
   releaseFeed!();
   pendingFeed = undefined;
   await expect(page.getByText('New creations will appear here.')).toBeVisible();
-  await expect(nav.getByRole('link')).toHaveText(['All content', 'About']);
+  await expect(nav.getByRole('link')).toHaveText(['All content', 'About', 'Is this your channel?']);
   // A bookmarked empty section still has a selected tab and the normal empty state.
   await page.goto(`${server.url}creators/${otherProfile.slug}/videos`);
   await expect(nav.getByRole('link', { name: 'Videos (0)', exact: true })).toHaveAttribute(
@@ -394,7 +400,7 @@ try {
   );
   await expect(page.getByText('New creations will appear here.')).toBeVisible();
   await nav.getByRole('link', { name: 'All content', exact: true }).click();
-  await expect(nav.getByRole('link')).toHaveText(['All content', 'About']);
+  await expect(nav.getByRole('link')).toHaveText(['All content', 'About', 'Is this your channel?']);
   countsUnavailable = true;
   await page.reload();
   await expect.poll(() => failedCounts).toBe(2);
@@ -406,6 +412,7 @@ try {
     'Decks',
     'Series',
     'About',
+    'Is this your channel?',
   ]);
   await nav.getByRole('link', { name: 'About', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'About Other Creator' })).toBeVisible();
