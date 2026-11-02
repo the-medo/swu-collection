@@ -8,10 +8,13 @@ import { useIsMobile } from '@/hooks/use-mobile.tsx';
 import { Checkbox } from '@/components/ui/checkbox.tsx';
 import { cn } from '@/lib/utils.ts';
 import { DeckCardsInfo } from '@/components/app/card-stats/CardDecks/CardDecks.tsx';
+import { Trophy } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 
 export function useTournamentDeckTableColumns(
   showSelectionCheckbox?: boolean,
   showAdditionalDeckCardInfo?: boolean,
+  topLeaderDeckIds?: ReadonlySet<string>,
 ): ExtendedColumnDef<TournamentDeckResponse & DeckCardsInfo>[] {
   const labelRenderer = useLabel();
   const { data: cardListData } = useCardList();
@@ -78,8 +81,24 @@ export function useTournamentDeckTableColumns(
         const key = getDeckKeys(tournamentDeck, 'leadersAndBase', cardListData);
 
         return (
-          <div className="hover:underline w-48 text-xs">
-            {labelRenderer(key[0], 'leadersAndBase', 'compact')}
+          <div className="flex w-48 items-center gap-1 text-xs">
+            {topLeaderDeckIds?.has(tournamentDeck.tournamentDeck.deckId) && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    tabIndex={0}
+                    aria-label="Best placement for this leader"
+                    className="shrink-0 text-amber-600 dark:text-amber-400"
+                  >
+                    <Trophy className="size-3.5" aria-hidden="true" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>Best placement for this leader</TooltipContent>
+              </Tooltip>
+            )}
+            <div className="min-w-0 flex-1 hover:underline">
+              {labelRenderer(key[0], 'leadersAndBase', 'compact')}
+            </div>
           </div>
         );
       },
@@ -138,5 +157,12 @@ export function useTournamentDeckTableColumns(
     }
 
     return definitions;
-  }, [labelRenderer, cardListData, isMobile]);
+  }, [
+    labelRenderer,
+    cardListData,
+    isMobile,
+    showSelectionCheckbox,
+    showAdditionalDeckCardInfo,
+    topLeaderDeckIds,
+  ]);
 }
