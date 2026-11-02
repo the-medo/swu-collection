@@ -1,5 +1,6 @@
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Trophy } from 'lucide-react';
+import { flushSync } from 'react-dom';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
 import { useDeckFilterStoreActions } from '@/components/app/decks/DeckFilters/useDeckFilterStore.ts';
@@ -22,7 +23,8 @@ const TournamentTopLeaderDecks: React.FC<TournamentTopLeaderDecksProps> = ({ dec
   if (decks.length === 0) return null;
 
   const openDeck = (deckId: string) => {
-    resetFilters();
+    // Finish filter URL synchronization before setting the mobile detail anchor.
+    flushSync(() => resetFilters());
     void navigate({
       to: '.',
       search: previous => ({

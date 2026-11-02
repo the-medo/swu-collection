@@ -52,6 +52,8 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
   const key = search.maDeckKey;
   const keyMetaInfo = search.maDeckKeyType;
   const defaultDeckInitialized = useRef(!!selectedDeckId);
+  const tableContainer = useRef<HTMLDivElement>(null);
+  const lastRevealedDeckId = useRef<string | undefined>(undefined);
 
   const basicBaseFilter = useMemo(() => {
     if (!base || !cardListData) return false;
@@ -176,7 +178,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
     navigate,
   ]);
 
-  const { itemsToShow, observerTarget } = useInfiniteScroll({
+  const { itemsToShow, observerTarget, loadMore } = useInfiniteScroll({
     totalItems: sortedDecks.length,
     initialItemsToLoad: 50,
     itemsPerBatch: 50,
@@ -187,11 +189,38 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
     return sortedDecks.slice(0, itemsToShow);
   }, [sortedDecks, itemsToShow]);
 
+  useEffect(() => {
+    if (!selectedDeckId) return;
+    const selectedIndex = sortedDecks.findIndex(deck => deck.deck?.id === selectedDeckId);
+    if (selectedIndex >= itemsToShow) loadMore();
+  }, [selectedDeckId, sortedDecks, itemsToShow, loadMore]);
+
+  useEffect(() => {
+    if (!selectedDeckId) {
+      lastRevealedDeckId.current = undefined;
+      return;
+    }
+    if (lastRevealedDeckId.current === selectedDeckId) return;
+
+    const container = tableContainer.current;
+    const row = container?.querySelector<HTMLTableRowElement>('tr[data-state="highlighted"]');
+    if (!container || !row) return;
+
+    // Reveal the selected row without moving the page away from the mobile detail anchor.
+    const offset = row.getBoundingClientRect().top - container.getBoundingClientRect().top;
+    const headerHeight = container.querySelector('thead')?.offsetHeight ?? 0;
+    if (offset < headerHeight) container.scrollTop += offset - headerHeight;
+    else if (offset + row.offsetHeight > container.clientHeight) {
+      container.scrollTop += offset + row.offsetHeight - container.clientHeight;
+    }
+    lastRevealedDeckId.current = selectedDeckId;
+  }, [selectedDeckId, visibleDecks]);
+
   const selectNextDeck = useCallback(
     (direction: 'next' | 'previous') => {
       const newDeckId =
-        visibleDecks[
-          visibleDecks.findIndex(deck => deck.deck?.id === selectedDeckId) +
+        sortedDecks[
+          sortedDecks.findIndex(deck => deck.deck?.id === selectedDeckId) +
             (direction === 'next' ? 1 : -1)
         ]?.deck?.id ?? selectedDeckId;
       navigate({
@@ -200,7 +229,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
         hash: isMobile ? 'tournament-deck-detail' : undefined,
       });
     },
-    [selectedDeckId, visibleDecks, navigate, deckIdSearchParam, isMobile],
+    [selectedDeckId, sortedDecks, navigate, deckIdSearchParam, isMobile],
   );
 
   useEffect(() => {
@@ -313,6 +342,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
             )}
           >
             <div
+              ref={tableContainer}
               className="overflow-auto border h-full rounded-md relative"
               id="tournament-deck-table"
             >
