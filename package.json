@@ -7,6 +7,7 @@
     "export:header-artwork": "bun scripts/export-homepage-header-artwork.ts",
     "check:header-artwork": "bun scripts/export-homepage-header-artwork.ts --check",
     "test:browser:live": "LIVE_HOME_BROWSER_TEST=1 bun frontend/tests/live-home.browser.ts",
+    "test:browser:tournament-top-decks": "TOURNAMENT_TOP_DECKS_BROWSER_TEST=1 bun frontend/tests/tournament-top-decks.browser.ts",
     "test:browser:today": "TODAY_HOME_BROWSER_TEST=1 bun frontend/tests/today-home.browser.ts",
     "test:browser:weekend-action": "WEEKEND_ACTION_BROWSER_TEST=1 bun frontend/tests/weekend-action.browser.ts",
     "patreon:sync": "bun scripts/patreon/sync.ts",

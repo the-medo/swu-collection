@@ -24,7 +24,9 @@ import { cn } from '@/lib/utils.ts';
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import { RowData, TableOptions } from '@tanstack/table-core';
 import { Loader2 } from 'lucide-react';
-import { RefObject } from 'react';
+import { RefObject, useRef } from 'react';
+import { VirtualizedTableBody } from './virtualized-table-body';
+import type { VirtualTableRowProps, VirtualTableScroll } from './virtualized-table-body';
 
 export type DataTableViewMode = 'table' | 'box';
 
@@ -55,6 +57,7 @@ interface DataTableProps<TData, TValue> {
   view?: DataTableViewMode;
   infiniteScrollObserver?: RefObject<HTMLDivElement>;
   infiniteScrollLoading?: boolean;
+  virtualScroll?: VirtualTableScroll;
   enableRowSelection?: boolean;
   rowSelection?: RowSelectionState;
   getRowId?: TableOptions<TData>['getRowId'];
@@ -85,6 +88,7 @@ export function DataTable<TData, TValue>({
   view = 'table',
   infiniteScrollObserver,
   infiniteScrollLoading,
+  virtualScroll,
   enableRowSelection = false,
   rowSelection = {},
   getRowId,
@@ -93,6 +97,7 @@ export function DataTable<TData, TValue>({
   headerCellClassName,
   onRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
+  const headerRef = useRef<HTMLTableSectionElement>(null);
   const table = useReactTable({
     data: (loading ? emptyData : data) as TData[],
     columns,
@@ -162,6 +167,41 @@ export function DataTable<TData, TValue>({
     );
   }
 
+  const renderRow = (row: Row<TData>, virtualRowProps?: VirtualTableRowProps) => (
+    <TableRow
+      key={row.id}
+      {...virtualRowProps}
+      onClick={() => onRowClick?.(row)}
+      onMouseEnter={() => onRowMouseEnter?.(row)}
+      onMouseLeave={() => onRowMouseLeave?.(row)}
+      data-state={isRowHighlighted?.(row) ? 'highlighted' : row.getIsSelected() && 'selected'}
+      data-selection-enabled={enableRowSelection ? 'true' : 'false'}
+      className={cn('group', {
+        'cursor-pointer': !!onRowClick,
+      })}
+    >
+      {row.getVisibleCells().map(cell => (
+        <TableCell
+          key={cell.id}
+          onMouseEnter={() => onCellMouseEnter?.(cell, row)}
+          className={cn(
+            {
+              [`w-${cell.column.getSize()} min-w-${cell.column.getSize()}`]:
+                cell.column.getSize() > 0,
+            },
+            cellClassName,
+          )}
+        >
+          {loading ? (
+            <Skeleton className="size-4 w-full rounded-md" data-sidebar="menu-skeleton-icon" />
+          ) : (
+            flexRender(cell.column.columnDef.cell, cell.getContext())
+          )}
+        </TableCell>
+      ))}
+    </TableRow>
+  );
+
   return (
     <div
       className={cn(
@@ -172,8 +212,11 @@ export function DataTable<TData, TValue>({
         className,
       )}
     >
-      <Table onMouseLeave={onTableMouseLeave}>
-        <TableHeader className="sticky top-0 z-20 bg-background">
+      <Table
+        onMouseLeave={onTableMouseLeave}
+        aria-rowcount={virtualScroll ? table.getRowModel().rows.length + 1 : undefined}
+      >
+        <TableHeader ref={headerRef} className="sticky top-0 z-20 bg-background">
           {table.getHeaderGroups().map(headerGroup => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map(header => {
@@ -196,68 +239,44 @@ export function DataTable<TData, TValue>({
             </TableRow>
           ))}
         </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map(row => (
-              <TableRow
-                key={row.id}
-                onClick={() => onRowClick?.(row)}
-                onMouseEnter={() => onRowMouseEnter?.(row)}
-                onMouseLeave={() => onRowMouseLeave?.(row)}
-                data-state={
-                  isRowHighlighted?.(row) ? 'highlighted' : row.getIsSelected() && 'selected'
-                }
-                data-selection-enabled={enableRowSelection ? 'true' : 'false'}
-                className={cn('group', {
-                  'cursor-pointer': !!onRowClick,
-                })}
-              >
-                {row.getVisibleCells().map(cell => (
-                  <TableCell
-                    key={cell.id}
-                    onMouseEnter={() => onCellMouseEnter?.(cell, row)}
-                    className={cn(
-                      {
-                        [`w-${cell.column.getSize()} min-w-${cell.column.getSize()}`]:
-                          cell.column.getSize() > 0,
-                      },
-                      cellClassName,
-                    )}
-                  >
-                    {loading ? (
-                      <Skeleton
-                        className="size-4 w-full rounded-md"
-                        data-sidebar="menu-skeleton-icon"
-                      />
-                    ) : (
-                      flexRender(cell.column.columnDef.cell, cell.getContext())
-                    )}
-                  </TableCell>
-                ))}
+        {virtualScroll && !loading && table.getRowModel().rows.length > 0 ? (
+          <VirtualizedTableBody
+            {...virtualScroll}
+            rows={table.getRowModel().rows}
+            headerRef={headerRef}
+            columnCount={table.getVisibleLeafColumns().length}
+            renderRow={renderRow}
+          />
+        ) : (
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map(row => renderRow(row))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  No results.
+                </TableCell>
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-          {infiniteScrollObserver && (
-            <TableRow>
-              <TableCell>
-                <div ref={infiniteScrollObserver} className="mt-0 flex justify-center items-center">
-                  {infiniteScrollLoading && (
-                    <div className="flex items-center justify-center py-2">
-                      <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
-                      <span>Loading...</span>
-                    </div>
-                  )}
-                </div>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
+            )}
+            {infiniteScrollObserver && (
+              <TableRow>
+                <TableCell>
+                  <div
+                    ref={infiniteScrollObserver}
+                    className="mt-0 flex justify-center items-center"
+                  >
+                    {infiniteScrollLoading && (
+                      <div className="flex items-center justify-center py-2">
+                        <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
+                        <span>Loading...</span>
+                      </div>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        )}
       </Table>
     </div>
   );

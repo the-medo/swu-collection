@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DataTable } from '@/components/ui/data-table.tsx';
 import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.ts';
 import { useTournamentDeckTableColumns } from './useTournamentDeckTableColumns.tsx';
-import { useDeckFilterStore } from '@/components/app/decks/DeckFilters/useDeckFilterStore.ts';
 import { getAspectsFromDeckInformation } from '@/components/app/tournaments/lib/getAspectsFromDeckInformation.ts';
 import { isBasicBase } from '../../../../../../shared/lib/isBasicBase.ts';
 import { useCardList } from '@/api/lists/useCardList.ts';
@@ -13,12 +12,14 @@ import { Row, RowSelectionState } from '@tanstack/react-table';
 import { useIsMobile } from '@/hooks/use-mobile.tsx';
 import { getDeckKeys } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
-import { useInfiniteScroll } from '@/hooks/useInfiniteScroll.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { Scale } from 'lucide-react';
 import { useComparerStoreActions } from '@/components/app/comparer/useComparerStore.ts';
 import { DeckCardsInfo } from '@/components/app/card-stats/CardDecks/CardDecks.tsx';
 import { cn } from '@/lib/utils.ts';
+
+const getTournamentDeckRowId = (deck: TournamentDeckResponse) =>
+  `${deck.tournamentDeck.tournamentId}:${deck.tournamentDeck.deckId}`;
 
 interface TournamentDeckTableProps {
   decks: (TournamentDeckResponse & DeckCardsInfo)[];
@@ -41,19 +42,18 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
   autoSelectFirstDeck = false,
   topLeaderDeckIds,
 }) => {
-  const { leaders, base, aspects } = useDeckFilterStore(false);
   const { data: cardListData } = useCardList();
   const isMobile = useIsMobile();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const search = useSearch({ strict: false });
+  const { deckLeaders: leaders, deckBase: base, deckAspects: aspects } = search;
   const navigate = useNavigate();
   const selectedDeckId = search[deckIdSearchParam];
   const key = search.maDeckKey;
   const keyMetaInfo = search.maDeckKeyType;
   const defaultDeckInitialized = useRef(!!selectedDeckId);
   const tableContainer = useRef<HTMLDivElement>(null);
-  const lastRevealedDeckId = useRef<string | undefined>(undefined);
 
   const basicBaseFilter = useMemo(() => {
     if (!base || !cardListData) return false;
@@ -73,6 +73,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
     return decks.filter(deck => {
       // Filter by leader
       if (
+        leaders &&
         leaders.length > 0 &&
         !leaders.some(l => l === deck.deck?.leaderCardId1 || l === deck.deck?.leaderCardId2)
       ) {
@@ -96,7 +97,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
       }
 
       // Filter by aspects
-      if (aspects.length > 0) {
+      if (aspects && aspects.length > 0) {
         const deckAspects = getAspectsFromDeckInformation(deck.deckInformation);
         if (!aspects.every(a => deckAspects.includes(a))) {
           return false;
@@ -129,6 +130,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
   // Count selected decks
   const selectedDecksCount = Object.keys(rowSelection).length;
   const showMdAndSbColumns = sortedDecks.length > 0 && 'deckCards' in sortedDecks[0];
+  const selectedDeck = sortedDecks.find(deck => deck.deck?.id === selectedDeckId);
   const columns = useTournamentDeckTableColumns(true, showMdAndSbColumns, topLeaderDeckIds);
 
   const onRowClick = useCallback(
@@ -178,44 +180,6 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
     navigate,
   ]);
 
-  const { itemsToShow, observerTarget, loadMore } = useInfiniteScroll({
-    totalItems: sortedDecks.length,
-    initialItemsToLoad: 50,
-    itemsPerBatch: 50,
-    threshold: 300,
-  });
-
-  const visibleDecks = useMemo(() => {
-    return sortedDecks.slice(0, itemsToShow);
-  }, [sortedDecks, itemsToShow]);
-
-  useEffect(() => {
-    if (!selectedDeckId) return;
-    const selectedIndex = sortedDecks.findIndex(deck => deck.deck?.id === selectedDeckId);
-    if (selectedIndex >= itemsToShow) loadMore();
-  }, [selectedDeckId, sortedDecks, itemsToShow, loadMore]);
-
-  useEffect(() => {
-    if (!selectedDeckId) {
-      lastRevealedDeckId.current = undefined;
-      return;
-    }
-    if (lastRevealedDeckId.current === selectedDeckId) return;
-
-    const container = tableContainer.current;
-    const row = container?.querySelector<HTMLTableRowElement>('tr[data-state="highlighted"]');
-    if (!container || !row) return;
-
-    // Reveal the selected row without moving the page away from the mobile detail anchor.
-    const offset = row.getBoundingClientRect().top - container.getBoundingClientRect().top;
-    const headerHeight = container.querySelector('thead')?.offsetHeight ?? 0;
-    if (offset < headerHeight) container.scrollTop += offset - headerHeight;
-    else if (offset + row.offsetHeight > container.clientHeight) {
-      container.scrollTop += offset + row.offsetHeight - container.clientHeight;
-    }
-    lastRevealedDeckId.current = selectedDeckId;
-  }, [selectedDeckId, visibleDecks]);
-
   const selectNextDeck = useCallback(
     (direction: 'next' | 'previous') => {
       const newDeckId =
@@ -258,36 +222,29 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
   };
 
   const addSelectedDecksToComparer = () => {
-    const selectedDeckRows = Object.keys(rowSelection);
+    decks
+      .filter(deck => rowSelection[getTournamentDeckRowId(deck)])
+      .forEach(deck => {
+        try {
+          if (!deck.deck?.id) {
+            console.error(`Deck not found or missing ID: ${getTournamentDeckRowId(deck)}`);
+            return;
+          }
 
-    selectedDeckRows.forEach(rowId => {
-      try {
-        const index = parseInt(rowId);
-        if (isNaN(index) || index < 0 || index >= visibleDecks.length) {
-          console.error(`Invalid row ID: ${rowId}`);
-          return;
+          addComparerEntry({
+            id: deck.deck.id,
+            dataType: 'deck',
+            additionalData: {
+              title: deck.deck.name,
+              leader1: deck.deck.leaderCardId1 ?? undefined,
+              leader2: deck.deck.leaderCardId2 ?? undefined,
+              base: deck.deck.baseCardId ?? undefined,
+            },
+          });
+        } catch (error) {
+          console.error(`Error adding deck to comparer: ${error}`);
         }
-
-        const deck = visibleDecks[index];
-        if (!deck || !deck.deck?.id) {
-          console.error(`Deck not found or missing ID for row ID: ${rowId}`);
-          return;
-        }
-
-        addComparerEntry({
-          id: deck.deck.id,
-          dataType: 'deck',
-          additionalData: {
-            title: deck.deck.name,
-            leader1: deck.deck.leaderCardId1 ?? undefined,
-            leader2: deck.deck.leaderCardId2 ?? undefined,
-            base: deck.deck.baseCardId ?? undefined,
-          },
-        });
-      } catch (error) {
-        console.error(`Error adding deck to comparer: ${error}`);
-      }
-    });
+      });
   };
 
   // Handler for adding selected decks to comparer
@@ -331,7 +288,7 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
 
   return (
     <div className="flex flex-col lg:flex-row gap-2 relative">
-      {visibleDecks.length > 0 ? (
+      {sortedDecks.length > 0 ? (
         <>
           <div
             className={cn(
@@ -349,12 +306,16 @@ const TournamentDeckTable: React.FC<TournamentDeckTableProps> = ({
               {tableHead}
               <DataTable
                 columns={columns}
-                data={visibleDecks}
+                data={sortedDecks}
                 loading={false}
                 view="table"
                 onRowClick={onRowClick}
                 isRowHighlighted={isRowHighlighted}
-                infiniteScrollObserver={observerTarget}
+                getRowId={getTournamentDeckRowId}
+                virtualScroll={{
+                  containerRef: tableContainer,
+                  highlightedRowId: selectedDeck ? getTournamentDeckRowId(selectedDeck) : undefined,
+                }}
                 enableRowSelection={true}
                 rowSelection={rowSelection}
                 onRowSelectionChange={setRowSelection}
