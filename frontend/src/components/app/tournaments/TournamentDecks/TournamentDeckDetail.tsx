@@ -36,7 +36,8 @@ const TournamentDeckDetail: React.FC<TournamentDeckDetailProps> = ({
           <Button
             variant="outline"
             size="iconSmall"
-            className="absolute top-2 right-2 z-10"
+            className="absolute top-2 right-2 z-30"
+            aria-label="Close deck details"
             onClick={() => setSelectedDeckId(undefined)}
           >
             <X />

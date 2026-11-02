@@ -8,22 +8,18 @@ import { RefreshCcw } from 'lucide-react';
 import {
   useDeckFilterStore,
   useDeckFilterStoreActions,
-  useInitializeDeckFilterFromUrlParams,
 } from '@/components/app/decks/DeckFilters/useDeckFilterStore.ts';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
 
-interface TournamentDeckFiltersProps {}
-
-const TournamentDeckFilters: React.FC<TournamentDeckFiltersProps> = () => {
+const TournamentDeckFilters = () => {
   const search = useSearch({ strict: false });
   const navigate = useNavigate();
   const key = search.maDeckKey;
   const keyMetaInfo = search.maDeckKeyType;
   const labelRenderer = useLabel();
 
-  const initialized = useInitializeDeckFilterFromUrlParams(false);
   const { leaders, base, aspects, activeFiltersCount } = useDeckFilterStore(false);
 
   const activeFilters = activeFiltersCount || (key && keyMetaInfo ? 1 : 0);
@@ -31,19 +27,28 @@ const TournamentDeckFilters: React.FC<TournamentDeckFiltersProps> = () => {
   const { setLeaders, setBase, setAspects, resetFilters } = useDeckFilterStoreActions();
 
   // Leader selection handling
-  const onLeaderChange = useCallback((leaderCardId: string | undefined) => {
-    setLeaders(leaderCardId ? [leaderCardId] : []);
-  }, []);
+  const onLeaderChange = useCallback(
+    (leaderCardId: string | undefined) => {
+      setLeaders(leaderCardId ? [leaderCardId] : []);
+    },
+    [setLeaders],
+  );
 
   // Base selection handling
-  const onBaseChange = useCallback((baseCardId: string | undefined) => {
-    setBase(baseCardId);
-  }, []);
+  const onBaseChange = useCallback(
+    (baseCardId: string | undefined) => {
+      setBase(baseCardId);
+    },
+    [setBase],
+  );
 
   // Aspect filter handling
-  const onAspectChange = useCallback((selectedAspects: SwuAspect[]) => {
-    setTimeout(() => setAspects(selectedAspects), 50);
-  }, []);
+  const onAspectChange = useCallback(
+    (selectedAspects: SwuAspect[]) => {
+      setTimeout(() => setAspects(selectedAspects), 50);
+    },
+    [setAspects],
+  );
 
   const handleResetFilters = useCallback(() => {
     setTimeout(() => {
@@ -53,11 +58,7 @@ const TournamentDeckFilters: React.FC<TournamentDeckFiltersProps> = () => {
         search: prev => ({ ...prev, maDeckKey: undefined, maDeckKeyType: undefined }),
       });
     }, 50);
-  }, []);
-
-  if (!initialized) {
-    return <div className="p-2 flex justify-center">Loading filters...</div>;
-  }
+  }, [resetFilters, navigate]);
 
   return (
     <div className="flex flex-wrap items-center gap-2 mb-0">
