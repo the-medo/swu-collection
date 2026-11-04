@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import type { AuthExtension } from '../../auth/auth.ts';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { and, eq, like, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, like, sql } from 'drizzle-orm';
 import { db } from '../../db';
 import { tournamentGroup as tournamentGroupTable } from '../../db/schema/tournament_group.ts';
 import { tournamentGroupTournament as tournamentGroupTournamentTable } from '../../db/schema/tournament_group_tournament.ts';
@@ -25,7 +25,7 @@ const zTournamentGroupQueryParams = z.object({
   nameTemplate: z.string().optional(),
   limit: z.coerce.number().optional().default(100),
   offset: z.coerce.number().optional().default(0),
-  sort: z.enum(['name', 'position', 'created_at']).optional().default('position'),
+  sort: z.enum(['name', 'position']).optional().default('position'),
   order: z.enum(['asc', 'desc']).optional().default('asc'),
 });
 
@@ -131,7 +131,11 @@ export const tournamentGroupGetRoute = new Hono<AuthExtension>().get(
     query = withPagination(query, limit, offset);
 
     // Apply sorting
-    const groups = await query.orderBy(sql.raw(`tournament_group.${sort} ${order}`));
+    const sortDirection = order === 'asc' ? asc : desc;
+    const groups = await query.orderBy(
+      sortDirection(tournamentGroupTable[sort]),
+      asc(tournamentGroupTable.id),
+    );
 
     return c.json({
       data: groups,
