@@ -163,8 +163,8 @@ export function MetaReportTemplateDialog(props: TemplateDialogProps) {
   const [search, setSearch] = useState('');
   const groups = useGetTournamentGroups({
     visible: true,
-    sort: 'created_at',
-    order: 'desc',
+    sort: 'position',
+    order: 'asc',
     enabled: scope === 'group',
   });
   const events = useConnectionChoices('tournament', search, scope === 'tournament');

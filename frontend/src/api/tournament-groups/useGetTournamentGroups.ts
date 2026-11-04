@@ -10,7 +10,7 @@ export type GetTournamentGroupsRequest = {
   visible?: boolean;
   includeStats?: boolean;
   nameTemplate?: string;
-  sort?: 'name' | 'position' | 'created_at';
+  sort?: 'name' | 'position';
   order?: 'asc' | 'desc';
   pageSize?: number;
   enabled?: boolean;
