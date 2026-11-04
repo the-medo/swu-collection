@@ -276,7 +276,7 @@ test('each supported card has a dedicated file and agrees with its pinned catalo
   );
   const catalog = { ...official, ...hmwById, ...iconsById };
   expect(hmw).toHaveLength(268);
-  expect(supportedCards).toHaveLength(1851);
+  expect(supportedCards).toHaveLength(1877);
   expect(coverage.map(row => row.cardId)).toEqual(supportedCards.map(card => card.cardId));
   for (const definition of supportedCards) {
     if (definition.cardId === 'beast' || definition.cardId === 'weakness') {

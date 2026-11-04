@@ -1,3 +1,29 @@
+import { ic27ReprintRuneHaakoSchemingSecond } from './twi/rune-haako--scheming-second.ts';
+import { ic27ReprintAtAtSuppressor } from './sor/at-at-suppressor.ts';
+import { ic27ReprintLethalCrackdown } from './twi/lethal-crackdown.ts';
+import { ic27ReprintClanWrenRescuer } from './shd/clan-wren-rescuer.ts';
+import { ic27ReprintConcordDawnInterceptors } from './shd/concord-dawn-interceptors.ts';
+import { ic27ReprintMoistureFarmer } from './shd/moisture-farmer.ts';
+import { ic27ReprintResilient } from './shd/resilient.ts';
+import { ic27ReprintInspiringMentor } from './shd/inspiring-mentor.ts';
+import { ic27ReprintSavageOpressMonster } from './twi/savage-opress--monster.ts';
+import { ic27ReprintInfiltratorSSkill } from './sor/infiltrator-s-skill.ts';
+import { ic27ReprintFrozenInCarbonite } from './shd/frozen-in-carbonite.ts';
+import { ic27ReprintGroguIrresistible } from './shd/grogu--irresistible.ts';
+import { ic27ReprintHiddenSharpshooter } from './twi/hidden-sharpshooter.ts';
+import { ic27ReprintShootFirst } from './sor/shoot-first.ts';
+import { ic27ReprintBreakingIn } from './twi/breaking-in.ts';
+import { ic27ReprintSuperBattleDroid } from './twi/super-battle-droid.ts';
+import { ic27ReprintIAmYourFather } from './sor/i-am-your-father.ts';
+import { ic27ReprintR2D2IgnoringProtocol } from './sor/r2-d2--ignoring-protocol.ts';
+import { ic27ReprintC3poProtocolDroid } from './sor/c-3po--protocol-droid.ts';
+import { ic27ReprintPhaseICloneTrooper } from './twi/phase-i-clone-trooper.ts';
+import { ic27ReprintEta2LightInterceptor } from './twi/eta-2-light-interceptor.ts';
+import { ic27ReprintYouReMyOnlyHope } from './sor/you-re-my-only-hope.ts';
+import { ic27CloneCommanderCodyLoyalToTheRepublic } from './ic27/clone-commander-cody--loyal-to-the-republic.ts';
+import { ic27JynErsoHerFatherSRevenge } from './ic27/jyn-erso--her-father-s-revenge.ts';
+import { ic27K2soEvacuateTheVaultDoor } from './ic27/k-2so--evacuate-the-vault-door.ts';
+import { ic27CassianAndorBlendingIn } from './ic27/cassian-andor--blending-in.ts';
 import release from './release.json';
 import { theStarhawkPrototypeBattleship } from './jtl/the-starhawk--prototype-battleship.ts';
 import { jumpToLightspeed } from './jtl/jump-to-lightspeed.ts';
@@ -1880,7 +1906,34 @@ import { ic27CaptainRexStaunchAdvocate } from './ic27/captain-rex--staunch-advoc
 import { ic27GrandInquisitorHowTheMightyWillFall } from './ic27/grand-inquisitor--how-the-mighty-will-fall.ts';
 import { ic27AdmiralHoldoWeAreTheSpark } from './ic27/admiral-holdo--we-are-the-spark.ts';
 
-const definitions: CardDefinition[] = [];
+const definitions: CardDefinition[] = [
+  ic27ReprintRuneHaakoSchemingSecond,
+  ic27ReprintAtAtSuppressor,
+  ic27ReprintLethalCrackdown,
+  ic27ReprintClanWrenRescuer,
+  ic27ReprintConcordDawnInterceptors,
+  ic27ReprintMoistureFarmer,
+  ic27ReprintResilient,
+  ic27ReprintInspiringMentor,
+  ic27ReprintSavageOpressMonster,
+  ic27ReprintInfiltratorSSkill,
+  ic27ReprintFrozenInCarbonite,
+  ic27ReprintGroguIrresistible,
+  ic27ReprintHiddenSharpshooter,
+  ic27ReprintShootFirst,
+  ic27ReprintBreakingIn,
+  ic27ReprintSuperBattleDroid,
+  ic27ReprintIAmYourFather,
+  ic27ReprintR2D2IgnoringProtocol,
+  ic27ReprintC3poProtocolDroid,
+  ic27ReprintPhaseICloneTrooper,
+  ic27ReprintEta2LightInterceptor,
+  ic27ReprintYouReMyOnlyHope,
+  ic27CloneCommanderCodyLoyalToTheRepublic,
+  ic27JynErsoHerFatherSRevenge,
+  ic27K2soEvacuateTheVaultDoor,
+  ic27CassianAndorBlendingIn,
+];
 definitions.push(
   admiralOzzelAsClumsyAsHeIsStupid,
   admiralPiettInCommandNow,

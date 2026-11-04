@@ -44,6 +44,9 @@ export function matchesCard(
     (!filter.sharesTraitWith ||
       (!!sharedTrait &&
         cardTraits(state, ref).some(t => cardTraits(state, sharedTrait).includes(t)))) &&
+    (filter.costEquals === undefined ||
+      (hasPrintedCost(state, ref) &&
+        printedCost(state, ref) === numericValue(state, context, filter.costEquals))) &&
     (filter.costAtMost === undefined ||
       (hasPrintedCost(state, ref) &&
         printedCost(state, ref) <= numericValue(state, context, filter.costAtMost))) &&

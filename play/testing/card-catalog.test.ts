@@ -9,7 +9,7 @@ import {
   cardDefinition,
   assertCompatibleVersions,
 } from '../cards/catalog.ts';
-import { supportsEngine } from '../engine/release.ts';
+import { ENGINE_VERSION, parseVersion, supportsEngine } from '../engine/release.ts';
 import { createGame, advance } from '../engine/advance.ts';
 import { decodeState, encodeState } from '../engine/checkpoint.ts';
 import { stateDigest } from '../storage/integrity.ts';
@@ -75,8 +75,9 @@ test('download validation covers every card property and nested effect', async (
   event.effects = [{ kind: 'execute-code', code: 'bad' }];
   expect(() => validateCatalog(effect)).toThrow('Invalid card definition');
   const future = modified();
-  future.version = '1.999.0';
-  future.requiredEngine = '1.999.0';
+  const [major, minor] = parseVersion(ENGINE_VERSION);
+  future.version = `${major}.${minor + 1}.0`;
+  future.requiredEngine = future.version;
   expect(() => validateCatalog(future)).toThrow('requires');
   const duplicate = modified();
   duplicate.cards.push(duplicate.cards[0]);

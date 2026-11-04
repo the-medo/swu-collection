@@ -4,6 +4,7 @@ import { supportedCards } from './registry.ts';
 import titles from './catalog-names.json';
 import hmwCatalog from './hmw/catalog.json';
 import ic27Catalog from './ic27/catalog.json';
+import ic27ReprintAdditions from './ic27/reprint-additions.json';
 import release from './release.json';
 
 const currentTitles = {
@@ -93,6 +94,7 @@ const developmentBaselineCatalog = new CardCatalog({
   cards: supportedCards.filter(
     card =>
       !ic27CardIds.has(card.cardId) &&
+      !ic27ReprintAdditions.includes(card.cardId) &&
       !hmwCardIds.has(card.cardId) &&
       card.cardId !== 'beast' &&
       card.cardId !== 'weakness',

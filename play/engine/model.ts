@@ -319,6 +319,7 @@ export const cardFilterSchema: z.ZodType<CardFilter> = z.strictObject({
   sharesFriendlyUnitAspect: z.boolean().optional(),
   withoutTrait: z.string().min(1).optional(),
   notName: z.string().min(1).optional(),
+  costEquals: z.lazy(() => numericValueSchema).optional(),
   costAtMost: z.lazy(() => numericValueSchema).optional(),
   owner: z.enum(['self', 'enemy']).optional(),
   hasKeyword: simpleAbilitiesSchema.shape.keywords.unwrap().element.optional(),
@@ -576,6 +577,7 @@ export const conditionSchema: z.ZodType<Condition> = z.lazy(() =>
       amount: count,
       player: z.enum(['self', 'enemy', 'any']).optional(),
     }),
+    z.strictObject({ kind: z.literal('own-base-remaining-hp-at-most'), amount: count }),
     z.strictObject({ kind: z.literal('own-base-upgraded') }),
     z.strictObject({
       kind: z.literal('leader-or-base-aspect'),
@@ -1028,6 +1030,7 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
     }),
     z.strictObject({
       kind: z.literal('play-card'),
+      preserveOptionalChoice: z.boolean().optional(),
       player: z.enum(['self', 'enemy', 'owner']).optional(),
       sharesKeywordWith: idSchema.optional(),
       beforePlayed: z.array(effectSchema).optional(),
@@ -1458,6 +1461,7 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
     z.strictObject({ kind: z.literal('damage-own-base'), amount: numericValueSchema }),
     z.strictObject({
       kind: z.literal('damage-units'),
+      bases: z.literal('enemy').optional(),
       after: z.array(effectSchema).optional(),
       bind: idSchema.optional(),
       amount: numericValueSchema,

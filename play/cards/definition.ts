@@ -1,6 +1,7 @@
 export type Aspect = 'Vigilance' | 'Command' | 'Aggression' | 'Cunning' | 'Heroism' | 'Villainy';
 export type Arena = 'ground' | 'space';
 export type CardFilter = {
+  costEquals?: NumericValue;
   otherThan?: string;
   sharesTraitWith?: string;
   sharesFriendlyUnitAspect?: boolean;
@@ -291,6 +292,7 @@ export type Condition =
       player?: 'self' | 'enemy' | 'any';
     }
   | { kind: 'base-damage-at-least'; amount: number; player?: 'self' | 'enemy' | 'any' }
+  | { kind: 'own-base-remaining-hp-at-most'; amount: number }
   | { kind: 'own-base-upgraded' }
   | { kind: 'more-cards-than-opponent'; player?: 'self' | 'enemy' }
   | { kind: 'attacked-with-trait'; trait: string; nonToken?: boolean }
@@ -541,6 +543,7 @@ export type CardEffect =
     }
   | {
       kind: 'play-card';
+      preserveOptionalChoice?: boolean;
       player?: 'self' | 'enemy' | 'owner';
       sharesKeywordWith?: string;
       beforePlayed?: readonly CardEffect[];
@@ -804,6 +807,7 @@ export type CardEffect =
   | { kind: 'damage-own-base'; amount: NumericValue }
   | {
       kind: 'damage-units';
+      bases?: 'enemy';
       after?: readonly CardEffect[];
       bind?: string;
       amount: NumericValue;

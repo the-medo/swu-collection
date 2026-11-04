@@ -276,6 +276,11 @@ export function conditionMatches(
         controller => instance(state, state.players[controller]!.base).damage >= condition.amount,
       );
     }
+    case 'own-base-remaining-hp-at-most': {
+      const base = instance(state, state.players[playerId]!.base);
+      const definition = cardDefinition(state, base.cardId);
+      return definition.kind === 'base' && definition.hp - base.damage <= condition.amount;
+    }
     case 'own-base-upgraded':
       return attachedUpgrades(state, instance(state, state.players[playerId]!.base)).length > 0;
     case 'attacked-with-trait':

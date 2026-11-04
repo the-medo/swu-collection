@@ -3,6 +3,7 @@ import baselineContract from './contracts/1.0.json';
 import previewContract from './contracts/1.1.json';
 import currentContract from './contracts/1.2.json';
 import iconsContract from './contracts/1.3.json';
+import iconsReprintsContract from './contracts/1.4.json';
 import { CardCatalog, type CatalogData, checksum } from './catalog.ts';
 import { parseVersion, supportsEngine } from '../engine/release.ts';
 
@@ -21,6 +22,7 @@ const contracts: Readonly<Record<string, { root: number; nodes: Node[] }>> = {
   '1.1': previewContract as { root: number; nodes: Node[] },
   '1.2': currentContract as { root: number; nodes: Node[] },
   '1.3': iconsContract as { root: number; nodes: Node[] },
+  '1.4': iconsReprintsContract as { root: number; nodes: Node[] },
 };
 function matches(value: unknown, index: number, nodes: Node[], depth = 0): boolean {
   if (depth > 64) return false;

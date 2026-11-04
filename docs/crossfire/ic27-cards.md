@@ -1,24 +1,69 @@
 # Icons 2027 cards
 
-Crossfire implements the 83 canonical IC27 identities present in the
-[standard IC27 catalog](https://swubase.com/cards/sets/ic27?csCategory=all&csVariant=standard)
-on November 4, 2026: seven leaders, 71 units and five events. This is the
-published preview snapshot, not a claim of coverage for future reveals.
+Crossfire implements all 151 canonical identities in the
+[SWUDB IC27 search](https://swudb.com/search/set:IC27?sortorder=preview&sortdir=desc)
+retrieved November 4, 2026. The [printing inventory](../../play/testing/fixtures/ic27-printings.json)
+pins the complete list, including token cards and the currently revealed Prestige
+printing of Cassian Andor, Blending In (587). Coverage applies to this snapshot;
+future reveals still require implementation.
 
-The pinned [catalog](../../play/cards/ic27/catalog.json) records the identity,
-printed stats, traits and text used by each explicit
-[card definition](../../play/cards/ic27/). It was obtained from SWUBASE's public
-merged card provider (`POST /api/cards`): 82 active previews and the official
-Jar Jar Binks printing. Official catalog ingestion remains a separate workflow.
+The original [SWUBASE standard catalog](https://swubase.com/cards/sets/ic27?csCategory=all&csVariant=standard)
+provided 83 identities: seven leaders, 71 units and five events, obtained from
+its public merged provider (`POST /api/cards`). SWUDB adds four newly revealed
+units: Clone Commander Cody, Loyal to the Republic; Jyn Erso, Her Father's
+Revenge; K-2SO, Evacuate The Vault Door; and Cassian Andor, Blending In.
+Their identity and printed text join the [pinned catalog](../../play/cards/ic27/catalog.json).
+The four additions use SWUDB's public printing details; the original 83 use 82
+active SWUBASE previews and official Jar Jar Binks data. Official website catalog
+ingestion remains a separate workflow.
+
+The remaining 64 identities are reprints. Forty-two already had implementations;
+the [22 additions](../../play/cards/ic27/reprint-additions.json) retain their
+canonical IDs and original SOR, SHD or TWI definition files. Their printed text
+and stats come from the repository's official card catalog. Reprinted artwork
+does not introduce duplicate gameplay definitions. The original development
+catalog remains frozen for historical replay.
+
 Kanan Jarrus, Sometimes I Hate Being Right has no printed ability; the empty
 text was checked against his
 [card image](https://images.swubase.com/cards/preview/kanan-jarrus--sometimes-i-hate-being-right-preview-standard-front-1793827646955.webp).
 
-These cards require engine 1.3.0 and ship in card release 1.3.0. State format
-109 and browser protocol 39 remain compatible. The 1.3 card data contract is
-retained alongside earlier minor contracts. Publishing and activation follow
-[card releases](card-releases.md); exporting the local bundle does not activate
-it on the website.
+The complete snapshot ships in card release **1.4.0**, requiring engine **1.4.0**.
+State format 109 and browser protocol 39 remain compatible. The 1.4 card contract
+adds printed-cost equality, own-base HP conditions, private optional-play
+choices, and simultaneous unit/base damage;
+earlier minor contracts are retained. Publishing and activation follow
+[card releases](card-releases.md); exporting a local bundle does not activate it.
+
+## Reprints and additional previews
+
+- **C-3PO, Protocol Droid:** publicly chooses a number before privately inspecting
+  the top card. Only a matching printed cost may be revealed and drawn; declining
+  a match and inspecting a mismatch have identical opponent/spectator views.
+- **R2-D2, Ignoring Protocol:** privately leaves or bottoms the exact top card on
+  play and attack, without drawing or shuffling.
+- **You're My Only Hope:** plays the inspected top card with a five-resource
+  discount, or offers free play when the base has at most five remaining HP.
+  Aspect penalties apply to discounted play; free play ignores resource costs.
+  Playable and unplayable hidden cards retain the same optional choice window,
+  so declining does not disclose affordability. The HP condition requires no
+  redundant base selection.
+- **Frozen in Carbonite:** exhausts a non-leader host and directly prevents all
+  readying while attached, including when the host loses its own abilities.
+- **Shoot First / Breaking In / Infiltrator's Skill:** use shared attack-scoped
+  combat ordering, power bonuses and Saboteur; the upgrade's grant persists.
+- **I Am Your Father:** the target's controller chooses damage or says no to let
+  the event controller draw three; preventing the chosen damage does not draw.
+- **Lethal Crackdown:** defeats a non-leader and damages the event controller's base
+  using the target's power before departure and attachment cleanup.
+- **Clone Commander Cody:** observes other friendly Republic units entering,
+  including created tokens, and gives each an Experience token.
+- **Jyn Erso:** readies up to three units with combined printed cost at most seven
+  and grants each Saboteur for the phase. A readying restriction does not stop
+  the separate ability grant; enemy units may be chosen.
+- **K-2SO:** assigns five damage to every enemy unit and base in one simultaneous
+  batch. Shield replacement decisions precede all damage, and base-defeat
+  maintenance follows the complete batch.
 
 ## Shared mechanics
 
@@ -72,7 +117,9 @@ The rule baseline remains Comprehensive Rules v8.0, particularly sections 6.2,
 ## Verification
 
 [Card scenarios](../../play/testing/ic27-cards.test.ts) exercise all nontrivial
-printed abilities and both leader faces. [Mechanic scenarios](../../play/testing/ic27-mechanics.test.ts)
+printed abilities and both leader faces. [Reprint scenarios](../../play/testing/ic27-reprints.test.ts)
+cover the 22 reprints and four additional previews, including private-view
+comparisons, exact-copy choices, empty decks and fresh-process continuation. [Mechanic scenarios](../../play/testing/ic27-mechanics.test.ts)
 cover replacement payment, duplicate copies, attachments, hidden-hand view
 comparison, damage order, regroup timing and fresh-process continuation.
 Catalog conformance also checks identities and printed stats for keyword-only

@@ -2982,6 +2982,12 @@ function applyEffect(
         effect.max === undefined
           ? matchingUnits(state, playerId, effect.filter, frame)
           : selections.map(id => instance(state, id));
+      if (effect.bases)
+        targets.push(
+          ...state.seats
+            .filter(seat => seat !== playerId)
+            .map(seat => instance(state, state.players[seat]!.base)),
+        );
       dealDamage(
         state,
         targets.map(target => ({
@@ -3950,7 +3956,19 @@ export function settle(state: GameState): void {
         applyEffect(state, frame);
         continue;
       }
-      if (!intents.length || (intents.length === 1 && intents[0]!.kind === 'decline-effect')) {
+      // An optional private play must not expose hidden affordability by skipping
+      // its decline-only choice. Older card definitions retain their exact flow.
+      const preserveOptionalPlayChoice =
+        frame.kind === 'effect' &&
+        frame.effect.kind === 'play-card' &&
+        frame.effect.optional &&
+        frame.effect.preserveOptionalChoice;
+      if (
+        !intents.length ||
+        (intents.length === 1 &&
+          intents[0]!.kind === 'decline-effect' &&
+          !preserveOptionalPlayChoice)
+      ) {
         state.execution.frames.shift();
         if (
           frame.kind === 'effect' &&

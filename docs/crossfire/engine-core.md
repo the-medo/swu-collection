@@ -26,9 +26,9 @@ own TypeScript check and is excluded from root TypeScript file discovery.
 
 ## Supported cards and rules
 
-There are 1,851 explicit definitions under [play/cards](../../play/cards).
+There are 1,877 explicit definitions under [play/cards](../../play/cards).
 All 275 HMW, 267 ASH, 267 LAW, 266 SEC, 267 LOF, 266 JTL and 51 IBH canonical identities are implemented, including reprints.
-The [Icons 2027 guide](ic27-cards.md) covers the 83 cards published in the November 4, 2026 catalog snapshot.
+The [Icons 2027 guide](ic27-cards.md) covers all 151 cards in the November 4, 2026 SWUDB snapshot, including 64 reprints.
 The [Homeworlds guide](hmw-cards.md) covers the official-set completion and preview ID changes.
 The [IBH implementation guide](ibh-cards.md) covers the 44 final definitions.
 The [LOF implementation guide](lof-cards.md) describes the 164 added definitions and their shared mechanics.
@@ -177,7 +177,7 @@ the original source and controller even after that physical card leaves play.
 These are the mechanisms exercised by the current cards, not full timing-window
 coverage for every possible ability.
 
-Current version pins are state 109, runtime `1.3.0`, an immutable card
+Current version pins are state 109, runtime `1.4.0`, an immutable card
 version/checksum, and browser protocol 41. [Card releases](card-releases.md)
 describes dynamic installation and backwards-compatible minor versions. The
 pre-refactor engine/card tuple remains supported against its exact baseline data.
