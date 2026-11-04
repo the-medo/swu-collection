@@ -396,6 +396,18 @@ export function conditionMatches(
         matchingUnits(state, playerId, { arena: condition.arena, controller: 'enemy' }).length >
         matchingUnits(state, playerId, { arena: condition.arena, controller: 'friendly' }).length
       );
+    case 'discarded-from-hand': {
+      const ref = boundReference(context, condition.target, state);
+      return (
+        !!ref &&
+        state.phaseHistory.discarded.some(
+          entry =>
+            entry.from === 'hand' &&
+            entry.card.instanceId === ref.instanceId &&
+            entry.card.incarnation === ref.incarnation,
+        )
+      );
+    }
     case 'initiative-unclaimed':
       return !state.initiative.claimed;
     case 'initiative':

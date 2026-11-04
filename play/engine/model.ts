@@ -614,6 +614,7 @@ export const conditionSchema: z.ZodType<Condition> = z.lazy(() =>
     }),
     z.strictObject({ kind: z.literal('initiative') }),
     z.strictObject({ kind: z.literal('initiative-unclaimed') }),
+    z.strictObject({ kind: z.literal('discarded-from-hand'), target: idSchema }),
     z.strictObject({ kind: z.literal('unit-matches'), target: idSchema, filter: unitFilterSchema }),
   ]),
 );
@@ -771,6 +772,8 @@ export const modifyOperationSchema = z.strictObject({
   cannotAttackBases: z.boolean().optional(),
   cannotBeAttacked: z.boolean().optional(),
   cannotDealCombatDamage: z.boolean().optional(),
+  preventCombatDamage: z.boolean().optional(),
+  defendingAttackerPower: z.number().int().optional(),
   cannotHeal: z.boolean().optional(),
   surviveZeroHp: z.boolean().optional(),
   preventNextDamage: z.union([count, z.literal('all')]).optional(),
@@ -919,6 +922,8 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
       arena: z.enum(['ground', 'space']),
     }),
     z.strictObject({ kind: z.literal('extra-action') }),
+    z.strictObject({ kind: z.literal('each-player-discards'), count, handSizeAtLeast: count }),
+    z.strictObject({ kind: z.literal('replace-attacker') }),
     z.strictObject({
       kind: z.literal('exchange-control'),
       first: idSchema,
@@ -1319,6 +1324,7 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
     z.strictObject({ kind: z.literal('defeat-target'), target: idSchema }),
     z.strictObject({
       kind: z.literal('choose-mode'),
+      oncePerPhase: idSchema.optional(),
       private: z.boolean().optional(),
       chooser: z.enum(['self', 'enemy']).optional(),
       chooserOf: idSchema.optional(),
@@ -1544,6 +1550,8 @@ export const lastingSchema = z.strictObject({
   cannotAttackBases: z.boolean().optional(),
   cannotBeAttacked: z.boolean().optional(),
   cannotDealCombatDamage: z.boolean().optional(),
+  preventCombatDamage: z.boolean().optional(),
+  defendingAttackerPower: z.number().int().optional(),
   cannotHeal: z.boolean().optional(),
   surviveZeroHp: z.boolean().optional(),
   preventNextDamage: z.union([count, z.literal('all')]).optional(),
@@ -1573,6 +1581,7 @@ export const attackSchema = z.strictObject({
   after: z.lazy(() => z.array(effectFrameSchema)).optional(),
   ambush: z.boolean(),
   attackerFirst: z.boolean(),
+  combatReplacementPassed: z.boolean().optional(),
   ending: z
     .strictObject({
       source: cardSchema,
@@ -2084,7 +2093,28 @@ export const frameSchema = z.discriminatedUnion('kind', [
     playerId: idSchema.nullable(),
   }),
   actionFrameSchema,
-  z.strictObject({ kind: z.literal('ready') }),
+  z.strictObject({
+    kind: z.literal('ready-cards'),
+    playerId: idSchema,
+    source: cardSchema,
+    cards: z.array(referenceSchema),
+    excluded: z.array(referenceSchema).optional(),
+  }),
+  z.strictObject({ kind: z.literal('ready'), excluded: z.array(referenceSchema).optional() }),
+  z.strictObject({
+    kind: z.literal('regroup-ready'),
+    playerId: idSchema,
+    source: cardSchema,
+    arena: z.enum(['ground', 'space']),
+    limit: count,
+    cards: z.array(referenceSchema).min(1),
+  }),
+  z.strictObject({
+    kind: z.literal('combat-replacement'),
+    playerId: idSchema,
+    source: cardSchema,
+    attackId: idSchema,
+  }),
   z.strictObject({ kind: z.literal('flush-triggers') }),
   z.strictObject({ kind: z.literal('queue-triggers'), triggers: z.array(triggerSchema).min(1) }),
   z.strictObject({
@@ -2259,6 +2289,15 @@ export const stateSchema = z.strictObject({
     .strictObject({ attacks: z.array(referenceSchema), basesAttacked: z.array(idSchema) })
     .nullable(),
   phaseHistory: z.strictObject({
+    regroupReadied: z
+      .array(
+        z.strictObject({
+          card: referenceSchema,
+          playerId: idSchema,
+          arena: z.enum(['ground', 'space']),
+        }),
+      )
+      .optional(),
     damageAttempts: z.array(referenceSchema),
     damagedUnits: z.array(referenceSchema),
     basesDamaged: z.array(idSchema),
@@ -2277,6 +2316,15 @@ export const stateSchema = z.strictObject({
       cardSchema.extend({ traits: z.array(z.string().min(1)), leaderUnit: z.boolean() }),
     ),
     actionsTaken: z.record(idSchema, count),
+    modeUses: z
+      .array(
+        z.strictObject({
+          source: referenceSchema,
+          origin: referenceSchema,
+          key: z.string().min(1).max(161),
+        }),
+      )
+      .optional(),
     enemyBaseDamaged: z.array(idSchema),
     indirectDamage: z.array(idSchema),
     tokensCreated: z.array(idSchema),

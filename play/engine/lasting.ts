@@ -1,3 +1,4 @@
+import { remainingRegroupReadies } from './regroup-ready.ts';
 import { effectiveAbilities, mayHaveAbility } from './effective-abilities.ts';
 import { isUnit, unitStats, attachedUpgrades } from './attachments.ts';
 import { upgradeProfile } from './roles.ts';
@@ -45,6 +46,10 @@ export function modifyUnit(
     ...(operation.cannotAttackBases ? { cannotAttackBases: true } : {}),
     ...(operation.cannotBeAttacked ? { cannotBeAttacked: true } : {}),
     ...(operation.cannotDealCombatDamage ? { cannotDealCombatDamage: true } : {}),
+    ...(operation.preventCombatDamage ? { preventCombatDamage: true } : {}),
+    ...(operation.defendingAttackerPower !== undefined
+      ? { defendingAttackerPower: operation.defendingAttackerPower }
+      : {}),
     ...(operation.cannotHeal ? { cannotHeal: true } : {}),
     ...(operation.surviveZeroHp ? { surviveZeroHp: true } : {}),
     ...(operation.preventAllDamage ? { preventAllDamage: true } : {}),
@@ -82,7 +87,19 @@ export function cannotGainKeywords(state: GameState, unit: CardInstance) {
     activeLasting(state, unit).some(effect => effect.loseKeywords)
   );
 }
-export function cannotReady(state: GameState, unit: CardInstance, duringRegroup = false) {
+export function cannotReady(
+  state: GameState,
+  unit: CardInstance,
+  duringRegroup = false,
+  actor = unit.controller,
+) {
+  if (
+    state.phase === 'regroup' &&
+    isUnit(state, unit) &&
+    (unit.zone === 'ground' || unit.zone === 'space') &&
+    remainingRegroupReadies(state, actor, unit.zone) === 0
+  )
+    return true;
   const threshold =
     duringRegroup && mayHaveAbility(state, unit, 'regroupReadyPower')
       ? (effectiveAbilities(state, unit).regroupReadyPower ?? 0)

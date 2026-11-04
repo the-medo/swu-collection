@@ -1,3 +1,6 @@
+import { modeAvailable } from './mode-choices.ts';
+import { combatReplacementIntents } from './combat-replacement.ts';
+import { regroupReadySelection } from './regroup-ready.ts';
 import { pendingBaseUpgradeProtectors } from './attachments.ts';
 import { matchingPlayModifiers } from './play-keywords.ts';
 import { resourcePayment } from './resource-payment.ts';
@@ -294,6 +297,12 @@ export function frameIntents(state: GameState, frame: Frame): Intent[] {
         })),
         { kind: 'decline-effect' },
       ];
+    case 'regroup-ready':
+      return [{ kind: 'accept-effect' }];
+    case 'combat-replacement': {
+      const attack = state.attacks.find(a => a.id === frame.attackId);
+      return attack ? combatReplacementIntents(state, attack) : [];
+    }
     case 'combat-order':
       return combatOrderIntents(state, frame);
     case 'optional-trigger':
@@ -599,7 +608,11 @@ export function frameIntents(state: GameState, frame: Frame): Intent[] {
       }
       if (effect.kind === 'choose-mode')
         return effect.options
-          .filter(o => !o.condition || conditionMatches(state, frame.playerId, o.condition, frame))
+          .filter(
+            o =>
+              modeAvailable(state, frame, o.id) &&
+              (!o.condition || conditionMatches(state, frame.playerId, o.condition, frame)),
+          )
           .map(option => ({ kind: 'choose-mode', mode: option.id }));
       if (effect.kind === 'select-departed-upgrade')
         return [
@@ -816,6 +829,9 @@ export function decisionContext(
       return tokenReplacementSources(state, frame).length
         ? { playerId: frame.creator, kind: 'replacement' }
         : null;
+    case 'combat-replacement':
+      return { playerId: frame.playerId, kind: 'replacement' };
+    case 'regroup-ready':
     case 'combat-order':
       return { playerId: frame.playerId, kind: 'effect' };
     case 'optional-trigger':
@@ -927,6 +943,7 @@ export function decisionContext(
 }
 
 export function frameSelection(state: GameState, frame: Frame, playerId: string) {
+  if (frame.kind === 'regroup-ready') return regroupReadySelection(state, frame);
   if (frame.kind === 'special-play-payment')
     return {
       cards: frame.cards.map(card => card.instanceId),

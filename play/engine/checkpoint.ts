@@ -1,3 +1,5 @@
+import { assertRegroupReady } from './regroup-ready.ts';
+import { combatReplacementIntents } from './combat-replacement.ts';
 import { assertDamageSequence } from './damage-sequence.ts';
 import { abilitiesFrom } from './effective-abilities.ts';
 import { isUpgrade } from './roles.ts';
@@ -345,6 +347,19 @@ export function decodeState(json: string): GameState {
     if (item.kind === 'capture-pairs' || item.kind === 'attack-series') assertSequence(state, item);
     if (item.kind === 'zone-inspection') assertInspection(state, item);
     if (item.kind === 'zone-search') assertZoneSearch(state, item);
+    if (item.kind === 'regroup-ready') assertRegroupReady(state, item);
+    if (item.kind === 'combat-replacement') {
+      const attack = state.attacks.find(a => a.id === item.attackId);
+      if (
+        !attack ||
+        !combatReplacementIntents(state, attack).length ||
+        attack.attacker.instanceId !== item.source.instanceId ||
+        attack.attacker.incarnation !== item.source.incarnation ||
+        attack.attacker.cardId !== item.source.cardId ||
+        item.playerId !== item.source.controller
+      )
+        throw new Error('Invalid combat replacement choice');
+    }
     if (item.kind === 'unit-tax') assertUnitTax(state, item);
     if (item.kind === 'arrange-deck') assertArrange(state, item);
     if (item.kind === 'random-discard') assertRandomDiscard(state, item);
@@ -424,7 +439,8 @@ export function decodeState(json: string): GameState {
       (!Object.hasOwn(state.cards, item.source.instanceId) ||
         state.cards[item.source.instanceId]!.cardId !== item.source.cardId ||
         !state.seats.includes(item.source.controller) ||
-        (item.source.controller !== item.playerId &&
+        (item.kind !== 'regroup-ready' &&
+          item.source.controller !== item.playerId &&
           !validBountyContext(
             state,
             item.source,

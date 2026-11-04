@@ -1,7 +1,7 @@
 import type { CatalogContext } from '../cards/catalog.ts';
 import { assertCompatibleVersions } from '../cards/catalog.ts';
 import { bundleVersionsSchema, type BundleVersions } from '../cards/version-contract.ts';
-import { captureTriggers } from './triggers.ts';
+import { abilitySources, captureTriggers } from './triggers.ts';
 import { containsRegroupOperation } from './delayed.ts';
 import { numericValue } from './values.ts';
 import { matchesUnit } from './targets.ts';
@@ -363,6 +363,12 @@ export function resourceCard(
   changeResourceController(state, card, playerId);
   card.damage = 0;
   card.exhausted = !ready;
+  collectTriggers(
+    state,
+    'card-resourced',
+    abilitySources(state).filter(source => source.controller === playerId),
+    card,
+  );
   return true;
 }
 export function addCard(state: GameState, owner: string, cardId: string, zone: Zone): CardInstance {
@@ -504,9 +510,15 @@ export function playCost(
           provided,
         );
   for (const source of Object.values(state.cards)) {
-    if (source.controller !== card.controller || !['base', 'ground', 'space'].includes(source.zone))
-      continue;
-    for (const exception of effectiveAbilities(state, source).ignoreAspectPenalties ?? []) {
+    if (source.controller !== card.controller) continue;
+    const definition = cardDefinition(state, source.cardId);
+    const exceptions =
+      source.zone === 'discard' && definition.kind === 'unit' && !namedAbilityLoss(state, source)
+        ? (definition.discardAbilities?.ignoreAspectPenalties ?? [])
+        : ['base', 'ground', 'space'].includes(source.zone)
+          ? (effectiveAbilities(state, source).ignoreAspectPenalties ?? [])
+          : [];
+    for (const exception of exceptions) {
       if (exception.filter.kind === 'unit' && !asUnit) continue;
       if (
         matchesCard(state, card, exception.filter, { source }) &&
@@ -632,6 +644,8 @@ export function startingHandSize(state: GameState, playerId: string): number {
   const base = cardDefinition(state, instance(state, state.players[playerId]!.base).cardId);
   return (
     6 +
+    (activeAbilities(state, instance(state, state.players[playerId]!.leader))
+      .startingHandIncrease ?? 0) +
     (base.kind === 'base'
       ? (base.startingHandIncrease ?? 0) - (base.startingHandReduction ?? 0)
       : 0)

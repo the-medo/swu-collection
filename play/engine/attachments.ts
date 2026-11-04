@@ -102,8 +102,22 @@ export function unitStats(state: GameState, unit: CardInstance, evaluation?: Eva
       !attack.removedFromCombat.some(
         ref => ref.instanceId === unit.instanceId && ref.incarnation === unit.incarnation,
       )
-    )
+    ) {
       power += attack.powerBonus;
+      const defender = state.cards[attack.defender.instanceId];
+      if (
+        defender &&
+        defender.incarnation === attack.defender.incarnation &&
+        isUnit(state, defender) &&
+        !attack.removedFromCombat.some(
+          ref => ref.instanceId === defender.instanceId && ref.incarnation === defender.incarnation,
+        )
+      )
+        power += activeLasting(state, defender).reduce(
+          (sum, effect) => sum + (effect.defendingAttackerPower ?? 0),
+          0,
+        );
+    }
   }
   if (
     state.attacks.some(

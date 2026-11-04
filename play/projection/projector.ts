@@ -373,6 +373,8 @@ export class Projector {
                           frame?.kind === 'create-tokens' ||
                           frame?.kind === 'ability-payment' ||
                           frame?.kind === 'unit-tax' ||
+                          frame?.kind === 'combat-replacement' ||
+                          frame?.kind === 'regroup-ready' ||
                           frame?.kind === 'combat-order' ||
                           frame?.kind === 'arrange-deck' ||
                           frame?.kind === 'effect' ||

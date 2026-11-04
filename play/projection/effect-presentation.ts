@@ -6,6 +6,16 @@ import type { Frame } from '../engine/model.ts';
 export function effectPresentation(
   frame: Frame | undefined,
 ): { title: string; text: string } | undefined {
+  if (frame?.kind === 'combat-replacement')
+    return {
+      title: 'Replace the attacker',
+      text: 'Reveal a unit from your hand and pay its replacement cost to put it into play as the attacker, or decline.',
+    };
+  if (frame?.kind === 'regroup-ready')
+    return {
+      title: `Choose ${frame.arena} units to ready`,
+      text: `You can ready ${frame.limit} ${frame.arena} unit${frame.limit === 1 ? '' : 's'} during this regroup phase.`,
+    };
   if (frame?.kind !== 'effect') return;
   const effect = frame.effect;
   const damage = (amount: unknown) => (typeof amount === 'number' ? `${amount} damage` : 'damage');

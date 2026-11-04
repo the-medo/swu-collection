@@ -16,6 +16,18 @@ export function recordHealing(
   amount: number,
 ) {
   fact(state, 'healed', actor, [source, target], amount);
+  if (
+    amount > 0 &&
+    actor === target.controller &&
+    cardDefinition(state, target.cardId).kind === 'base'
+  )
+    collectTriggers(
+      state,
+      'own-base-healed',
+      abilitySources(state).filter(card => card.controller === target.controller),
+      target,
+      { values: { 'healed-amount': amount } },
+    );
   if (amount > 0 && isUnit(state, target))
     collectTriggers(state, 'healed', [target], undefined, { values: { 'healed-amount': amount } });
 }

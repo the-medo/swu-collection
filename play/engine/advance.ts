@@ -1,4 +1,5 @@
-import { supportsHandReveal } from './release.ts';
+import type { CardEffect } from '../cards/definition.ts';
+import { supportsEngine, supportsHandReveal } from './release.ts';
 import { assertCompatibleVersions } from '../cards/catalog.ts';
 import { captureUpgradeDeparture } from './state.ts';
 import type { DefeatPreparation } from './model.ts';
@@ -97,6 +98,13 @@ import { offerPlot, plotPlay } from './plot.ts';
 import { sequenceDealer } from './damage-sequence.ts';
 import { pendingBaseUpgradeProtectors } from './attachments.ts';
 import { matchesCard } from './inspection.ts';
+import { modeAvailable } from './mode-choices.ts';
+import {
+  combatReplacementIntents,
+  combatReplacementPayment,
+  replaceAttacker,
+} from './combat-replacement.ts';
+import { prepareRegroupReady, regroupReadySelection, acceptRegroupReady } from './regroup-ready.ts';
 import { startingHandSize } from './state.ts';
 import { triggerDefinitions } from './triggers.ts';
 import {
@@ -430,14 +438,21 @@ function dealDamage(
   });
 }
 
-function draw(state: GameState, players: string[], amount: number) {
+function draw(state: GameState, players: string[], amount: number, regroup = false) {
   const missing: { target: CardInstance; amount: number }[] = [];
   for (const id of players) {
     const player = state.players[id]!;
-    const drawn = player.deck.slice(0, amount).map(card => instance(state, card));
+    const requested =
+      amount +
+      (regroup
+        ? abilitySources(state)
+            .filter(c => c.controller === id)
+            .reduce((sum, c) => sum + (effectiveAbilities(state, c).regroupDrawIncrease ?? 0), 0)
+        : 0);
+    const drawn = player.deck.slice(0, requested).map(card => instance(state, card));
     for (const card of drawn) move(state, card, 'hand');
     recordDraw(state, id, drawn);
-    missing.push({ target: instance(state, player.base), amount: (amount - drawn.length) * 3 });
+    missing.push({ target: instance(state, player.base), amount: (requested - drawn.length) * 3 });
   }
   dealDamage(state, missing, null);
 }
@@ -748,7 +763,7 @@ function playFromZone(
   }
   if (replacement) {
     const resource = instance(state, replacement);
-    move(state, resource, 'resources');
+    resourceCard(state, resource, actor);
     resource.exhausted = true;
     fact(state, 'resourced', actor, [], 1);
     fact(state, 'resourced', actor, [resource], 1, [actor]);
@@ -869,7 +884,7 @@ function applyCardCosts(
       }
     if (cost.kind === 'ready-enemy-unit')
       for (const card of cards) {
-        readyInPlay(state, [card]);
+        readyInPlay(state, [card], false, source.controller);
         fact(state, 'readied', source.controller, [source, card]);
       }
     if (cost.kind === 'defeat-friendly-upgrade') defeatUpgrades(state, cards, source);
@@ -934,6 +949,40 @@ function applyEffect(
   }
   const target = intent?.kind === 'target' ? instance(state, intent.card) : null;
   switch (effect.kind) {
+    case 'each-player-discards': {
+      const players = [state.activePlayer, opponent(state, state.activePlayer)].filter(
+        p => state.players[p]!.hand.length >= effect.handSizeAtLeast,
+      );
+      let effects: CardEffect[] = players.map(p => ({
+        kind: 'move-cards',
+        group: `discard-${p}`,
+        from: 'hand',
+        to: 'discard',
+        discardBy: 'owner',
+      }));
+      for (const player of [...players].reverse())
+        effects = [
+          {
+            kind: 'inspect-zone',
+            zone: 'hand',
+            player: player === playerId ? 'self' : 'enemy',
+            chooser: 'owner',
+            filter: {},
+            min: effect.count,
+            max: effect.count,
+            bind: `card-${player}`,
+            group: `discard-${player}`,
+            effects,
+            otherwise: effects,
+          },
+        ];
+      state.execution.frames.unshift(...effectFrames(playerId, source, effects, frame));
+      break;
+    }
+    case 'replace-attacker':
+      replaceAttacker(state, frame);
+      maintenance(state);
+      break;
     case 'schedule-resource-repayment': {
       const amount = numericValue(state, frame, effect.amount);
       if (amount > 0) {
@@ -2004,8 +2053,7 @@ function applyEffect(
       const id = state.players[owner]!.deck[0];
       if (!id) break;
       const card = instance(state, id);
-      move(state, card, 'resources');
-      card.exhausted = !effect.ready;
+      resourceCard(state, card, owner, !!effect.ready);
       fact(state, 'resourced', owner, [], 1);
       fact(state, 'resourced', owner, [card], 1, [owner]);
       break;
@@ -2417,7 +2465,15 @@ function applyEffect(
     case 'choose-mode': {
       if (intent?.kind !== 'choose-mode') break;
       const option = effect.options.find(option => option.id === intent.mode);
-      if (!option) throw new IllegalInput();
+      if (!option || !modeAvailable(state, frame, option.id)) throw new IllegalInput();
+      if (effect.oncePerPhase) {
+        state.phaseHistory.modeUses ??= [];
+        state.phaseHistory.modeUses.push({
+          source: reference(source),
+          origin: reference(frame.origin?.card ?? source),
+          key: `${effect.oncePerPhase}:${option.id}`,
+        });
+      }
       const chooser =
         effect.chooser === 'enemy'
           ? opponent(state, playerId)
@@ -2459,7 +2515,21 @@ function applyEffect(
       }
       break;
     case 'ready-units': {
-      const cards = readyInPlay(state, matchingUnits(state, playerId, effect.filter, frame));
+      if (state.phase === 'regroup' && supportsEngine('1.3.0', state.versions.engine)) {
+        state.execution.frames.unshift({
+          kind: 'ready-cards',
+          playerId,
+          source,
+          cards: matchingUnits(state, playerId, effect.filter, frame).map(reference),
+        });
+        break;
+      }
+      const cards = readyInPlay(
+        state,
+        matchingUnits(state, playerId, effect.filter, frame),
+        false,
+        playerId,
+      );
       if (cards.length) fact(state, 'readied', playerId, [source, ...cards]);
       break;
     }
@@ -2750,7 +2820,10 @@ function applyEffect(
           }
           break;
         case 'heal': {
-          const amount = op.amount === 'all' ? unit.damage : Math.min(unit.damage, op.amount);
+          const requested = op.amount === 'all' ? unit.damage : op.amount;
+          const amount = supportsEngine('1.3.0', state.versions.engine)
+            ? healingAmount(state, unit, requested)
+            : Math.min(unit.damage, requested);
           unit.damage -= amount;
           recordHealing(state, playerId, source, unit, amount);
           if (effect.ifYouDo && amount > 0)
@@ -2790,11 +2863,11 @@ function applyEffect(
         case 'ready': {
           if (
             unit.exhausted === (op.kind === 'exhaust') ||
-            (op.kind === 'ready' && cannotReady(state, unit)) ||
+            (op.kind === 'ready' && cannotReady(state, unit, false, playerId)) ||
             (op.kind === 'exhaust' && !canAffectWithAbility(state, unit, source, 'exhaust'))
           )
             break;
-          if (op.kind === 'ready') readyInPlay(state, [unit]);
+          if (op.kind === 'ready') readyInPlay(state, [unit], false, playerId);
           else unit.exhausted = true;
           fact(state, unit.exhausted ? 'exhausted' : 'readied', playerId, [source, unit]);
           state.execution.frames.unshift(...next);
@@ -3529,6 +3602,15 @@ export function settle(state: GameState): void {
       }
       continue;
     }
+    if (frame.kind === 'combat-replacement' || frame.kind === 'regroup-ready') {
+      prompt(
+        state,
+        frame,
+        frame.playerId,
+        frame.kind === 'combat-replacement' ? 'replacement' : 'effect',
+      );
+      break;
+    }
     if (frame.kind === 'combat-order') {
       prompt(state, frame, frame.playerId, 'effect');
       break;
@@ -3778,6 +3860,8 @@ export function settle(state: GameState): void {
           frame.effect.kind === 'capture-unit' ||
           frame.effect.kind === 'distribute' ||
           frame.effect.kind === 'random-card' ||
+          frame.effect.kind === 'replace-attacker' ||
+          frame.effect.kind === 'each-player-discards' ||
           frame.effect.kind === 'repeat-effects' ||
           frame.effect.kind === 'friendly-units-damage-different-enemies' ||
           frame.effect.kind === 'lose-enemy-trait' ||
@@ -4001,13 +4085,37 @@ export function settle(state: GameState): void {
         state.execution.frames.push({ kind: 'flush-triggers' }, { kind: 'action' });
         break;
       case 'draw':
-        draw(state, frame.players, frame.count);
+        draw(state, frame.players, frame.count, state.phase === 'regroup');
         break;
+      case 'ready-cards': {
+        if (prepareRegroupReady(state, frame)) break;
+        const cards = readyInPlay(
+          state,
+          frame.cards
+            .filter(
+              ref =>
+                ref.incarnation === state.cards[ref.instanceId]?.incarnation &&
+                !frame.excluded?.some(
+                  e => e.instanceId === ref.instanceId && e.incarnation === ref.incarnation,
+                ),
+            )
+            .map(ref => instance(state, ref.instanceId)),
+          false,
+          frame.playerId,
+        );
+        if (cards.length) fact(state, 'readied', frame.playerId, [frame.source, ...cards]);
+        break;
+      }
       case 'ready':
+        if (prepareRegroupReady(state, frame)) break;
         readyInPlay(
           state,
           Object.values(state.cards).filter(
-            card => card.zone === 'base' || card.zone === 'resources' || isArena(card.zone),
+            card =>
+              (card.zone === 'base' || card.zone === 'resources' || isArena(card.zone)) &&
+              !frame.excluded?.some(
+                ref => ref.instanceId === card.instanceId && ref.incarnation === card.incarnation,
+              ),
           ),
           true,
         );
@@ -4092,6 +4200,9 @@ export function settle(state: GameState): void {
             { kind: 'flush-triggers' },
             ...attack.after.map(frame => ({
               ...frame,
+              ...(supportsEngine('1.3.0', state.versions.engine)
+                ? { bindings: { ...frame.bindings, 'completed-attacker': attack.attacker } }
+                : {}),
               values: {
                 ...frame.values,
                 'attacker-damaged-base': Number(
@@ -4147,6 +4258,18 @@ export function settle(state: GameState): void {
         const attacker = instance(state, attack.attacker.instanceId),
           defender = instance(state, attack.defender.instanceId);
         if (!inCombat(state, attack, attacker, attack.attacker)) break;
+        if (combatReplacementIntents(state, attack).length) {
+          state.execution.frames.unshift(
+            {
+              kind: 'combat-replacement',
+              attackId: attack.id,
+              playerId: attacker.controller,
+              source: structuredClone(attacker),
+            },
+            frame,
+          );
+          break;
+        }
         const orderFrame = {
           kind: 'combat-order' as const,
           attackId: attack.id,
@@ -4156,6 +4279,11 @@ export function settle(state: GameState): void {
         if (!attack.order && combatOrderIntents(state, orderFrame).length) {
           state.execution.frames.unshift(orderFrame, frame);
           break;
+        }
+        if (!attack.order && inCombat(state, attack, defender, attack.defender)) {
+          if (effectiveAbilities(state, attacker).combatDamageLast) attack.order = 'defender-first';
+          else if (effectiveAbilities(state, defender).combatDamageLast)
+            attack.order = 'attacker-first';
         }
         attack.ending = {
           source: structuredClone(attacker),
@@ -4643,6 +4771,44 @@ function applyIntent(
     state.execution.frames.unshift(frame);
     return;
   }
+  if (frame.kind === 'regroup-ready') {
+    acceptRegroupReady(state, frame, selections);
+    return;
+  }
+  if (frame.kind === 'combat-replacement') {
+    const attack = state.attacks.find(a => a.id === frame.attackId);
+    if (!attack) throw new IllegalInput();
+    if (intent.kind === 'decline-effect') {
+      attack.combatReplacementPassed = true;
+      return;
+    }
+    if (
+      intent.kind !== 'target' ||
+      !combatReplacementIntents(state, attack).some(
+        i => i.kind === 'target' && i.card === intent.card,
+      )
+    )
+      throw new IllegalInput();
+    const card = instance(state, intent.card);
+    recordHandReveal(state, [card]);
+    fact(state, 'revealed', actor, [card]);
+    state.execution.frames.unshift(
+      ...effectFrames(
+        actor,
+        structuredClone(card),
+        [
+          {
+            kind: 'pay',
+            optional: false,
+            costs: [{ kind: 'resources', amount: combatReplacementPayment(state, card) }],
+            effects: [{ kind: 'replace-attacker' }],
+          },
+        ],
+        { bindings: { attacker: attack.attacker, replacement: reference(card) } },
+      ),
+    );
+    return;
+  }
   if (frame.kind === 'combat-order') {
     const attack = state.attacks.find(a => a.id === frame.attackId);
     if (
@@ -5008,8 +5174,7 @@ function applyIntent(
       if (frame.kind !== 'resource') throw new IllegalInput();
       const cards = selections.map(id => instance(state, id));
       for (const card of cards) {
-        move(state, card, 'resources');
-        card.exhausted = !frame.setup;
+        resourceCard(state, card, actor, frame.setup);
       }
       fact(state, 'resourced', actor, [], cards.length);
       if (cards.length) fact(state, 'resourced', actor, cards, cards.length, [actor]);

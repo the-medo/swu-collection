@@ -1,3 +1,4 @@
+import ic27Catalog from '../cards/ic27/catalog.json';
 import { expect, test } from 'bun:test';
 import { bundledCatalog } from '../cards/catalog.ts';
 const cardTitles = bundledCatalog.data.titles;
@@ -77,9 +78,10 @@ test('naming pins official full titles separately from supported behavior and ig
     new URL('../../server/db/json/card-list.json', import.meta.url),
   ).json();
   expect(cardTitles).toEqual(
-    Object.fromEntries(
-      Object.entries(catalog).map(([id, c]) => [id, (c as { title: string }).title]),
-    ),
+    Object.fromEntries([
+      ...Object.entries(catalog).map(([id, c]) => [id, (c as { title: string }).title]),
+      ...ic27Catalog.map(c => [c.cardId, c.title]),
+    ]),
   );
   expect(cardTitle('no-glory--only-results')).toBe('No Glory, Only Results');
   expect(cardTitle(ids.leader)).toBe(cardTitle(sabine));

@@ -37,13 +37,16 @@ export function combatOrderIntents(
     defender = instance(state, attack.defender.instanceId);
   if (
     !inCombat(state, attack, attacker, attack.attacker) ||
-    !inCombat(state, attack, defender, attack.defender) ||
-    !effectiveAbilities(state, attacker).defenderCombatFirst
+    !inCombat(state, attack, defender, attack.defender)
   )
     return [];
-  const first = attack.attackerFirst || effectiveAbilities(state, attacker).firstCombatDamage;
-  return [first ? 'attacker-first' : 'simultaneous', 'defender-first'].map(mode => ({
-    kind: 'choose-mode',
-    mode,
-  }));
+  const a = effectiveAbilities(state, attacker),
+    d = effectiveAbilities(state, defender);
+  const first = attack.attackerFirst || a.firstCombatDamage;
+  if (a.combatDamageLast && (d.combatDamageLast || first))
+    return ['attacker-first', 'defender-first'].map(mode => ({ kind: 'choose-mode', mode }));
+  if (!a.defenderCombatFirst) return [];
+  return [first || d.combatDamageLast ? 'attacker-first' : 'simultaneous', 'defender-first'].map(
+    mode => ({ kind: 'choose-mode', mode }),
+  );
 }

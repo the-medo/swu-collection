@@ -384,6 +384,10 @@ export function abilityOrigins(
 }
 export function abilitiesFrom(state: CatalogContext, origins: readonly AbilityOrigin[]): Abilities {
   const result: Required<Abilities> = {
+    startingHandIncrease: 0,
+    regroupDrawIncrease: 0,
+    enemyRegroupReadyLimit: Number.MAX_SAFE_INTEGER,
+    combatDamageLast: false,
     lookAtDeckTop: false,
     resourcePaymentTraits: [],
     damageReplacements: [],
@@ -603,6 +607,13 @@ export function abilitiesFrom(state: CatalogContext, origins: readonly AbilityOr
     result.cannotAttackUndamaged ||= abilities.cannotAttackUndamaged ?? false;
     result.extraPilotSlots += abilities.extraPilotSlots ?? 0;
     result.extraRegroups += abilities.extraRegroups ?? 0;
+    result.startingHandIncrease += abilities.startingHandIncrease ?? 0;
+    result.regroupDrawIncrease += abilities.regroupDrawIncrease ?? 0;
+    result.enemyRegroupReadyLimit = Math.min(
+      result.enemyRegroupReadyLimit,
+      abilities.enemyRegroupReadyLimit ?? Number.MAX_SAFE_INTEGER,
+    );
+    result.combatDamageLast ||= abilities.combatDamageLast ?? false;
     result.indirectBonus += abilities.indirectBonus ?? 0;
     result.assignsOpponentIndirect ||= abilities.assignsOpponentIndirect ?? false;
     result.assignsOwnIndirect ||= abilities.assignsOwnIndirect ?? false;

@@ -26,8 +26,9 @@ own TypeScript check and is excluded from root TypeScript file discovery.
 
 ## Supported cards and rules
 
-There are 1,768 explicit definitions under [play/cards](../../play/cards).
+There are 1,851 explicit definitions under [play/cards](../../play/cards).
 All 275 HMW, 267 ASH, 267 LAW, 266 SEC, 267 LOF, 266 JTL and 51 IBH canonical identities are implemented, including reprints.
+The [Icons 2027 guide](ic27-cards.md) covers the 83 cards published in the November 4, 2026 catalog snapshot.
 The [Homeworlds guide](hmw-cards.md) covers the official-set completion and preview ID changes.
 The [IBH implementation guide](ibh-cards.md) covers the 44 final definitions.
 The [LOF implementation guide](lof-cards.md) describes the 164 added definitions and their shared mechanics.

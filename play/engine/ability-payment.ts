@@ -37,7 +37,7 @@ export function costCards(state: GameState, source: CardInstance, cost: ChosenCa
   if (cost.kind === 'defeat-friendly-credit') return credits(state, source.controller);
   if (cost.kind === 'ready-enemy-unit')
     return matchingUnits(state, source.controller, { controller: 'enemy', exhausted: true }).filter(
-      c => !cannotReady(state, c),
+      c => !cannotReady(state, c, false, source.controller),
     );
   if (cost.kind === 'defeat-friendly-upgrade')
     return matchingUpgrades(state, source.controller, { controller: 'friendly' }, { source });

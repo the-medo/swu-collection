@@ -8,6 +8,7 @@ import { readyResourceCount, credits } from './credits.ts';
 import { opponent } from './state.ts';
 import { effectiveAbilities, keywordNames } from './effective-abilities.ts';
 import { cardTitle } from '../cards/catalog.ts';
+import { supportsEngine } from './release.ts';
 import type { Evaluation } from './evaluation.ts';
 import { attachedUpgrades } from './attachments.ts';
 import { printedCost, hasPrintedCost, matchesCard } from './inspection.ts';
@@ -289,6 +290,17 @@ export function numericValue(
   const ref = boundReference(context, value.target, state),
     card = ref && state.cards[ref.instanceId];
   if (!ref || !card) return 0;
+  const definition = cardDefinition(state, card.cardId);
+  if (
+    supportsEngine('1.3.0', state.versions.engine) &&
+    definition.kind === 'base' &&
+    card.incarnation === ref.incarnation
+  )
+    return value.stat === 'remaining-hp'
+      ? Math.max(0, definition.hp - card.damage)
+      : value.stat === 'damage'
+        ? card.damage
+        : 0;
   if (value.stat === 'damage')
     return card.incarnation === ref.incarnation && isUnit(state, card)
       ? card.damage

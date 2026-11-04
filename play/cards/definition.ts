@@ -234,6 +234,7 @@ export type SimpleAbilities = Pick<
   })[];
 };
 export type Condition =
+  | { kind: 'discarded-from-hand'; target: string }
   | { kind: 'initiative-unclaimed' }
   | { kind: 'leader-or-base-aspect'; aspect: Aspect }
   | { kind: 'enemy-last-action-attacked-base' }
@@ -343,6 +344,8 @@ export type UnitOperation =
       cannotAttackBases?: boolean;
       cannotBeAttacked?: boolean;
       cannotDealCombatDamage?: boolean;
+      preventCombatDamage?: boolean;
+      defendingAttackerPower?: number;
       cannotHeal?: boolean;
       surviveZeroHp?: boolean;
       preventNextDamage?: number | 'all';
@@ -354,6 +357,8 @@ export type UnitOperation =
 // The initial effect vocabulary is deliberately small. New mechanics add typed
 // execution frames and conformance cases, never callbacks captured in live state.
 export type CardEffect =
+  | { kind: 'each-player-discards'; count: number; handSizeAtLeast: number }
+  | { kind: 'replace-attacker' }
   | {
       kind: 'schedule-phase-trigger';
       id: string;
@@ -708,6 +713,7 @@ export type CardEffect =
   | { kind: 'defeat-target'; target: string }
   | {
       kind: 'choose-mode';
+      oncePerPhase?: string;
       private?: boolean;
       chooser?: 'self' | 'enemy';
       chooserOf?: string;
@@ -888,6 +894,10 @@ export type ActionDefinition = {
   effects: readonly CardEffect[];
 };
 export type Abilities = {
+  startingHandIncrease?: number;
+  regroupDrawIncrease?: number;
+  enemyRegroupReadyLimit?: number;
+  combatDamageLast?: boolean;
   protectSingleFriendlyUpgrade?: boolean;
   protectBaseUpgradeBySelfDefeat?: boolean;
   lookAtDeckTop?: boolean;
@@ -1004,6 +1014,9 @@ export type TriggerDefinition = {
   limit?: 'once-per-round' | 'once-per-phase';
   id: string;
   timing:
+    | 'own-base-healed'
+    | 'card-resourced'
+    | 'friendly-unit-base-damage'
     | 'drawn'
     | 'played-ability-used'
     | 'damaged'
@@ -1076,6 +1089,8 @@ type Identity = {
 export type UnitDefinition = Identity &
   Abilities & {
     kind: 'unit';
+    discardAbilities?: Pick<Abilities, 'ignoreAspectPenalties'>;
+    handCombatReplacement?: { cost: number; aspects: readonly Aspect[]; attacker: UnitFilter };
     costReductions?: readonly { condition: Condition; amount: NumericValue }[];
     token?: true;
     cost: number;

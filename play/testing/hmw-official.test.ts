@@ -1,3 +1,4 @@
+import { supportsEngine } from '../engine/release.ts';
 import previewIdRecording from './fixtures/replay-compatibility/hmw-preview-ids.json';
 import { validateCatalog } from '../cards/validate.ts';
 import { stateDigest } from '../storage/integrity.ts';
@@ -86,7 +87,7 @@ test('all 275 official HMW identities are playable, including the corrected IDs 
   for (const c of cards) expect(() => definition(c.cardId)).not.toThrow();
   expect(() => definition('garnac--let-the-hunt-begin')).toThrow();
   expect(() => definition('stormtrooper-patrol--')).toThrow();
-  expect(bundledCatalog.data.requiredEngine).toBe('1.2.0');
+  expect(supportsEngine('1.2.0', bundledCatalog.data.requiredEngine)).toBe(true);
 });
 
 test('installed catalogs keep historical preview IDs without aliasing new game identities', () => {

@@ -1796,6 +1796,90 @@ function freeze<T extends object>(value: T): T {
   return Object.freeze(value);
 }
 
+import { ic27DarthVaderNoOneToStopUs } from './ic27/darth-vader--no-one-to-stop-us.ts';
+import { ic27ReyInBalance } from './ic27/rey--in-balance.ts';
+import { ic27KyloRenSupremeLeader } from './ic27/kylo-ren--supreme-leader.ts';
+import { ic27MaceWinduHereWithBackup } from './ic27/mace-windu--here-with-backup.ts';
+import { ic27LukeSkywalkerIHaveToFaceHim } from './ic27/luke-skywalker--i-have-to-face-him.ts';
+import { ic27AsajjVentressBaldAndBeautiful } from './ic27/asajj-ventress--bald-and-beautiful.ts';
+import { ic27PrincessLeiaOnADiplomaticMission } from './ic27/princess-leia--on-a-diplomatic-mission.ts';
+import { ic27NuteGunrayRingRingSpaceCalling } from './ic27/nute-gunray--ring-ring--space-calling.ts';
+import { ic27DrydenVosThumbSpikingTheScale } from './ic27/dryden-vos--thumb-spiking-the-scale.ts';
+import { ic27SoullessOneSoullessFun } from './ic27/soulless-one--soulless-fun.ts';
+import { ic27GeneralGrievousFourArmedMenace } from './ic27/general-grievous--four-armed-menace.ts';
+import { ic27MoffGideonColdCalling } from './ic27/moff-gideon--cold-calling.ts';
+import { ic27GrandMoffTarkinCrackingDownOnLothal } from './ic27/grand-moff-tarkin--cracking-down-on-lothal.ts';
+import { ic27GrandAdmiralThrawnListenToMeCarefully } from './ic27/grand-admiral-thrawn--listen-to-me-carefully.ts';
+import { ic27DarthSidiousMoveAgainstTheJedi } from './ic27/darth-sidious--move-against-the-jedi.ts';
+import { ic27ChimaeraGrandAdmiralSMight } from './ic27/chimaera--grand-admiral-s-might.ts';
+import { ic27Bb8FrazzledFriend } from './ic27/bb-8--frazzled-friend.ts';
+import { ic27KaydelConnixKeepGoing } from './ic27/kaydel-connix--keep-going.ts';
+import { ic27ObiWanSInterceptorNothingTooFancy } from './ic27/obi-wan-s-interceptor--nothing-too-fancy.ts';
+import { ic27YodaADisturbingPuzzle } from './ic27/yoda--a-disturbing-puzzle.ts';
+import { ic27FinnStandAndFight } from './ic27/finn--stand-and-fight.ts';
+import { ic27AhsokaTanoNotOnMyDeathWatch } from './ic27/ahsoka-tano--not-on-my-death-watch.ts';
+import { ic27RoseInTheFight } from './ic27/rose--in-the-fight.ts';
+import { ic27QiRaSurvivor } from './ic27/qi-ra--survivor.ts';
+import { ic27VigilantDefense } from './ic27/vigilant-defense.ts';
+import { ic27DexterJettsterObiWannnn } from './ic27/dexter-jettster--obi-wannnn.ts';
+import { ic27AllegiantGeneralPrydeHeartlessEfficiency } from './ic27/allegiant-general-pryde--heartless-efficiency.ts';
+import { ic27DirectorKrennicArchitectOfAnnihilation } from './ic27/director-krennic--architect-of-annihilation.ts';
+import { ic27GeneralVeersPrepared } from './ic27/general-veers--prepared.ts';
+import { ic27JabbaTheHuttBountiesLeftAndRight } from './ic27/jabba-the-hutt--bounties-left-and-right.ts';
+import { ic27AdmiralMottiConanInCommand } from './ic27/admiral-motti--conan-in-command.ts';
+import { ic27KyloSTieSilencerFollowMyLead } from './ic27/kylo-s-tie-silencer--follow-my-lead.ts';
+import { ic27DarthMaulMindfulApprentice } from './ic27/darth-maul--mindful-apprentice.ts';
+import { ic27MotherTalzinTheTimeHasCome } from './ic27/mother-talzin--the-time-has-come.ts';
+import { ic27DarthVaderUselessToResist } from './ic27/darth-vader--useless-to-resist.ts';
+import { ic27DevastatorLordVaderSFlagship } from './ic27/devastator--lord-vader-s-flagship.ts';
+import { ic27C3poImpulseBuy } from './ic27/c-3po--impulse-buy.ts';
+import { ic27AvarKrissForLightAndLife } from './ic27/avar-kriss--for-light-and-life.ts';
+import { ic27RedLeaderWaitForMySignal } from './ic27/red-leader---wait-for-my-signal.ts';
+import { ic27MonMothmaTruthIsAnAbyss } from './ic27/mon-mothma--truth-is-an-abyss.ts';
+import { ic27AnakinSkywalkerDestinedForDarkness } from './ic27/anakin-skywalker--destined-for-darkness.ts';
+import { ic27QuiGonJinnUnwaveringBelief } from './ic27/qui-gon-jinn--unwavering-belief.ts';
+import { ic27MaceWinduDroppingBy } from './ic27/mace-windu--dropping-by.ts';
+import { ic27NegotiatorPrepareTheTroops } from './ic27/negotiator--prepare-the-troops.ts';
+import { ic27EnfysNestNoMore } from './ic27/enfys-nest--no-more.ts';
+import { ic27IssueACommand } from './ic27/issue-a-command.ts';
+import { ic27MazKanataItCallsToYou } from './ic27/maz-kanata--it-calls-to-you.ts';
+import { ic27CommanderPyreGoldenMenace } from './ic27/commander-pyre--golden-menace.ts';
+import { ic27EighthBrotherIllFatedEscape } from './ic27/eighth-brother--ill-fated-escape.ts';
+import { ic27GeneralHuxFireVentralCannons } from './ic27/general-hux--fire-ventral-cannons.ts';
+import { ic27TheInquisitorSTieWouldRatherWin } from './ic27/the-inquisitor-s-tie--would-rather-win.ts';
+import { ic27AurraSingGettingEven } from './ic27/aurra-sing--getting-even.ts';
+import { ic27SupremacyDestroyTheResistance } from './ic27/supremacy--destroy-the-resistance.ts';
+import { ic27EzraBridgerDownWithTheFreedom } from './ic27/ezra-bridger--down-with-the-freedom.ts';
+import { ic27PoeDameronHeroOfTheResistance } from './ic27/poe-dameron--hero-of-the-resistance.ts';
+import { ic27BlackOneDrawFireTwice } from './ic27/black-one--draw-fire--twice.ts';
+import { ic27SabineWrenLiberatorOfKrownest } from './ic27/sabine-wren--liberator-of-krownest.ts';
+import { ic27ReyEmbracingDestiny } from './ic27/rey--embracing-destiny.ts';
+import { ic27KananJarrusSometimesIHateBeingRight } from './ic27/kanan-jarrus--sometimes-i-hate-being-right.ts';
+import { ic27TheGhostWhaleWatching } from './ic27/the-ghost--whale-watching.ts';
+import { ic27SawGerreraForTheCause } from './ic27/saw-gerrera--for-the-cause.ts';
+import { ic27ActOfAggression } from './ic27/act-of-aggression.ts';
+import { ic27BansheeScreamMachine } from './ic27/banshee--scream-machine.ts';
+import { ic27GreedoBigTimer } from './ic27/greedo--big-timer.ts';
+import { ic27WatTamborWarpedWarbling } from './ic27/wat-tambor--warped-warbling.ts';
+import { ic27JangoFettStraightShooter } from './ic27/jango-fett--straight-shooter.ts';
+import { ic27PoggleTheLesserSecretDesigns } from './ic27/poggle-the-lesser--secret-designs.ts';
+import { ic27BobaFettCompensatedIfHeDies } from './ic27/boba-fett--compensated-if-he-dies.ts';
+import { ic27AsajjVentressDeathFromAbove } from './ic27/asajj-ventress--death-from-above.ts';
+import { ic27CountDookuSilverTongued } from './ic27/count-dooku--silver-tongued.ts';
+import { ic27TheInvisibleHandConfederateMight } from './ic27/the-invisible-hand--confederate-might.ts';
+import { ic27GreefKargaICelebrateYourSuccess } from './ic27/greef-karga--i-celebrate-your-success.ts';
+import { ic27TheMandalorianFromTheShadows } from './ic27/the-mandalorian--from-the-shadows.ts';
+import { ic27MillenniumFalconYaHoo } from './ic27/millennium-falcon--ya-hoo.ts';
+import { ic27PrincessLeiaCalculatedDistraction } from './ic27/princess-leia--calculated-distraction.ts';
+import { ic27BoKatanKryzeRightPlaceRightTime } from './ic27/bo-katan-kryze--right-place--right-time.ts';
+import { ic27IVeGotABadFeeling } from './ic27/i-ve-got-a-bad-feeling.ts';
+import { ic27LandoCalrissianCheckThisOut } from './ic27/lando-calrissian--check-this-out.ts';
+import { ic27CunningPloy } from './ic27/cunning-ploy.ts';
+import { ic27JarJarBinksBumblingRepresentative } from './ic27/jar-jar-binks--bumbling-representative.ts';
+import { ic27CaptainRexStaunchAdvocate } from './ic27/captain-rex--staunch-advocate.ts';
+import { ic27GrandInquisitorHowTheMightyWillFall } from './ic27/grand-inquisitor--how-the-mighty-will-fall.ts';
+import { ic27AdmiralHoldoWeAreTheSpark } from './ic27/admiral-holdo--we-are-the-spark.ts';
+
 const definitions: CardDefinition[] = [];
 definitions.push(
   admiralOzzelAsClumsyAsHeIsStupid,
@@ -3607,6 +3691,91 @@ definitions.push(
   hmwFriendlyEopie,
   hmwWildSpaceWanderer,
   hmwLandingPad,
+);
+definitions.push(
+  ic27DarthVaderNoOneToStopUs,
+  ic27ReyInBalance,
+  ic27KyloRenSupremeLeader,
+  ic27MaceWinduHereWithBackup,
+  ic27LukeSkywalkerIHaveToFaceHim,
+  ic27AsajjVentressBaldAndBeautiful,
+  ic27PrincessLeiaOnADiplomaticMission,
+  ic27NuteGunrayRingRingSpaceCalling,
+  ic27DrydenVosThumbSpikingTheScale,
+  ic27SoullessOneSoullessFun,
+  ic27GeneralGrievousFourArmedMenace,
+  ic27MoffGideonColdCalling,
+  ic27GrandMoffTarkinCrackingDownOnLothal,
+  ic27GrandAdmiralThrawnListenToMeCarefully,
+  ic27DarthSidiousMoveAgainstTheJedi,
+  ic27ChimaeraGrandAdmiralSMight,
+  ic27Bb8FrazzledFriend,
+  ic27KaydelConnixKeepGoing,
+  ic27ObiWanSInterceptorNothingTooFancy,
+  ic27YodaADisturbingPuzzle,
+  ic27FinnStandAndFight,
+  ic27AhsokaTanoNotOnMyDeathWatch,
+  ic27RoseInTheFight,
+  ic27QiRaSurvivor,
+  ic27VigilantDefense,
+  ic27DexterJettsterObiWannnn,
+  ic27AllegiantGeneralPrydeHeartlessEfficiency,
+  ic27DirectorKrennicArchitectOfAnnihilation,
+  ic27GeneralVeersPrepared,
+  ic27JabbaTheHuttBountiesLeftAndRight,
+  ic27AdmiralMottiConanInCommand,
+  ic27KyloSTieSilencerFollowMyLead,
+  ic27DarthMaulMindfulApprentice,
+  ic27MotherTalzinTheTimeHasCome,
+  ic27DarthVaderUselessToResist,
+  ic27DevastatorLordVaderSFlagship,
+  ic27C3poImpulseBuy,
+  ic27AvarKrissForLightAndLife,
+  ic27RedLeaderWaitForMySignal,
+  ic27MonMothmaTruthIsAnAbyss,
+  ic27AnakinSkywalkerDestinedForDarkness,
+  ic27QuiGonJinnUnwaveringBelief,
+  ic27MaceWinduDroppingBy,
+  ic27NegotiatorPrepareTheTroops,
+  ic27EnfysNestNoMore,
+  ic27IssueACommand,
+  ic27MazKanataItCallsToYou,
+  ic27CommanderPyreGoldenMenace,
+  ic27EighthBrotherIllFatedEscape,
+  ic27GeneralHuxFireVentralCannons,
+  ic27TheInquisitorSTieWouldRatherWin,
+  ic27AurraSingGettingEven,
+  ic27SupremacyDestroyTheResistance,
+  ic27EzraBridgerDownWithTheFreedom,
+  ic27PoeDameronHeroOfTheResistance,
+  ic27BlackOneDrawFireTwice,
+  ic27SabineWrenLiberatorOfKrownest,
+  ic27ReyEmbracingDestiny,
+  ic27KananJarrusSometimesIHateBeingRight,
+  ic27TheGhostWhaleWatching,
+  ic27SawGerreraForTheCause,
+  ic27ActOfAggression,
+  ic27BansheeScreamMachine,
+  ic27GreedoBigTimer,
+  ic27WatTamborWarpedWarbling,
+  ic27JangoFettStraightShooter,
+  ic27PoggleTheLesserSecretDesigns,
+  ic27BobaFettCompensatedIfHeDies,
+  ic27AsajjVentressDeathFromAbove,
+  ic27CountDookuSilverTongued,
+  ic27TheInvisibleHandConfederateMight,
+  ic27GreefKargaICelebrateYourSuccess,
+  ic27TheMandalorianFromTheShadows,
+  ic27MillenniumFalconYaHoo,
+  ic27PrincessLeiaCalculatedDistraction,
+  ic27BoKatanKryzeRightPlaceRightTime,
+  ic27IVeGotABadFeeling,
+  ic27LandoCalrissianCheckThisOut,
+  ic27CunningPloy,
+  ic27JarJarBinksBumblingRepresentative,
+  ic27CaptainRexStaunchAdvocate,
+  ic27GrandInquisitorHowTheMightyWillFall,
+  ic27AdmiralHoldoWeAreTheSpark,
 );
 freeze(definitions);
 const registry = new Map(definitions.map(card => [card.cardId, card]));

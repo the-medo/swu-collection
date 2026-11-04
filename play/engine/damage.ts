@@ -131,8 +131,16 @@ function damageOptions(
           lastingId: lasting.id,
         });
   if (!assignment.unpreventable)
-    for (const lasting of activeLasting(state, target))
-      if (lasting.preventAllDamage && !applied.some(r => r.abilityId === lasting.id))
+    for (const lasting of [
+      ...activeLasting(state, target),
+      ...(frame.combatAttackId && assignment.source
+        ? activeLasting(state, assignment.source).filter(e => e.preventCombatDamage)
+        : []),
+    ])
+      if (
+        (lasting.preventAllDamage || (frame.combatAttackId && lasting.preventCombatDamage)) &&
+        !applied.some(r => r.abilityId === lasting.id)
+      )
         options.push({
           card: lasting.source,
           source: lasting.source,
@@ -504,6 +512,9 @@ export function applyDamage(state: GameState, frame: DamageFrame) {
     amount: number;
     origins: ReturnType<typeof abilityOrigins>;
   }[] = [];
+  const friendlyUnitBaseObservers = state.seats.flatMap(player =>
+    triggerObservers(state, 'friendly-unit-base-damage', player),
+  );
   const friendlyCombatObservers = frame.combatAttackId
     ? state.seats.flatMap(player =>
         triggerObservers(state, 'friendly-combat-base-damage-dealt', player),
@@ -733,6 +744,14 @@ export function applyDamage(state: GameState, frame: DamageFrame) {
         origins: observer.origins,
       });
     if (event.source) {
+      if (isUnit(state, event.source) && event.target.controller !== event.source.controller)
+        for (const observer of friendlyUnitBaseObservers.filter(
+          o => o.source.controller === event.source!.controller,
+        ))
+          collectTriggers(state, 'friendly-unit-base-damage', [observer.source], event.source, {
+            ...context,
+            origins: observer.origins,
+          });
       collectTriggers(state, 'base-damage-dealt', [event.source], undefined, {
         ...context,
         origins: event.origins,
