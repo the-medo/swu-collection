@@ -6,7 +6,6 @@ import { Helmet } from 'react-helmet-async';
 import { useMemo } from 'react';
 import TournamentTopLeaderDecks from '../TournamentDecks/TournamentTopLeaderDecks.tsx';
 import { getTopLeaderDecks } from '../TournamentDecks/topLeaderDecks.ts';
-import { useInitializeDeckFilterFromUrlParams } from '@/components/app/decks/DeckFilters/useDeckFilterStore.ts';
 
 interface AllDecksTabProps {
   compact?: boolean;
@@ -19,7 +18,6 @@ const AllDecksTab: React.FC<AllDecksTabProps> = ({
   showTopLeaders = false,
   tournamentId,
 }) => {
-  const filtersInitialized = useInitializeDeckFilterFromUrlParams(false);
   const { decks, isLoaded, tournamentIds } = useTournamentMetaStore();
   const isCurrentTournament =
     !tournamentId || (tournamentIds.length === 1 && tournamentIds[0] === tournamentId);
@@ -36,7 +34,7 @@ const AllDecksTab: React.FC<AllDecksTabProps> = ({
     <>
       <Helmet title="Decks" />
       <div className="space-y-2">
-        {isLoaded && isCurrentTournament && filtersInitialized ? (
+        {isLoaded && isCurrentTournament ? (
           <>
             <TournamentDeckFilters />
             {showTopLeaders && <TournamentTopLeaderDecks decks={topLeaderDecks} />}

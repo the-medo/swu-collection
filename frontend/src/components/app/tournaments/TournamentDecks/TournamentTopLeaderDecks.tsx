@@ -1,9 +1,7 @@
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Trophy } from 'lucide-react';
-import { flushSync } from 'react-dom';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import CardImage from '@/components/app/global/CardImage.tsx';
-import { useDeckFilterStoreActions } from '@/components/app/decks/DeckFilters/useDeckFilterStore.ts';
 import { useIsMobile } from '@/hooks/use-mobile.tsx';
 import { cn } from '@/lib/utils.ts';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
@@ -15,16 +13,13 @@ interface TournamentTopLeaderDecksProps {
 
 const TournamentTopLeaderDecks: React.FC<TournamentTopLeaderDecksProps> = ({ decks }) => {
   const { data: cardList } = useCardList();
-  const { maDeckId } = useSearch({ strict: false });
+  const { maDeckId, deckLeaders } = useSearch({ strict: false });
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { resetFilters } = useDeckFilterStoreActions();
 
   if (decks.length === 0) return null;
 
-  const openDeck = (deckId: string) => {
-    // Finish filter URL synchronization before setting the mobile detail anchor.
-    flushSync(() => resetFilters());
+  const openDeck = (deckId: string, leaderCardId: string) => {
     void navigate({
       to: '.',
       search: previous => ({
@@ -32,7 +27,7 @@ const TournamentTopLeaderDecks: React.FC<TournamentTopLeaderDecksProps> = ({ dec
         maDeckId: deckId,
         maDeckKey: undefined,
         maDeckKeyType: undefined,
-        deckLeaders: undefined,
+        deckLeaders: [leaderCardId],
         deckBase: undefined,
         deckAspects: undefined,
         deckFormat: undefined,
@@ -55,23 +50,27 @@ const TournamentTopLeaderDecks: React.FC<TournamentTopLeaderDecksProps> = ({ dec
           const leaderName = card?.title ?? leaderCardId;
           const label = `${leaderName}${set ? ` (${set})` : ''}`;
 
+          const selected =
+            maDeckId === deckId && (!deckLeaders?.length || deckLeaders.includes(leaderCardId));
+
           return (
             <button
               key={leaderCardId}
               type="button"
-              onClick={() => openDeck(deckId)}
+              onClick={() => openDeck(deckId, leaderCardId)}
               aria-label={`Open #${placement} ${label} deck${playerName ? ` by ${playerName}` : ''}`}
-              aria-pressed={maDeckId === deckId}
+              aria-pressed={selected}
               title={`${label} · #${placement}${playerName ? ` · ${playerName}` : ''}`}
               className={cn(
                 'relative shrink-0 rounded-lg border-2 border-transparent text-left transition-colors hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-                maDeckId === deckId && 'border-primary',
+                selected && 'border-primary',
               )}
             >
               <CardImage
                 card={card}
                 cardVariantId={variantId}
                 size="w100"
+                loading="lazy"
                 forceHorizontal
                 backSideButton={false}
               />

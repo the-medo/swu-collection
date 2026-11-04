@@ -5,10 +5,6 @@ import MultiAspectFilter from '@/components/app/global/MultiAspectFilter/MultiAs
 import { SwuAspect } from '../../../../../../types/enums.ts';
 import { Button } from '@/components/ui/button.tsx';
 import { RefreshCcw } from 'lucide-react';
-import {
-  useDeckFilterStore,
-  useDeckFilterStoreActions,
-} from '@/components/app/decks/DeckFilters/useDeckFilterStore.ts';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { useLabel } from '@/components/app/tournaments/TournamentMeta/useLabel.tsx';
 import { MetaInfo } from '@/components/app/tournaments/TournamentMeta/MetaInfoSelector.tsx';
@@ -20,48 +16,72 @@ const TournamentDeckFilters = () => {
   const keyMetaInfo = search.maDeckKeyType;
   const labelRenderer = useLabel();
 
-  const { leaders, base, aspects, activeFiltersCount } = useDeckFilterStore(false);
-
+  const { deckLeaders: leaders, deckBase: base, deckAspects: aspects, deckFormat } = search;
+  const activeFiltersCount = [
+    !!leaders?.length,
+    base !== undefined,
+    !!aspects?.length,
+    deckFormat !== undefined,
+  ].filter(Boolean).length;
   const activeFilters = activeFiltersCount || (key && keyMetaInfo ? 1 : 0);
 
-  const { setLeaders, setBase, setAspects, resetFilters } = useDeckFilterStoreActions();
-
-  // Leader selection handling
   const onLeaderChange = useCallback(
     (leaderCardId: string | undefined) => {
-      setLeaders(leaderCardId ? [leaderCardId] : []);
+      void navigate({
+        to: '.',
+        replace: true,
+        search: previous => ({
+          ...previous,
+          deckLeaders: leaderCardId ? [leaderCardId] : undefined,
+        }),
+      });
     },
-    [setLeaders],
+    [navigate],
   );
 
-  // Base selection handling
   const onBaseChange = useCallback(
     (baseCardId: string | undefined) => {
-      setBase(baseCardId);
+      void navigate({
+        to: '.',
+        replace: true,
+        search: previous => ({ ...previous, deckBase: baseCardId }),
+      });
     },
-    [setBase],
+    [navigate],
   );
 
-  // Aspect filter handling
   const onAspectChange = useCallback(
     (selectedAspects: SwuAspect[]) => {
-      setTimeout(() => setAspects(selectedAspects), 50);
+      void navigate({
+        to: '.',
+        replace: true,
+        search: previous => ({
+          ...previous,
+          deckAspects: selectedAspects.length ? selectedAspects : undefined,
+        }),
+      });
     },
-    [setAspects],
+    [navigate],
   );
 
   const handleResetFilters = useCallback(() => {
-    setTimeout(() => {
-      resetFilters();
-      navigate({
-        to: '.',
-        search: prev => ({ ...prev, maDeckKey: undefined, maDeckKeyType: undefined }),
-      });
-    }, 50);
-  }, [resetFilters, navigate]);
+    void navigate({
+      to: '.',
+      replace: true,
+      search: previous => ({
+        ...previous,
+        maDeckKey: undefined,
+        maDeckKeyType: undefined,
+        deckLeaders: undefined,
+        deckBase: undefined,
+        deckAspects: undefined,
+        deckFormat: undefined,
+      }),
+    });
+  }, [navigate]);
 
   return (
-    <div className="flex flex-wrap items-center gap-2 mb-0">
+    <div role="group" aria-label="Deck filters" className="flex flex-wrap items-center gap-2 mb-0">
       <Button variant="default" disabled={!activeFilters} onClick={handleResetFilters} size="sm">
         <RefreshCcw className="h-4 w-4 mr-2" /> Reset Filters ({activeFilters})
       </Button>
@@ -75,7 +95,7 @@ const TournamentDeckFilters = () => {
           <LeaderSelector
             trigger={null}
             size="w100"
-            leaderCardId={leaders[0]}
+            leaderCardId={leaders?.[0]}
             onLeaderSelected={onLeaderChange}
           />
 
@@ -87,7 +107,7 @@ const TournamentDeckFilters = () => {
           />
 
           <MultiAspectFilter
-            value={aspects}
+            value={aspects ?? []}
             onChange={onAspectChange}
             multiSelect={true}
             multiMainAspects={true}
