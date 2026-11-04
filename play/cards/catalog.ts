@@ -6,6 +6,7 @@ import hmwCatalog from './hmw/catalog.json';
 import ic27Catalog from './ic27/catalog.json';
 import ic27ReprintAdditions from './ic27/reprint-additions.json';
 import release from './release.json';
+import earlySetAdditions from './early-set-additions.json';
 
 const currentTitles = {
   ...titles,
@@ -95,6 +96,7 @@ const developmentBaselineCatalog = new CardCatalog({
     card =>
       !ic27CardIds.has(card.cardId) &&
       !ic27ReprintAdditions.includes(card.cardId) &&
+      !earlySetAdditions.includes(card.cardId) &&
       !hmwCardIds.has(card.cardId) &&
       card.cardId !== 'beast' &&
       card.cardId !== 'weakness',

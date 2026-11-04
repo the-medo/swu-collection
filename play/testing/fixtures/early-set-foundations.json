@@ -1,0 +1,542 @@
+{
+  "at-st": {
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "keywords": ["Overwhelm"],
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "unique": false
+  },
+  "auzituck-liberator-gunship": {
+    "text": "Ambush (After you play this unit, it may ready and attack an enemy unit.)",
+    "keywords": ["Ambush"],
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "unique": false
+  },
+  "syndicate-lackeys": {
+    "text": "Ambush (After you play this unit, it may ready and attack an enemy unit.)",
+    "keywords": ["Ambush"],
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "unique": false
+  },
+  "cell-block-guard": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "unique": false
+  },
+  "cloud-city-wing-guard": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "unique": false
+  },
+  "echo-base-defender": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "unique": false
+  },
+  "system-patrol-craft": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "unique": false
+  },
+  "crafty-smuggler": {
+    "text": "Shielded (When you play this unit, give a Shield token to it.)",
+    "keywords": ["Shielded"],
+    "rules": null,
+    "unique": false
+  },
+  "seventh-fleet-defender": {
+    "text": "Shielded (When you play this unit, give a Shield token to it.)",
+    "keywords": ["Shielded"],
+    "rules": null,
+    "unique": false
+  },
+  "wilderness-fighter": {
+    "text": "Shielded (When you play this unit, give a Shield token to it.)",
+    "keywords": ["Shielded"],
+    "rules": null,
+    "unique": false
+  },
+  "jawa-scavenger": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "keywords": ["Saboteur"],
+    "rules": null,
+    "unique": false
+  },
+  "scout-bike-pursuer": {
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)",
+    "keywords": ["Grit"],
+    "rules": null,
+    "unique": false
+  },
+  "mercenary-company": {
+    "text": "Ambush (When you play this unit, it may ready and attack an enemy unit.)\nOverwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "keywords": ["Ambush", "Overwhelm"],
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "unique": false
+  },
+  "cantina-braggart": {
+    "text": "Raid 2 (This unit gets +2/+0 while attacking.)",
+    "keywords": ["Raid"],
+    "rules": null,
+    "unique": false
+  },
+  "green-squadron-a-wing": {
+    "text": "Raid 2 (This unit gets +2/+0 while attacking.)",
+    "keywords": ["Raid"],
+    "rules": null,
+    "unique": false
+  },
+  "regional-sympathizers": {
+    "text": "Restore 2 (When this unit attacks, heal 2 damage from your base.)",
+    "keywords": ["Restore"],
+    "rules": null,
+    "unique": false
+  },
+  "restored-arc-170": {
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)",
+    "keywords": ["Restore"],
+    "rules": null,
+    "unique": false
+  },
+  "underworld-thug": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "2-1b-surgical-droid": {
+    "text": "On Attack: You may heal 2 damage from another unit.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "admiral-motti--brazen-and-scornful": {
+    "text": "When Defeated: You may ready a [Villainy] unit.",
+    "keywords": [],
+    "rules": null,
+    "unique": true
+  },
+  "ardent-sympathizer": {
+    "text": "While you have the initiative, this unit gets +2/+0.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "cantina-bouncer": {
+    "text": "When Played: You may return a non-leader unit to its owner's hand.",
+    "keywords": [],
+    "rules": "Abilities that return a card to hand must choose a card in play unless otherwise specified.\n",
+    "unique": false
+  },
+  "confiscate": {
+    "text": "Defeat an upgrade.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "disabling-fang-fighter": {
+    "text": "When Played: You may defeat an upgrade.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "disarm": {
+    "text": "Give an enemy unit –4/–0 for this phase.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "distant-patroller": {
+    "text": "When Defeated: You may give a Shield token to a [Vigilance] unit.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "general-dodonna--massassi-group-commander": {
+    "text": "Other friendly Rebel units get +1/+1.",
+    "keywords": [],
+    "rules": null,
+    "unique": true
+  },
+  "general-veers--blizzard-force-commander": {
+    "text": "Other friendly Imperial units get +1/+1.",
+    "keywords": [],
+    "rules": null,
+    "unique": true
+  },
+  "patrolling-v-wing": {
+    "text": "When Played: Draw a card.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "wing-leader": {
+    "text": "When Played: Give 2 Experience tokens to another friendly REBEL unit.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "black-sun-starfighter": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "unique": false
+  },
+  "niima-outpost-constables": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "unique": false
+  },
+  "pyke-sentinel": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "unique": false
+  },
+  "cloud-rider": {
+    "text": "Ambush (When you play this unit, it may ready and attack an enemy unit.)",
+    "keywords": ["Ambush"],
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "unique": false
+  },
+  "heroic-renegade": {
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)",
+    "keywords": ["Grit"],
+    "rules": null,
+    "unique": false
+  },
+  "wroshyr-tree-tender": {
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)",
+    "keywords": ["Grit"],
+    "rules": null,
+    "unique": false
+  },
+  "house-kast-soldier": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "keywords": ["Saboteur"],
+    "rules": null,
+    "unique": false
+  },
+  "resourceful-pursuers": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "keywords": ["Saboteur"],
+    "rules": null,
+    "unique": false
+  },
+  "hutt-s-henchmen": {
+    "text": "Shielded (When you play this unit, give a Shield token to it.)",
+    "keywords": ["Shielded"],
+    "rules": null,
+    "unique": false
+  },
+  "death-watch-loyalist": {
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)\nOverwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "keywords": ["Grit", "Overwhelm"],
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "unique": false
+  },
+  "village-protectors": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)\nShielded (When you play this unit, give a Shield token to it.)",
+    "keywords": ["Sentinel", "Shielded"],
+    "rules": null,
+    "unique": false
+  },
+  "modded-cohort": {
+    "text": "Ambush (When you play this unit, it may ready and attack an enemy unit.)\nRaid 2 (This unit gets +2/+0 while attacking.)",
+    "keywords": ["Ambush", "Raid"],
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "unique": false
+  },
+  "sundari-peacekeeper": {
+    "text": "Raid 2 (This unit gets +2/+0 while attacking.)\nRestore 2 (When this unit attacks, heal 2 damage from your base.)",
+    "keywords": ["Raid", "Restore"],
+    "rules": null,
+    "unique": false
+  },
+  "twin-pod-cloud-car": {
+    "text": "Restore 2 (When this unit attacks, heal 2 damage from your base.)",
+    "keywords": ["Restore"],
+    "rules": null,
+    "unique": false
+  },
+  "desperado-freighter": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "hwk-290-freighter": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "liberated-slaves": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "warzone-lieutenant": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "follower-of-the-way": {
+    "text": "While this unit is upgraded, it gets +1/+1.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "protector-of-the-throne": {
+    "text": "While this unit is upgraded, it gains Sentinel. (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "unique": false
+  },
+  "gamorrean-retainer": {
+    "text": "While you control another Command unit, this unit gains Sentinel. (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "unique": false
+  },
+  "privateer-scyk": {
+    "text": "While you control another Cunning unit, this unit gains Shielded. (When you play this unit, give a Shield token to it.)",
+    "keywords": ["Shielded"],
+    "rules": null,
+    "unique": false
+  },
+  "daring-raid": {
+    "text": "Deal 2 damage to a unit or base.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "moment-of-glory": {
+    "text": "Give a unit +4/+4 for this phase.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "rival-s-fall": {
+    "text": "Defeat a unit.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "fell-the-dragon": {
+    "text": "Defeat a non-leader unit with 5 or more power.",
+    "keywords": [],
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\n",
+    "unique": false
+  },
+  "mandalorian-warrior": {
+    "text": "When Played: You may give an Experience token to another Mandalorian unit.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "outland-tie-vanguard": {
+    "text": "When Played: You may give an Experience token to another unit that costs 3 or less.",
+    "keywords": [],
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n",
+    "unique": false
+  },
+  "rhokai-gunship": {
+    "text": "When Defeated: Deal 1 damage to a unit or base.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "wookiee-warrior": {
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)\nWhen Played: If you control another Wookiee unit, draw a card.",
+    "keywords": ["Grit"],
+    "rules": null,
+    "unique": false
+  },
+  "advanced-recon-commando": {
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "keywords": ["Overwhelm"],
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "unique": false
+  },
+  "dendup-s-loyalist": {
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "keywords": ["Overwhelm"],
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n",
+    "unique": false
+  },
+  "armored-saber-tank": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "unique": false
+  },
+  "b1-security-team": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "unique": false
+  },
+  "falchion-ion-tank": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "unique": false
+  },
+  "patrolling-aat": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": ["Sentinel"],
+    "rules": null,
+    "unique": false
+  },
+  "bold-recon-commando": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "keywords": ["Saboteur"],
+    "rules": null,
+    "unique": false
+  },
+  "droid-starfighter": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "keywords": ["Saboteur"],
+    "rules": null,
+    "unique": false
+  },
+  "dwarf-spider-droid": {
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)",
+    "keywords": ["Grit"],
+    "rules": null,
+    "unique": false
+  },
+  "phase-ii-clone-trooper": {
+    "text": "Ambush (When you play this unit, it may ready and attack an enemy unit.)",
+    "keywords": ["Ambush"],
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n",
+    "unique": false
+  },
+  "ryloth-militia": {
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)",
+    "keywords": ["Raid"],
+    "rules": null,
+    "unique": false
+  },
+  "soldier-of-the-501st": {
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)",
+    "keywords": ["Raid"],
+    "rules": null,
+    "unique": false
+  },
+  "b1-attack-platform": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "headhunter-squadron": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "hotshot-v-wing": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "republic-arc-170": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "warrior-drone": {
+    "text": "",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "332nd-stalwart": {
+    "text": "Coordinate — This unit gets +1/+1. (Gain this ability while you control 3 or more units.)",
+    "keywords": ["Coordinate"],
+    "rules": null,
+    "unique": false
+  },
+  "41st-elite-corps": {
+    "text": "Coordinate — This unit gets +0/+3. (Gain this ability while you control 3 or more units.)",
+    "keywords": ["Coordinate"],
+    "rules": null,
+    "unique": false
+  },
+  "clone-heavy-gunner": {
+    "text": "Coordinate — This unit gets +2/+0. (Gain this ability while you control 3 or more units.)",
+    "keywords": ["Coordinate"],
+    "rules": null,
+    "unique": false
+  },
+  "echo--valiant-arc-trooper": {
+    "text": "Coordinate — This unit gets +2/+2. (Gain this ability while you control 3 or more units.)",
+    "keywords": ["Coordinate"],
+    "rules": null,
+    "unique": true
+  },
+  "batch-brothers": {
+    "text": "When Played: Create a Clone Trooper token.",
+    "keywords": [],
+    "rules": "If there are multiple opponents, the controlling player chooses which one will be “an opponent.”\n",
+    "unique": false
+  },
+  "captain-rex--lead-by-example": {
+    "text": "When Played: Create 2 Clone Trooper tokens.",
+    "keywords": [],
+    "rules": null,
+    "unique": true
+  },
+  "battle-droid-escort": {
+    "text": "When Played/When Defeated: Create a Battle Droid token.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "confederate-courier": {
+    "text": "When Defeated: Create a Battle Droid token.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "wartime-trade-official": {
+    "text": "When Defeated: Create a Battle Droid token.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "droid-deployment": {
+    "text": "Create 2 Battle Droid tokens.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "drop-in": {
+    "text": "Create 2 Clone Trooper tokens.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "blood-sport": {
+    "text": "Deal 2 damage to each ground unit.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  },
+  "strategic-analysis": {
+    "text": "Draw 3 cards.",
+    "keywords": [],
+    "rules": null,
+    "unique": false
+  }
+}

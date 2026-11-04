@@ -1,3 +1,4 @@
+import earlySetFoundations from './fixtures/early-set-foundations.json';
 import ibh from './fixtures/ibh.json';
 import jtlPayments from './fixtures/jtl-payments.json';
 import jtlDefeats from './fixtures/jtl-defeats.json';
@@ -125,6 +126,7 @@ const metaPins: Record<
     rules?: string | null;
   }
 > = {
+  ...earlySetFoundations,
   ...ibh,
   ...secFoundations,
   ...secEffects,
@@ -276,7 +278,7 @@ test('each supported card has a dedicated file and agrees with its pinned catalo
   );
   const catalog = { ...official, ...hmwById, ...iconsById };
   expect(hmw).toHaveLength(268);
-  expect(supportedCards).toHaveLength(1877);
+  expect(supportedCards).toHaveLength(1967);
   expect(coverage.map(row => row.cardId)).toEqual(supportedCards.map(card => card.cardId));
   for (const definition of supportedCards) {
     if (definition.cardId === 'beast' || definition.cardId === 'weakness') {

@@ -1,3 +1,93 @@
+import { earlySetAtSt } from './sor/at-st.ts';
+import { earlySetAuzituckLiberatorGunship } from './sor/auzituck-liberator-gunship.ts';
+import { earlySetSyndicateLackeys } from './sor/syndicate-lackeys.ts';
+import { earlySetCellBlockGuard } from './sor/cell-block-guard.ts';
+import { earlySetCloudCityWingGuard } from './sor/cloud-city-wing-guard.ts';
+import { earlySetEchoBaseDefender } from './sor/echo-base-defender.ts';
+import { earlySetSystemPatrolCraft } from './sor/system-patrol-craft.ts';
+import { earlySetCraftySmuggler } from './sor/crafty-smuggler.ts';
+import { earlySetSeventhFleetDefender } from './sor/seventh-fleet-defender.ts';
+import { earlySetWildernessFighter } from './sor/wilderness-fighter.ts';
+import { earlySetJawaScavenger } from './sor/jawa-scavenger.ts';
+import { earlySetScoutBikePursuer } from './sor/scout-bike-pursuer.ts';
+import { earlySetMercenaryCompany } from './sor/mercenary-company.ts';
+import { earlySetCantinaBraggart } from './sor/cantina-braggart.ts';
+import { earlySetGreenSquadronAWing } from './sor/green-squadron-a-wing.ts';
+import { earlySetRegionalSympathizers } from './sor/regional-sympathizers.ts';
+import { earlySetRestoredArc170 } from './sor/restored-arc-170.ts';
+import { earlySetUnderworldThug } from './sor/underworld-thug.ts';
+import { earlySet21BSurgicalDroid } from './sor/2-1b-surgical-droid.ts';
+import { earlySetAdmiralMottiBrazenAndScornful } from './sor/admiral-motti--brazen-and-scornful.ts';
+import { earlySetArdentSympathizer } from './sor/ardent-sympathizer.ts';
+import { earlySetCantinaBouncer } from './sor/cantina-bouncer.ts';
+import { earlySetConfiscate } from './sor/confiscate.ts';
+import { earlySetDisablingFangFighter } from './sor/disabling-fang-fighter.ts';
+import { earlySetDisarm } from './sor/disarm.ts';
+import { earlySetDistantPatroller } from './sor/distant-patroller.ts';
+import { earlySetGeneralDodonnaMassassiGroupCommander } from './sor/general-dodonna--massassi-group-commander.ts';
+import { earlySetGeneralVeersBlizzardForceCommander } from './sor/general-veers--blizzard-force-commander.ts';
+import { earlySetPatrollingVWing } from './sor/patrolling-v-wing.ts';
+import { earlySetWingLeader } from './sor/wing-leader.ts';
+import { earlySetBlackSunStarfighter } from './shd/black-sun-starfighter.ts';
+import { earlySetNiimaOutpostConstables } from './shd/niima-outpost-constables.ts';
+import { earlySetPykeSentinel } from './shd/pyke-sentinel.ts';
+import { earlySetCloudRider } from './shd/cloud-rider.ts';
+import { earlySetHeroicRenegade } from './shd/heroic-renegade.ts';
+import { earlySetWroshyrTreeTender } from './shd/wroshyr-tree-tender.ts';
+import { earlySetHouseKastSoldier } from './shd/house-kast-soldier.ts';
+import { earlySetResourcefulPursuers } from './shd/resourceful-pursuers.ts';
+import { earlySetHuttSHenchmen } from './shd/hutt-s-henchmen.ts';
+import { earlySetDeathWatchLoyalist } from './shd/death-watch-loyalist.ts';
+import { earlySetVillageProtectors } from './shd/village-protectors.ts';
+import { earlySetModdedCohort } from './shd/modded-cohort.ts';
+import { earlySetSundariPeacekeeper } from './shd/sundari-peacekeeper.ts';
+import { earlySetTwinPodCloudCar } from './shd/twin-pod-cloud-car.ts';
+import { earlySetDesperadoFreighter } from './shd/desperado-freighter.ts';
+import { earlySetHwk290Freighter } from './shd/hwk-290-freighter.ts';
+import { earlySetLiberatedSlaves } from './shd/liberated-slaves.ts';
+import { earlySetWarzoneLieutenant } from './shd/warzone-lieutenant.ts';
+import { earlySetFollowerOfTheWay } from './shd/follower-of-the-way.ts';
+import { earlySetProtectorOfTheThrone } from './shd/protector-of-the-throne.ts';
+import { earlySetGamorreanRetainer } from './shd/gamorrean-retainer.ts';
+import { earlySetPrivateerScyk } from './shd/privateer-scyk.ts';
+import { earlySetDaringRaid } from './shd/daring-raid.ts';
+import { earlySetMomentOfGlory } from './shd/moment-of-glory.ts';
+import { earlySetRivalSFall } from './shd/rival-s-fall.ts';
+import { earlySetFellTheDragon } from './shd/fell-the-dragon.ts';
+import { earlySetMandalorianWarrior } from './shd/mandalorian-warrior.ts';
+import { earlySetOutlandTieVanguard } from './shd/outland-tie-vanguard.ts';
+import { earlySetRhokaiGunship } from './shd/rhokai-gunship.ts';
+import { earlySetWookieeWarrior } from './shd/wookiee-warrior.ts';
+import { earlySetAdvancedReconCommando } from './twi/advanced-recon-commando.ts';
+import { earlySetDendupSLoyalist } from './twi/dendup-s-loyalist.ts';
+import { earlySetArmoredSaberTank } from './twi/armored-saber-tank.ts';
+import { earlySetB1SecurityTeam } from './twi/b1-security-team.ts';
+import { earlySetFalchionIonTank } from './twi/falchion-ion-tank.ts';
+import { earlySetPatrollingAat } from './twi/patrolling-aat.ts';
+import { earlySetBoldReconCommando } from './twi/bold-recon-commando.ts';
+import { earlySetDroidStarfighter } from './twi/droid-starfighter.ts';
+import { earlySetDwarfSpiderDroid } from './twi/dwarf-spider-droid.ts';
+import { earlySetPhaseIiCloneTrooper } from './twi/phase-ii-clone-trooper.ts';
+import { earlySetRylothMilitia } from './twi/ryloth-militia.ts';
+import { earlySetSoldierOfThe501St } from './twi/soldier-of-the-501st.ts';
+import { earlySetB1AttackPlatform } from './twi/b1-attack-platform.ts';
+import { earlySetHeadhunterSquadron } from './twi/headhunter-squadron.ts';
+import { earlySetHotshotVWing } from './twi/hotshot-v-wing.ts';
+import { earlySetRepublicArc170 } from './twi/republic-arc-170.ts';
+import { earlySetWarriorDrone } from './twi/warrior-drone.ts';
+import { earlySet332NdStalwart } from './twi/332nd-stalwart.ts';
+import { earlySet41StEliteCorps } from './twi/41st-elite-corps.ts';
+import { earlySetCloneHeavyGunner } from './twi/clone-heavy-gunner.ts';
+import { earlySetEchoValiantArcTrooper } from './twi/echo--valiant-arc-trooper.ts';
+import { earlySetBatchBrothers } from './twi/batch-brothers.ts';
+import { earlySetCaptainRexLeadByExample } from './twi/captain-rex--lead-by-example.ts';
+import { earlySetBattleDroidEscort } from './twi/battle-droid-escort.ts';
+import { earlySetConfederateCourier } from './twi/confederate-courier.ts';
+import { earlySetWartimeTradeOfficial } from './twi/wartime-trade-official.ts';
+import { earlySetDroidDeployment } from './twi/droid-deployment.ts';
+import { earlySetDropIn } from './twi/drop-in.ts';
+import { earlySetBloodSport } from './twi/blood-sport.ts';
+import { earlySetStrategicAnalysis } from './twi/strategic-analysis.ts';
 import { ic27ReprintRuneHaakoSchemingSecond } from './twi/rune-haako--scheming-second.ts';
 import { ic27ReprintAtAtSuppressor } from './sor/at-at-suppressor.ts';
 import { ic27ReprintLethalCrackdown } from './twi/lethal-crackdown.ts';
@@ -1907,6 +1997,97 @@ import { ic27GrandInquisitorHowTheMightyWillFall } from './ic27/grand-inquisitor
 import { ic27AdmiralHoldoWeAreTheSpark } from './ic27/admiral-holdo--we-are-the-spark.ts';
 
 const definitions: CardDefinition[] = [
+  earlySetAtSt,
+  earlySetAuzituckLiberatorGunship,
+  earlySetSyndicateLackeys,
+  earlySetCellBlockGuard,
+  earlySetCloudCityWingGuard,
+  earlySetEchoBaseDefender,
+  earlySetSystemPatrolCraft,
+  earlySetCraftySmuggler,
+  earlySetSeventhFleetDefender,
+  earlySetWildernessFighter,
+  earlySetJawaScavenger,
+  earlySetScoutBikePursuer,
+  earlySetMercenaryCompany,
+  earlySetCantinaBraggart,
+  earlySetGreenSquadronAWing,
+  earlySetRegionalSympathizers,
+  earlySetRestoredArc170,
+  earlySetUnderworldThug,
+  earlySet21BSurgicalDroid,
+  earlySetAdmiralMottiBrazenAndScornful,
+  earlySetArdentSympathizer,
+  earlySetCantinaBouncer,
+  earlySetConfiscate,
+  earlySetDisablingFangFighter,
+  earlySetDisarm,
+  earlySetDistantPatroller,
+  earlySetGeneralDodonnaMassassiGroupCommander,
+  earlySetGeneralVeersBlizzardForceCommander,
+  earlySetPatrollingVWing,
+  earlySetWingLeader,
+  earlySetBlackSunStarfighter,
+  earlySetNiimaOutpostConstables,
+  earlySetPykeSentinel,
+  earlySetCloudRider,
+  earlySetHeroicRenegade,
+  earlySetWroshyrTreeTender,
+  earlySetHouseKastSoldier,
+  earlySetResourcefulPursuers,
+  earlySetHuttSHenchmen,
+  earlySetDeathWatchLoyalist,
+  earlySetVillageProtectors,
+  earlySetModdedCohort,
+  earlySetSundariPeacekeeper,
+  earlySetTwinPodCloudCar,
+  earlySetDesperadoFreighter,
+  earlySetHwk290Freighter,
+  earlySetLiberatedSlaves,
+  earlySetWarzoneLieutenant,
+  earlySetFollowerOfTheWay,
+  earlySetProtectorOfTheThrone,
+  earlySetGamorreanRetainer,
+  earlySetPrivateerScyk,
+  earlySetDaringRaid,
+  earlySetMomentOfGlory,
+  earlySetRivalSFall,
+  earlySetFellTheDragon,
+  earlySetMandalorianWarrior,
+  earlySetOutlandTieVanguard,
+  earlySetRhokaiGunship,
+  earlySetWookieeWarrior,
+  earlySetAdvancedReconCommando,
+  earlySetDendupSLoyalist,
+  earlySetArmoredSaberTank,
+  earlySetB1SecurityTeam,
+  earlySetFalchionIonTank,
+  earlySetPatrollingAat,
+  earlySetBoldReconCommando,
+  earlySetDroidStarfighter,
+  earlySetDwarfSpiderDroid,
+  earlySetPhaseIiCloneTrooper,
+  earlySetRylothMilitia,
+  earlySetSoldierOfThe501St,
+  earlySetB1AttackPlatform,
+  earlySetHeadhunterSquadron,
+  earlySetHotshotVWing,
+  earlySetRepublicArc170,
+  earlySetWarriorDrone,
+  earlySet332NdStalwart,
+  earlySet41StEliteCorps,
+  earlySetCloneHeavyGunner,
+  earlySetEchoValiantArcTrooper,
+  earlySetBatchBrothers,
+  earlySetCaptainRexLeadByExample,
+  earlySetBattleDroidEscort,
+  earlySetConfederateCourier,
+  earlySetWartimeTradeOfficial,
+  earlySetDroidDeployment,
+  earlySetDropIn,
+  earlySetBloodSport,
+  earlySetStrategicAnalysis,
+
   ic27ReprintRuneHaakoSchemingSecond,
   ic27ReprintAtAtSuppressor,
   ic27ReprintLethalCrackdown,
