@@ -1,3 +1,5 @@
+import { replacementCostCards, additionalCostUnits } from './additional-play-costs.ts';
+import { withPlayCandidate } from './play-cost-context.ts';
 import { matchingPlayModifiers } from './play-keywords.ts';
 import { resourcePayment } from './resource-payment.ts';
 import { exploitAllowance } from './exploit.ts';
@@ -166,7 +168,9 @@ export function cardPlayIntents(
           phaseAbilities,
         ),
       );
-    if (!smuggleOptions(state, card).some(cost => cost.id === smuggle)) return [];
+    const option = smuggleOptions(state, card).find(cost => cost.id === smuggle);
+    if (!option || (option.damageFriendlyUnit && !additionalCostUnits(state, actor).length))
+      return [];
     allowPiloting = false;
   }
   if (
@@ -199,6 +203,7 @@ export function cardPlayIntents(
         ? specialPlayPayment(state, card, actor, free ? 0 : determinedCost)
         : undefined;
     if (
+      replacementCostCards(state, card, actor, using).length > 0 ||
       free ||
       matchingPlayModifiers(state, card, true, using).some(m => m.optionalFreeCopy) ||
       resourcePayment(state, actor, determinedCost) <= ready ||
@@ -362,7 +367,7 @@ export function nestedPlayIntents(
           state,
           effect.takeControl ? { ...c, controller: playerId } : c,
           playerId,
-          numericValue(state, context, effect.discount ?? 0),
+          numericValue(state, withPlayCandidate(state, context, c), effect.discount ?? 0),
           effect.free,
           effect.filter.kind !== 'unit',
           effect.ignoreOneColoredPenalty,

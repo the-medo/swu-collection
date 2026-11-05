@@ -1,4 +1,16 @@
-import { supportsHandReveal } from './release.ts';
+import { remainingHpRecord } from './remaining-hp.ts';
+import { consolidateMultiExcess } from './excess-damage.ts';
+import { additionalDefenderTargets } from './actions.ts';
+import { instanceDefinition } from './instance-definition.ts';
+import {
+  queueCopyEntry,
+  copyEntryChoices,
+  prioritizeCopyEntry,
+  completeCopyEntries,
+} from './unit-entry.ts';
+import { withPlayCandidate } from './play-cost-context.ts';
+import type { CardEffect } from '../cards/definition.ts';
+import { supportsEngine, supportsHandReveal } from './release.ts';
 import { assertCompatibleVersions } from '../cards/catalog.ts';
 import { captureUpgradeDeparture } from './state.ts';
 import type { DefeatPreparation } from './model.ts';
@@ -60,7 +72,13 @@ import { resourceCard, changeResourceController } from './state.ts';
 import { invokeDefeatedAbility, repeatAttackAbility } from './triggers.ts';
 import { cannotPlayCard } from './play-restrictions.ts';
 import { survivesZeroHp } from './lasting.ts';
-import { combatAmount, inCombat, combatOrderIntents, type Attack } from './combat.ts';
+import {
+  combatAmount,
+  inCombat,
+  combatOrderIntents,
+  attackDefenders,
+  type Attack,
+} from './combat.ts';
 import { planRandomCard, resolveRandomCard } from './random-card.ts';
 import { assertRandomDiscard } from './random-discard.ts';
 import { resolveAcceptedTrigger } from './triggers.ts';
@@ -87,7 +105,7 @@ import { applyUnitTax } from './unit-tax.ts';
 import { grantedDiscardPlay } from './play-permissions.ts';
 import { zoneSearchCards, zoneSearchOwner, finishZoneSearch } from './zone-search.ts';
 import { zoneSearchEffectSchema } from './model.ts';
-import { credits, defeatCredit, paymentAmount } from './credits.ts';
+import { credits, defeatCredit, paymentAmount, spendingPower } from './credits.ts';
 import { disclosePlayer, disclosureSatisfied } from './disclose.ts';
 import { resolvedSearchEffectSchema, discloseEffectSchema } from './model.ts';
 import { cardTitle } from '../cards/catalog.ts';
@@ -97,6 +115,13 @@ import { offerPlot, plotPlay } from './plot.ts';
 import { sequenceDealer } from './damage-sequence.ts';
 import { pendingBaseUpgradeProtectors } from './attachments.ts';
 import { matchesCard } from './inspection.ts';
+import { modeAvailable } from './mode-choices.ts';
+import {
+  combatReplacementIntents,
+  combatReplacementPayment,
+  replaceAttacker,
+} from './combat-replacement.ts';
+import { prepareRegroupReady, regroupReadySelection, acceptRegroupReady } from './regroup-ready.ts';
 import { startingHandSize } from './state.ts';
 import { triggerDefinitions } from './triggers.ts';
 import {
@@ -117,6 +142,11 @@ import {
   unitFilterSchema,
 } from './model.ts';
 import { boundUnit, boundReference } from './bindings.ts';
+import {
+  replacementCostCards,
+  additionalPlayCosts,
+  additionalCostUnits,
+} from './additional-play-costs.ts';
 import { conditionMatches } from './conditions.ts';
 import { cannotReady, modifyUnit } from './lasting.ts';
 import { matchingUnits, matchesUnit } from './targets.ts';
@@ -217,14 +247,76 @@ function endGame(
   fact(state, 'ended', winner, source ? [source] : []);
 }
 
-// V8 §§1.16.5, 5.6: base defeat is checked before unit defeat, after each
-// simultaneous damage instance is fully applied. Both bases defeated is a draw.
+// Responsibility follows v8 §1.18. Record a continuous HP reduction's source on
+// entry; later changes belong to the resolving instruction, including loss of
+// an ability that previously allowed the unit to survive at zero HP.
+function rememberRemainingHp(state: GameState, playerId: string | null, initializeOnly = false) {
+  if (!supportsEngine('1.5.0', state.versions.engine)) return;
+  for (const card of arenaSources(state)) {
+    const next = remainingHpRecord(state, card, playerId);
+    const previous = card.remainingHpChange;
+    if (
+      !previous ||
+      (!initializeOnly &&
+        (previous.remaining !== next.remaining || (previous.survived && !next.survived)))
+    ) {
+      const reducers = !previous
+        ? new Set(
+            abilityOrigins(state, card)
+              .filter(
+                origin =>
+                  (!origin.suppressed || origin.profile === 'aura') &&
+                  (origin.resolved?.hp ?? 0) < 0,
+              )
+              .map(origin => origin.card.controller),
+          )
+        : new Set<string>();
+      const expiredHp = (previous?.sourceBonuses ?? [])
+        .filter(bonus => !next.sourceBonuses?.some(current => current.id === bonus.id))
+        .reduce((sum, bonus) => sum + bonus.hp, 0);
+      const expired =
+        expiredHp > 0 &&
+        previous!.remaining - next.remaining ===
+          Math.min(expiredHp, previous!.remaining + card.damage);
+      card.remainingHpChange = {
+        ...next,
+        playerId: expired ? null : reducers.size === 1 ? [...reducers][0]! : playerId,
+        ...(expired ? { expired: true } : {}),
+      };
+    } else {
+      if (next.survived) previous.survived = true;
+      if (next.sourceBonuses) previous.sourceBonuses = next.sourceBonuses;
+      else delete previous.sourceBonuses;
+    }
+  }
+}
+function defeatBy(
+  state: GameState,
+  cards: CardInstance[],
+  playerId: string,
+  source?: CardInstance,
+) {
+  return defeatUnits(
+    state,
+    cards,
+    [],
+    source,
+    false,
+    undefined,
+    supportsEngine('1.5.0', state.versions.engine)
+      ? Object.fromEntries(cards.map(c => [c.instanceId, playerId]))
+      : undefined,
+  );
+}
+// V8 §§1.16.5, 5.6: check bases before units after simultaneous damage.
 function maintenance(
   state: GameState,
   combatDamaged: import('./model.ts').CardReference[] = [],
   sacrificed: CardInstance[] = [],
+  responsible: string | null = state.activePlayer,
 ) {
   reconcilePrintedStats(state);
+  rememberRemainingHp(state, responsible);
   const defeated = state.seats.filter(id => {
     const base = instance(state, state.players[id]!.base);
     return base.damage >= hitPoints(cardDefinition(state, base.cardId));
@@ -260,8 +352,23 @@ function maintenance(
         r =>
           !sacrificed.some(c => c.instanceId === r.instanceId && c.incarnation === r.incarnation),
       ),
+      undefined,
+      false,
+      undefined,
+      supportsEngine('1.5.0', state.versions.engine)
+        ? Object.fromEntries(
+            lethal.map(c => [
+              c.instanceId,
+              sacrificed.includes(c)
+                ? c.controller
+                : responsible === null || c.remainingHpChange?.expired
+                  ? null
+                  : (c.remainingHpChange?.playerId ?? responsible),
+            ]),
+          )
+        : undefined,
     );
-    maintenance(state, combatDamaged);
+    maintenance(state, combatDamaged, [], responsible);
   }
 }
 
@@ -272,10 +379,20 @@ function defeatUnits(
   source?: CardInstance,
   committed = false,
   prepared?: DefeatPreparation,
+  responsibility?: Record<string, string | null>,
 ) {
+  if (supportsEngine('1.5.0', state.versions.engine))
+    responsibility ??= Object.fromEntries(
+      cards.map(c => [c.instanceId, source?.controller ?? state.activePlayer]),
+    );
   if (!committed) {
     cards = cards.filter(card => canAffectWithAbility(state, card, source, 'defeat'));
-    if (deferUnitDefeat(state, cards, combatDamaged, source, prepared)) return cards;
+    if (responsibility)
+      responsibility = Object.fromEntries(
+        cards.map(c => [c.instanceId, responsibility![c.instanceId] ?? null]),
+      );
+    if (deferUnitDefeat(state, cards, combatDamaged, source, prepared, responsibility))
+      return cards;
   }
   const observers =
     prepared?.observers ??
@@ -317,12 +434,37 @@ function defeatUnits(
       ...structuredClone(card),
       traits: [...departures.get(card.instanceId)!.unit.traits],
       leaderUnit: departures.get(card.instanceId)!.unit.leaderUnit,
+      ...(responsibility ? { defeatedBy: responsibility[card.instanceId] ?? null } : {}),
     })),
   );
   // Every observer still sees the whole simultaneous defeat event, including
   // an observer that is itself defeated in this event (v8 §7.6.4).
   for (const card of cards) {
     const origins = departures.get(card.instanceId)!.unit.abilities;
+    collectTriggers(state, 'unit-defeated', sources, card);
+    for (const attack of state.attacks) {
+      if (
+        !attackDefenders(attack).some(
+          ref => ref.instanceId === card.instanceId && ref.incarnation === card.incarnation,
+        )
+      )
+        continue;
+      const attacker = state.cards[attack.attacker.instanceId];
+      if (
+        !attacker ||
+        !isUnit(state, attacker) ||
+        attacker.incarnation !== attack.attacker.incarnation ||
+        attack.removedFromCombat.some(
+          r => r.instanceId === attacker.instanceId && r.incarnation === attacker.incarnation,
+        )
+      )
+        continue;
+      const excess = Math.max(0, card.damage - unitStats(state, card).hp);
+      collectTriggers(state, 'attack-defeated-unit', [attacker], card, {
+        bindings: { defender: reference(card) },
+        values: { 'attack-excess': excess },
+      });
+    }
     collectTriggers(state, 'bounty', [card], undefined, { origins });
     const batch = state.defeatedAbilityBatches.length;
     const defeatedTriggers = captureTriggers(state, 'defeated', [card], undefined, {
@@ -395,8 +537,13 @@ function dealDamage(
   source?: CardInstance,
   combatAttackId?: string,
   after?: Extract<Frame, { kind: 'damage' }>['after'],
+  simultaneous?: Extract<Frame, { kind: 'damage' }>['simultaneous'],
 ) {
   if (!assignments.length) {
+    if (simultaneous) {
+      commitSimultaneousChoices(state, simultaneous);
+      maintenance(state);
+    }
     if (after)
       state.execution.frames.unshift(
         ...effectFrames(after.playerId, after.source, after.effects, {
@@ -413,6 +560,7 @@ function dealDamage(
   }
   state.execution.frames.unshift({
     kind: 'damage',
+    ...(simultaneous ? { simultaneous } : {}),
     ...(after ? { after } : {}),
     ...(combatAttackId ? { combatAttackId } : {}),
     actor,
@@ -430,28 +578,86 @@ function dealDamage(
   });
 }
 
-function draw(state: GameState, players: string[], amount: number) {
+function payAdditionalPlayCosts(state: GameState) {
+  const payment = state.playPayment!,
+    additional = payment.additional!;
+  additional.paid = true;
+  payment.stage = 'additional-damage';
+  state.execution.frames.unshift({
+    kind: 'finish-additional-play-payment',
+    playerId: payment.playerId,
+  });
+  const assignments: { target: CardInstance; amount: number; source?: CardInstance }[] =
+    additional.baseCosts.map(cost => ({
+      target: instance(state, state.players[payment.playerId]!.base),
+      amount: cost.amount,
+    }));
+  if (additional.unit)
+    assignments.push({
+      target: instance(state, additional.unit.instanceId),
+      amount: additional.unitDamage,
+      source: payment.source,
+    });
+  dealDamage(state, assignments, payment.playerId);
+}
+
+function commitSimultaneousChoices(
+  state: GameState,
+  choices: NonNullable<Extract<Frame, { kind: 'damage' }>['simultaneous']>,
+) {
+  const live = (refs: import('./model.ts').CardReference[]) =>
+    refs.flatMap(ref => {
+      const card = state.cards[ref.instanceId];
+      return card && card.incarnation === ref.incarnation && card.visibility === ref.visibility
+        ? [card]
+        : [];
+    });
+  // Damage has been assigned and applied, but lethal units have not left yet.
+  // This preserves choices such as defeating an upgrade on a damaged host.
+  defeatUpgrades(
+    state,
+    live(choices.upgrades).filter(card => isUpgrade(state, card)),
+    choices.source,
+  );
+  const hand = live(choices.hand).filter(card => card.zone === 'hand');
+  for (const owner of new Set(hand.map(card => card.owner)))
+    discardCards(
+      state,
+      hand.filter(card => card.owner === owner),
+      owner,
+      choices.source,
+    );
+}
+
+function draw(state: GameState, players: string[], amount: number, regroup = false) {
   const missing: { target: CardInstance; amount: number }[] = [];
   for (const id of players) {
     const player = state.players[id]!;
-    const drawn = player.deck.slice(0, amount).map(card => instance(state, card));
+    const requested =
+      amount +
+      (regroup
+        ? abilitySources(state)
+            .filter(c => c.controller === id)
+            .reduce((sum, c) => sum + (effectiveAbilities(state, c).regroupDrawIncrease ?? 0), 0)
+        : 0);
+    const drawn = player.deck.slice(0, requested).map(card => instance(state, card));
     for (const card of drawn) move(state, card, 'hand');
     recordDraw(state, id, drawn);
-    missing.push({ target: instance(state, player.base), amount: (amount - drawn.length) * 3 });
+    missing.push({ target: instance(state, player.base), amount: (requested - drawn.length) * 3 });
   }
   dealDamage(state, missing, null);
 }
 
-function attackingAssignments(state: GameState, attack: Attack) {
+function attackingAssignments(state: GameState, attack: Attack, defenderRef = attack.defender) {
   const attacker = instance(state, attack.attacker.instanceId),
-    defender = instance(state, attack.defender.instanceId);
+    defender = instance(state, defenderRef.instanceId);
   const power = combatAmount(state, attack, attacker);
   const overwhelm = effectiveAbilities(state, attacker).keywords?.includes('Overwhelm');
   const base = instance(state, state.players[attack.defendingPlayer]!.base);
   const missing =
-    defender.incarnation !== attack.defender.incarnation ||
+    defender.incarnation !== defenderRef.incarnation ||
     attack.removedFromCombat.some(
-      r => r.instanceId === defender.instanceId && r.incarnation === attack.defender.incarnation,
+      r => r.instanceId === defender.instanceId && r.incarnation === defenderRef.incarnation,
     ) ||
     !(isUnit(state, defender) || cardDefinition(state, defender.cardId).kind === 'base');
   const route = attack.excessToUnit
@@ -494,19 +700,54 @@ function beginAttack(
   grantedAbilities: AbilityOrigin[] = [],
   attackerFirst = false,
   ambush = false,
-  rules: {
-    preventDamage?: boolean;
-    redirectExcess?: boolean;
-    blankDefender?: boolean;
-    defenderPowerModifier?: number;
-    damageStat?: 'remaining-hp';
-    swapRaidRestore?: boolean;
-    cannotAttackBases?: boolean;
-    source?: CardInstance;
-    after?: Attack['after'];
-  } = {},
+  rules: import('./model.ts').AttackRules = {},
+  additionalDefender?: CardInstance | null,
 ) {
+  const declarationState: GameState = grantedAbilities.length
+    ? {
+        ...state,
+        attacks: [
+          ...state.attacks,
+          {
+            id: 'declaration-preview',
+            attacker: reference(attacker),
+            defender: reference(defender),
+            defendingPlayer: defender.controller,
+            grantedAbilities,
+            powerBonus,
+            ambush,
+            attackerFirst,
+            removedFromCombat: [],
+            baseDamageSources: [],
+            combatDamage: [],
+            defeated: [],
+          },
+        ],
+      }
+    : state;
+  if (
+    additionalDefender === undefined &&
+    isUnit(state, defender) &&
+    effectiveAbilities(declarationState, attacker).attackTwoUnits
+  ) {
+    const declaration: Extract<Frame, { kind: 'attack-declaration' }> = {
+      kind: 'attack-declaration',
+      playerId: actor,
+      attacker: reference(attacker),
+      defender: reference(defender),
+      powerBonus,
+      grantedAbilities,
+      attackerFirst,
+      ambush,
+      rules,
+    };
+    if (additionalDefenderTargets(state, declaration).length) {
+      state.execution.frames.unshift(declaration);
+      return;
+    }
+  }
   const attack: Attack = {
+    ...(additionalDefender ? { additionalDefender: reference(additionalDefender) } : {}),
     baseDamageSources: [],
     ...(rules.redirectExcess && isUnit(state, defender)
       ? {
@@ -539,15 +780,16 @@ function beginAttack(
     traits: [...cardTraits(state, attacker)],
   });
   attacker.exhausted = true;
-  fact(state, 'attacked', actor, [attacker, defender]);
-  if (rules.blankDefender && isUnit(state, defender))
-    modifyUnit(state, rules.source ?? attacker, defender, {
-      kind: 'modify',
-      power: 0,
-      hp: 0,
-      duration: 'attack',
-      loseAbilities: true,
-    });
+  fact(state, 'attacked', actor, [attacker, ...attackDefenders(attack)]);
+  for (const defender of attackDefenders(attack).map(ref => instance(state, ref.instanceId)))
+    if (rules.blankDefender && isUnit(state, defender))
+      modifyUnit(state, rules.source ?? attacker, defender, {
+        kind: 'modify',
+        power: 0,
+        hp: 0,
+        duration: 'attack',
+        loseAbilities: true,
+      });
   if (rules.preventDamage)
     modifyUnit(state, rules.source ?? attacker, attacker, {
       kind: 'modify',
@@ -566,15 +808,17 @@ function beginAttack(
     });
   const context = {
     bindings: { attacker: reference(attacker), defender: reference(defender) },
+    ...(additionalDefender ? { groups: { defenders: attackDefenders(attack) } } : {}),
     values: { 'attacking-seat': state.seats.indexOf(actor) },
   };
-  if (rules.defenderPowerModifier && isUnit(state, defender))
-    modifyUnit(state, rules.source ?? attacker, defender, {
-      kind: 'modify',
-      power: rules.defenderPowerModifier,
-      hp: 0,
-      duration: 'attack',
-    });
+  for (const defender of attackDefenders(attack).map(ref => instance(state, ref.instanceId)))
+    if (rules.defenderPowerModifier && isUnit(state, defender))
+      modifyUnit(state, rules.source ?? attacker, defender, {
+        kind: 'modify',
+        power: rules.defenderPowerModifier,
+        hp: 0,
+        duration: 'attack',
+      });
   if (cardDefinition(state, defender.cardId).kind === 'base') {
     state.actionHistory?.basesAttacked.push(defender.controller);
     (state.phaseHistory.baseAttackers ??= []).push(reference(attacker));
@@ -589,9 +833,23 @@ function beginAttack(
     );
   }
   collectTriggers(state, 'attack', [attacker], undefined, context);
-  collectTriggers(state, 'attacked', [defender], undefined, context);
-  if (isUnit(state, defender))
-    collectTriggers(state, 'host-attacked', attachedUpgrades(state, defender), defender, context);
+  for (const ref of attackDefenders(attack)) {
+    const unit = instance(state, ref.instanceId);
+    const defendingContext = {
+      ...context,
+      ...(additionalDefender ? { groups: {} } : {}),
+      bindings: { ...context.bindings, defender: ref },
+    };
+    collectTriggers(state, 'attacked', [unit], undefined, defendingContext);
+    if (isUnit(state, unit))
+      collectTriggers(
+        state,
+        'host-attacked',
+        attachedUpgrades(state, unit),
+        unit,
+        defendingContext,
+      );
+  }
   collectTriggers(
     state,
     'friendly-attack',
@@ -613,7 +871,7 @@ function playFromZone(
   intent: Extract<Intent, { kind: 'play' }>,
   discount = 0,
   ready = false,
-  from: 'hand' | 'discard' | 'deck' | 'resources' = 'hand',
+  from: 'hand' | 'discard' | 'deck' | 'resources' | 'captured' = 'hand',
   free = false,
   replaceResource = false,
   credit = 0,
@@ -653,7 +911,9 @@ function playFromZone(
     (intent.piloting && namedAbilityLoss(state, card)) ||
     card.zone !== from ||
     (card.controller !== actor && !granted && !takeControl) ||
-    (takeControl && (!free || (from !== 'resources' && from !== 'deck'))) ||
+    (takeControl &&
+      ((from !== 'discard' && !free) ||
+        (from !== 'resources' && from !== 'deck' && from !== 'captured' && from !== 'discard'))) ||
     (from === 'deck' &&
       !state.searching.includes(card.instanceId) &&
       !(
@@ -709,7 +969,14 @@ function playFromZone(
     ? state.playModifiers.filter(m => prepared.modifiers.includes(m.id))
     : matchingPlayModifiers(state, card, asUnit, using);
   state.playPayment = null;
-  state.playModifiers = state.playModifiers.filter(m => m.phaseCost || !modifiers.includes(m));
+  state.playModifiers = state.playModifiers.filter(m => {
+    if (m.phaseCost || !modifiers.includes(m)) return true;
+    if (m.remainingUses && m.remainingUses > 1) {
+      m.remainingUses--;
+      return true;
+    }
+    return false;
+  });
   ready ||= asUnit && modifiers.some(m => m.ready);
   state.roundHistory.plays.push({
     ...(intent.target ? { host: structuredClone(instance(state, intent.target)) } : {}),
@@ -721,6 +988,49 @@ function playFromZone(
         t => t.timing === 'defeated',
       ),
   });
+  const entry: import('./model.ts').PlayedEntry = {
+    playerId: actor,
+    from,
+    ...(using ? { using } : {}),
+    ...(intent.target ? { target: intent.target } : {}),
+    ...(replacement ? { replacement } : {}),
+    replaceResource,
+    paid: cost + unitPayment,
+    roundPlayIndex: state.roundHistory.plays.length - 1,
+    grants: [
+      ...modifiers.flatMap(m =>
+        m.phaseAbilities
+          ? [
+              {
+                source: structuredClone(m.source),
+                abilities: simpleAbilitiesSchema.parse(m.phaseAbilities),
+              },
+            ]
+          : [],
+      ),
+      ...(phaseAbilities
+        ? [
+            {
+              ...(grantSource ? { source: structuredClone(grantSource) } : {}),
+              abilities: simpleAbilitiesSchema.parse(phaseAbilities),
+            },
+          ]
+        : []),
+      ...(prepared?.special?.phaseAbilities
+        ? [{ abilities: simpleAbilitiesSchema.parse(prepared.special.phaseAbilities) }]
+        : []),
+    ],
+    ...(phaseDamagePrevention
+      ? {
+          prevention: {
+            ...(grantSource ? { source: structuredClone(grantSource) } : {}),
+            amount: phaseDamagePrevention,
+          },
+        }
+      : {}),
+    exploited: prepared?.selected.map(reference) ?? [],
+  };
+  if (asUnit && queueCopyEntry(state, card, actor, ready, { play: entry })) return card;
   if (definition.kind === 'event') {
     // V8 §7.4: events never enter play; their ability resolves from discard.
     if (card.zone === 'discard') {
@@ -731,7 +1041,15 @@ function playFromZone(
     move(state, card, 'discard');
     card.controller = card.owner;
     const playedSource = { ...card, controller: actor };
-    if (!namedAbilityLoss(state, playedSource))
+    const blanked =
+      state.roundHistory.plays.filter(
+        p => p.card.controller === actor && cardDefinition(state, p.card.cardId).kind === 'event',
+      ).length === 1 &&
+      abilitySources(state).some(
+        source =>
+          source.controller !== actor && effectiveAbilities(state, source).blankFirstEnemyEvent,
+      );
+    if (!namedAbilityLoss(state, playedSource) && !blanked)
       state.execution.frames.unshift(...effectFrames(actor, playedSource, definition.effects));
   } else if (definition.kind === 'upgrade' || intent.piloting) {
     if (!intent.target || (definition.kind === 'upgrade' && definition.token))
@@ -746,9 +1064,28 @@ function playFromZone(
     move(state, card, definition.arena);
     card.exhausted = !(ready || entersReady);
   }
+  finishPlayedCard(state, card, entry);
+  maintenance(state);
+  return card;
+}
+
+function finishPlayedCard(
+  state: GameState,
+  card: CardInstance,
+  entry: import('./model.ts').PlayedEntry,
+) {
+  const { playerId: actor, from, using, replacement, replaceResource } = entry;
+  const definition = instanceDefinition(state, card);
+  if (card.copiedCardId) {
+    const history = state.roundHistory.plays[entry.roundPlayIndex]!;
+    history.card = structuredClone(card);
+    history.whenDefeated = triggerDefinitions(state, card, abilityOrigins(state, card)).some(
+      t => t.timing === 'defeated',
+    );
+  }
   if (replacement) {
     const resource = instance(state, replacement);
-    move(state, resource, 'resources');
+    resourceCard(state, resource, actor);
     resource.exhausted = true;
     fact(state, 'resourced', actor, [], 1);
     fact(state, 'resourced', actor, [resource], 1, [actor]);
@@ -767,49 +1104,56 @@ function playFromZone(
     card: { ...structuredClone(card), controller: actor },
     traits: [...cardTraits(state, card)],
   });
-  for (const modifier of modifiers)
-    if (modifier.phaseAbilities && (isUnit(state, card) || isUpgrade(state, card)))
-      modifyUnit(state, modifier.source, card, {
+  for (const grant of entry.grants)
+    if (isUnit(state, card) || isUpgrade(state, card))
+      modifyUnit(state, grant.source ?? card, card, {
         kind: 'modify',
         power: 0,
         hp: 0,
         duration: 'phase',
-        abilities: modifier.phaseAbilities,
+        abilities: grant.abilities,
       });
-  if (phaseAbilities && (isUnit(state, card) || isUpgrade(state, card)))
-    modifyUnit(state, grantSource ?? card, card, {
+  if (entry.prevention && isUnit(state, card))
+    modifyUnit(state, entry.prevention.source ?? card, card, {
       kind: 'modify',
       power: 0,
       hp: 0,
-      abilities: phaseAbilities,
       duration: 'phase',
+      preventNextDamage: entry.prevention.amount,
     });
-  if (prepared?.special?.phaseAbilities && isUnit(state, card))
+  if (
+    from === 'hand' &&
+    definition.kind === 'unit' &&
+    definition.handPlayAbilities &&
+    isUnit(state, card)
+  )
     modifyUnit(state, card, card, {
       kind: 'modify',
       power: 0,
       hp: 0,
-      duration: 'phase',
-      abilities: prepared.special.phaseAbilities,
+      duration: 'source-in-play',
+      abilities: definition.handPlayAbilities,
     });
-  if (phaseDamagePrevention && isUnit(state, card))
-    modifyUnit(state, grantSource ?? card, card, {
-      kind: 'modify',
-      power: 0,
-      hp: 0,
-      duration: 'phase',
-      preventNextDamage: phaseDamagePrevention,
-    });
-  card.resourcesPaid = cost + unitPayment;
+  card.resourcesPaid = entry.paid;
   recordUnitEntry(state, card);
   if (isUnit(state, card)) collectTriggers(state, 'unit-entered', abilitySources(state), card);
-  fact(state, 'played', actor, [card], cost + unitPayment);
+  fact(state, 'played', actor, [card], entry.paid);
   collectTriggers(
     state,
     'played',
     [card],
     undefined,
-    using === 'smuggle' ? { values: { 'played-using-smuggle': 1 } } : undefined,
+    supportsEngine('1.5.0', state.versions.engine)
+      ? {
+          ...(entry.exploited.length ? { groups: { 'exploited-units': entry.exploited } } : {}),
+          values: {
+            'played-from-hand': Number(from === 'hand'),
+            ...(using === 'smuggle' ? { 'played-using-smuggle': 1 } : {}),
+          },
+        }
+      : using === 'smuggle'
+        ? { values: { 'played-using-smuggle': 1 } }
+        : undefined,
   );
   collectTriggers(
     state,
@@ -817,6 +1161,9 @@ function playFromZone(
     abilitySources(state).filter(c => c.controller === actor),
     { ...card, controller: actor },
     {
+      ...(supportsEngine('1.5.0', state.versions.engine) && entry.target
+        ? { bindings: { 'played-host': reference(instance(state, entry.target)) } }
+        : {}),
       values: {
         'played-from-resources': from === 'resources' ? 1 : 0,
         ...(using === 'smuggle' ? { 'played-using-smuggle': 1 } : {}),
@@ -843,8 +1190,6 @@ function playFromZone(
       abilitySources(state).filter(c => c.controller === actor),
       card,
     );
-  maintenance(state);
-  return card;
 }
 
 function applyCardCosts(
@@ -862,6 +1207,14 @@ function applyCardCosts(
         source.controller,
         source,
       );
+    if (cost.kind === 'damage-friendly-unit')
+      dealDamage(
+        state,
+        cards.map(target => ({ target, amount: cost.amount })),
+        source.controller,
+        source,
+      );
+    if (cost.kind === 'defeat-upgrade') defeatUpgrades(state, cards, source);
     if (cost.kind === 'exhaust-friendly-unit')
       for (const card of cards) {
         card.exhausted = true;
@@ -869,7 +1222,7 @@ function applyCardCosts(
       }
     if (cost.kind === 'ready-enemy-unit')
       for (const card of cards) {
-        readyInPlay(state, [card]);
+        readyInPlay(state, [card], false, source.controller);
         fact(state, 'readied', source.controller, [source, card]);
       }
     if (cost.kind === 'defeat-friendly-upgrade') defeatUpgrades(state, cards, source);
@@ -889,7 +1242,7 @@ function applyCardCosts(
       }
     if (cost.kind === 'return-friendly-unit')
       for (const card of cards) {
-        if (unitIsLeader(state, card)) defeatUnits(state, [card]);
+        if (unitIsLeader(state, card)) defeatUnits(state, [card], [], source);
         else {
           fact(
             state,
@@ -903,7 +1256,7 @@ function applyCardCosts(
       }
     if (cost.kind === 'defeat-friendly-token' || cost.kind === 'defeat-friendly-credit')
       for (const card of cards) {
-        if (isUnit(state, card)) defeatUnits(state, [card]);
+        if (isUnit(state, card)) defeatUnits(state, [card], [], source);
         else if (isUpgrade(state, card)) defeatUpgrade(state, card);
         else {
           fact(state, 'defeated', source.controller, [source, card]);
@@ -911,7 +1264,7 @@ function applyCardCosts(
         }
       }
   }
-  maintenance(state);
+  maintenance(state, [], [], source.controller);
 }
 
 function applyEffect(
@@ -926,7 +1279,10 @@ function applyEffect(
   const { effect, playerId, source } = frame;
   if (intent?.kind === 'decline-effect') {
     if (
-      (effect.kind === 'select-unit' || effect.kind === 'play-card' || effect.kind === 'pay') &&
+      (effect.kind === 'select-unit' ||
+        effect.kind === 'select-captured' ||
+        effect.kind === 'play-card' ||
+        effect.kind === 'pay') &&
       effect.otherwise
     )
       state.execution.frames.unshift(...effectFrames(playerId, source, effect.otherwise, frame));
@@ -934,6 +1290,40 @@ function applyEffect(
   }
   const target = intent?.kind === 'target' ? instance(state, intent.card) : null;
   switch (effect.kind) {
+    case 'each-player-discards': {
+      const players = [state.activePlayer, opponent(state, state.activePlayer)].filter(
+        p => state.players[p]!.hand.length >= effect.handSizeAtLeast,
+      );
+      let effects: CardEffect[] = players.map(p => ({
+        kind: 'move-cards',
+        group: `discard-${p}`,
+        from: 'hand',
+        to: 'discard',
+        discardBy: 'owner',
+      }));
+      for (const player of [...players].reverse())
+        effects = [
+          {
+            kind: 'inspect-zone',
+            zone: 'hand',
+            player: player === playerId ? 'self' : 'enemy',
+            chooser: 'owner',
+            filter: {},
+            min: effect.count,
+            max: effect.count,
+            bind: `card-${player}`,
+            group: `discard-${player}`,
+            effects,
+            otherwise: effects,
+          },
+        ];
+      state.execution.frames.unshift(...effectFrames(playerId, source, effects, frame));
+      break;
+    }
+    case 'replace-attacker':
+      replaceAttacker(state, frame);
+      maintenance(state, [], [], playerId);
+      break;
     case 'schedule-resource-repayment': {
       const amount = numericValue(state, frame, effect.amount);
       if (amount > 0) {
@@ -988,7 +1378,7 @@ function applyEffect(
       if (upgrade && isUpgrade(state, upgrade) && recipient && upgrade.controller !== recipient) {
         if (cardDefinition(state, upgrade.cardId).kind === 'leader') {
           defeatUpgrade(state, upgrade);
-          maintenance(state);
+          maintenance(state, [], [], playerId);
           break;
         }
         upgrade.controller = recipient;
@@ -1013,21 +1403,21 @@ function applyEffect(
             }),
           );
         attachPilot(state, self, target, source, effect.filter);
-        maintenance(state);
+        maintenance(state, [], [], playerId);
       }
       break;
     }
     case 'attach-pilot': {
       const host = boundUnit(state, frame, effect.host);
       if (host && target && attachablePilots(state, playerId, host).includes(target)) {
-        if (attachPilot(state, target, host, source)) maintenance(state);
+        if (attachPilot(state, target, host, source)) maintenance(state, [], [], playerId);
       }
       break;
     }
     case 'detach-pilot':
       if (target && detachablePilots(state).includes(target)) {
         detachPilot(state, target, source);
-        maintenance(state);
+        maintenance(state, [], [], playerId);
       }
       break;
     case 'flip-leader': {
@@ -1045,7 +1435,7 @@ function applyEffect(
         if (leader.leaderSide) delete leader.leaderSide;
         else leader.leaderSide = 'back';
         fact(state, 'leader-flipped', playerId, [before, leader]);
-        maintenance(state);
+        maintenance(state, [], [], playerId);
       }
       break;
     }
@@ -1062,7 +1452,7 @@ function applyEffect(
         leader.deployedAs = 'upgrade';
         attach(state, leader, target);
         recordUnitEntry(state, leader);
-        maintenance(state);
+        maintenance(state, [], [], playerId);
       }
       break;
     }
@@ -1079,7 +1469,7 @@ function applyEffect(
       const upgrade = boundUnit(state, frame, effect.target);
       if (
         upgrade &&
-        isUpgrade(state, upgrade) &&
+        (isUpgrade(state, upgrade) || (effect.fromDiscard && upgrade.zone === 'discard')) &&
         target &&
         reattachmentTargets(state, upgrade).includes(target) &&
         (!effect.filter ||
@@ -1092,12 +1482,16 @@ function applyEffect(
           ))
       ) {
         attach(state, upgrade, target);
-        maintenance(state);
+        maintenance(state, [], [], playerId);
       }
       break;
     }
     case 'exhaust-leader':
-      if (target && exhaustibleLeaders(state, playerId).includes(target)) {
+      if (
+        target &&
+        exhaustibleLeaders(state, playerId).includes(target) &&
+        (!effect.filter || matchesCard(state, target, effect.filter, frame))
+      ) {
         target.exhausted = true;
         fact(state, 'exhausted', playerId, [source, target]);
         state.execution.frames.unshift(...effectFrames(playerId, source, effect.effects, frame));
@@ -1204,6 +1598,7 @@ function applyEffect(
           playerId,
           filter: structuredClone(effect.filter),
           discount: numericValue(state, frame, effect.discount ?? 0),
+          ...(effect.uses ? { remainingUses: effect.uses } : {}),
           ...(frame.values?.['bounty-context'] !== undefined
             ? { bounty: frame.values['bounty-context'] }
             : {}),
@@ -1237,7 +1632,11 @@ function applyEffect(
           state,
           playActor(state, playerId, effect, frame),
           intent,
-          numericValue(state, frame, effect.discount ?? 0),
+          numericValue(
+            state,
+            withPlayCandidate(state, frame, instance(state, intent.card)),
+            effect.discount ?? 0,
+          ),
           effect.ready ?? false,
           effect.from,
           effect.free,
@@ -1384,6 +1783,22 @@ function applyEffect(
       });
       break;
     }
+    case 'discard-groups': {
+      const cards = [
+        ...new Map(
+          effect.groups
+            .flatMap(group => frame.groups?.[group] ?? [])
+            .flatMap(ref => {
+              const card = state.cards[ref.instanceId];
+              return card?.incarnation === ref.incarnation && card.zone === 'hand'
+                ? [[card.instanceId, card] as const]
+                : [];
+            }),
+        ).values(),
+      ];
+      discardCards(state, cards, playerId, source, true);
+      break;
+    }
     case 'move-cards': {
       const cards = (frame.groups?.[effect.group] ?? []).flatMap(ref => {
         const card = state.cards[ref.instanceId];
@@ -1514,6 +1929,56 @@ function applyEffect(
       fact(state, 'delayed-scheduled', playerId, [source]);
       break;
     }
+    case 'simultaneous-choices': {
+      const target = effect.damage && boundUnit(state, frame, effect.damage.target);
+      dealDamage(
+        state,
+        target && (isUnit(state, target) || cardDefinition(state, target.cardId).kind === 'base')
+          ? [{ target, amount: effect.damage!.amount }]
+          : [],
+        playerId,
+        source,
+        undefined,
+        undefined,
+        {
+          playerId,
+          source: structuredClone(source),
+          upgrades: effect.defeatUpgrades ? (frame.groups?.[effect.defeatUpgrades] ?? []) : [],
+          hand: effect.discardHand ? (frame.groups?.[effect.discardHand] ?? []) : [],
+        },
+      );
+      break;
+    }
+    case 'redirect-combat-damage': {
+      const attack = state.attacks.at(-1),
+        from = boundUnit(state, frame, effect.from),
+        to = boundUnit(state, frame, effect.to);
+      if (
+        attack &&
+        from &&
+        to &&
+        isUnit(state, from) &&
+        isUnit(state, to) &&
+        from.instanceId !== to.instanceId
+      )
+        (attack.combatRedirections ??= []).push({
+          source: structuredClone(source),
+          from: reference(from),
+          to: reference(to),
+        });
+      break;
+    }
+    case 'require-next-attack': {
+      const ref = boundReference(frame, effect.target, state),
+        controller = boundController(state, frame, effect.target);
+      if (ref && controller)
+        (state.phaseHistory.requiredAttacks ??= []).push({
+          playerId: controller,
+          unit: ref,
+          source: structuredClone(source),
+        });
+      break;
+    }
     case 'extra-action': {
       const finish = state.execution.frames.find(
         f => f.kind === 'finish-action' && f.playerId === playerId,
@@ -1548,14 +2013,21 @@ function applyEffect(
     }
     case 'reveal-deck-cards': {
       const owner = effect.player === 'enemy' ? opponent(state, playerId) : playerId;
-      const cards = state.players[owner]!.deck.slice(0, effect.count).map(id =>
-        reference(instance(state, id)),
-      );
+      const cards = state.players[owner]!.deck.slice(
+        effect.offset ?? 0,
+        (effect.offset ?? 0) + effect.count,
+      ).map(id => reference(instance(state, id)));
       if (cards.length) fact(state, 'revealed', playerId, cards, cards.length);
       state.execution.frames.unshift(
         ...effectFrames(playerId, source, effect.effects, {
           ...frame,
-          groups: { ...frame.groups, [effect.group]: cards },
+          groups: {
+            ...frame.groups,
+            [effect.group]: [
+              ...(effect.append ? (frame.groups?.[effect.group] ?? []) : []),
+              ...cards,
+            ],
+          },
           values: { ...frame.values, 'revealed-count': cards.length },
         }),
       );
@@ -1742,9 +2214,10 @@ function applyEffect(
             ? playerId
             : opponent(state, playerId);
       if (!owner) break;
-      const cards = state.players[owner]!.deck.slice(0, effect.count).map(id =>
-        instance(state, id),
-      );
+      const cards = state.players[owner]!.deck.slice(
+        0,
+        Math.max(0, numericValue(state, frame, effect.count)),
+      ).map(id => instance(state, id));
       discardCards(state, cards, playerId, source);
       if (cards.length || effect.afterEvenIfEmpty) {
         state.execution.frames.unshift(
@@ -1763,13 +2236,51 @@ function applyEffect(
       }
       break;
     }
+    case 'choose-group-damage': {
+      const { kind: _kind, effect: _effect, ...context } = frame;
+      state.execution.frames.unshift({
+        ...context,
+        kind: 'group-damage',
+        filter: effect.filter,
+        optional: effect.optional,
+        dealers: (frame.groups?.[effect.group] ?? []).map(card => ({
+          card,
+          amount: numericValue(
+            state,
+            { ...frame, bindings: { ...frame.bindings, dealer: card } },
+            { kind: 'unit-stat', target: 'dealer', stat: 'power' },
+          ),
+        })),
+        index: 0,
+        chosen: [],
+      });
+      break;
+    }
+    case 'each-bound-card':
+      state.execution.frames.unshift(
+        ...(frame.groups?.[effect.group] ?? []).flatMap(ref => {
+          const card = state.cards[ref.instanceId];
+          return card && card.incarnation === ref.incarnation && card.visibility === ref.visibility
+            ? effectFrames(playerId, source, effect.effects, {
+                ...frame,
+                bindings: { ...frame.bindings, [effect.bind]: ref },
+              })
+            : [];
+        }),
+      );
+      break;
+    case 'collect-bounties': {
+      const unit = boundUnit(state, frame, effect.target);
+      if (unit && isUnit(state, unit)) collectTriggers(state, 'bounty', [unit]);
+      break;
+    }
     case 'unit-to-deck': {
       const card = boundUnit(state, frame, effect.target);
       if (
         !card ||
         !isUnit(state, card) ||
         unitIsLeader(state, card) ||
-        intent?.kind !== 'choose-mode'
+        (!effect.position && intent?.kind !== 'choose-mode')
       )
         break;
       fact(
@@ -1780,12 +2291,16 @@ function applyEffect(
       );
       move(state, card, 'deck');
       card.damage = 0;
-      if (card.zone === 'deck' && intent.mode === 'deck-top') {
+      if (
+        card.zone === 'deck' &&
+        (effect.position === 'top' ||
+          (!effect.position && intent?.kind === 'choose-mode' && intent.mode === 'deck-top'))
+      ) {
         const deck = state.players[card.owner]!.deck;
         deck.splice(deck.indexOf(card.instanceId), 1);
         deck.unshift(card.instanceId);
       }
-      maintenance(state);
+      maintenance(state, [], [], playerId);
       break;
     }
     case 'divide-damage': {
@@ -1881,7 +2396,30 @@ function applyEffect(
             },
           }),
         );
-      maintenance(state);
+      maintenance(state, [], [], playerId);
+      break;
+    }
+    case 'take-control-resources': {
+      for (const ref of frame.groups?.[effect.group] ?? []) {
+        const card = state.cards[ref.instanceId];
+        if (!card || card.incarnation !== ref.incarnation || card.zone !== 'resources') continue;
+        changeResourceController(state, card, playerId);
+        state.delayedEffects.push({
+          id: allocateId(state, 'l'),
+          kind: 'control-on-departure',
+          playerId,
+          source: structuredClone(source),
+          target: reference(card),
+          targetZone: 'resources',
+          dueRound: state.round,
+          ...(frame.origin ? { origin: structuredClone(frame.origin) } : {}),
+        });
+        fact(state, 'delayed-scheduled', playerId, [source]);
+        fact(state, 'delayed-scheduled', playerId, [source, card], null, [
+          ...new Set([playerId, card.owner]),
+        ]);
+      }
+      maintenance(state, [], [], playerId);
       break;
     }
     case 'select-resources': {
@@ -1975,7 +2513,7 @@ function applyEffect(
         hp: numericValue(state, frame, effect.operation.hp),
       };
       for (const unit of targets) modifyUnit(state, source, unit, operation);
-      maintenance(state);
+      maintenance(state, [], [], playerId);
       break;
     }
     case 'phase-stat-modifier':
@@ -1989,7 +2527,7 @@ function applyEffect(
           round: state.round,
           phase: state.phase,
         });
-      maintenance(state);
+      maintenance(state, [], [], playerId);
       break;
     case 'with-value':
       state.execution.frames.unshift(
@@ -2004,8 +2542,7 @@ function applyEffect(
       const id = state.players[owner]!.deck[0];
       if (!id) break;
       const card = instance(state, id);
-      move(state, card, 'resources');
-      card.exhausted = !effect.ready;
+      resourceCard(state, card, owner, !!effect.ready);
       fact(state, 'resourced', owner, [], 1);
       fact(state, 'resourced', owner, [card], 1, [owner]);
       break;
@@ -2019,7 +2556,70 @@ function applyEffect(
           }),
         );
       break;
+    case 'damage-assignments': {
+      const assignments = effect.assignments.flatMap(entry => {
+        const target = boundUnit(state, frame, entry.target);
+        if (
+          !target ||
+          (!isUnit(state, target) && cardDefinition(state, target.cardId).kind !== 'base')
+        )
+          return [];
+        const dealer = entry.source ? boundUnit(state, frame, entry.source) : undefined;
+        return [
+          {
+            target,
+            amount: Math.max(0, numericValue(state, frame, entry.amount)),
+            ...(dealer ? { source: dealer } : {}),
+          },
+        ];
+      });
+      dealDamage(state, assignments, playerId, source);
+      break;
+    }
     case 'damage-target': {
+      if (effect.target === 'defender' && (frame.groups?.defenders?.length ?? 0) > 1) {
+        const dealer = effect.source ? boundUnit(state, frame, effect.source) : source;
+        dealDamage(
+          state,
+          frame.groups!.defenders!.flatMap(ref => {
+            const card = state.cards[ref.instanceId];
+            if (!card || card.incarnation !== ref.incarnation || !isUnit(state, card)) return [];
+            const amount = Math.max(
+              0,
+              numericValue(
+                state,
+                { ...frame, bindings: { ...frame.bindings, defender: ref } },
+                effect.amount,
+              ),
+            );
+            const excess =
+              effect.excessToEnemyBase &&
+              dealer &&
+              effectiveAbilities(state, dealer).keywords?.includes('Overwhelm')
+                ? Math.max(0, amount - (unitStats(state, card).hp - card.damage))
+                : 0;
+            return [
+              {
+                target: card,
+                amount: amount - excess,
+                ...(excess
+                  ? {
+                      excess: {
+                        target: reference(
+                          instance(state, state.players[opponent(state, playerId)]!.base),
+                        ),
+                        amount: excess,
+                      },
+                    }
+                  : {}),
+              },
+            ];
+          }),
+          playerId,
+          dealer ?? source,
+        );
+        break;
+      }
       const card = boundUnit(state, frame, effect.target);
       if (card && (isUnit(state, card) || cardDefinition(state, card.cardId).kind === 'base')) {
         const dealer = effect.source ? boundUnit(state, frame, effect.source) : source;
@@ -2074,7 +2674,7 @@ function applyEffect(
         c => cardDefinition(state, c.cardId).kind === 'player-token',
       );
       const count = selected.length;
-      defeatUnits(state, units, [], source);
+      defeatBy(state, units, playerId, source);
       defeatUpgrades(
         state,
         upgrades.filter(card => isUpgrade(state, card)),
@@ -2090,7 +2690,7 @@ function applyEffect(
           values: { ...frame.values, [effect.countAs]: count },
         }),
       );
-      maintenance(state);
+      maintenance(state, [], [], playerId);
       break;
     }
     case 'defeat-group': {
@@ -2104,14 +2704,14 @@ function applyEffect(
             ),
         );
       const unique = [...new Map(targets.map(c => [c.instanceId, c])).values()];
-      const defeated = defeatUnits(state, unique, [], source);
+      const defeated = defeatBy(state, unique, playerId, source);
       state.execution.frames.unshift(
         ...effectFrames(playerId, source, effect.effects, {
           ...frame,
           values: { ...frame.values, [effect.countAs]: defeated.length },
         }),
       );
-      maintenance(state);
+      maintenance(state, [], [], playerId);
       break;
     }
     case 'return-unit-with-upgrades': {
@@ -2151,7 +2751,17 @@ function applyEffect(
         move(state, card, 'hand', undefined, rescued, snapshots.get(card.instanceId));
       }
       if (wasLeader)
-        defeatUnits(state, [unit], [], undefined, false, { departures: [departure], observers });
+        defeatUnits(
+          state,
+          [unit],
+          [],
+          undefined,
+          false,
+          { departures: [departure], observers },
+          supportsEngine('1.5.0', state.versions.engine)
+            ? { [unit.instanceId]: playerId }
+            : undefined,
+        );
       else {
         fact(
           state,
@@ -2175,15 +2785,22 @@ function applyEffect(
           round: state.round,
           phase: state.phase,
         });
-      maintenance(state);
+      maintenance(state, [], [], playerId);
       break;
     }
+    case 'return-nonleader-units':
     case 'return-bound': {
       const units = [
         ...new Map(
-          effect.targets
+          (effect.kind === 'return-nonleader-units'
+            ? matchingUnits(state, playerId, effect.filter, frame).map(c => c.instanceId)
+            : effect.targets
+          )
             .flatMap(name => {
-              const c = boundUnit(state, frame, name);
+              const c =
+                effect.kind === 'return-nonleader-units'
+                  ? state.cards[name]
+                  : boundUnit(state, frame, name);
               return c &&
                 isUnit(state, c) &&
                 !unitIsLeader(state, c) &&
@@ -2207,15 +2824,15 @@ function applyEffect(
         c.damage = 0;
       }
       for (const prisoner of rescued) rescueCaptured(state, prisoner);
-      maintenance(state);
+      maintenance(state, [], [], playerId);
       break;
     }
     case 'defeat-bound': {
       const units = effect.targets
         .map(name => boundUnit(state, frame, name))
         .filter((c): c is CardInstance => !!c && isUnit(state, c));
-      defeatUnits(state, [...new Map(units.map(c => [c.instanceId, c])).values()], [], source);
-      maintenance(state);
+      defeatBy(state, [...new Map(units.map(c => [c.instanceId, c])).values()], playerId, source);
+      maintenance(state, [], [], playerId);
       break;
     }
     case 'damage-bound': {
@@ -2300,10 +2917,10 @@ function applyEffect(
     case 'defeat-target': {
       const target = boundUnit(state, frame, effect.target);
       if (!target) break;
-      if (isUnit(state, target)) defeatUnits(state, [target], [], source);
+      if (isUnit(state, target)) defeatBy(state, [target], playerId, source);
       else if (cardDefinition(state, target.cardId).kind === 'base') {
         target.damage = hitPoints(cardDefinition(state, target.cardId));
-        maintenance(state);
+        maintenance(state, [], [], playerId);
       }
       break;
     }
@@ -2316,13 +2933,14 @@ function applyEffect(
         playerId,
         name,
         restriction: effect.restriction,
+        ...(effect.amount ? { amount: effect.amount } : {}),
         appliesTo: effect.appliesTo ?? 'enemy',
         expires:
           effect.duration === 'phase'
             ? { kind: 'phase', round: state.round, phase: state.phase }
             : { kind: 'source-in-play' },
       });
-      maintenance(state);
+      maintenance(state, [], [], playerId);
       break;
     }
     case 'choose-number':
@@ -2338,8 +2956,19 @@ function applyEffect(
         !unitIsLeader(state, second) &&
         exchangeControl(state, first, second)
       ) {
+        if (effect.returnAtRegroup)
+          for (const unit of [first, second])
+            scheduleRegroup(
+              state,
+              playerId,
+              source,
+              unit,
+              'control-at-regroup',
+              undefined,
+              frame.origin,
+            );
         state.execution.frames.unshift(...effectFrames(playerId, source, effect.effects, frame));
-        maintenance(state);
+        maintenance(state, [], [], playerId);
       }
       break;
     }
@@ -2357,6 +2986,16 @@ function applyEffect(
       const attack = state.attacks.at(-1);
       if (attack)
         (attack.after ??= []).push(...effectFrames(playerId, source, effect.effects, frame));
+      break;
+    }
+    case 'resource-card': {
+      const card = boundUnit(state, frame, effect.target);
+      if (card && card.zone === 'discard') {
+        const old = reference(card);
+        resourceCard(state, card, playerId, false);
+        fact(state, 'resourced', playerId, [source, old], 1);
+        fact(state, 'resourced', playerId, [card], 1, [playerId]);
+      }
       break;
     }
     case 'resource-departed': {
@@ -2384,7 +3023,7 @@ function applyEffect(
           kind: 'regroup-operation',
           id: allocateId(state, 'l'),
           playerId,
-          source: structuredClone(source),
+          source: { ...structuredClone(source), controller: playerId },
           target: reference(target),
           dueRound: state.round + (state.phase === 'regroup' ? 1 : 0),
           operation: effect.operation,
@@ -2394,6 +3033,31 @@ function applyEffect(
       }
       break;
     }
+    case 'pay-resources':
+      state.execution.frames.unshift(
+        ...effectFrames(
+          playerId,
+          source,
+          [
+            {
+              kind: 'pay',
+              costs: [
+                {
+                  kind: 'resources',
+                  amount: Math.max(0, numericValue(state, frame, effect.amount)),
+                },
+              ],
+              optional: effect.optional,
+              effects: effect.effects,
+            },
+          ],
+          frame,
+        ),
+      );
+      break;
+    case 'lose-game':
+      endGame(state, opponent(state, playerId), 'card-effect', source);
+      break;
     case 'prevent-base-healing':
       for (const seat of state.seats)
         modifyUnit(state, source, instance(state, state.players[seat]!.base), {
@@ -2417,7 +3081,15 @@ function applyEffect(
     case 'choose-mode': {
       if (intent?.kind !== 'choose-mode') break;
       const option = effect.options.find(option => option.id === intent.mode);
-      if (!option) throw new IllegalInput();
+      if (!option || !modeAvailable(state, frame, option.id)) throw new IllegalInput();
+      if (effect.oncePerPhase) {
+        state.phaseHistory.modeUses ??= [];
+        state.phaseHistory.modeUses.push({
+          source: reference(source),
+          origin: reference(frame.origin?.card ?? source),
+          key: `${effect.oncePerPhase}:${option.id}`,
+        });
+      }
       const chooser =
         effect.chooser === 'enemy'
           ? opponent(state, playerId)
@@ -2459,7 +3131,21 @@ function applyEffect(
       }
       break;
     case 'ready-units': {
-      const cards = readyInPlay(state, matchingUnits(state, playerId, effect.filter, frame));
+      if (state.phase === 'regroup' && supportsEngine('1.4.0', state.versions.engine)) {
+        state.execution.frames.unshift({
+          kind: 'ready-cards',
+          playerId,
+          source,
+          cards: matchingUnits(state, playerId, effect.filter, frame).map(reference),
+        });
+        break;
+      }
+      const cards = readyInPlay(
+        state,
+        matchingUnits(state, playerId, effect.filter, frame),
+        false,
+        playerId,
+      );
       if (cards.length) fact(state, 'readied', playerId, [source, ...cards]);
       break;
     }
@@ -2532,7 +3218,7 @@ function applyEffect(
           if (unit && unit.incarnation === ref.incarnation)
             captureUnit(state, guard, unit, playerId, source);
         }
-      maintenance(state);
+      maintenance(state, [], [], playerId);
       break;
     }
     case 'capture-unit': {
@@ -2549,7 +3235,20 @@ function applyEffect(
         unit.zone === 'captured'
       )
         scheduleRegroup(state, playerId, source, unit, 'rescue-at-regroup');
-      maintenance(state);
+      maintenance(state, [], [], playerId);
+      break;
+    }
+    case 'rescue-captured':
+    case 'discard-captured': {
+      const ref = boundReference(frame, effect.target, state);
+      const card = ref && state.cards[ref.instanceId];
+      if (!card || card.incarnation !== ref.incarnation || card.zone !== 'captured') break;
+      if (effect.kind === 'discard-captured') {
+        move(state, card, 'discard');
+        fact(state, 'discarded', playerId, [card]);
+      } else if (rescueCaptured(state, card) && effect.effects) {
+        state.execution.frames.unshift(...effectFrames(playerId, source, effect.effects, frame));
+      }
       break;
     }
     case 'select-departed-upgrade':
@@ -2561,8 +3260,9 @@ function applyEffect(
           }),
         );
       break;
+    case 'select-captured':
     case 'select-unit':
-      if (target || effect.allowMissing)
+      if (target || (effect.kind === 'select-unit' && effect.allowMissing))
         state.execution.frames.unshift(
           ...effectFrames(playerId, source, effect.effects, {
             ...frame,
@@ -2639,7 +3339,17 @@ function applyEffect(
             source,
             preventDamage: effect.preventDamage,
             blankDefender: effect.blankDefender,
-            defenderPowerModifier: effect.defenderPowerModifier,
+            defenderPowerModifier: numericValue(
+              state,
+              {
+                ...frame,
+                bindings: {
+                  ...frame.bindings,
+                  defender: reference(instance(state, intent.defender)),
+                },
+              },
+              effect.defenderPowerModifier ?? 0,
+            ),
             damageStat: effect.damageStat,
             swapRaidRestore: effect.swapRaidRestore,
             cannotAttackBases: effect.cannotAttackBases,
@@ -2695,6 +3405,44 @@ function applyEffect(
       break;
     }
     case 'on-unit': {
+      if (effect.target === 'defender' && (frame.groups?.defenders?.length ?? 0) > 1) {
+        const units = frame.groups!.defenders!.flatMap(ref => {
+          const unit = state.cards[ref.instanceId];
+          return unit && unit.incarnation === ref.incarnation && isUnit(state, unit) ? [unit] : [];
+        });
+        const operation = effect.operation;
+        if (operation.kind === 'modify') {
+          for (const unit of units) {
+            const context = {
+              ...frame,
+              bindings: { ...frame.bindings, defender: reference(unit) },
+            };
+            modifyUnit(state, source, unit, {
+              ...operation,
+              power: numericValue(state, context, operation.power),
+              hp: numericValue(state, context, operation.hp),
+            });
+          }
+          if (units.length && effect.ifYouDo)
+            state.execution.frames.unshift(
+              ...effectFrames(playerId, source, effect.ifYouDo, frame),
+            );
+          maintenance(state, [], [], playerId);
+        } else if (operation.kind === 'defeat') {
+          defeatBy(state, units, playerId, source);
+          maintenance(state, [], [], playerId);
+        } else
+          state.execution.frames.unshift(
+            ...units.flatMap(unit =>
+              effectFrames(playerId, source, [effect], {
+                ...frame,
+                groups: { ...frame.groups, defenders: [] },
+                bindings: { ...frame.bindings, defender: reference(unit) },
+              }),
+            ),
+          );
+        break;
+      }
       const unit = boundUnit(state, frame, effect.target);
       if (!unit || !isUnit(state, unit)) break;
       const op = effect.operation;
@@ -2712,8 +3460,8 @@ function applyEffect(
                   : opponent(state, playerId)) &&
             !effectiveAbilities(state, unit).cannotChangeController
           ) {
-            defeatUnits(state, [unit]);
-            maintenance(state);
+            defeatBy(state, [unit], playerId, source);
+            maintenance(state, [], [], playerId);
             break;
           }
           if (
@@ -2738,7 +3486,7 @@ function applyEffect(
                 frame.origin,
               );
             state.execution.frames.unshift(...next);
-            maintenance(state);
+            maintenance(state, [], [], playerId);
           }
           break;
         case 'move-arena':
@@ -2746,11 +3494,14 @@ function applyEffect(
             move(state, unit, op.arena);
             fact(state, 'moved-arena', playerId, [source, unit]);
             state.execution.frames.unshift(...next);
-            maintenance(state);
+            maintenance(state, [], [], playerId);
           }
           break;
         case 'heal': {
-          const amount = op.amount === 'all' ? unit.damage : Math.min(unit.damage, op.amount);
+          const requested = op.amount === 'all' ? unit.damage : op.amount;
+          const amount = supportsEngine('1.4.0', state.versions.engine)
+            ? healingAmount(state, unit, requested)
+            : Math.min(unit.damage, requested);
           unit.damage -= amount;
           recordHealing(state, playerId, source, unit, amount);
           if (effect.ifYouDo && amount > 0)
@@ -2784,17 +3535,17 @@ function applyEffect(
             hp: numericValue(state, frame, op.hp),
           });
           state.execution.frames.unshift(...next);
-          maintenance(state);
+          maintenance(state, [], [], playerId);
           break;
         case 'exhaust':
         case 'ready': {
           if (
             unit.exhausted === (op.kind === 'exhaust') ||
-            (op.kind === 'ready' && cannotReady(state, unit)) ||
+            (op.kind === 'ready' && cannotReady(state, unit, false, playerId)) ||
             (op.kind === 'exhaust' && !canAffectWithAbility(state, unit, source, 'exhaust'))
           )
             break;
-          if (op.kind === 'ready') readyInPlay(state, [unit]);
+          if (op.kind === 'ready') readyInPlay(state, [unit], false, playerId);
           else unit.exhausted = true;
           fact(state, unit.exhausted ? 'exhausted' : 'readied', playerId, [source, unit]);
           state.execution.frames.unshift(...next);
@@ -2803,8 +3554,21 @@ function applyEffect(
         case 'return-to-hand':
           if (!canAffectWithAbility(state, unit, source, 'return-to-hand')) break;
           if (unitIsLeader(state, unit)) {
-            if (defeatUnits(state, [unit]).length) state.execution.frames.unshift(...next);
-            maintenance(state);
+            if (
+              defeatUnits(
+                state,
+                [unit],
+                [],
+                undefined,
+                false,
+                undefined,
+                supportsEngine('1.5.0', state.versions.engine)
+                  ? { [unit.instanceId]: playerId }
+                  : undefined,
+              ).length
+            )
+              state.execution.frames.unshift(...next);
+            maintenance(state, [], [], playerId);
             break;
           }
           fact(
@@ -2816,12 +3580,12 @@ function applyEffect(
           move(state, unit, 'hand');
           unit.damage = 0;
           state.execution.frames.unshift(...next);
-          maintenance(state);
+          maintenance(state, [], [], playerId);
           break;
         case 'defeat':
-          if (defeatUnits(state, [unit], [], source).length)
+          if (defeatBy(state, [unit], playerId, source).length)
             state.execution.frames.unshift(...next);
-          maintenance(state);
+          maintenance(state, [], [], playerId);
           break;
         case 'defeat-shields':
           defeatUpgrades(
@@ -2850,6 +3614,7 @@ function applyEffect(
               },
               {
                 after: effect.ifYouDo ? [...effect.ifYouDo] : undefined,
+                group: op.group,
                 ...(effect.creatorOf
                   ? { creator: boundController(state, frame, effect.creatorOf) }
                   : {}),
@@ -2909,6 +3674,12 @@ function applyEffect(
         effect.max === undefined
           ? matchingUnits(state, playerId, effect.filter, frame)
           : selections.map(id => instance(state, id));
+      if (effect.bases)
+        targets.push(
+          ...state.seats
+            .filter(seat => seat !== playerId)
+            .map(seat => instance(state, state.players[seat]!.base)),
+        );
       dealDamage(
         state,
         targets.map(target => ({
@@ -2943,8 +3714,8 @@ function applyEffect(
     }
     case 'defeat-unit':
       if (target) {
-        defeatUnits(state, [target], [], source);
-        maintenance(state);
+        defeatBy(state, [target], playerId, source);
+        maintenance(state, [], [], playerId);
         if (effect.healOwnBase && !state.result) {
           const base = instance(state, state.players[playerId]!.base);
           const healed = healingAmount(state, base, effect.healOwnBase);
@@ -2958,9 +3729,9 @@ function applyEffect(
       const enemyIds = new Set(
         targets.filter(card => card.controller !== playerId).map(c => c.instanceId),
       );
-      const defeated = defeatUnits(state, targets, [], source);
+      const defeated = defeatBy(state, targets, playerId, source);
       const enemies = defeated.filter(card => enemyIds.has(card.instanceId)).length;
-      maintenance(state);
+      maintenance(state, [], [], playerId);
       if (effect.damageEnemyBase && enemies && !state.result)
         dealDamage(
           state,
@@ -2979,20 +3750,17 @@ function applyEffect(
           a.attacker.instanceId === source.instanceId &&
           a.attacker.incarnation === source.incarnation,
       );
-      const defender = attack && instance(state, attack.defender.instanceId);
-      if (
-        defender &&
-        isUnit(state, defender) &&
-        defender.incarnation === attack!.defender.incarnation &&
-        !attack!.removedFromCombat.some(
-          ref => ref.instanceId === defender.instanceId && ref.incarnation === defender.incarnation,
-        )
-      )
+      if (attack)
         defeatUpgrades(
           state,
-          attachedUpgrades(state, defender).filter(upgrade => {
-            const d = cardDefinition(state, upgrade.cardId);
-            return d.kind === 'upgrade' && d.replacement?.kind === 'shield';
+          attackDefenders(attack).flatMap(ref => {
+            const defender = instance(state, ref.instanceId);
+            return inCombat(state, attack, defender, ref)
+              ? attachedUpgrades(state, defender).filter(upgrade => {
+                  const d = instanceDefinition(state, upgrade);
+                  return d.kind === 'upgrade' && d.replacement?.kind === 'shield';
+                })
+              : [];
           }),
           source,
         );
@@ -3013,16 +3781,11 @@ function applyEffect(
           attack.attacker.incarnation === source.incarnation,
       );
       if (!attack) break;
-      const defender = instance(state, attack.defender.instanceId),
-        current = instance(state, source.instanceId);
-      if (
-        defender.incarnation !== attack.defender.incarnation ||
-        !isUnit(state, defender) ||
-        attack.removedFromCombat.some(
-          ref => ref.instanceId === defender.instanceId && ref.incarnation === defender.incarnation,
-        )
-      )
-        break;
+      const current = instance(state, source.instanceId);
+      const defenders = attackDefenders(attack).flatMap(ref => {
+        const defender = instance(state, ref.instanceId);
+        return inCombat(state, attack, defender, ref) ? [defender] : [];
+      });
       const upgraded =
         current.incarnation === source.incarnation && isUnit(state, current)
           ? attachedUpgrades(state, current).length > 0
@@ -3033,7 +3796,10 @@ function applyEffect(
             )?.upgraded;
       dealDamage(
         state,
-        [{ target: defender, amount: upgraded ? effect.upgradedAmount : effect.amount }],
+        defenders.map(target => ({
+          target,
+          amount: upgraded ? effect.upgradedAmount : effect.amount,
+        })),
         playerId,
         source,
       );
@@ -3082,7 +3848,7 @@ function applyEffect(
           source,
           mode: effect.mode,
           ...(effect.minDiscard !== undefined ? { minDiscard: effect.minDiscard } : {}),
-          stage: effect.mode === 'discard-one' ? 'choose-discard' : 'choose-bottom',
+          stage: effect.mode === 'bottom-any' ? 'choose-bottom' : 'choose-discard',
           cards,
           bottom: [],
           topOrder: [],
@@ -3157,7 +3923,13 @@ function applyEffect(
       scheduleNextAction(state, playerId, source, effect.effects);
       break;
     case 'schedule-regroup-effects':
-      scheduleRegroupEffects(state, playerId, source, effect.effects);
+      scheduleRegroupEffects(
+        state,
+        playerId,
+        source,
+        effect.effects,
+        supportsEngine('1.5.0', state.versions.engine) ? frame.origin : undefined,
+      );
       break;
     case 'tax-units': {
       const chooser = effect.player === 'self' ? playerId : opponent(state, playerId);
@@ -3224,7 +3996,7 @@ function applyEffect(
     case 'defeat-upgrade':
       if (target) {
         defeatUpgrade(state, target, undefined, source);
-        maintenance(state);
+        maintenance(state, [], [], playerId);
       }
       break;
     case 'damage-bases': {
@@ -3278,15 +4050,15 @@ function applyEffect(
       )
         break;
       if (cardDefinition(state, card.cardId).kind === 'leader') {
-        defeatUnits(state, [card]);
-        maintenance(state);
+        defeatBy(state, [card], playerId, source);
+        maintenance(state, [], [], playerId);
         break;
       }
       if (!resourceCard(state, card, playerId, effect.ready !== false)) break;
       // The old public source is known; the new hidden incarnation is private.
       fact(state, 'resource-returned', playerId, [source]);
       fact(state, 'resourced', playerId, [card], 1, [playerId]);
-      maintenance(state);
+      maintenance(state, [], [], playerId);
       break;
     }
     case 'ambush':
@@ -3345,7 +4117,7 @@ function applyEffect(
         abilitySources(state).filter(observer => observer.controller !== playerId),
         card,
       );
-      maintenance(state);
+      maintenance(state, [], [], playerId);
       break;
     }
     default: {
@@ -3415,12 +4187,14 @@ function prompt(state: GameState, frame: Frame, playerId: string, kind: Decision
 // Run only deterministic internal steps; stop at explicit data suspensions.
 // No closure, timer, or random generator is captured by an execution frame.
 export function settle(state: GameState): void {
+  rememberRemainingHp(state, null, true);
   let steps = 0;
   while (state.phase !== 'ended' && !state.execution.decision && !state.execution.random) {
     reconcilePrintedStats(state);
     if (++steps > 1000) throw new Error('Crossfire resolution limit reached');
     if (!state.playPayment) collectDepartureEffects(state);
     prioritizeUpgradeDefeat(state);
+    prioritizeCopyEntry(state);
     const frame = state.execution.frames[0];
     if (!frame) throw new Error('Crossfire execution has no continuation');
     if (
@@ -3456,6 +4230,45 @@ export function settle(state: GameState): void {
       }
       continue;
     }
+    if (frame.kind === 'attack-declaration') {
+      prompt(state, frame, frame.playerId, 'effect');
+      break;
+    }
+    if (frame.kind === 'unit-entry') {
+      if (frame.choice === undefined && copyEntryChoices(state, frame).length) {
+        prompt(state, frame, frame.playerId, 'replacement');
+        break;
+      }
+      if (frame.choice === undefined) {
+        frame.choice = null;
+        continue;
+      }
+      for (const entry of completeCopyEntries(state))
+        if (entry.play) finishPlayedCard(state, instance(state, entry.card.instanceId), entry.play);
+      maintenance(state);
+      continue;
+    }
+    if (frame.kind === 'group-damage') {
+      if (
+        frame.index < frame.dealers.length &&
+        matchingUnits(state, frame.playerId, frame.filter, frame).length
+      ) {
+        prompt(state, frame, frame.playerId, 'effect');
+        break;
+      }
+      state.execution.frames.shift();
+      const assignments = new Map<string, { target: CardInstance; amount: number }>();
+      frame.chosen.forEach((ref, index) => {
+        const card = ref && state.cards[ref.instanceId];
+        if (!card || card.incarnation !== ref!.incarnation || !isUnit(state, card)) return;
+        const existing = assignments.get(card.instanceId);
+        if (existing) existing.amount += frame.dealers[index]!.amount;
+        else
+          assignments.set(card.instanceId, { target: card, amount: frame.dealers[index]!.amount });
+      });
+      dealDamage(state, [...assignments.values()], frame.playerId, frame.source);
+      continue;
+    }
     if (frame.kind === 'different-unit-damage') {
       while (frame.index < frame.dealers.length && !sequenceDealer(state, frame)) frame.index++;
       const options = frameIntents(state, frame);
@@ -3477,7 +4290,15 @@ export function settle(state: GameState): void {
       const cards = frame.cards
         .map(c => state.cards[c.instanceId]!)
         .filter((c, i) => c.incarnation === frame.cards[i]!.incarnation && isUnit(state, c));
-      defeatUnits(state, cards, frame.combatDamaged, frame.source, true, frame.prepared);
+      defeatUnits(
+        state,
+        cards,
+        frame.combatDamaged,
+        frame.source,
+        true,
+        frame.prepared,
+        frame.responsibility,
+      );
       maintenance(state);
       continue;
     }
@@ -3529,6 +4350,15 @@ export function settle(state: GameState): void {
       }
       continue;
     }
+    if (frame.kind === 'combat-replacement' || frame.kind === 'regroup-ready') {
+      prompt(
+        state,
+        frame,
+        frame.playerId,
+        frame.kind === 'combat-replacement' ? 'replacement' : 'effect',
+      );
+      break;
+    }
     if (frame.kind === 'combat-order') {
       prompt(state, frame, frame.playerId, 'effect');
       break;
@@ -3540,6 +4370,22 @@ export function settle(state: GameState): void {
     if (frame.kind === 'unit-tax') {
       prompt(state, frame, frame.chooser, 'effect');
       break;
+    }
+    if (frame.kind === 'finish-additional-play-payment') {
+      state.execution.frames.shift();
+      const payment = state.playPayment!;
+      payment.stage = 'play';
+      applyIntent(
+        state,
+        payment.intent,
+        [],
+        payment.continuation,
+        payment.playerId,
+        payment.additional!.credit ?? 0,
+        undefined,
+        payment.additional!.unitPayment ?? 0,
+      );
+      continue;
     }
     if (frame.kind === 'exploit-play') {
       state.execution.frames.shift();
@@ -3613,6 +4459,9 @@ export function settle(state: GameState): void {
       }
     }
     if (
+      frame.kind === 'replacement-play-choice' ||
+      frame.kind === 'replacement-play-discard' ||
+      frame.kind === 'additional-play-payment' ||
       frame.kind === 'free-play-choice' ||
       frame.kind === 'credit-payment' ||
       frame.kind === 'ability-payment' ||
@@ -3661,6 +4510,7 @@ export function settle(state: GameState): void {
     if (frame.kind === 'damage') {
       const choice = damagePreventionChoice(state, frame);
       if (!choice) {
+        if (consolidateMultiExcess(state, frame)) continue;
         const routing = excessDamageChoice(state, frame);
         if (routing) {
           if (routing.targets.length) {
@@ -3672,13 +4522,20 @@ export function settle(state: GameState): void {
         state.execution.frames.shift();
         const upgraded = frame.tokens ? commitTokenCreation(state, frame.tokens, true) : [];
         const result = applyDamage(state, frame);
+        if (frame.simultaneous) commitSimultaneousChoices(state, frame.simultaneous);
         const friendlyDamaged = frame.after
           ? result.unitDamage.filter(
               d => state.cards[d.target.instanceId]?.controller === frame.after!.playerId,
             ).length
           : 0;
         for (const unit of upgraded) collectTriggers(state, 'upgrades-attached', [unit]);
-        maintenance(state, frame.combatAttackId ? result.damaged : [], result.sacrificed);
+        const remainingFrames = state.execution.frames.length;
+        maintenance(
+          state,
+          frame.combatAttackId ? result.damaged : [],
+          result.sacrificed,
+          frame.actor ?? state.activePlayer,
+        );
         if (!state.result)
           state.execution.frames.unshift(
             ...result.replacementEffects.flatMap(replacement =>
@@ -3686,7 +4543,13 @@ export function settle(state: GameState): void {
             ),
           );
         if (!state.result && frame.after)
-          state.execution.frames.unshift(
+          // Complete deferred defeat replacements before effects referring to the
+          // damage result. Earlier runtimes retain their archived ordering.
+          state.execution.frames.splice(
+            supportsEngine('1.5.0', state.versions.engine)
+              ? state.execution.frames.length - remainingFrames
+              : 0,
+            0,
             ...effectFrames(frame.after.playerId, frame.after.source, frame.after.effects, {
               ...frame.after,
               groups: {
@@ -3715,7 +4578,12 @@ export function settle(state: GameState): void {
             ))
               collectTriggers(state, 'friendly-damage-survived', [observer.source], survivor, {
                 origins: observer.origins,
-                values: { damage: event.amount },
+                values: {
+                  damage: event.amount,
+                  ...(supportsEngine('1.5.0', state.versions.engine)
+                    ? { combat: Number(!!frame.combatAttackId) }
+                    : {}),
+                },
               });
           }
       } else if (choice.options.length === 1 && choice.mandatory) {
@@ -3769,15 +4637,26 @@ export function settle(state: GameState): void {
           frame.effect.kind === 'grant-discard-play' ||
           frame.effect.kind === 'schedule-return' ||
           frame.effect.kind === 'schedule-next-action' ||
+          (frame.effect.kind === 'schedule-regroup-effects' &&
+            supportsEngine('1.5.0', state.versions.engine)) ||
           (frame.effect.kind === 'resource-top' && !frame.effect.optional) ||
           frame.effect.kind === 'tax-units' ||
           frame.effect.kind === 'exhaust-group' ||
+          frame.effect.kind === 'rescue-captured' ||
+          frame.effect.kind === 'discard-captured' ||
+          frame.effect.kind === 'collect-bounties' ||
+          frame.effect.kind === 'take-control-resources' ||
+          frame.effect.kind === 'choose-group-damage' ||
+          frame.effect.kind === 'each-bound-card' ||
+          (frame.effect.kind === 'unit-to-deck' && !!frame.effect.position) ||
           frame.effect.kind === 'capture-pairs' ||
           frame.effect.kind === 'attack-series' ||
           frame.effect.kind === 'capture-group' ||
           frame.effect.kind === 'capture-unit' ||
           frame.effect.kind === 'distribute' ||
           frame.effect.kind === 'random-card' ||
+          frame.effect.kind === 'replace-attacker' ||
+          frame.effect.kind === 'each-player-discards' ||
           frame.effect.kind === 'repeat-effects' ||
           frame.effect.kind === 'friendly-units-damage-different-enemies' ||
           frame.effect.kind === 'lose-enemy-trait' ||
@@ -3804,9 +4683,15 @@ export function settle(state: GameState): void {
             'exchange-control',
             'after-attack',
             'resource-departed',
+            'resource-card',
             'schedule-regroup-operation',
           ].includes(frame.effect.kind) ||
           frame.effect.kind === 'prevent-base-healing' ||
+          frame.effect.kind === 'lose-game' ||
+          frame.effect.kind === 'pay-resources' ||
+          frame.effect.kind === 'simultaneous-choices' ||
+          frame.effect.kind === 'redirect-combat-damage' ||
+          frame.effect.kind === 'require-next-attack' ||
           frame.effect.kind === 'extra-action' ||
           frame.effect.kind === 'bottom-hand' ||
           frame.effect.kind === 'reveal-deck-cards' ||
@@ -3817,6 +4702,8 @@ export function settle(state: GameState): void {
           frame.effect.kind === 'schedule-resource-repayment' ||
           frame.effect.kind === 'flip-leader' ||
           frame.effect.kind === 'draw-card' ||
+          frame.effect.kind === 'discard-groups' ||
+          frame.effect.kind === 'return-nonleader-units' ||
           frame.effect.kind === 'move-cards' ||
           frame.effect.kind === 'move-card' ||
           frame.effect.kind === 'defeat-resource' ||
@@ -3828,6 +4715,7 @@ export function settle(state: GameState): void {
           frame.effect.kind === 'modify-units' ||
           frame.effect.kind === 'phase-stat-modifier' ||
           frame.effect.kind === 'with-value' ||
+          frame.effect.kind === 'damage-assignments' ||
           frame.effect.kind === 'damage-target' ||
           frame.effect.kind === 'create-unit' ||
           frame.effect.kind === 'defeat-group' ||
@@ -3866,11 +4754,24 @@ export function settle(state: GameState): void {
         applyEffect(state, frame);
         continue;
       }
-      if (!intents.length || (intents.length === 1 && intents[0]!.kind === 'decline-effect')) {
+      // An optional private play must not expose hidden affordability by skipping
+      // its decline-only choice. Older card definitions retain their exact flow.
+      const preserveOptionalPlayChoice =
+        frame.kind === 'effect' &&
+        frame.effect.kind === 'play-card' &&
+        frame.effect.optional &&
+        frame.effect.preserveOptionalChoice;
+      if (
+        !intents.length ||
+        (intents.length === 1 &&
+          intents[0]!.kind === 'decline-effect' &&
+          !preserveOptionalPlayChoice)
+      ) {
         state.execution.frames.shift();
         if (
           frame.kind === 'effect' &&
           (frame.effect.kind === 'select-unit' ||
+            frame.effect.kind === 'select-captured' ||
             frame.effect.kind === 'play-card' ||
             frame.effect.kind === 'pay') &&
           frame.effect.otherwise
@@ -3916,7 +4817,7 @@ export function settle(state: GameState): void {
         break;
       case 'expire-round':
         state.lastingEffects = state.lastingEffects.filter(e => e.expires.kind !== 'round');
-        maintenance(state);
+        maintenance(state, [], [], null);
         break;
       case 'finish-regroup': {
         const remaining =
@@ -3950,7 +4851,7 @@ export function settle(state: GameState): void {
               e.expires.round === state.round
             ),
         );
-        maintenance(state);
+        maintenance(state, [], [], null);
         break;
       case 'begin-regroup':
         state.playModifiers = [];
@@ -3960,7 +4861,7 @@ export function settle(state: GameState): void {
         state.phase = 'regroup';
         state.phaseHistory = emptyPhaseHistory();
         collectTriggers(state, 'regroup-start', abilitySources(state));
-        maintenance(state);
+        maintenance(state, [], [], null);
         break;
       case 'regroup-delayed':
         // The captured phase-start abilities wait behind delayed effects (§7.7.4b).
@@ -4001,17 +4902,43 @@ export function settle(state: GameState): void {
         state.execution.frames.push({ kind: 'flush-triggers' }, { kind: 'action' });
         break;
       case 'draw':
-        draw(state, frame.players, frame.count);
+        draw(state, frame.players, frame.count, state.phase === 'regroup');
         break;
+      case 'ready-cards': {
+        if (prepareRegroupReady(state, frame)) break;
+        const cards = readyInPlay(
+          state,
+          frame.cards
+            .filter(
+              ref =>
+                ref.incarnation === state.cards[ref.instanceId]?.incarnation &&
+                !frame.excluded?.some(
+                  e => e.instanceId === ref.instanceId && e.incarnation === ref.incarnation,
+                ),
+            )
+            .map(ref => instance(state, ref.instanceId)),
+          false,
+          frame.playerId,
+        );
+        if (cards.length) fact(state, 'readied', frame.playerId, [frame.source, ...cards]);
+        break;
+      }
       case 'ready':
+        if (prepareRegroupReady(state, frame)) break;
         readyInPlay(
           state,
           Object.values(state.cards).filter(
-            card => card.zone === 'base' || card.zone === 'resources' || isArena(card.zone),
+            card =>
+              (card.zone === 'base' || card.zone === 'resources' || isArena(card.zone)) &&
+              !frame.excluded?.some(
+                ref => ref.instanceId === card.instanceId && ref.incarnation === card.incarnation,
+              ),
           ),
           true,
         );
         fact(state, 'readied');
+        if (supportsEngine('1.5.0', state.versions.engine))
+          collectTriggers(state, 'regroup-ready', abilitySources(state));
         break;
       case 'end-attack': {
         const attack = state.attacks.pop();
@@ -4019,9 +4946,9 @@ export function settle(state: GameState): void {
         state.lastingEffects = state.lastingEffects.filter(
           e => e.expires.kind !== 'attack' || e.expires.attackId !== attack.id,
         );
-        maintenance(state);
+        maintenance(state, [], [], null);
         if (state.result) break;
-        for (const ref of [attack.attacker, attack.defender]) {
+        for (const ref of [attack.attacker, ...attackDefenders(attack)]) {
           const unit = state.cards[ref.instanceId];
           if (
             unit &&
@@ -4049,10 +4976,10 @@ export function settle(state: GameState): void {
                 state.cards[source.instanceId]!.incarnation === source.incarnation,
             ),
             'defender-defeated': Number(
-              attack.defeated.some(
-                r =>
-                  r.instanceId === attack.defender.instanceId &&
-                  r.incarnation === attack.defender.incarnation,
+              attack.defeated.some(r =>
+                attackDefenders(attack).some(
+                  ref => r.instanceId === ref.instanceId && r.incarnation === ref.incarnation,
+                ),
               ),
             ),
             'combat-base-damage': damage
@@ -4092,6 +5019,9 @@ export function settle(state: GameState): void {
             { kind: 'flush-triggers' },
             ...attack.after.map(frame => ({
               ...frame,
+              ...(supportsEngine('1.4.0', state.versions.engine)
+                ? { bindings: { ...frame.bindings, 'completed-attacker': attack.attacker } }
+                : {}),
               values: {
                 ...frame.values,
                 'attacker-damaged-base': Number(
@@ -4104,7 +5034,30 @@ export function settle(state: GameState): void {
               },
             })),
           );
-        fact(state, 'attack-ended', null, [attack.attacker, attack.defender]);
+        fact(state, 'attack-ended', null, [attack.attacker, ...attackDefenders(attack)]);
+        break;
+      }
+      case 'multi-combat': {
+        const attack = state.attacks.find(a => a.id === frame.attackId);
+        if (!attack?.additionalDefender) throw new Error('Missing multi-unit combat');
+        const attacker = instance(state, attack.attacker.instanceId);
+        if (!inCombat(state, attack, attacker, attack.attacker)) break;
+        const responding = (frame.stage === 'attacker' ? frame.simultaneous : frame.late).flatMap(
+          ref => {
+            const unit = instance(state, ref.instanceId);
+            return inCombat(state, attack, unit, ref)
+              ? [{ target: attacker, amount: combatAmount(state, attack, unit), source: unit }]
+              : [];
+          },
+        );
+        const assignments =
+          frame.stage === 'attacker'
+            ? attackDefenders(attack).flatMap(ref => attackingAssignments(state, attack, ref))
+            : [];
+        assignments.push(...responding);
+        if (frame.stage === 'attacker' && frame.late.length)
+          state.execution.frames.unshift({ ...frame, stage: 'late-defenders' });
+        dealDamage(state, assignments, attacker.controller, undefined, attack.id);
         break;
       }
       case 'combat-response': {
@@ -4119,7 +5072,7 @@ export function settle(state: GameState): void {
           if (attack.order === 'defender-first')
             dealDamage(
               state,
-              attackingAssignments(state, attack),
+              attackDefenders(attack).flatMap(ref => attackingAssignments(state, attack, ref)),
               attacker.controller,
               attacker,
               attack.id,
@@ -4147,6 +5100,18 @@ export function settle(state: GameState): void {
         const attacker = instance(state, attack.attacker.instanceId),
           defender = instance(state, attack.defender.instanceId);
         if (!inCombat(state, attack, attacker, attack.attacker)) break;
+        if (combatReplacementIntents(state, attack).length) {
+          state.execution.frames.unshift(
+            {
+              kind: 'combat-replacement',
+              attackId: attack.id,
+              playerId: attacker.controller,
+              source: structuredClone(attacker),
+            },
+            frame,
+          );
+          break;
+        }
         const orderFrame = {
           kind: 'combat-order' as const,
           attackId: attack.id,
@@ -4157,11 +5122,62 @@ export function settle(state: GameState): void {
           state.execution.frames.unshift(orderFrame, frame);
           break;
         }
+        if (
+          !attack.additionalDefender &&
+          !attack.order &&
+          inCombat(state, attack, defender, attack.defender)
+        ) {
+          if (effectiveAbilities(state, attacker).combatDamageLast) attack.order = 'defender-first';
+          else if (effectiveAbilities(state, defender).combatDamageLast)
+            attack.order = 'attacker-first';
+        }
         attack.ending = {
           source: structuredClone(attacker),
           abilities: abilityOrigins(state, attacker),
           observers: triggerObservers(state, 'friendly-attack-ended', attacker.controller),
         };
+        if (attack.additionalDefender) {
+          const a = effectiveAbilities(state, attacker);
+          const first = attack.attackerFirst || a.firstCombatDamage;
+          const early: import('./model.ts').CardReference[] = [],
+            simultaneous: import('./model.ts').CardReference[] = [],
+            late: import('./model.ts').CardReference[] = [];
+          for (const ref of attackDefenders(attack)) {
+            const unit = instance(state, ref.instanceId);
+            if (!inCombat(state, attack, unit, ref)) continue;
+            const last = effectiveAbilities(state, unit).combatDamageLast;
+            if (
+              attack.order === 'defender-first' ||
+              (a.combatDamageLast && !(attack.order === 'attacker-first' && (first || last)))
+            )
+              early.push(ref);
+            else if (attack.order === 'attacker-first' || first || last) late.push(ref);
+            else simultaneous.push(ref);
+          }
+          state.execution.frames.unshift({
+            kind: 'multi-combat',
+            attackId: attack.id,
+            stage: 'attacker',
+            simultaneous,
+            late,
+          });
+          if (early.length)
+            dealDamage(
+              state,
+              early.map(ref => {
+                const unit = instance(state, ref.instanceId);
+                return {
+                  target: attacker,
+                  amount: combatAmount(state, attack, unit),
+                  source: unit,
+                };
+              }),
+              attack.defendingPlayer,
+              undefined,
+              attack.id,
+            );
+          break;
+        }
         const unitDefender = inCombat(state, attack, defender, attack.defender);
         if (unitDefender && attack.order === 'defender-first') {
           state.execution.frames.unshift({ kind: 'combat-response', attackId: attack.id });
@@ -4174,7 +5190,9 @@ export function settle(state: GameState): void {
           );
           break;
         }
-        const assignments = attackingAssignments(state, attack);
+        const assignments = attackDefenders(attack).flatMap(ref =>
+          attackingAssignments(state, attack, ref),
+        );
         const first =
           attack.order === 'attacker-first' ||
           (attack.order === undefined &&
@@ -4294,10 +5312,28 @@ function resolveDelayed(
   }
   if (effect.kind === 'effects-at-action' || effect.kind === 'effects-at-regroup') {
     fact(state, 'delayed-resolved', effect.playerId, [effect.source]);
-    state.execution.frames.unshift(...effectFrames(effect.playerId, effect.source, effect.effects));
+    state.execution.frames.unshift(
+      ...effectFrames(
+        effect.playerId,
+        effect.source,
+        effect.effects,
+        'origin' in effect && effect.origin ? { origin: effect.origin } : undefined,
+      ),
+    );
     return;
   }
   const unit = instance(state, effect.target.instanceId);
+  if ('targetZone' in effect && effect.targetZone === 'resources') {
+    fact(state, 'delayed-resolved', effect.playerId, [effect.source]);
+    if (unit.incarnation === effect.target.incarnation && unit.zone === 'resources') {
+      changeResourceController(state, unit, unit.owner);
+      fact(state, 'delayed-resolved', effect.playerId, [effect.source, unit], null, [
+        ...new Set([effect.playerId, unit.owner]),
+      ]);
+    }
+    maintenance(state, [], [], effect.playerId);
+    return;
+  }
   fact(state, 'delayed-resolved', effect.playerId, [effect.source, effect.target]);
   if (effect.kind === 'regroup-operation') {
     if (
@@ -4309,14 +5345,14 @@ function resolveDelayed(
         move(state, unit, 'deck');
       } else if (isUnit(state, unit)) defeatUnits(state, [unit], [], effect.source);
       else defeatUpgrade(state, unit);
-      maintenance(state);
+      maintenance(state, [], [], effect.playerId);
     }
     return;
   }
   if (effect.kind === 'rescue-at-regroup') {
     if (unit.incarnation === effect.target.incarnation && unit.zone === 'captured')
       rescueCaptured(state, unit);
-    maintenance(state);
+    maintenance(state, [], [], effect.playerId);
     return;
   }
   if (
@@ -4333,10 +5369,10 @@ function resolveDelayed(
       )
         isUnit(state, unit) ? defeatUnits(state, [unit]) : defeatUpgrade(state, unit);
       else changeControl(state, unit, unit.owner);
-      maintenance(state);
+      maintenance(state, [], [], effect.playerId);
     } else if (effect.kind === 'defeat-at-regroup') {
       defeatUnits(state, [unit], [], effect.source);
-      maintenance(state);
+      maintenance(state, [], [], effect.playerId);
     } else
       state.execution.frames.unshift(
         ...effectFrames(
@@ -4394,6 +5430,57 @@ function applyIntent(
     );
     return;
   }
+  if (frame.kind === 'replacement-play-choice') {
+    if (intent.kind === 'decline-effect') {
+      rollbackExploit(state);
+      return;
+    }
+    const payment = state.playPayment!;
+    if (
+      intent.kind !== 'choose-mode' ||
+      !payment.costReplacement ||
+      !['discard-instead', 'pay-cost'].includes(intent.mode) ||
+      (intent.mode === 'pay-cost' && !payment.costReplacement.normal)
+    )
+      throw new IllegalInput();
+    payment.costReplacement.choice = intent.mode === 'discard-instead' ? 'replacement' : 'normal';
+    if (payment.costReplacement.choice === 'replacement') {
+      payment.stage = 'replacement-discard';
+      state.execution.frames.unshift({ kind: 'replacement-play-discard', playerId: actor });
+    } else {
+      payment.stage = payment.maximum ? 'units' : 'defeats';
+      state.execution.frames.unshift({
+        kind: payment.maximum ? 'exploit-payment' : 'exploit-play',
+        playerId: actor,
+      });
+    }
+    return;
+  }
+  if (frame.kind === 'replacement-play-discard' || frame.kind === 'additional-play-payment') {
+    if (intent.kind === 'decline-effect') {
+      rollbackExploit(state);
+      return;
+    }
+    const payment = state.playPayment!;
+    const candidates =
+      frame.kind === 'replacement-play-discard'
+        ? replacementCostCards(state, payment.source, actor)
+        : additionalCostUnits(state, actor);
+    const card = candidates.find(candidate => candidate.instanceId === selections[0]);
+    if (intent.kind !== 'accept-effect' || selections.length !== 1 || !card)
+      throw new IllegalInput();
+    if (frame.kind === 'replacement-play-discard') {
+      payment.costReplacement!.discarded = structuredClone(card);
+      discardCards(state, [card], actor, payment.source);
+      payment.stage = 'credits';
+      payment.remaining = 0;
+      state.execution.frames.unshift({ kind: 'exploit-play', playerId: actor });
+    } else {
+      payment.additional!.unit = structuredClone(card);
+      payAdditionalPlayCosts(state);
+    }
+    return;
+  }
   if (frame.kind === 'free-play-choice') {
     if (intent.kind === 'decline-effect') {
       rollbackExploit(state);
@@ -4425,6 +5512,19 @@ function applyIntent(
   }
   if (frame.kind === 'exploit-play') {
     const payment = state.playPayment!;
+    if (
+      payment.additional &&
+      !payment.additional.paid &&
+      payment.costReplacement?.choice !== 'replacement'
+    ) {
+      payment.additional.credit = credit ?? 0;
+      payment.additional.unitPayment = unitPayment;
+      payment.stage = 'additional';
+      if (payment.additional.unitDamage)
+        state.execution.frames.unshift({ kind: 'additional-play-payment', playerId: actor });
+      else payAdditionalPlayCosts(state);
+      return;
+    }
     payment.stage = 'play';
     applyIntent(
       state,
@@ -4446,11 +5546,18 @@ function applyIntent(
   ) {
     const maximum = exploitForIntent(state, frame, intent, actor);
     const freeOffer = freePlayOffer(state, frame, intent, actor);
+    const replacements = replacementCostCards(
+      state,
+      instance(state, intent.card),
+      actor,
+      intent.smuggle ? 'smuggle' : declarationEffect(frame)?.using,
+    );
     const sourceCard = { ...instance(state, intent.card), controller: actor };
     const special =
       !intent.piloting &&
       specialPlayPayment(state, sourceCard, actor, paymentAmount(state, frame, intent, actor));
-    if (maximum || freeOffer || special) {
+    const additional = additionalPlayCosts(state, sourceCard, intent);
+    if (maximum || freeOffer || special || replacements.length || additional) {
       const saved = structuredClone(state);
       saved.execution.frames.unshift(frame);
       settle(saved);
@@ -4464,7 +5571,21 @@ function applyIntent(
         source,
         intent,
         continuation: frame,
-        stage: freeOffer ? 'free' : maximum ? 'units' : 'defeats',
+        stage: replacements.length
+          ? 'replacement-choice'
+          : freeOffer
+            ? 'free'
+            : maximum
+              ? 'units'
+              : 'defeats',
+        ...(replacements.length
+          ? {
+              costReplacement: {
+                normal: resourcePayment(state, actor, remaining) <= spendingPower(state, actor),
+              },
+            }
+          : {}),
+        ...(additional ? { additional } : {}),
         ...(freeOffer ? { freeOffer } : {}),
         maximum,
         ...parts,
@@ -4480,7 +5601,13 @@ function applyIntent(
       };
       fact(state, 'revealed', actor, [source]);
       state.execution.frames.unshift({
-        kind: freeOffer ? 'free-play-choice' : maximum ? 'exploit-payment' : 'exploit-play',
+        kind: replacements.length
+          ? 'replacement-play-choice'
+          : freeOffer
+            ? 'free-play-choice'
+            : maximum
+              ? 'exploit-payment'
+              : 'exploit-play',
         playerId: actor,
       });
       return;
@@ -4549,6 +5676,38 @@ function applyIntent(
     });
     return;
   }
+  if (frame.kind === 'attack-declaration') {
+    if (
+      intent.kind !== 'decline-effect' &&
+      (intent.kind !== 'target' || !additionalDefenderTargets(state, frame).includes(intent.card))
+    )
+      throw new IllegalInput();
+    beginAttack(
+      state,
+      instance(state, frame.attacker.instanceId),
+      instance(state, frame.defender.instanceId),
+      frame.playerId,
+      frame.powerBonus,
+      frame.grantedAbilities,
+      frame.attackerFirst,
+      frame.ambush,
+      frame.rules,
+      intent.kind === 'target' ? instance(state, intent.card) : null,
+    );
+    return;
+  }
+  if (frame.kind === 'unit-entry') {
+    const target =
+      intent.kind === 'target'
+        ? copyEntryChoices(state, frame).find(c => c.instanceId === intent.card)
+        : undefined;
+    if (!target && intent.kind !== 'decline-effect') throw new IllegalInput();
+    state.execution.frames.unshift({
+      ...frame,
+      choice: target ? (target.copiedCardId ?? target.cardId) : null,
+    });
+    return;
+  }
   if (frame.kind === 'unit-defeat') {
     const card = unitDefeatChoice(state, frame);
     if (!card || (intent.kind !== 'target' && intent.kind !== 'decline-effect'))
@@ -4565,6 +5724,23 @@ function applyIntent(
       attachPilot(state, card, host, card, defeatAttachmentFilter);
     }
     maintenance(state);
+    return;
+  }
+  if (frame.kind === 'group-damage') {
+    if (intent.kind !== 'target' && !(intent.kind === 'decline-effect' && frame.optional))
+      throw new IllegalInput();
+    const card =
+      intent.kind === 'target'
+        ? matchingUnits(state, frame.playerId, frame.filter, frame).find(
+            c => c.instanceId === intent.card,
+          )
+        : undefined;
+    if (intent.kind === 'target' && !card) throw new IllegalInput();
+    state.execution.frames.unshift({
+      ...frame,
+      index: frame.index + 1,
+      chosen: [...frame.chosen, card ? reference(card) : null],
+    });
     return;
   }
   if (frame.kind === 'different-unit-damage') {
@@ -4622,7 +5798,7 @@ function applyIntent(
       if (!live || live.incarnation !== protector.incarnation || !isUnit(state, live))
         throw new IllegalInput();
       fact(state, 'upgrade-defeat-replaced', card.controller, [card, live]);
-      defeatUnits(state, [live]);
+      defeatUnits(state, [live], [], live);
     } else if (!deferUpgradeDefeat(state, card, frame.observers))
       commitUpgradeDefeat(state, card, frame.observers);
     maintenance(state);
@@ -4636,11 +5812,49 @@ function applyIntent(
       doubleTokenCreation(frame, card);
       state.execution.frames.unshift(frame);
       fact(state, 'token-creation-replaced', frame.creator, [frame.source, card]);
-      defeatUnits(state, [card]);
+      defeatUnits(state, [card], [], card);
       maintenance(state);
       return;
     } else throw new IllegalInput();
     state.execution.frames.unshift(frame);
+    return;
+  }
+  if (frame.kind === 'regroup-ready') {
+    acceptRegroupReady(state, frame, selections);
+    return;
+  }
+  if (frame.kind === 'combat-replacement') {
+    const attack = state.attacks.find(a => a.id === frame.attackId);
+    if (!attack) throw new IllegalInput();
+    if (intent.kind === 'decline-effect') {
+      attack.combatReplacementPassed = true;
+      return;
+    }
+    if (
+      intent.kind !== 'target' ||
+      !combatReplacementIntents(state, attack).some(
+        i => i.kind === 'target' && i.card === intent.card,
+      )
+    )
+      throw new IllegalInput();
+    const card = instance(state, intent.card);
+    recordHandReveal(state, [card]);
+    fact(state, 'revealed', actor, [card]);
+    state.execution.frames.unshift(
+      ...effectFrames(
+        actor,
+        structuredClone(card),
+        [
+          {
+            kind: 'pay',
+            optional: false,
+            costs: [{ kind: 'resources', amount: combatReplacementPayment(state, card) }],
+            effects: [{ kind: 'replace-attacker' }],
+          },
+        ],
+        { bindings: { attacker: attack.attacker, replacement: reference(card) } },
+      ),
+    );
     return;
   }
   if (frame.kind === 'combat-order') {
@@ -4959,11 +6173,24 @@ function applyIntent(
     defeatUnits(
       state,
       defeated.filter(card => isUnit(state, card)),
+      [],
+      undefined,
+      false,
+      undefined,
+      supportsEngine('1.5.0', state.versions.engine)
+        ? Object.fromEntries(defeated.map(c => [c.instanceId, actor]))
+        : undefined,
     );
     maintenance(state);
     return;
   }
-  if (frame.kind === 'action') state.actionHistory = { attacks: [], basesAttacked: [] };
+  if (frame.kind === 'action') {
+    state.actionHistory = { attacks: [], basesAttacked: [] };
+    if (state.phaseHistory.requiredAttacks)
+      state.phaseHistory.requiredAttacks = state.phaseHistory.requiredAttacks.filter(
+        requirement => requirement.playerId !== actor,
+      );
+  }
   if (frame.kind === 'action')
     state.execution.frames.unshift(
       { kind: 'flush-triggers' },
@@ -5008,8 +6235,7 @@ function applyIntent(
       if (frame.kind !== 'resource') throw new IllegalInput();
       const cards = selections.map(id => instance(state, id));
       for (const card of cards) {
-        move(state, card, 'resources');
-        card.exhausted = !frame.setup;
+        resourceCard(state, card, actor, frame.setup);
       }
       fact(state, 'resourced', actor, [], cards.length);
       if (cards.length) fact(state, 'resourced', actor, cards, cards.length, [actor]);
@@ -5084,7 +6310,7 @@ function applyIntent(
       );
       applyCardCosts(state, paymentSource, ability.costs, costSelections ?? []);
       if (sacrificed) {
-        defeatUnits(state, [sacrificed]);
+        defeatUnits(state, [sacrificed], [], paymentSource);
         maintenance(state);
       }
       break;

@@ -3,8 +3,9 @@
 Crossfire's executable archive is a smoke artifact for the newest committed
 runtime. Production replay/recovery uses the current compatible runtime with the
 original installed card data; see [card releases](card-releases.md). Card-only
-updates do not require rebuilding this artifact. Older minor recordings are a
-compatibility obligation, and historical JSON bundles remain retained in the DB.
+updates do not require rebuilding this artifact. Recordings require a supported
+card-data contract; the minimum accepted bundle feature line is 1.5. Historical
+JSON bundles remain in the DB, but retired contracts 1.0–1.4 cannot be loaded.
 This command's pruning only affects generated executable artifacts.
 
 From the worktree root, after committing engine changes:
@@ -32,8 +33,9 @@ continuation fixtures in fresh processes. Unit tests also exercise corrupted
 artifacts, conflicting publication and pruning that preserves the current build.
 These checks prove recovery of the current engine without retaining old engines.
 
-Minor runtime updates preserve historical behavior and data contracts; the frozen
-recordings in the conformance suite enforce that obligation. A future breaking
+Minor runtime updates preserve historical behavior for supported card bundles;
+the frozen built-in baseline recordings remain in the conformance suite.
+Retirement of a bundle contract is explicit in [card releases](card-releases.md). A future breaking
 major release must explicitly decide whether to retain an executable adapter for
 older majors. It must not silently reinterpret historical games.
 The benchmark reports below are historical measurements, not installed builds.

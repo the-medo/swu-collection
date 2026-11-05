@@ -1,3 +1,4 @@
+import { attackDefenders } from './combat.ts';
 import type { CardInstance, Frame, GameState } from './model.ts';
 import { isUnit, unitStats } from './attachments.ts';
 import { survivesZeroHp } from './lasting.ts';
@@ -26,8 +27,9 @@ export function excessDamageChoice(state: GameState, frame: DamageFrame) {
           .filter(
             c =>
               isUnit(state, c) &&
-              (c.instanceId !== attack.defender.instanceId ||
-                c.incarnation !== attack.defender.incarnation),
+              !attackDefenders(attack).some(
+                ref => c.instanceId === ref.instanceId && c.incarnation === ref.incarnation,
+              ),
           )
       : [];
   return { assignment, route, amount, targets };
@@ -65,4 +67,70 @@ export function finishExcessRouting(state: GameState, frame: DamageFrame, target
       amount,
     };
   }
+}
+
+// Several defenders still produce one excess-damage packet from the attacker.
+// First resolve every defender's replacements, then choose any excess route and
+// resolve replacements on its destination before committing the entire combat.
+export function consolidateMultiExcess(state: GameState, frame: DamageFrame) {
+  const attack = state.attacks.find(a => a.id === frame.combatAttackId);
+  if (!attack?.additionalDefender || frame.multiExcessResolved) return false;
+  frame.multiExcessResolved = true;
+  const base = instance(state, state.players[attack.defendingPlayer]!.base);
+  let amount = 0;
+  let source: DamageFrame['assignments'][number]['source'] = null;
+  let route: NonNullable<DamageFrame['assignments'][number]['excessRoute']> | undefined;
+  let unpreventable = false;
+  for (const assignment of frame.assignments) {
+    if (
+      assignment.source?.instanceId !== attack.attacker.instanceId ||
+      assignment.source.incarnation !== attack.attacker.incarnation
+    )
+      continue;
+    source = assignment.source;
+    unpreventable ||= !!assignment.unpreventable;
+    const target = instance(state, assignment.target.instanceId);
+    const routed = assignment.excessRoute;
+    if (routed) {
+      route = { ...routed, whole: true };
+      const excess = routed.whole
+        ? assignment.amount
+        : !assignment.preventedBy &&
+            !survivesZeroHp(state, target) &&
+            assignment.amount >= unitStats(state, target).hp - target.damage
+          ? Math.max(
+              0,
+              assignment.amount - Math.max(0, unitStats(state, target).hp - target.damage),
+            )
+          : 0;
+      delete assignment.excessRoute;
+      if (!routed.whole) {
+        assignment.amount -= excess;
+        if (excess) assignment.redirectedAmount = excess;
+      } else assignment.amount = 0;
+      amount += excess;
+    } else if (assignment.excess) {
+      if (
+        !assignment.preventedBy &&
+        !survivesZeroHp(state, target) &&
+        assignment.amount >= unitStats(state, target).hp - target.damage
+      )
+        amount += assignment.excess.amount;
+      delete assignment.excess;
+    } else if (target.instanceId === base.instanceId) {
+      // A missing defender with Overwhelm contributes its full attack damage.
+      amount += assignment.amount;
+      assignment.amount = 0;
+    }
+  }
+  if (amount > 0)
+    frame.assignments.push({
+      target: reference(base),
+      amount,
+      source: structuredClone(source),
+      preventedBy: null,
+      ...(route ? { excessRoute: route } : {}),
+      ...(unpreventable ? { unpreventable: true } : {}),
+    });
+  return true;
 }

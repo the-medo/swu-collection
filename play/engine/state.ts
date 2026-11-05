@@ -1,7 +1,12 @@
+import { supportsEngine } from './release.ts';
+import { attackDefenders } from './combat.ts';
+import { instanceDefinition } from './instance-definition.ts';
+import { cardTitle } from '../cards/catalog.ts';
+import { activeNamedEffects } from './naming.ts';
 import type { CatalogContext } from '../cards/catalog.ts';
 import { assertCompatibleVersions } from '../cards/catalog.ts';
 import { bundleVersionsSchema, type BundleVersions } from '../cards/version-contract.ts';
-import { captureTriggers } from './triggers.ts';
+import { abilitySources, captureTriggers } from './triggers.ts';
 import { containsRegroupOperation } from './delayed.ts';
 import { numericValue } from './values.ts';
 import { matchesUnit } from './targets.ts';
@@ -24,7 +29,7 @@ import { containsRescueSchedule, containsReturnSchedule } from './delayed.ts';
 import { catalogFor } from '../cards/catalog.ts';
 import { namedAbilityLoss } from './naming.ts';
 import { matchesCard } from './inspection.ts';
-import { effectiveAbilities } from './effective-abilities.ts';
+import { effectiveAbilities, potentialAbilitySources } from './effective-abilities.ts';
 import { z } from 'zod';
 import { abilityOrigins, assertAbilityOrigins, originAbilities } from './effective-abilities.ts';
 import { cardDefinition } from '../cards/catalog.ts';
@@ -167,6 +172,7 @@ export function reference(card: CardReference): CardReference {
     instanceId: card.instanceId,
     cardId: card.cardId,
     ...(card.leaderSide ? { leaderSide: card.leaderSide } : {}),
+    ...(card.copiedCardId ? { copiedCardId: card.copiedCardId } : {}),
     incarnation: card.incarnation,
     visibility: card.visibility,
   };
@@ -324,10 +330,25 @@ export function move(
   }
   if (zone === 'deck' || zone === 'hand' || zone === 'resources') card.visibility++;
   // V8 §8.36: changing arenas does not leave play or create a new copy.
-  if ((isArena(zone) && !isArena(card.zone)) || zone === 'resources' || zone === 'base')
+  if (
+    (isArena(zone) &&
+      !isArena(card.zone) &&
+      !state.execution.frames.some(
+        f =>
+          f.kind === 'unit-entry' &&
+          f.card.instanceId === card.instanceId &&
+          f.card.incarnation === card.incarnation,
+      )) ||
+    zone === 'resources' ||
+    zone === 'base'
+  )
     card.incarnation++;
   if (!(isArena(zone) && isArena(card.zone))) delete card.resourcesPaid;
-  if (!isArena(zone)) card.controller = card.owner;
+  if (!isArena(zone)) {
+    card.controller = card.owner;
+    delete card.copiedCardId;
+    delete card.remainingHpChange;
+  }
   card.zone = zone;
   membership(state, card)?.push(card.instanceId);
   if (isArena(zone)) for (const upgrade of attachments) move(state, upgrade, zone);
@@ -363,6 +384,12 @@ export function resourceCard(
   changeResourceController(state, card, playerId);
   card.damage = 0;
   card.exhausted = !ready;
+  collectTriggers(
+    state,
+    'card-resourced',
+    abilitySources(state).filter(source => source.controller === playerId),
+    card,
+  );
   return true;
 }
 export function addCard(state: GameState, owner: string, cardId: string, zone: Zone): CardInstance {
@@ -493,21 +520,52 @@ export function playCost(
       providers.add(unit.instanceId);
   const provided = [...providers].flatMap(id => cardAspects(state, instance(state, id)));
   const asUnit = definition.kind === 'unit' && !piloting;
+  const ownExceptions = !namedAbilityLoss(state, card)
+    ? (definition.ownPlayAspectExceptions ?? []).filter(
+        exception =>
+          (!exception.host ||
+            (!!target &&
+              matchesUnit(state, target, card.controller, exception.host, { source: card }))) &&
+          (!exception.condition ||
+            conditionMatches(state, card.controller, exception.condition, { source: card })),
+      )
+    : [];
+  const ignoredAspects = new Set(Array.isArray(ignoreAspectPenalties) ? ignoreAspectPenalties : []);
+  for (const exception of ownExceptions)
+    for (const aspect of exception.aspects ?? definition.aspects) ignoredAspects.add(aspect);
   let penalty =
     ignoreAspectPenalties === true
       ? 0
       : aspectPenalty(
-          (alternate?.aspects ?? definition.aspects).filter(
-            aspect =>
-              !Array.isArray(ignoreAspectPenalties) || !ignoreAspectPenalties.includes(aspect),
-          ),
+          (alternate?.aspects ?? definition.aspects).filter(aspect => !ignoredAspects.has(aspect)),
           provided,
         );
   for (const source of Object.values(state.cards)) {
-    if (source.controller !== card.controller || !['base', 'ground', 'space'].includes(source.zone))
-      continue;
-    for (const exception of effectiveAbilities(state, source).ignoreAspectPenalties ?? []) {
+    if (source.controller !== card.controller) continue;
+    const definition = cardDefinition(state, source.cardId);
+    const exceptions =
+      source.zone === 'discard' && definition.kind === 'unit' && !namedAbilityLoss(state, source)
+        ? (definition.discardAbilities?.ignoreAspectPenalties ?? [])
+        : ['base', 'ground', 'space'].includes(source.zone)
+          ? (effectiveAbilities(state, source).ignoreAspectPenalties ?? [])
+          : [];
+    for (const exception of exceptions) {
       if (exception.filter.kind === 'unit' && !asUnit) continue;
+      if (
+        exception.host &&
+        (!target || !matchesUnit(state, target, source.controller, exception.host, { source }))
+      )
+        continue;
+      if (
+        exception.firstEachRound &&
+        state.roundHistory.plays.some(
+          play =>
+            play.card.controller === card.controller &&
+            (exception.filter.kind !== 'unit' || play.asUnit) &&
+            matchesCard(state, play.card, exception.filter, { source }),
+        )
+      )
+        continue;
       if (
         matchesCard(state, card, exception.filter, { source }) &&
         (!exception.condition ||
@@ -619,7 +677,26 @@ export function playCost(
     (sum, modifier) => sum + (modifier.phaseCost?.increase ?? 0),
     0,
   );
-  const basis = increased ?? (alternate?.cost ?? definition.cost) + penalty + surcharge;
+  const enemyTax = potentialAbilitySources(state, 'enemyPlayCostIncreases')
+    .filter(source => source.controller !== card.controller)
+    .reduce(
+      (sum, source) =>
+        sum +
+        (effectiveAbilities(state, source).enemyPlayCostIncreases ?? [])
+          .filter(tax => matchesCard(state, card, tax.filter, { source }))
+          .reduce((n, tax) => n + tax.amount, 0),
+      0,
+    );
+  const namedTax = activeNamedEffects(state)
+    .filter(
+      effect =>
+        effect.restriction === 'increase-cost' &&
+        (effect.appliesTo === 'each' || effect.playerId !== card.controller) &&
+        effect.name === cardTitle(state, card.cardId),
+    )
+    .reduce((sum, effect) => sum + (effect.amount ?? 0), 0);
+  const basis =
+    increased ?? (alternate?.cost ?? definition.cost) + penalty + surcharge + enemyTax + namedTax;
   if (parts) Object.assign(parts, { increased: basis, reductions });
   return Math.max(0, basis - Object.values(reductions).reduce((a, b) => a + b, 0));
 }
@@ -632,6 +709,8 @@ export function startingHandSize(state: GameState, playerId: string): number {
   const base = cardDefinition(state, instance(state, state.players[playerId]!.base).cardId);
   return (
     6 +
+    (activeAbilities(state, instance(state, state.players[playerId]!.leader))
+      .startingHandIncrease ?? 0) +
     (base.kind === 'base'
       ? (base.startingHandIncrease ?? 0) - (base.startingHandReduction ?? 0)
       : 0)
@@ -771,12 +850,29 @@ export function assertState(state: GameState): void {
   if (seen.size !== Object.keys(state.cards).length || nonTokens.length > 244)
     throw new Error('Unplaced or excessive cards');
   for (const [id, card] of Object.entries(state.cards)) {
-    const definition = cardDefinition(state, card.cardId);
+    const definition = instanceDefinition(state, card);
+    const entering = state.execution.frames.filter(
+      f =>
+        f.kind === 'unit-entry' &&
+        f.card.instanceId === card.instanceId &&
+        f.card.incarnation === card.incarnation,
+    );
+    if (
+      card.remainingHpChange?.playerId != null &&
+      !state.seats.includes(card.remainingHpChange.playerId)
+    )
+      throw new Error('Invalid remaining HP responsibility');
+    if (card.copiedCardId && (!isArena(card.zone) || definition.kind !== 'unit'))
+      throw new Error('Copied attributes outside play');
+    if (entering.length > 1) throw new Error('Duplicate unit entry');
     if (
       card.instanceId !== id ||
       !state.seats.includes(card.owner) ||
       !state.seats.includes(card.controller) ||
-      (!isArena(card.zone) && card.controller !== card.owner && card.zone !== 'resources')
+      (!isArena(card.zone) &&
+        card.controller !== card.owner &&
+        card.zone !== 'resources' &&
+        !entering.length)
     )
       throw new Error('Invalid card identity/control');
     if (
@@ -865,7 +961,7 @@ export function assertState(state: GameState): void {
       )
         throw new Error('Invalid captured unit');
     } else if (card.capturedBy) throw new Error('Capture link outside captivity');
-    if (card.zone === 'set-aside' && !isToken(definition))
+    if (card.zone === 'set-aside' && !isToken(definition) && !entering.length)
       throw new Error('Invalid set-aside card');
     if (
       definition.kind === 'player-token' &&
@@ -986,13 +1082,21 @@ export function assertState(state: GameState): void {
     usageKeys.add(key);
   }
   for (const attack of state.attacks) {
+    if (
+      attack.additionalDefender &&
+      (attack.additionalDefender.instanceId === attack.defender.instanceId ||
+        attackDefenders(attack).some(
+          ref => !['unit', 'leader'].includes(cardDefinition(state, ref.cardId).kind),
+        ))
+    )
+      throw new Error('Invalid additional defender');
     if (!state.seats.includes(attack.defendingPlayer)) throw new Error('Invalid defending player');
     if (
       new Set(attack.removedFromCombat.map(ref => ref.instanceId)).size !==
         attack.removedFromCombat.length ||
       attack.removedFromCombat.some(
         ref =>
-          ![attack.attacker, attack.defender].some(
+          ![attack.attacker, ...attackDefenders(attack)].some(
             participant =>
               participant.instanceId === ref.instanceId &&
               participant.incarnation === ref.incarnation &&
@@ -1067,13 +1171,16 @@ export function assertState(state: GameState): void {
         target.cardId !== attack.routedExcess.cardId ||
         target.incarnation < attack.routedExcess.incarnation ||
         !['unit', 'leader'].includes(cardDefinition(state, target.cardId).kind) ||
-        (target.instanceId === attack.defender.instanceId &&
-          attack.routedExcess.incarnation === attack.defender.incarnation)
+        attackDefenders(attack).some(
+          ref =>
+            target.instanceId === ref.instanceId &&
+            attack.routedExcess!.incarnation === ref.incarnation,
+        )
       )
         throw Error('Invalid redirected combat target');
     }
     for (const damage of attack.combatDamage) {
-      const source = [attack.attacker, attack.defender].find(
+      const source = [attack.attacker, ...attackDefenders(attack)].find(
         r =>
           r.instanceId === damage.source.instanceId &&
           r.incarnation === damage.source.incarnation &&
@@ -1091,7 +1198,7 @@ export function assertState(state: GameState): void {
       const legal =
         source === attack.attacker
           ? [
-              attack.defender,
+              ...attackDefenders(attack),
               ...(attack.routedExcess ? [attack.routedExcess] : []),
               reference(instance(state, state.players[attack.defendingPlayer]!.base)),
             ]
@@ -1129,7 +1236,7 @@ export function assertState(state: GameState): void {
       )
     )
       throw new Error('Invalid attack ability grant');
-    for (const ref of [attack.attacker, attack.defender]) {
+    for (const ref of [attack.attacker, ...attackDefenders(attack)]) {
       const card = state.cards[ref.instanceId];
       if (!card || card.cardId !== ref.cardId || card.incarnation < ref.incarnation)
         throw new Error('Invalid attack reference');
@@ -1179,6 +1286,9 @@ export function assertState(state: GameState): void {
       throw new Error('Invalid previous action history');
   if (state.actionHistory?.basesAttacked.some(id => !state.seats.includes(id)))
     throw new Error('Invalid current action bases');
+  for (const card of state.phaseHistory.defeated)
+    if (card.defeatedBy != null && !state.seats.includes(card.defeatedBy))
+      throw new Error('Invalid defeat responsibility');
   for (const card of state.phaseHistory.defeatedAttacking)
     if (
       !state.phaseHistory.defeated.some(
@@ -1314,6 +1424,20 @@ export function assertState(state: GameState): void {
     )
       throw new Error('Invalid lasting effect expiry');
   }
+  for (const requirement of state.phaseHistory.requiredAttacks ?? []) {
+    const unit = state.cards[requirement.unit.instanceId],
+      source = state.cards[requirement.source.instanceId];
+    if (
+      !state.seats.includes(requirement.playerId) ||
+      !unit ||
+      unit.cardId !== requirement.unit.cardId ||
+      unit.incarnation < requirement.unit.incarnation ||
+      !source ||
+      source.cardId !== requirement.source.cardId ||
+      source.incarnation < requirement.source.incarnation
+    )
+      throw new Error('Invalid required attack');
+  }
   const delayedIds = new Set<string>();
   for (const delayed of [
     ...state.delayedEffects,
@@ -1322,7 +1446,9 @@ export function assertState(state: GameState): void {
     ),
   ]) {
     const source = state.cards[delayed.source.instanceId];
-    const definition = source && cardDefinition(state, source.cardId);
+    const definition = source && instanceDefinition(state, delayed.source);
+    const regroupEffects =
+      delayed.kind === 'effects-at-regroup' && supportsEngine('1.5.0', state.versions.engine);
     const regroupOperation = delayed.kind === 'regroup-operation';
     const resourceRepayment =
       delayed.kind === 'resources-at-regroup' || delayed.kind === 'resources-at-action';
@@ -1336,11 +1462,16 @@ export function assertState(state: GameState): void {
       (!controlReturn &&
         !resourceRepayment &&
         !regroupOperation &&
+        !regroupEffects &&
         delayed.source.zone !== 'discard') ||
       delayed.source.visibility > source.visibility ||
       delayed.source.controller !== delayed.playerId ||
       !state.seats.includes(delayed.playerId) ||
-      (!controlReturn && !resourceRepayment && !regroupOperation && definition?.kind !== 'event') ||
+      (!controlReturn &&
+        !resourceRepayment &&
+        !regroupOperation &&
+        !regroupEffects &&
+        definition?.kind !== 'event') ||
       delayedIds.has(delayed.id) ||
       (delayed.kind !== 'control-on-departure' && delayed.dueRound < state.round)
     )
@@ -1386,8 +1517,11 @@ export function assertState(state: GameState): void {
         throw new Error('Invalid delayed action effects');
     } else if (delayed.kind === 'effects-at-regroup') {
       if (
-        definition?.kind !== 'event' ||
-        !containsRegroupEffects(definition.effects, delayed.effects)
+        (!regroupEffects && definition?.kind !== 'event') ||
+        !containsRegroupEffects(
+          delayed.origin ? originAbilities(state, delayed.origin) : definition,
+          delayed.effects,
+        )
       )
         throw new Error('Invalid delayed regroup effects');
     } else {
@@ -1397,13 +1531,17 @@ export function assertState(state: GameState): void {
         delayed.target.visibility > target.visibility ||
         delayed.target.cardId !== target.cardId ||
         delayed.target.incarnation > target.incarnation ||
-        cardDefinition(state, target.cardId).kind !== 'unit' ||
+        (delayed.targetZone === 'resources'
+          ? delayed.kind !== 'control-on-departure' ||
+            !['unit', 'upgrade', 'event'].includes(cardDefinition(state, target.cardId).kind)
+          : cardDefinition(state, target.cardId).kind !== 'unit') ||
         !(controlReturn
           ? containsControlSchedule(
               delayed.origin
                 ? originAbilities(state, delayed.origin)
                 : activeAbilities(state, delayed.source),
               delayed.kind === 'control-at-regroup' ? 'regroup' : 'source-leaves',
+              delayed.targetZone,
             )
           : definition?.kind === 'event' &&
             (delayed.kind === 'defeat-at-regroup'

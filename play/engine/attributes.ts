@@ -1,3 +1,4 @@
+import { instanceDefinition } from './instance-definition.ts';
 import { activeLasting } from './lasting.ts';
 import { conditionMatches } from './conditions.ts';
 import { evaluate } from './evaluation.ts';
@@ -22,10 +23,10 @@ export function unitIsLeader(
   const card = state.cards[ref.instanceId];
   if (card && card.incarnation === ref.incarnation && isUnit(state, card))
     return (
-      cardDefinition(state, card.cardId).kind === 'leader' ||
+      instanceDefinition(state, card).kind === 'leader' ||
       attachedUpgrades(state, card).some(
         u =>
-          upgradeProfile(cardDefinition(state, u.cardId))?.hostIsLeader &&
+          upgradeProfile(instanceDefinition(state, u))?.hostIsLeader &&
           activeUpgrade(state, u, evaluation),
       )
     );
@@ -65,7 +66,7 @@ export function cardTraits(
         ...grantedTraits(state, card, evaluation),
         ...attachedUpgrades(state, card).flatMap(u => {
           if (!activeUpgrade(state, u, evaluation)) return [];
-          const profile = upgradeProfile(cardDefinition(state, u.cardId));
+          const profile = upgradeProfile(instanceDefinition(state, u));
           return [
             ...(profile?.hostTraits ?? []),
             ...(profile?.conditionalHostTraits ?? []).flatMap((grant, index) =>
@@ -84,7 +85,7 @@ export function cardTraits(
         !activeLasting(state, card).some(e => e.loseTraits?.includes(trait)) &&
         !attachedUpgrades(state, card).some(
           u =>
-            upgradeProfile(cardDefinition(state, u.cardId))?.hostLosesTraits?.includes(trait) &&
+            upgradeProfile(instanceDefinition(state, u))?.hostLosesTraits?.includes(trait) &&
             activeUpgrade(state, u, evaluation),
         ),
     );

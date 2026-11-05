@@ -1,0 +1,3524 @@
+{
+  "4-lom--bounty-hunter-for-hire": {
+    "text": "Ambush (When you play this unit, it may ready and attack an enemy unit.)\nEach friendly unit named Zuckuss gets +1/+1 and gains Ambush.",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": true,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "501st-liberator": {
+    "text": "When Played: If you control another Republic unit, you may heal 3 damage from a base.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "97th-legion--keeping-the-peace-on-sullust": {
+    "text": "This unit gets +1/+1 for each resource you control.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "a-fine-addition": {
+    "text": "If an enemy unit was defeated this phase, play an upgrade from your hand or from any player's discard pile, ignoring its aspect penalty.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that let you play a card require you to pay that card's cost unless specified otherwise.\n"
+  },
+  "a-new-adventure": {
+    "text": "Return a non-leader unit that costs 6 or less to its owner's hand. Then, its owner may play it for free.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\n"
+  },
+  "aayla-secura--master-of-the-blade": {
+    "text": "Coordinate — On Attack: Prevent all combat damage that would be dealt to this unit for this attack.",
+    "keywords": [
+      "Coordinate"
+    ],
+    "unique": true,
+    "rules": "“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\n"
+  },
+  "academy-defense-walker": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)\n\nWhen Played: Give an Experience token to each friendly damaged unit.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "adelphi-patrol-wing": {
+    "text": "When Played: You may attack with a unit. If you have the initiative, it gets +2/+0 for this attack.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Units must be ready in order to attack.\n"
+  },
+  "admiral-ackbar--brilliant-strategist": {
+    "text": "Restore 1 \n\nWhen Played: You may deal damage to a unit equal to the number of units you control in its arena. ",
+    "keywords": [
+      "Restore"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "admiral-ozzel--overconfident": {
+    "text": "Action [exhaust]: Play an Imperial unit from your hand (paying its cost). It enters play ready. Each opponent may ready a unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": "Abilities that let you play a card require you to pay that card’s cost unless specified otherwise.\nOpponents choose and ready their units before resolving any “When Played” abilities or other abilities that trigger when you play your unit.\n"
+  },
+  "admiral-piett--captain-of-the-executor": {
+    "text": "Each friendly non-leader unit that costs 6 or more gains Ambush. (After you play that unit, it may ready and attack an enemy unit.)",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": true,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAmbush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "admiral-trench--holding-the-line": {
+    "text": "Exploit 1 \nWhen Played: Return up to 3 units that were defeated this phase from your discard pile to your hand.",
+    "keywords": [
+      "Exploit"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "admiral-yularen--advising-caution": {
+    "text": "Restore 1\nEach other friendly Heroism unit gets +0/+1.",
+    "keywords": [
+      "Restore"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "agent-kallus--seeking-the-rebels": {
+    "text": "Ambush \n\nWhen another unique unit is defeated: You may draw a card. Use this ability only once each round.",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "aggression": {
+    "text": "Choose two, in any order:\n\nDraw a card.\nDefeat up to 2 upgrades.\nReady a unit with 3 or less power.\nDeal 4 damage to a unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "aggrieved-parliamentarian": {
+    "text": "When Played: Choose an opponent. They shuffle their discard pile and put it on the bottom of their deck.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "ahsoka-s-padawan-lightsaber": {
+    "text": "Attach to a non-Vehicle unit.\nWhen Played: If attached unit is Ahsoka Tano, you may attack with a unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Units must be ready in order to attack.\n"
+  },
+  "ahsoka-tano--always-ready-for-trouble": {
+    "text": "While you control fewer units than an opponent , this unit gains Ambush.\nAction [2 resources]: Return this unit and each upgrade on her to their owners' hands.",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "aid-from-the-innocent": {
+    "text": "Search the top 10 cards of your deck for 2 Heroism non-unit cards and discard them. (Put the other cards on the bottom of your deck in a random order.)\nFor this phase, you may play the discarded cards, and they each cost 2 resources less.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "alliance-dispatcher": {
+    "text": "Action [exhaust]: Play a unit from your hand. It costs [1 resource] less.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "altering-the-deal": {
+    "text": "Discard a captured card guarded by a friendly unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "anakin-s-interceptor--where-the-fun-begins": {
+    "text": "While your base has 15 or more damage on it, this unit gets +2/+0.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "anakin-skywalker--maverick-mentor": {
+    "text": "Coordinate — On Attack: Draw a card. (Gain this ability while you control 3 or more units.)",
+    "keywords": [
+      "Coordinate"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "armed-to-the-teeth": {
+    "text": "Attached unit gains: “On Attack: Give another friendly unit +2/+0 for this phase.”\nSmuggle [4 resources Aggression] (If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "arquitens-assault-cruiser": {
+    "text": "Ambush\nWhen this unit attacks and defeats a non-leader unit: Put the defeated unit into play as a resource under your control.",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": false,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\nA unit “attacks and defeats a unit” if it defeats the defender at any point during the attack.\n"
+  },
+  "asajj-ventress--count-dooku-s-assassin": {
+    "text": "Exploit 2 (While playing this card, defeat up to 2 units you control. This card costs 2 resources less for each unit defeated this way.)\nOn Attack: If you've attacked with another Separatist unit this phase, this unit gets +3/+0 for this phase.",
+    "keywords": [
+      "Exploit"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "asteroid-sanctuary": {
+    "text": "Exhaust an enemy unit.\n\nGive a Shield token to a friendly unit that costs 3 or less.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n"
+  },
+  "at-te-vanguard": {
+    "text": "Restore 3 (When this unit attacks, heal 3 damage from your base.)\nWhen Defeated: Create 2 Clone Trooper tokens.",
+    "keywords": [
+      "Restore"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "attack-pattern-delta": {
+    "text": "Give a friendly unit +3/+3 for this phase.\n\nGive another friendly unit +2/+2 for this phase.\n\nGive a third friendly unit +1/+1 for this phase.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "aurra-sing--crackshot-sniper": {
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\nWhen an enemy ground unit attacks your base: Ready this unit.",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "unique": true,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "avenger--hunting-star-destroyer": {
+    "text": "When Played/On Attack: An opponent chooses a non‑leader unit they control. Defeat that unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "b2-legionnaires": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)\nOverwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "keywords": [
+      "Sentinel",
+      "Overwhelm"
+    ],
+    "unique": false,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "bail-organa--rebel-councilor": {
+    "text": "Action [Exhaust]: Give an Experience token to another friendly unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "baktoid-spider-droid": {
+    "text": "Exploit 2 (While playing this card, defeat up to 2 units you control. This card costs 2 resources less for each unit defeated this way.)\nAmbush (When you play this unit, it may ready and attack an enemy unit.)",
+    "keywords": [
+      "Exploit",
+      "Ambush"
+    ],
+    "unique": false,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "bamboozle": {
+    "text": "You may discard a [Cunning] card from your hand instead of paying this event's cost. \nExhaust a unit and return each upgrade on it to its owner's hand.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Each upgrade is returned to the upgrade’s owner’s hand.\nIf you discard a card instead of paying this event’s cost, you ignore all costs, including all additional costs.\nIf Bamboozle is played using Smuggle (for example, when a player has Tech in play), a player cannot discard a Y card from hand instead of paying the Smuggle cost, as Bamboozle's ability only can replace the event's printed cost.\n"
+  },
+  "barriss-offee--unassuming-apprentice": {
+    "text": "Each friendly unit that was healed this phase gets +1/+0.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "baze-malbus--temple-guardian": {
+    "text": "Grit (This unit gets +1/+0 for each damage on him.)\n\nWhile you have the initiative, this unit gains Sentinel. (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": [
+      "Grit",
+      "Sentinel"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "bazine-netal--spy-for-the-first-order": {
+    "text": "When Played: Look at an opponent's hand. You may discard 1 of those cards. If you do, that player draws a card.\nSmuggle [4 resources Cunning Villainy]",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "bendu--the-one-in-the-middle": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)\n\nOn Attack: The next non-[Heroism], non-[Villainy] card you play this phase costs [2 resources] less.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": true,
+    "rules": "The cost reduction from Bendu’s “On Attack” ability remains active even if Bendu is defeated.\n"
+  },
+  "benthic--two-tubes---partisan-lieutenant": {
+    "text": "On Attack: Another friendly [Aggression] unit gains Raid 2 for this phase. (It gets +2/+0 while attacking.)",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "bib-fortuna--jabba-s-majordomo": {
+    "text": "Shielded (When you play this unit, give him a Shield token.)\n\nAction [Exhaust]: Play an event from your hand. It costs [1 resource] less.",
+    "keywords": [
+      "Shielded"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "black-one--scourge-of-starkiller-base": {
+    "text": "When Played/When Defeated: You may discard your hand. If you do, draw 3 cards.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "blizzard-assault-at-at": {
+    "text": "When this unit attacks and defeats a unit: You may deal the excess damage from this attack to an enemy ground unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": "A unit “attacks and defeats a unit” if it defeats the defender at any point during the attack.\nIf Blizzard Assault AT-AT is given Overwhelm, all excess damage is applied to the defending player's base, and there is no excess damage that can be dealt by the triggered ability.\n"
+  },
+  "bo-katan-kryze--death-watch-lieutenant": {
+    "text": "While you control another Mandalorian unit, this unit gains Overwhelm and Saboteur.\nWhile you control another Trooper unit, this unit gets +1/+0.",
+    "keywords": [
+      "Overwhelm",
+      "Saboteur"
+    ],
+    "unique": true,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "bo-katan-kryze--fighting-for-mandalore": {
+    "text": "When Defeated: For each player with 15 or more damage on their base, draw a card.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "boba-fett--disintegrator": {
+    "text": "On Attack: If this unit is attacking an exhausted unit that didn't enter play this round, deal 3 damage to the defender.",
+    "keywords": [],
+    "unique": true,
+    "rules": "Boba Fett’s ability will deal damage to an exhausted leader the turn it deploys, since leaders never enter or leave play.\n"
+  },
+  "boba-fett-s-armor": {
+    "text": "Attach to a non-Vehicle unit.\nIf attached unit is Boba Fett and damage would be dealt to him, prevent 2 of that damage.",
+    "keywords": [],
+    "unique": false,
+    "rules": "If your Boba Fett unit has both his Armor and another damage prevention effect (e.g. Shield), you can choose in what order to resolve the prevention effects.\n"
+  },
+  "bodhi-rook--imperial-defector": {
+    "text": "When Played: Look at an opponent's hand and discard a non-unit card from it.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "bold-resistance": {
+    "text": "Choose up to 3 units that share the same Trait. Each of those units gets +2/+0 for this phase.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "bombing-run": {
+    "text": "Choose an arena (ground or space). Deal 3 damage to each unit in that arena.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "bossk--deadly-stalker": {
+    "text": "Ambush (After you play this unit, he may ready and attack an enemy unit.)\n\nWhen you play an event: You may deal 2 damage to a unit.",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": true,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\nBossk’s “When you play an event” ability triggers when an event is played but only resolves after the event has fully finished resolving.\n"
+  },
+  "bounty-guild-initiate": {
+    "text": "When Played: If you control another Bounty Hunter unit, you may deal 2 damage to a ground unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "bounty-hunter-crew": {
+    "text": "Ambush (After you play this unit, it may ready and attack an enemy unit.)\n\nWhen Played: You may return an event from a discard pile to its owner's hand.",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": false,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "bounty-hunter-s-quarry": {
+    "text": "Attached unit gains: “Bounty — Search the top 5 cards of your deck, or 10 cards instead if this unit is unique, for a unit that costs 3 or less and play it for free.” (Put the other cards on the bottom of your deck in a random order.)",
+    "keywords": [
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAfter searching, put any cards not chosen on the bottom of your deck in a random order.\n“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\n"
+  },
+  "bounty-posting": {
+    "text": "Search your deck for a Bounty upgrade, reveal it, and draw it. (Shuffle your deck.) \nYou may play that upgrade (paying its cost).",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that let you play a card require you to pay that card’s cost unless specified otherwise.\nAfter searching your deck, shuffle it.\n"
+  },
+  "brain-invaders": {
+    "text": "Each leader loses all abilities except for epic actions and can't gain abilities.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "bravado": {
+    "text": "If you've defeated an enemy unit this phase, this event costs 2 resources less to play.\nReady a unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Any card you control or ability you resolve that defeats a unit is considered you defeating that unit.\n"
+  },
+  "bright-hope--the-last-transport": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)\n\nWhen Played: You may return a friendly non-leader ground unit to its owner's hand. If you do, draw a card.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": true,
+    "rules": "Abilities that return a card to hand must choose a card in play unless otherwise specified.\n"
+  },
+  "brutal-traditions": {
+    "text": "Action: If an enemy unit was defeated this phase, play this upgrade from your discard pile (paying its cost).",
+    "keywords": [],
+    "unique": false,
+    "rules": "Brutal Traditions’ ability cannot be used as an action if no enemy unit left play this phase, as it would not change the game state.\nAbilities that let you play a card require you to pay that card’s cost unless specified otherwise.\n"
+  },
+  "cad-bane--hostage-taker": {
+    "text": "When Played: This unit captures up to 3 enemy non-leader units with a total of 8 or less remaining HP.\nOn Attack: The defending player may rescue a card they own guarded by this unit. If they do, draw 2 cards.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "calculated-lethality": {
+    "text": "Defeat a non-leader unit that costs 3 or less. For each upgrade that was on that unit, give an Experience token to a friendly unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nEach Experience token can be given to any friendly unit.\n"
+  },
+  "calculating-magnaguard": {
+    "text": "When Played/When a friendly unit is defeated: This unit gains Sentinel for this phase. (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "captain-typho--protecting-the-senator": {
+    "text": "When Played/On Attack: Give a unit Sentinel for this phase.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "cargo-juggernaut": {
+    "text": "Shielded (When you play this unit, give a Shield token to it.)\nWhen Played: If you control another Vigilance unit, heal 4 damage from your base.",
+    "keywords": [
+      "Shielded"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "cartel-spacer": {
+    "text": "When Played: If you control another [Cunning] unit, exhaust an enemy unit that costs 4 or less.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n"
+  },
+  "cassian-andor--rebellions-are-built-on-hope": {
+    "text": "Smuggle [5 resources Aggression Heroism] (If this card is a resource, you may play him for his smuggle cost. Replace it with the top card of your deck.)\nWhen played using Smuggle: Ready this unit.",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "caught-in-the-crossfire": {
+    "text": "Choose 2 enemy units in the same arena. Each of those units deals damage equal to its power to the other.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card's power include temporary modifiers.\n"
+  },
+  "chain-code-collector": {
+    "text": "Ambush (When you play this unit, it may ready and attack an enemy unit.)\nOn Attack: If the defender has a Bounty, it gets –4/–0 for this attack.",
+    "keywords": [
+      "Ambush",
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "chancellor-palpatine--wartime-chancellor": {
+    "text": "Each token unit you create enters play ready.\nOn Attack: If a unit left play this phase, create a Clone Trooper token.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "change-of-heart": {
+    "text": "Take control of a non-leader unit. At the start of the regroup phase, its owner takes control of it.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "chewbacca--loyal-companion": {
+    "text": "Sentinel \n\nWhen this unit is attacked: Ready him.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "chewbacca--pykesbane": {
+    "text": "Grit\nWhen Played: You may defeat a unit with 5 or less remaining HP.\nSmuggle [9 resources Aggression Heroism]",
+    "keywords": [
+      "Grit",
+      "Smuggle"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "chimaera--flagship-of-the-seventh-fleet": {
+    "text": "Shielded (When you play this unit, give a Shield token to it.)\n\nOn Attack: Name a card. An opponent reveals their hand and discards a card with that name from it.",
+    "keywords": [
+      "Shielded"
+    ],
+    "unique": true,
+    "rules": "If there are multiple opponents, the controlling player chooses which one will be “an opponent.”\nAbilities that refer to a card’s “name” do not include the subtitle of the card.\n"
+  },
+  "choose-sides": {
+    "text": "Choose a friendly non-leader unit and an enemy non-leader unit. Exchange control of those units.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "chopper--metal-menace": {
+    "text": "While you control another SPECTRE unit, this unit gains Raid 1.\n\nOn Attack: Discard a card from the defending player's deck. If it's an event, exhaust a resource that player controls.",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": true,
+    "rules": "Always discard from the top of a deck unless an ability says otherwise.\n"
+  },
+  "clan-challengers": {
+    "text": "Raid 3 (This unit gets +3/+0 while attacking.)\nWhile this unit is upgraded, it gains Overwhelm. (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "keywords": [
+      "Raid",
+      "Overwhelm"
+    ],
+    "unique": false,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "clan-saxon-gauntlet": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)\nWhen this unit is attacked: You may give an Experience token to a unit (before damage is dealt).",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": "When this unit is attacked” triggers at the same time as “On Attack” abilities.\n"
+  },
+  "clear-the-field": {
+    "text": "Choose a non-leader unit that costs 3 or less. Return it and each enemy non-leader unit with the same name as it to their owners' hands.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card's cost always refer to its printed cost, regardless of modifiers.\nAbilities that refer to a card's “name” do not include the subtitle of the card.\nClear the Field requires you to choose a unit in play and only returns units in play to hand.\n"
+  },
+  "clone-cohort": {
+    "text": "Attached unit gains Raid 2 and: “When Defeated: Create a Clone Trooper token.”",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "clone-commander-cody--commanding-the-212th": {
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\nCoordinate — Each other friendly unit gets +1/+1 and gains Overwhelm. (Gain this ability while you control 3 or more units.)",
+    "keywords": [
+      "Overwhelm",
+      "Coordinate"
+    ],
+    "unique": true,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "clone-deserter": {
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)\nBounty — Draw a card. (When this unit is defeated or captured, your opponent collects its bounty.)",
+    "keywords": [
+      "Restore",
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "clone-dive-trooper": {
+    "text": "Coordinate — While this unit is attacking, the defender gets –2/–0. (Gain this ability while you control 3 or more units.)",
+    "keywords": [
+      "Coordinate"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "clone": {
+    "text": "You may have this unit enter play as a copy of a non-leader, non-Vehicle unit in play, except it gains the Clone trait and is not unique. (Only the card's printed attributes are copied.)",
+    "keywords": [],
+    "unique": false,
+    "rules": "Clone remains in play as a modified copy of the chosen unit even if the chosen unit leaves play.\nIf Clone is captured and later rescued, it may only enter play as a copy of a unit currently in play.\n"
+  },
+  "cobb-vanth--the-marshal": {
+    "text": "When Defeated: Search the top 10 cards of your deck for a unit that costs 2 or less and discard it. For this phase, you may play that card from your discard pile for free.",
+    "keywords": [],
+    "unique": true,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAfter searching, put any cards not chosen on the bottom of your deck in a random order.\n“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\nWhen a unit is played through Cobb’s ability, it enters play as a new copy of that unit. If it is defeated that same phase, it cannot be replayed again from the discard pile, as the new copy is not considered the same copy as the card discarded through Cobb’s ability.\n"
+  },
+  "colonel-yularen--isb-director": {
+    "text": "When you play a [Command] unit (including this one): Heal 1 damage from your base.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "command": {
+    "text": "Choose two, in any order:\n\nGive 2 Experience tokens to a unit.\nA friendly unit deals damage equal to its power to a non-unique enemy unit.\nPut this event into play as a resource.\nReturn a unit from your discard pile to your hand.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "commission": {
+    "text": "Search the top 10 cards of your deck for a Bounty Hunter, Item, or Transport card, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)\nSmuggle [3 resources Command]",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": false,
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n"
+  },
+  "compassionate-senator": {
+    "text": "Action [2 resources, Exhaust]: Heal 2 damage from a unit or base.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "confederate-tri-fighter": {
+    "text": "Bases can't be healed.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "consolidation-of-power": {
+    "text": "Choose any number of friendly units. You may play a unit from your hand if its cost is less than or equal to the combined power of the chosen units for free. Then, defeat the chosen units.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card's cost always refer to its printed cost, regardless of modifiers.\nAbilities that refer to a card's power include temporary modifiers.\n“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\n"
+  },
+  "corner-the-prey": {
+    "text": "Attack with a unit. It gets +1/+0 for this attack for each damage on the defender at the start of this attack.",
+    "keywords": [],
+    "unique": false,
+    "rules": "If you play Corner the Prey, you must attack with a unit, if able. Units must be ready in order to attack.\n"
+  },
+  "coruscant-dissident": {
+    "text": "On Attack: You may ready a resource.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "coruscant-guard": {
+    "text": "Coordinate — Ambush (Gain this keyword while you control 3 or more units, including this one. When you play this unit, it may ready and attack an enemy unit.)",
+    "keywords": [
+      "Coordinate",
+      "Ambush"
+    ],
+    "unique": false,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\nIf you play Coruscant Guard and control two other units, its Ambush ability triggers.\n"
+  },
+  "count-dooku--darth-tyranus": {
+    "text": "Shielded (When you play this unit, give him a Shield token.)\n\nWhen Played: You may defeat a unit with 4 or less remaining HP.",
+    "keywords": [
+      "Shielded"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "count-dooku--fallen-jedi": {
+    "text": "Exploit 2\nOverwhelm\nWhen Played: For each unit you exploited while playing this card, you may deal damage to an enemy unit equal to the power of the exploited unit.",
+    "keywords": [
+      "Exploit",
+      "Overwhelm"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "covert-strength": {
+    "text": "Heal 2 damage from a unit and give an Experience token to it.\nSmuggle [3 resources Vigilance] (If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "covetous-rivals": {
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)\nWhen Played/On Attack: You may deal 2 damage to a unit with a Bounty.",
+    "keywords": [
+      "Grit",
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "creative-thinking": {
+    "text": "Exhaust a non-unique unit.\nCreate a Clone Trooper token.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "criminal-muscle": {
+    "text": "When Played: You may return a non-unique upgrade to its owner's hand.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that return a card to hand must choose a card in play unless otherwise specified.\n"
+  },
+  "cripple-authority": {
+    "text": "Draw a card. Each opponent who controls more resources than you discards a card from their hand.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "crosshair--following-orders": {
+    "text": "Action [2 resources]: This unit gets +1/+0 for this phase.\nAction [Exhaust]: This unit deals damage equal to his power to an enemy ground unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\n"
+  },
+  "cunning": {
+    "text": "Choose two, in any order:\n\nReturn a non-leader unit with 4 or less power to its owner's hand.\nGive a unit +4/+0 for this phase.\nExhaust up to 2 units.\nAn opponent discards a random card from their hand.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "darth-maul--revenge-at-last": {
+    "text": "This unit can attack 2 units instead of 1.  ",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "darth-vader--commanding-the-first-legion": {
+    "text": "Ambush\n\nWhen Played: Search the top 10 cards of your deck for any number of [Villainy] units with combined cost 3 or less and play each of them for free.",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "daughter-of-dathomir": {
+    "text": "While this unit is undamaged, it gains Restore 2. (When this unit attacks, heal 2 damage from your base.)",
+    "keywords": [
+      "Restore"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "death-by-droids": {
+    "text": "Defeat a unit that costs 3 or less. Create 2 Battle Droid tokens.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card's cost always refer to its printed cost, regardless of modifiers.\n"
+  },
+  "del-meeko--providing-overwatch": {
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)\n\nEach event an opponent plays costs [1 resource] more.",
+    "keywords": [
+      "Restore"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "dengar--the-demolisher": {
+    "text": "When you play an upgrade on a unit: You may deal 1 damage to that unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "desperate-attack": {
+    "text": "Attack with a damaged unit. It gets +2/+0 for this attack.",
+    "keywords": [],
+    "unique": false,
+    "rules": "You must attack with a damaged unit, if able. Units must be ready in order to attack.\n"
+  },
+  "detention-block-rescue": {
+    "text": "Deal 3 damage to a unit. If that unit is guarding any captured cards, deal 6 damage instead.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "devastating-gunship": {
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)\nWhen Played: Defeat an enemy unit with 2 or less remaining HP.",
+    "keywords": [
+      "Grit"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "devastator--inescapable": {
+    "text": "Sentinel\n\nOverwhelm\n\nWhen Played: You may deal damage to a unit equal to the number of resources you control.",
+    "keywords": [
+      "Sentinel",
+      "Overwhelm"
+    ],
+    "unique": true,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "disaffected-senator": {
+    "text": "Action [2 resources, Exhaust]: Deal 2 damage to a base.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "discerning-veteran": {
+    "text": "When Played: This unit captures an enemy non-leader ground unit. (Put the captured card facedown under this unit until this unit leaves play.)",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "disruptive-burst": {
+    "text": "Give each enemy unit –1/–1 for this phase.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "dj--blatant-thief": {
+    "text": "Smuggle [7 resources Cunning Cunning]\nWhen played using Smuggle: Take control of an enemy resource. When this unit leaves play, that resource's owner takes control of it.",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": true,
+    "rules": "If DJ has already left play when you resolve his \"When Played\" ability, immediately return the stolen resource to its owner's control.\n"
+  },
+  "doctor-evazan--wanted-on-twelve-systems": {
+    "text": "Shielded (When you play this unit, give a Shield token to him.)\nBounty — Ready up to 12 resources. (When this unit is defeated or captured, your opponent collects his bounty.)",
+    "keywords": [
+      "Shielded",
+      "Bounty"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "doctor-pershing--experimenting-with-life": {
+    "text": "Action [Exhaust, deal 1 damage to a friendly unit]: Draw a card.",
+    "keywords": [],
+    "unique": true,
+    "rules": "Doctor Pershing can damage himself in order to draw a card, even if he is defeated by that damage.\n"
+  },
+  "don-t-get-cocky": {
+    "text": "Choose a unit. One at a time, reveal cards from your deck until you choose to stop or have revealed 7 cards. If the combined cost of the revealed cards is 7 or less, deal that much damage to the chosen unit. Put the revealed cards on the bottom of your deck in a random order.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAlways reveal from the top of a deck unless an ability says otherwise.\n"
+  },
+  "droid-cohort": {
+    "text": "Attached unit gains, “When Defeated: Create a Battle Droid token.”",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "droid-commando": {
+    "text": "While you control another Separatist unit, this unit gains Ambush. (When you play this unit, it may ready and attack an enemy unit.)",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": false,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "droideka-security": {
+    "text": "Exploit 2 (While playing this card, defeat up to 2 units you control. This card costs 2 resources less for each unit defeated this way.)\nSentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": [
+      "Exploit",
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "dryden-vos--offering-no-escape": {
+    "text": "Shielded\nWhen Played: Choose a captured card guarded by a unit you control. You may play it for free under your control.",
+    "keywords": [
+      "Shielded"
+    ],
+    "unique": true,
+    "rules": "“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\n"
+  },
+  "duchess-s-champion": {
+    "text": "While an opponent controls 3 or more units, this unit gains Sentinel. (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "echo--restored": {
+    "text": "Restore 2\nWhen Played: You may discard a card from your hand. Give 2 Experience tokens to a unit in play with the same name as the discarded card.",
+    "keywords": [
+      "Restore"
+    ],
+    "unique": true,
+    "rules": "Abilities that refer to a card’s “name” do not include the subtitle of the card.\n"
+  },
+  "electrostaff": {
+    "text": "Attach to a non-VEHICLE unit. \n\nWhile attached unit is defending, the attacker gets –1/–0.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "elite-p-38-starfighter": {
+    "text": "When Played/When Defeated: You may deal 1 damage to a unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "embo--stoic-and-resolute": {
+    "text": "When this unit completes an attack: If the defender was defeated, heal up to 2 damage from a unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": "A unit must survive an attack to trigger its “when this unit completes an attack” abilities.\n"
+  },
+  "emperor-palpatine--master-of-the-dark-side": {
+    "text": "Overwhelm \n\nWhen Played: Deal 6 damage divided as you choose among enemy units.",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "emperor-s-royal-guard": {
+    "text": "While you control an OFFICIAL unit, this unit gains Sentinel.\n\nWhile you control Emperor Palpatine (as a leader or unit), this unit gets +0/+1.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "encouraging-leadership": {
+    "text": "Give each friendly unit +1/+1 for this phase.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "endless-legions": {
+    "text": "Reveal any number of resources you control. Play each unit revealed this way for free (one at a time).",
+    "keywords": [],
+    "unique": false,
+    "rules": "If playing multiple units, resolve all abilities triggered while playing each unit before playing the next unit.\n“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\n"
+  },
+  "enforced-loyalty": {
+    "text": "Defeat a friendly unit. If you do, draw 2 cards.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "enfys-nest--champion-of-justice": {
+    "text": "Saboteur\nWhen Played/On Attack: You may return an enemy non-leader unit with less power than this unit to its owner's hand.",
+    "keywords": [
+      "Saboteur"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "enfys-nest--marauder": {
+    "text": "Ambush (When you play this unit, it may ready and attack an enemy unit.)\nWhile a friendly unit (including this one) is attacking using Ambush, the defender gets –3/–0.",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": true,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "enterprising-lackeys": {
+    "text": "When Defeated: You may defeat a friendly resource. If you do, put this unit into play as a resource.\nSmuggle [6 resources Command Command]",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "enticing-reward": {
+    "text": "Attached unit gains: “Bounty — Search the top 10 cards of your deck for 2 non-unit cards, reveal them, and draw them. (Put the other cards on the bottom of your deck in a random order.) Then, if this unit isn't unique, discard a card from your hand.”",
+    "keywords": [
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n"
+  },
+  "entrenched": {
+    "text": "Attached unit can't attack bases.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Units that can’t attack bases can still damage bases through other abilities, like Overwhelm.\n"
+  },
+  "ephant-mon--head-of-security": {
+    "text": "On Attack: Choose an enemy non-leader unit that attacked your base this phase. A friendly unit in the same arena captures that unit. (Put the captured card facedown under the friendly unit until the friendly unit leaves play.)",
+    "keywords": [],
+    "unique": true,
+    "rules": "Ephant Mon can capture a unit with his own ability.\n"
+  },
+  "equalize": {
+    "text": "Give a unit –2/–2 for this phase. Then, if you control fewer units than that unit's controller, give another unit –2/–2 for this phase.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "escort-skiff": {
+    "text": "While you control another [Command] unit, this unit gains Ambush. (After you play this unit, it may ready and attack an enemy unit.)",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": false,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "evacuate": {
+    "text": "Return each non-leader unit to its owner's hand.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that return a card to hand must choose a card in play unless otherwise specified.\n"
+  },
+  "evidence-of-the-crime": {
+    "text": "Take control of an upgrade that costs 3 or less and attach it to an eligible unit of your choice.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n"
+  },
+  "execute-order-66": {
+    "text": "Deal 6 damage to each Jedi unit. For each unit defeated this way, its controller creates a Clone Trooper token.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "ezra-bridger--resourceful-troublemaker": {
+    "text": "When this unit completes an attack: Look at the top card of your deck. You may play it, discard it, or leave it on top of your deck.",
+    "keywords": [],
+    "unique": true,
+    "rules": "A unit must survive an attack to trigger its “when this unit completes an attack” abilities.\n"
+  },
+  "fallen-lightsaber": {
+    "text": "Attach to a non-Vehicle unit. \n\nIf attached unit is a Force unit, it gains: \"On Attack: Deal 1 damage to each ground unit the defending player controls.\"",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "favorable-delegate": {
+    "text": "When Played: Draw a card.\nWhen Defeated: Discard a card from your hand.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "fenn-rau--protector-of-concord-dawn": {
+    "text": "When Played: You may play an upgrade from your hand. It costs 2 resources less.\nWhen you play an upgrade on this unit: Give an enemy unit –2/–2 for this phase.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "fennec-shand--loyal-sharpshooter": {
+    "text": "Ambush (When you play this unit, it may ready and attack an enemy unit.)\nOn Attack: Deal 1 damage to the defender (if it's a unit) for each different cost among cards in your discard pile.",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": true,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAmbush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "fett-s-firespray--pursuing-the-bounty": {
+    "text": "When Played: If you control Boba Fett or Jango Fett , ready this unit.\n\nAction [2 resources]: Exhaust a non-unique unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "fifth-brother--fear-hunter": {
+    "text": "This unit gains Raid 1 for each damage on him. (He gets +1/+0 while attacking for each damage on him.)\n\nOn Attack: You may deal 1 damage to this unit and 1 damage to another ground unit.",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "fighters-for-freedom": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\n\nWhen you play another [Aggression] card: You may deal 1 damage to a base.",
+    "keywords": [
+      "Saboteur"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "final-showdown": {
+    "text": "Ready each unit you control. At the start of the regroup phase, you lose the game.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "finalizer--might-of-the-first-order": {
+    "text": "Overwhelm\nWhen Played: Choose any number of friendly units. Each of those units captures an enemy non-leader unit in the same arena.",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "unique": true,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nIf you choose more friendly units than there are enemy units, the extra chosen units do nothing.\n"
+  },
+  "finn--on-the-run": {
+    "text": "When this unit completes an attack: Choose a unique unit. For this phase, if damage would be dealt to that unit, prevent 1 of that damage.",
+    "keywords": [],
+    "unique": true,
+    "rules": "A unit must survive an attack to trigger its “when this unit completes an attack” abilities.\n"
+  },
+  "first-legion-snowtrooper": {
+    "text": "While attacking a damaged unit, this unit gets +2/+0 and gains Overwhelm. (Deal excess damage to the opponent's base.)",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "unique": false,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "first-light--headquarters-of-the-crimson-dawn": {
+    "text": "Grit\nEach other friendly non-leader unit gains Grit.\nSmuggle [7 resources Vigilance Villainy, deal 4 damage to a friendly unit]",
+    "keywords": [
+      "Grit",
+      "Smuggle"
+    ],
+    "unique": true,
+    "rules": "First Light’s cannot damage itself to pay for its own Smuggle ability, since the ability’s cost must be paid before it enters play.\n"
+  },
+  "fives--in-search-of-truth": {
+    "text": "Saboteur\nWhen you play an event: You may put a Clone unit from your discard pile on the bottom of your deck. If you do, draw a card.",
+    "keywords": [
+      "Saboteur"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "fleet-lieutenant": {
+    "text": "When Played: You may attack with a unit. If it's a Rebel unit, it gets +2/+0 for this attack.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Units must be ready in order to attack.\n"
+  },
+  "for-a-cause-i-believe-in": {
+    "text": "Reveal the top 4 cards of your deck. For each [Heroism] card revealed this way, deal 1 damage to an enemy base. You may discard any of the revealed cards and put the rest back on top of your deck in any order.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "for-the-republic": {
+    "text": "If you control 3 or more Republic units, this upgrade costs 2 resources less to play.\nAttached unit gains: “Coordinate — Restore 2.”",
+    "keywords": [
+      "Coordinate",
+      "Restore"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "force-choke": {
+    "text": "If you control a FORCE unit, this event costs [1 resource] less to play. \n\nDeal 5 damage to a non-VEHICLE unit. That unit's controller draws a card.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "force-lightning": {
+    "text": "Choose a unit. It loses all abilities for this phase. Then, if you control a FORCE unit, pay any number of resources and deal 2 damage to the chosen unit for each resource paid this way.",
+    "keywords": [],
+    "unique": false,
+    "rules": "The chosen unit can still gain new abilities later in the phase, including the abilities it lost.\nAll damage dealt by a single ability is dealt simultaneously.\n"
+  },
+  "forced-surrender": {
+    "text": "Draw 2 cards. Each opponent whose base you've damaged this phase discards 2 cards from their hand.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "foresight": {
+    "text": "Attached unit gains: “When the regroup phase starts (before drawing cards): Name a card, then look at the top card of your deck. If it's the named card, you may reveal and draw it.”",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card's “name” do not include the subtitle of the card.\n"
+  },
+  "foundling": {
+    "text": "Attached unit gains the Mandalorian trait.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "freelance-assassin": {
+    "text": "When Played: You may pay 2 resources. If you do, deal 2 damage to a unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "freetown-backup": {
+    "text": "On Attack: Give another friendly unit +2/+2 for this phase.\nSmuggle [4 resources Command Heroism] (If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "frontier-at-rt": {
+    "text": "While you control another VEHICLE unit, this unit gains Ambush. (After you play this unit, it may ready and attack an enemy unit.)",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": false,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "frontier-trader": {
+    "text": "When Played: You may return a resource you control to its owner's hand. If you do, you may put the top card of your deck into play as a resource.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "frontline-shuttle": {
+    "text": "Action [defeat this unit]: Attack with a unit, even if it's exhausted. It can't attack bases for this attack.",
+    "keywords": [],
+    "unique": false,
+    "rules": "If you use Frontline Shuttle’s ability, you must attack with a unit, if able.\nUnits that can’t attack bases can still damage bases through other abilities, like Overwhelm.\n"
+  },
+  "galactic-ambition": {
+    "text": "Play a non-[Heroism] unit from your hand for free. Deal damage to your base equal to its cost.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\n"
+  },
+  "gamorrean-guards": {
+    "text": "While you control another [Cunning] unit, this unit gains Sentinel. (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "general-grievous--trophy-collector": {
+    "text": "Ignore the aspect penalty on each Lightsaber upgrade you play on this unit.\nOn Attack: If this unit has 4 or more Lightsaber upgrades attached to him, defeat 4 enemy units.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "general-krell--heartless-tactician": {
+    "text": "Each other friendly unit gains: “When Defeated: You may draw a card.”",
+    "keywords": [],
+    "unique": true,
+    "rules": "If General Krell is defeated simultaneously with other friendly units, all “When Defeated” abilities still trigger.\n"
+  },
+  "general-rieekan--defensive-strategist": {
+    "text": "When Played/On Attack: Choose a friendly unit. If it has Sentinel, give an Experience token to it. Otherwise, it gains Sentinel for this phase.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "general-s-blade": {
+    "text": "Attach to a non-Vehicle unit.\nIf attached unit is a Jedi, it gains: “On Attack: The next unit you play this phase costs 2 resources less.”",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "general-s-guardian": {
+    "text": "When this unit is attacked: Create a Battle Droid token.",
+    "keywords": [],
+    "unique": false,
+    "rules": "“When this unit is attacked” triggers at the same time as “On Attack” abilities.\n"
+  },
+  "general-tagge--concerned-commander": {
+    "text": "When Played: Give an Experience token to each of up to 3 Trooper units.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "gentle-giant": {
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)\nOn Attack: You may heal damage from another unit equal to the damage on this unit.",
+    "keywords": [
+      "Grit"
+    ],
+    "unique": false,
+    "rules": "If the chosen unit has less damage on it than Gentle Giant, heal all damage on it.\n"
+  },
+  "geonosis-patrol-fighter": {
+    "text": "Exploit 2 (While playing this card, defeat up to 2 units you control. This card costs 2 resources less for each unit defeated this way.)\nWhen Played: You may return a non-leader unit that costs 3 or less to its owner's hand.",
+    "keywords": [
+      "Exploit"
+    ],
+    "unique": false,
+    "rules": "Abilities that refer to a card's cost always refer to its printed cost, regardless of modifiers.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\n"
+  },
+  "gideon-hask--ruthless-loyalist": {
+    "text": "When an enemy unit is defeated: Give an Experience token to a friendly unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": "If Gideon Hask is defeated simultaneously with other enemy units, you still get to give Experience.\n"
+  },
+  "gideon-s-light-cruiser--dark-troopers--station": {
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\n\nWhen Played: If you control Moff Gideon (as a leader or unit), play a [villainy] unit that costs 3 or less from your hand or discard pile for free.",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "unique": true,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "give-in-to-your-anger": {
+    "text": "Deal 1 damage to an enemy unit. Its controller's next action this phase must be an attack action with that unit, if able. It must attack a unit, if able.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Units must be ready in order to attack.\nYour opponent can’t play a card from hand or activate an ability to attack with that unit, they must take the “Attack With a Unit” action.\nAbilities that affect what a unit can attack, including abilities that prevent a unit from being attacked, still apply to the Give In to Your Anger attack.\nIf the chosen unit can’t attack a unit, it must attack a base. If the chosen unit can’t legally attack, your opponent may take a different action.\n"
+  },
+  "gladiator-star-destroyer": {
+    "text": "When Played: Give a unit Sentinel for this phase. (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "gor--grievous-s-pet": {
+    "text": "Exploit 3\nSentinel\nAmbush\nOverwhelm",
+    "keywords": [
+      "Exploit",
+      "Sentinel",
+      "Ambush",
+      "Overwhelm"
+    ],
+    "unique": true,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "grand-moff-tarkin--death-star-overseer": {
+    "text": "When Played: Search the top 5 cards of your deck for up to 2 Imperial cards, reveal them, and draw them. (Put the other cards on the bottom of your deck in a random order.)",
+    "keywords": [],
+    "unique": true,
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n"
+  },
+  "greedo--slow-on-the-draw": {
+    "text": "When Defeated: You may discard a card from your deck. If it's not a unit, deal 2 damage to a ground unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": "Always discard from the top of a deck unless an ability says otherwise.\n"
+  },
+  "grenade-strike": {
+    "text": "Deal 2 damage to a unit. You may deal 1 damage to another unit in the same arena.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "grey-squadron-y-wing": {
+    "text": "On Attack: An opponent chooses a unit or base they control. You may deal 2 damage to it.",
+    "keywords": [],
+    "unique": false,
+    "rules": "If there are multiple opponents, the controlling player chooses which one will be “an opponent.”\n"
+  },
+  "grievous-reassembly": {
+    "text": "Heal 3 damage from a unit. Create a Battle Droid token.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "grievous-s-wheel-bike": {
+    "text": "While playing this upgrade on General Grievous, it costs 2 resources less to play.\nAttach to a non-Vehicle unit.\nAttached unit gains Overwhelm.",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "unique": false,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "grim-resolve": {
+    "text": "Attack with a non-leader unit. It gains Grit for this attack. (It gets +1/+0 for each damage on it.)",
+    "keywords": [
+      "Grit"
+    ],
+    "unique": false,
+    "rules": "If you play Grim Resolve, you must attack with a unit, if able. Units must be ready in order to attack.\n"
+  },
+  "guarding-the-way": {
+    "text": "Give a unit Sentinel for this phase. (Units in its arena can't attack your non-Sentinel units or your base.)\nIf you have the initiative, also give that unit +2/+2 for this phase.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "guavian-antagonizer": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\nBounty — Draw a card. (When this unit is defeated or captured, your opponent collects its bounty.)",
+    "keywords": [
+      "Saboteur",
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "guerilla-attack-pod": {
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)  \n\nWhen Played: If a base has 15 or more damage on it, ready this unit.",
+    "keywords": [
+      "Grit"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "guerilla-insurgency": {
+    "text": "Each player defeats a resource they control and discards 2 cards from their hand. Deal 4 damage to each ground unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "guild-target": {
+    "text": "Attached unit gains: “Bounty — Deal 2 damage to a base. If this unit is unique, deal 3 damage instead.” (When this unit is defeated or captured, its opponent collects its bounty.)",
+    "keywords": [
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "han-solo--reluctant-hero": {
+    "text": "Ambush \n\nWhile attacking, this unit deals combat damage before the defender.",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "hardpoint-heavy-blaster": {
+    "text": "Attach to a VEHICLE unit.\n\nAttached unit gains: \"On Attack: If this unit isn't attacking a base, you may deal 2 damage to a unit in the defender's arena.\"",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "headhunting": {
+    "text": "Attack with up to 3 units (one at a time). They can't attack bases for these attacks. Each Bounty Hunter that attacks this way gets +2/+0 for its attack.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Units must be ready in order to attack.\nUnits that can’t attack bases can still damage bases through other abilities, like Overwhelm.\n"
+  },
+  "heavy-persuader-tank": {
+    "text": "Exploit 2 (While playing this card, defeat up to 2 units you control. This card costs 2 resources less for each unit defeated this way.)\nWhen Played: You may deal 2 damage to a ground unit.",
+    "keywords": [
+      "Exploit"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "hello-there": {
+    "text": "Choose a unit that entered play this phase. It gets –4/–4 for this phase.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "heroes-on-both-sides": {
+    "text": "Choose up to 1 Republic unit and up to 1 Separatist unit. Give each chosen unit +2/+2 and Saboteur for this phase. (When either of those units attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "keywords": [
+      "Saboteur"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "heroic-resolve": {
+    "text": "Attached unit gains: “Action [2 resources, defeat a Heroic Resolve on this unit]: Attack with this unit. It gets +4/+0 and gains Overwhelm for this attack.”",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "unique": false,
+    "rules": "If you use Heroic Resolve’s ability, you must attack with the unit, if able. Units must be ready in order to attack.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "heroic-sacrifice": {
+    "text": "Draw a card, then attack with a unit. For this attack, it gets +2/+0 and gains: \"When this unit deals combat damage: Defeat it.\"",
+    "keywords": [],
+    "unique": false,
+    "rules": "You must attack with a unit, if able. Units must be ready in order to attack.\n“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\n"
+  },
+  "hevy--staunch-martyr": {
+    "text": "Coordinate — Raid 2 (Gain this keyword while you control 3 or more units. This unit gets +2/+0 while attacking.)\nWhen Defeated: Deal 1 damage to each enemy ground unit.",
+    "keywords": [
+      "Coordinate",
+      "Raid"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "hold-out-blaster": {
+    "text": "Attach to a non-Vehicle unit.\nWhen Played: You may have attached unit deal 1 damage to a ground unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "home-one--alliance-flagship": {
+    "text": "Restore 2\n\nEach other friendly unit gains Restore 1.\n\nWhen Played: Play a [Heroism] unit from your discard pile. It costs [3 resources] less.",
+    "keywords": [
+      "Restore"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "hunter-of-the-haxion-brood": {
+    "text": "While an enemy unit has a Bounty, this unit gains Shielded. (When you play this unit, give a Shield token to it.)",
+    "keywords": [
+      "Bounty",
+      "Shielded"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "huyang--enduring-instructor": {
+    "text": "When Played: Choose another friendly unit. While this unit is in play, the chosen unit gets +2/+2.",
+    "keywords": [],
+    "unique": true,
+    "rules": "Until Huyang leaves play, the friendly unit gets +2/+2. This effect is not changed if an opponent takes control of Huyang.\nIf Huyang is captured and then rescued, his \"When Played\" effect does not resume.\n"
+  },
+  "hylobon-enforcer": {
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)\nBounty — Draw a card. (When this unit is defeated or captured, your opponent collects its bounty.)",
+    "keywords": [
+      "Grit",
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "i-had-no-choice": {
+    "text": "Choose up to 2 non-leader units. An opponent chooses 1 of those units. Return that unit to its owner's hand and put the other on the bottom of its owner's deck.",
+    "keywords": [],
+    "unique": false,
+    "rules": "If there are multiple opponents, the controlling player chooses which one will be “an opponent.”\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\n"
+  },
+  "i-have-the-high-ground": {
+    "text": "Choose a friendly unit. Each enemy unit gets –4/–0 while attacking that unit this phase.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "ig-11--i-cannot-be-captured": {
+    "text": "If this unit would be captured, defeat him and deal 3 damage to each enemy ground unit instead.\nOn Attack: You may deal 3 damage to a damaged ground unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "imperial-interceptor": {
+    "text": "When Played: You may deal 3 damage to a space unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "imprisoned": {
+    "text": "Attach to a non-leader unit.\nAttached unit loses its current abilities and can't gain abilities.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Other upgrades attached to the unit still provide their power and HP modifiers but cannot give the attached unit abilities.\n"
+  },
+  "impropriety-among-thieves": {
+    "text": "Choose a ready non-leader unit controlled by each player. If you do, each player takes control of the chosen unit controlled by the player to their right. At the start of the regroup phase, each player takes control of each unit they own that was chosen for this ability.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "in-defense-of-kamino": {
+    "text": "For this phase, each friendly Republic unit gains Restore 2 and: “When Defeated: Create a Clone Trooper token.”",
+    "keywords": [
+      "Restore"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "in-pursuit": {
+    "text": "Exhaust a friendly unit. If you do, exhaust an enemy unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "incinerator-trooper": {
+    "text": "While attacking, this unit deals combat damage before the defender. (If the defender is defeated, it deals no combat damage.)",
+    "keywords": [],
+    "unique": false,
+    "rules": "Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\n"
+  },
+  "independent-senator": {
+    "text": "Action [2 resources, Exhaust]: Exhaust a unit with 4 or less power.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card's power include temporary modifiers.\n"
+  },
+  "infantry-of-the-212th": {
+    "text": "Coordinate — Sentinel (Gain this keyword while you control 3 or more units. Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": [
+      "Coordinate",
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "inferno-four--unforgetting": {
+    "text": "When Played/When Defeated: Look at the top 2 cards of your deck. Put any number of them on the bottom of your deck and the rest on top in any order.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "infiltrating-demolisher": {
+    "text": "Exploit 1 (While playing this card, defeat up to 1 unit you control. This card costs 2 resources less for each unit defeated this way.)\nSaboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "keywords": [
+      "Exploit",
+      "Saboteur"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "it-binds-all-things": {
+    "text": "Heal up to 3 damage from a unit. If you control a FORCE unit, you may deal that much damage to another unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": "You can only choose to deal damage equal to the amount of damage removed.\n"
+  },
+  "jabba-s-rancor--pateesa": {
+    "text": "If you control Jabba the Hutt (as a leader or unit), this unit costs 1 resource less to play.\nWhen Played/On Attack: Deal 3 damage to another friendly ground unit and 3 damage to an enemy ground unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "jabba-the-hutt--cunning-daimyo": {
+    "text": "Each TRICK event you play costs [1 resource] less. \n\nWhen Played: Search the top 8 cards of your deck for a TRICK event, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "keywords": [],
+    "unique": true,
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n"
+  },
+  "jango-fett--renowned-bounty-hunter": {
+    "text": "While attacking a unit with a Bounty, this unit gets +3/+0 and gains Overwhelm.\nWhen this unit attacks and defeats a unit: Draw a card.",
+    "keywords": [
+      "Bounty",
+      "Overwhelm"
+    ],
+    "unique": true,
+    "rules": "A unit “attacks and defeats a unit” if it defeats the defender at any point during the attack.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "jar-jar-binks--foolish-gungan": {
+    "text": "On Attack: Deal 2 damage to a random unit or base.",
+    "keywords": [],
+    "unique": true,
+    "rules": "When choosing randomly from a set of options, any method agreed upon by both players is acceptable, so long as each option has an equal likelihood of being chosen.\n"
+  },
+  "jedha-agitator": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\n\nOn Attack: If you control a leader unit, deal 2 damage to a ground unit or a base.",
+    "keywords": [
+      "Saboteur"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "jedi-lightsaber": {
+    "text": "Attach to a non-VEHICLE unit.\n\nIf attached unit is a FORCE unit, it gains: “On Attack: Give the defender –2/–2 for this phase.”",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "jesse--hard-fighting-patriot": {
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)\nWhen Played: An opponent creates 2 Battle Droid tokens.",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "jetpack": {
+    "text": "Attach to a non-Vehicle unit.\nWhen Played: Give a Shield token to attached unit. At the start of the regroup phase, defeat that token.\nSmuggle [4 resources Cunning]",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": false,
+    "rules": "Jetpack’s ability’s requirement to defeat the Shield token remains active even if the Jetpack is defeated or changes zones before the start of the next regroup phase.\n"
+  },
+  "jyn-erso--stardust": {
+    "text": "While an enemy unit has been defeated this phase, this unit gets +1/+0 and gains Saboteur.",
+    "keywords": [
+      "Saboteur"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "k-2so--cassian-s-counterpart": {
+    "text": "Overwhelm\n\nWhen Defeated: For each opponent, choose one: either deal 3 damage to that player's base, or that player discards a card from their hand.",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "kalani--analytical-general": {
+    "text": "On Attack: You may choose another unit. If you have the initiative, you may choose up to 2 other units instead. Give each chosen unit +2/+2 for this phase.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "kanan-jarrus--revealed-jedi": {
+    "text": "On Attack: You may discard 1 card from the defending player's deck for each friendly SPECTRE unit. Heal 1 damage from your base for each different aspect among the discarded cards.",
+    "keywords": [],
+    "unique": true,
+    "rules": "Always discard from the top of a deck, unless an ability specifies otherwise.\n"
+  },
+  "karabast": {
+    "text": "A friendly unit deals damage to an enemy unit equal to the amount of damage on the friendly unit plus 1.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "kashyyyk-defender": {
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)\nWhen Played: Heal up to 2 damage from another unit and deal that much damage to this unit.",
+    "keywords": [
+      "Grit"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "keep-fighting": {
+    "text": "Ready a unit with 3 or less power.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\n"
+  },
+  "ketsu-onyo--old-friend": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\nWhen this unit deals combat damage to a base: You may defeat an upgrade that costs 2 or less.",
+    "keywords": [
+      "Saboteur"
+    ],
+    "unique": true,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nCombat damage” is only the damage dealt during the “deal combat damage” step of an attack.\n"
+  },
+  "ki-adi-mundi--composed-and-confident": {
+    "text": "Coordinate — When an opponent plays their second card each phase: You may draw 2 cards.",
+    "keywords": [
+      "Coordinate"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "kihraxz-heavy-fighter": {
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\nOn Attack: You may exhaust another friendly unit. If you do, this unit gets +3/+0 for this attack.",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "unique": false,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "kintan-intimidator": {
+    "text": "On Attack: Exhaust the defender.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "kit-fisto--the-smiling-jedi": {
+    "text": "Saboteur\nCoordinate — On Attack: You may deal 3 damage to a ground unit. ",
+    "keywords": [
+      "Saboteur",
+      "Coordinate"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "knight-of-the-republic": {
+    "text": "When this unit is attacked: Create a Clone Trooper token.",
+    "keywords": [],
+    "unique": false,
+    "rules": "“When this unit is attacked” triggers at the same time as “On Attack” abilities.\n"
+  },
+  "koska-reeves--loyal-nite-owl": {
+    "text": "On Attack: If this unit is upgraded, you may deal 2 damage to a ground unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "kragan-gorr--warbird-captain": {
+    "text": "When an enemy unit attacks your base: Give a Shield token to a friendly unit in the same arena as the attacker.",
+    "keywords": [],
+    "unique": true,
+    "rules": "When an enemy unit attacks your base” triggers at the same time as “On Attack” abilities.\n"
+  },
+  "kraken--confederate-tactician": {
+    "text": "When Played: Create 2 Battle Droid tokens.\nOn Attack: Give each friendly token unit +1/+1 for this phase.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "krayt-dragon": {
+    "text": "Overwhelm\nWhen an opponent plays a card: You may deal damage equal to that card's cost to their base or a ground unit they control.",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\nIf Krayt Dragon is defeated by your opponent playing a card, its ability still triggers.\n"
+  },
+  "krrsantan--muscle-for-hire": {
+    "text": "When Played: If an enemy unit has a Bounty, you may ready this unit.\nOn Attack: Choose a ground unit. You may deal 1 damage to it for each damage on this unit.",
+    "keywords": [
+      "Bounty"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "kuiil--i-have-spoken": {
+    "text": "Restore 1 (When this unit attacks, heal 1 damage from your base.)\nOn Attack: Discard a card from your deck. If it shares an aspect with your base, return it to your hand.",
+    "keywords": [
+      "Restore"
+    ],
+    "unique": true,
+    "rules": "Always discard from the top of a deck, unless an ability specifies otherwise.\n"
+  },
+  "kylo-ren--killing-the-past": {
+    "text": "While playing this unit, ignore his Villainy aspect penalty if you control Rey.\nOn Attack: Give a unit +2/+0 for this phase. If it?s a non-Villainy unit, also give an Experience token to it.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "kylo-s-tie-silencer--ruthlessly-efficient": {
+    "text": "Action: If this unit was discarded from your hand or deck this phase, play it from your discard pile (paying its cost).",
+    "keywords": [],
+    "unique": true,
+    "rules": "Kylo’s TIE Silencer’s ability cannot be used as an action if it wasn’t discarded from your hand or deck this phase, or if you can’t pay its cost, as that would not change the game state.\nAbilities that let you play a card require you to pay that card’s cost unless specified otherwise.\n"
+  },
+  "l3-37--droid-revolutionary": {
+    "text": "When Played: You may rescue a captured card. If you don't, give a Shield token to this unit.\nSmuggle [4 resources Cunning Heroism] (If this card is a resource, you may play her for her smuggle cost. Replace her with the top card of your deck.)",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "lady-proxima--white-worm-matriarch": {
+    "text": "When you play another Underworld card: You may deal 1 damage to a base.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "lando-calrissian--responsible-businessman": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\n\nWhen Played: Return up to 2 friendly resources to their owners' hands.",
+    "keywords": [
+      "Saboteur"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "legal-authority": {
+    "text": "Attach to a friendly unit.\nWhen Played: Attached unit captures an enemy non-leader unit with less power than it. (Put the captured card facedown under attached unit until attached unit leaves play.)",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\n"
+  },
+  "leia-organa--defiant-princess": {
+    "text": "When Played: Either ready a resource or exhaust a unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": "You may choose whether to ready a resource or exhaust a unit.\n"
+  },
+  "let-the-wookiee-win": {
+    "text": "An opponent chooses one:\n<bullet>You ready up to 6 resources.\nYou ready a friendly unit. If it's a Wookiee unit, attack with it. It gets +2/+0 for this attack.</bullet>",
+    "keywords": [],
+    "unique": false,
+    "rules": "If there are multiple opponents, the controlling player chooses which one will be “an opponent.”\n"
+  },
+  "lieutenant-childsen--death-star-prison-warden": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)\n\nWhen Played: Reveal up to 4 [Vigilance] cards from your hand. For each card revealed this way, give an Experience token to this unit.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "lom-pyke--dealer-in-truths": {
+    "text": "On Attack: You may give a Shield token to an enemy unit. If you do, give a Shield token to a friendly unit.\nSmuggle [5 resources Vigilance Villainy]",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "look-the-other-way": {
+    "text": "Exhaust a unit unless its controller pays 2 resources.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "lothal-insurgent": {
+    "text": "When Played: If you played another card this phase, each opponent draws a card then discards a random card from their hand.",
+    "keywords": [],
+    "unique": false,
+    "rules": "If Lothal Insurgent is played by an event, that event counts as another card played this phase.\n"
+  },
+  "low-altitude-gunship": {
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\nWhen Played: Choose an enemy unit. Deal 1 damage to it for each friendly Republic unit.",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "unique": false,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "luke-s-lightsaber": {
+    "text": "Attach to a non-Vehicle unit.\n\nWhen Played: If attached unit is Luke Skywalker, heal all damage from him and give a Shield token to him.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "luke-skywalker--jedi-knight": {
+    "text": "Restore 3\n\nWhen Played: Give an enemy unit –3/–3 for this phase. If a friendly unit was defeated this phase, give that enemy unit –6/–6 for this phase instead.",
+    "keywords": [
+      "Restore"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "luminara-unduli--soft-spoken-master": {
+    "text": "Coordinate — Grit (Gain this keyword while you control 3 or more units. This unit gets +1/+0 for each damage on her.)\nWhen Played: Choose a base. Heal 1 damage from it for each unit you control.",
+    "keywords": [
+      "Coordinate",
+      "Grit"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "lurking-tie-phantom": {
+    "text": "Raid 2 (This unit gets +2/+0 while attacking.)\nThis unit can't be captured, damaged, or defeated by enemy card abilities.",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": false,
+    "rules": "Lurking TIE Phantom can’t be defeated directly by card abilities that “defeat a unit”, but it can still be defeated as a result of card abilities, such as abilities that give a unit -X/-X for the phase.\nLurking TIE Phantom can’t be damaged directly by card abilities that deal damage, regardless of how those abilities deal damage.\nLurking TIE Phantom can be dealt combat damage during an attack, even if that attack occurs as part of an ability.\n"
+  },
+  "lux-bonteri--renegade-separatist": {
+    "text": "When an opponent plays a card: If that opponent paid less than the card's cost to play it, ready or exhaust a unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": "Abilities that refer to a card's cost always refer to its printed cost, regardless of modifiers.\n\"Paid less than the card's cost to play it\" means the opponent paid fewer resources than the card's printed cost.\n"
+  },
+  "ma-klounkee": {
+    "text": "Return a friendly non-leader Underworld unit to its owner's hand. If you do, deal 3 damage to a unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that return a card to hand must choose a card in play unless otherwise specified.\n"
+  },
+  "mace-windu--party-crasher": {
+    "text": "Ambush\n\nWhen this unit attacks and defeats a unit: Ready him.",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": true,
+    "rules": "A unit “attacks and defeats a unit” if it defeats the defender at any point during the attack.\nAmbush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "mace-windu-s-lightsaber": {
+    "text": "Attach to a non-Vehicle unit.\nWhen Played: If attached unit is Mace Windu, draw 2 cards.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "magnaguard-wing-leader": {
+    "text": "Action: Attack with a Droid unit. Then, attack with another Droid unit. Use this ability only once each round.",
+    "keywords": [],
+    "unique": false,
+    "rules": "If you use MagnaGuard Wing Leader's ability, you must attack with two droid units, if able. Units must be ready in order to attack.\nFully resolve the first attack, including all triggers, before beginning the second attack.\nMagnaGuard Wing Leader's action ability cannot be used as an action if you can't attack with a Droid unit, as it would not change the game state.\n"
+  },
+  "make-an-opening": {
+    "text": "Give a unit –2/–2 for this phase. Heal 2 damage from your base.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "malevolence--grievous-s-secret-weapon": {
+    "text": "Exploit 4\nRestore 2\nWhen Played: Give an enemy unit –4/–0 for this phase. It can't attack for this phase.",
+    "keywords": [
+      "Exploit",
+      "Restore"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "mandalorian-armor": {
+    "text": "Attach to a non-Vehicle unit.\nWhen Played: If attached unit is a Mandalorian, give a Shield token to it.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "manufactured-soldiers": {
+    "text": "Choose one:\n<bullet>Create 2 Clone Trooper tokens.\nCreate 3 Battle Droid tokens.</bullet>",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "mas-amedda--vice-chair": {
+    "text": "When you play another unit: You may exhaust this unit. If you do, search the top 4 cards of your deck for a unit, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "maul--shadow-collective-visionary": {
+    "text": "Ambush, Overwhelm\nOn Attack: You may choose another friendly Underworld unit. If you do, all combat damage that would be dealt to this unit during this attack is dealt to the chosen unit instead.",
+    "keywords": [
+      "Ambush",
+      "Overwhelm"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "maximum-firepower": {
+    "text": "A friendly Imperial unit deals damage equal to its power to a unit.\n\nThen, another friendly Imperial unit deals damage equal to its power to the same unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "maz-kanata--pirate-queen": {
+    "text": "When you play another unit: Give an Experience token to this unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "medal-ceremony": {
+    "text": "Give an Experience token to each of up to 3 REBEL units that attacked this phase.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "mercenary-gunship": {
+    "text": "Action [4 resources]: Take control of this unit. Any player may use this ability.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "merciless-contest": {
+    "text": "Each player chooses a non-leader unit they control. Defeat those units.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "midnight-repairs": {
+    "text": "Heal up to 8 total damage from any number of units.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "migs-mayfeld--triggerman": {
+    "text": "When a player discards a card from their hand: You may deal 2 damage to a unit or base. Use this ability only once each round.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "millennium-falcon--lando-s-pride": {
+    "text": "If you play this unit from your hand, it gains Ambush.\nSmuggle [6 resources Cunning Heroism] (If this card is a resource, you may play her for her smuggle cost. Replace her with the top card of your deck.)",
+    "keywords": [
+      "Ambush",
+      "Smuggle"
+    ],
+    "unique": true,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "millennium-falcon--piece-of-junk": {
+    "text": "This unit enters play ready.\n\nWhen you ready cards during the regroup phase: Either pay [1 resource] or return this unit to her owner's hand.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "mining-guild-tie-fighter": {
+    "text": "On Attack: You may pay [2 resources]. If you do, draw a card.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "mission-briefing": {
+    "text": "Choose a player. They draw 2 cards.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "mister-bones--i-performed-violence": {
+    "text": "On Attack: If you have no cards in your hand, you may deal 3 damage to a ground unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "moment-of-peace": {
+    "text": "Give a Shield token to a unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "mon-mothma--voice-of-the-rebellion": {
+    "text": "When Played: Search the top 5 cards of your deck for a REBEL card, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "keywords": [],
+    "unique": true,
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n"
+  },
+  "morgan-elsbeth--keeper-of-many-secrets": {
+    "text": "Restore 1\nOn Attack: You may defeat another friendly unit. If you do, draw a card.",
+    "keywords": [
+      "Restore"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "multi-troop-transport": {
+    "text": "Exploit 2 (While playing this card, defeat up to 2 units you control. This card costs 2 resources less for each unit defeated this way.)\nOn Attack: Create a Battle Droid token.",
+    "keywords": [
+      "Exploit"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "mystic-reflection": {
+    "text": "Give an enemy unit –2/–0 for this phase. If you control a Force unit, give the enemy unit –2/–2 for this phase instead.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "nameless-valor": {
+    "text": "Attach to a token unit.\nAttached unit gains Overwhelm. (When attacking an enemy unit, deal excess damage to the opponent's base.)",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "unique": false,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "nite-owl-skirmisher": {
+    "text": "Smuggle [5 resources Aggression Heroism] (If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "no-bargain": {
+    "text": "Each opponent discards a card from their hand. Draw a card.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "no-good-to-me-dead": {
+    "text": "Exhaust a unit. That unit can't ready this round (including during the regroup phase).",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "now-there-are-two-of-them": {
+    "text": "If you control exactly one unit, play a non-Vehicle unit from your hand that shares a Trait with the unit you control. It costs 5 resources less.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "obedient-vanguard": {
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)\nWhen Defeated: You may give a Trooper unit +2/+2 for this phase.",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "obi-wan-kenobi--following-fate": {
+    "text": "Sentinel \n\nWhen Defeated: Give 2 Experience tokens to another friendly unit. If it's a Force unit, draw a card.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "obi-wan-s-aethersprite--this-is-why-i-hate-flying": {
+    "text": "When Played/On Attack: You may deal 1 damage to this unit and 2 damage to another space unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "old-access-codes": {
+    "text": "When Played: If an opponent controls more units than you, draw a card.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "omega--part-of-the-squad": {
+    "text": "Ignore the aspect penalty on the first Clone unit you play each round.\nWhen Played: Search the top 5 cards of your deck for a Clone card, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "keywords": [],
+    "unique": true,
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n"
+  },
+  "on-the-doorstep": {
+    "text": "Create 3 Battle Droid tokens and ready them.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "on-top-of-things": {
+    "text": "When Played: Attached unit can't be attacked this phase (unless it has Sentinel).",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "oom-series-officer": {
+    "text": "When Defeated: Deal 2 damage to a base.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "osi-sobeck--warden-of-the-citadel": {
+    "text": "Exploit 3\nWhen Played: This unit captures an enemy non-leader ground unit with cost equal to or less than the number of resources paid to play this unit.",
+    "keywords": [
+      "Exploit"
+    ],
+    "unique": true,
+    "rules": "Abilities that refer to a card's cost always refer to its printed cost, regardless of modifiers.\n"
+  },
+  "outer-rim-headhunter": {
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)\n\nOn Attack: If you control a leader unit, you may exhaust a non-leader unit.",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "outflank": {
+    "text": "Attack with 2 units (one at a time).",
+    "keywords": [],
+    "unique": false,
+    "rules": "You must attack with two units, if able. Units must be ready in order to attack.\nFully resolve the first attack, including all triggers, before beginning the second attack.\n"
+  },
+  "outlaw-corona": {
+    "text": "Bounty — Put the top card of your deck into play as a resource. (When this unit is defeated or captured, your opponent collects its bounty.)",
+    "keywords": [
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "outmaneuver": {
+    "text": "Choose an arena (ground or space). Exhaust each unit in that arena.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "outspoken-representative": {
+    "text": "While you control another Republic unit, this unit gains Sentinel. (Units in this arena can't attack your non-Sentinel units or your base.)\nWhen Defeated: Create a Clone Trooper token.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "overwhelming-barrage": {
+    "text": "Give a friendly unit +2/+2 for this phase. Then, it deals damage equal to its power divided as you choose among any number of other units.",
+    "keywords": [],
+    "unique": false,
+    "rules": "You can choose to assign more damage to a unit than it has remaining HP.\nAll damage dealt by a single ability is dealt simultaneously.\n"
+  },
+  "padm--amidala--pursuing-peace": {
+    "text": "Coordinate — On Attack: Give an enemy unit –3/–0 for this phase. (Gain this ability while you control 3 or more units.)",
+    "keywords": [
+      "Coordinate"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "palpatine-s-return": {
+    "text": "Play a unit from your discard pile. \nIt costs 6 resources less. If it's a Force unit, \nit costs 8 resources less instead.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "partisan-insurgent": {
+    "text": "While you control another [Aggression] unit, this unit gains Raid 2. (It gets +2/+0 while attacking.)",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "pelta-supply-frigate": {
+    "text": "Coordinate — When Played: Create a Clone Trooper token. (Gain this ability while you control 3 or more units, including this one.)",
+    "keywords": [
+      "Coordinate"
+    ],
+    "unique": false,
+    "rules": "If you play Pelta Supply Frigate and control two other units, its \"When Played\" ability triggers.\n"
+  },
+  "perilous-position": {
+    "text": "When Played: Exhaust attached unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "petition-the-senate": {
+    "text": "If you control 3 or more Official units, draw 3 cards.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "phase-iii-dark-trooper": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)\n\nWhen combat damage is dealt to this unit: Give an Experience token to this unit (if it survives the damage).",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": "Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\n"
+  },
+  "pillage": {
+    "text": "Choose a player. They discard 2 cards from their hand.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "pirate-battle-tank": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)\nSmuggle [7 resources Command Villainy] (If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)",
+    "keywords": [
+      "Sentinel",
+      "Smuggle"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "pirated-starfighter": {
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)\n\nWhen Played: Return a friendly non-leader unit to its owner's hand.",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": false,
+    "rules": "Abilities that return a card to hand must choose a card in play unless otherwise specified.\nIf Pirated Starfighter is the only friendly unit in play, it must be chosen by its “When Played” ability.\n"
+  },
+  "planetary-invasion": {
+    "text": "Exploit 3\nReady up to 3 units. Each of those units gets +1/+0 and gains Overwhelm for this phase.",
+    "keywords": [
+      "Exploit",
+      "Overwhelm"
+    ],
+    "unique": false,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "plo-koon--koh-to-yah-": {
+    "text": "Ambush (When you play this unit, it may ready and attack an enemy unit.)\nCoordinate — Raid 3 (Gain this keyword while you control 3 or more units. This unit gets +3/+0 while attacking.)",
+    "keywords": [
+      "Ambush",
+      "Coordinate",
+      "Raid"
+    ],
+    "unique": true,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "poe-dameron--quick-to-improvise": {
+    "text": "On Attack: Discard up to 3 cards from your hand. For each card discarded this way, choose a different option:\n<bullet>Deal 2 damage to a unit or base.\nDefeat an upgrade.\nAn opponent discards a card from their hand.</bullet>",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "poggle-the-lesser--archduke-of-the-stalgasin-hive": {
+    "text": "When you play another unit: You may exhaust this unit. If you do, create a Battle Droid token.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "political-pressure": {
+    "text": "Choose an opponent. They may discard a random card from their hand. If they don't, create 2 Battle Droid tokens.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "power-failure": {
+    "text": "Defeat any number of upgrades on a unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "power-of-the-dark-side": {
+    "text": "An opponent chooses a unit they control. Defeat that unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": "If there are multiple opponents, the controlling player chooses which one will be “an opponent.”\n"
+  },
+  "pre-vizsla--power-hungry": {
+    "text": "When Played/On Attack: You may pay the cost of an upgrade attached to another non-Vehicle unit. If you do, take control of that upgrade and attach it to this unit, if able. If it can't attach to this unit, defeat it instead.",
+    "keywords": [],
+    "unique": true,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nToken upgrades are considered upgrades. Pre’s ability can be used to pay 0 and choose a token upgrade.\n"
+  },
+  "precision-fire": {
+    "text": "Attack with a unit. It gains Saboteur for this attack. If it's a TROOPER, it also gets +2/+0 for this attack. (Ignore Sentinel and defeat the defender's Shields.)",
+    "keywords": [
+      "Saboteur"
+    ],
+    "unique": false,
+    "rules": "You must attack with a unit, if able. Units must be ready in order to attack.\n"
+  },
+  "price-on-your-head": {
+    "text": "Attached unit gains: “Bounty — Put the top card of your deck into play as a resource.” (When this unit is defeated or captured, its opponent collects its bounty.)",
+    "keywords": [
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "principled-outlaw": {
+    "text": "On Attack: You may exhaust a ground unit.\nSmuggle [6 resources Cunning Heroism] (If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "prisoner-of-war": {
+    "text": "A friendly unit captures an enemy non-leader, non-Vehicle unit. If the enemy unit costs less than the friendly unit, create 2 Battle Droid tokens. (Put the captured card facedown under the friendly unit until that unit leaves play.)",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card's cost always refer to its printed cost, regardless of modifiers.\n"
+  },
+  "private-manufacturing": {
+    "text": "Draw 2 cards. If you control no token units, put 2 cards from your hand on the bottom of your deck in any order.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "protector": {
+    "text": "Attached unit gains Sentinel. (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "providence-destroyer": {
+    "text": "Exploit 2 (While playing this card, defeat up to 2 units you control. This card costs 2 resources less for each unit defeated this way.)\nOn Attack: Give an enemy space unit –2/–2 for this phase.",
+    "keywords": [
+      "Exploit"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "public-enemy": {
+    "text": "Attached unit gains: “Bounty — Give a Shield token to a unit.” (When this unit is defeated or captured, its opponent collects its bounty.)",
+    "keywords": [
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "punishing-one--dengar-s-jumpmaster": {
+    "text": "When an upgraded enemy unit is defeated: You may ready this unit. Use this ability only once each round.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "pyrrhic-assault": {
+    "text": "For this phase, each friendly unit gains: “When Defeated: Deal 2 damage to an enemy unit.”",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "qi-ra--playing-her-part": {
+    "text": "When Played: Look at an opponent's hand, then name a card. While this unit is in play, each card with that name costs 3 resources more for your opponents to play.",
+    "keywords": [],
+    "unique": true,
+    "rules": "Abilities that refer to a card’s “name” do not include the subtitle of the card.\nUntil Qi'ra leaves play, your opponents's cards cost more. This effect is not changed if an opponent takes control of Qi'ra.\nIf Qi'ra is captured and then rescued, her \"When Played\" effect does not resume.\n"
+  },
+  "r2-d2--full-of-solutions": {
+    "text": "When Played: You may discard a card from your hand. If you do, search the top 3 cards of your deck for a card and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "rallying-cry": {
+    "text": "Each friendly unit gains Raid 2 this phase. (They get +2/+0 while attacking.)",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "razor-crest--reliable-gunship": {
+    "text": "Restore 2 \n\nWhen Played: You may return an upgrade from your discard pile to your hand.",
+    "keywords": [
+      "Restore"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "rebel-assault": {
+    "text": "Attack with a REBEL unit. It gets +1/+0 for this attack.\n\nThen, attack with another REBEL unit. It gets +1/+0 for this attack.",
+    "keywords": [],
+    "unique": false,
+    "rules": "You must attack with a Rebel unit, if able. Units must be ready in order to attack.\nFor abilities that encompass multiple actions, resolve each action (and any resulting triggers) sequentially.\n"
+  },
+  "reckless-gunslinger": {
+    "text": "When Played: Deal 1 damage to each base.\nSmuggle [3 resources Aggression] (If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "reckless-torrent": {
+    "text": "Coordinate — When Played: You may deal 2 damage to a friendly unit and 2 damage to an enemy unit in the same arena. (Gain this ability while you control 3 or more units, including this one.)",
+    "keywords": [
+      "Coordinate"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "red-three--unstoppable": {
+    "text": "Raid 1 \n\nEach other friendly [Heroism] unit gains Raid 1.",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "redemption--medical-frigate": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)\n\nWhen Played: Heal up to 8 total damage from any number of units and/or bases. Deal that much damage to this unit.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "regional-governor": {
+    "text": "When Played: Name a card. While this unit is in play, opponents can't play the named card.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s “name” do not include the subtitle of the card.\nUntil Regional Governor leaves play, your opponents can’t play the named card. This effect is not changed if an opponent takes control of Regional Governor.\nIf Regional Governor is captured and then rescued, its \"When Played\" effect does not resume.\n"
+  },
+  "reinforcement-walker": {
+    "text": "When Played/On Attack: Look at the top card of your deck. Either draw that card or discard it and heal 3 damage from your base.",
+    "keywords": [],
+    "unique": false,
+    "rules": "You may choose whether to draw a card or discard a card and heal 3 from your base.\n"
+  },
+  "relentless--konstantine-s-folly": {
+    "text": "The first event played by each opponent each round loses all abilities.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "relentless-pursuit": {
+    "text": "Choose a friendly unit. It captures an enemy non-leader unit that costs the same as or less than it. If the friendly unit is a Bounty Hunter, give a Shield token to it. (Put the captured card facedown under the friendly unit until it leaves play.)",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n"
+  },
+  "relentless-rocket-droid": {
+    "text": "While you control another Trooper unit, this unit gets +2/+0.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "reprocess": {
+    "text": "Choose up to 4 units in your discard pile. Put them on the bottom of your deck in a random order and create that many Battle Droid tokens.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "republic-attack-pod": {
+    "text": "If you control 3 or more units, this unit costs 1 resource less to play.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "republic-commando": {
+    "text": "Coordinate — Saboteur (Gain this keyword while you control 3 or more units. When this unit attacks, ignore Sentinel and defeat the defender's Shields.)",
+    "keywords": [
+      "Coordinate",
+      "Saboteur"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "republic-defense-carrier": {
+    "text": "This unit costs 1 resource less to play for each unit controlled by the opponent who controls the most units.\nSentinel (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "republic-tactical-officer": {
+    "text": "When Played: You may attack with a Republic unit. It gets +2/+0 for this attack.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Units must be ready in order to attack.\n"
+  },
+  "reputable-hunter": {
+    "text": "If an enemy unit has a Bounty, this unit costs 1 resource less to play.",
+    "keywords": [
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "resolute--under-anakin-s-command": {
+    "text": "This unit costs 1 resource less to play for every 5 damage on your base.\nWhen Played/On Attack: Deal 2 damage to an enemy unit and each other enemy unit with the same name as that unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": "Abilities that refer to a card's “name” do not include the subtitle of the card.\n"
+  },
+  "restock": {
+    "text": "Choose up to 4 cards in a discard pile. Put them on the bottom of their owner's deck in a random order.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "rey--keeping-the-past": {
+    "text": "While playing this unit, ignore her Heroism aspect penalty if you control Kylo Ren.\nOn Attack: You may heal 2 damage from a unit. If it's a non-Heroism unit, give a Shield token to it.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "roger-roger": {
+    "text": "When Defeated: Attach this upgrade to a friendly Battle Droid token.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "rogue-operative": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\n\nRaid 2 (This unit gets +2/+0 while attacking.)",
+    "keywords": [
+      "Saboteur",
+      "Raid"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "rogue-squadron-skirmisher": {
+    "text": "Ambush (After you play this unit, it may ready and attack an enemy unit.)\n\nWhen Played: Return a unit that costs 2 or less from your discard pile to your hand.",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\nAmbush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "rose-tico--dedicated-to-the-cause": {
+    "text": "Shielded (When you play this unit, give a Shield token to her.)\nOn Attack: You may defeat a Shield token on a friendly unit. If you do, give 2 Experience tokens to that unit.",
+    "keywords": [
+      "Shielded"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "royal-guard-attach-": {
+    "text": "When Played: Deal 2 damage to this unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "rugged-survivors": {
+    "text": "Grit (This unit gets +1/+0 for each damage on it.)\n\nOn Attack: If you control a leader unit, you may draw a card.",
+    "keywords": [
+      "Grit"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "rukh--thrawn-s-assassin": {
+    "text": "Shielded (When you play this unit, give a Shield token to it.)\n\nWhen this unit deals combat damage to a non-leader unit while attacking: Defeat that unit.",
+    "keywords": [
+      "Shielded"
+    ],
+    "unique": true,
+    "rules": "“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\n"
+  },
+  "rule-with-respect": {
+    "text": "A friendly unit captures each enemy non-leader unit that attacked your base this phase.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "rush-clovis--banking-clan-scion": {
+    "text": "Raid 2\nOn Attack: If the defending player controls no ready resources, create a Battle Droid token.",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "ruthless-assassin": {
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\nWhen Played: Deal 2 damage to a friendly unit.",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "unique": false,
+    "rules": "If Ruthless Assassin is the only friendly unit in play, it must be chosen by its “When Played” ability.\nShields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "ruthless-raider": {
+    "text": "When Played/When Defeated: Deal 2 damage to an enemy base and 2 damage to an enemy unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "ruthlessness": {
+    "text": "Attached unit gains: “When this unit attacks and defeats a unit: Deal 2 damage to the defending player's base.”",
+    "keywords": [],
+    "unique": false,
+    "rules": "A unit “attacks and defeats a unit” if it defeats the defender at any point during the attack.\n"
+  },
+  "sabine-wren--explosives-artist": {
+    "text": "While there are at least 3 aspects among other friendly units, this unit can't be attacked (unless she gains Sentinel).\n\nOn Attack: You may deal 1 damage to the defender or to a base.",
+    "keywords": [],
+    "unique": true,
+    "rules": "Sabine’s first ability requires 3 different aspects among other friendly units.\n"
+  },
+  "sabine-wren--you-can-count-on-me": {
+    "text": "While this unit is exhausted, she can't be attacked (unless she gains Sentinel).\nOn Attack: You may discard a card from your deck. If it doesn't share an aspect with your base, deal 2 damage to a ground unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": "Always discard from the top of a deck, unless an ability specifies otherwise.\n"
+  },
+  "salacious-crumb--obnoxious-pet": {
+    "text": "When Played: Heal 1 damage from your base.\nAction [Exhaust, return this unit to his owner's hand]: Deal 1 damage to a ground unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "san-hill--chairman-of-the-banking-clan": {
+    "text": "Exploit 3 (While playing this card, defeat up to 3 units you control. This card costs 2 resources less for each unit defeated this way.)\nOn Attack: For each friendly unit that was defeated this phase, ready a friendly resource.",
+    "keywords": [
+      "Exploit"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "sanctioner-s-shuttle": {
+    "text": "Coordinate — When Played: This unit captures an enemy non-leader unit that costs 3 or less. (Gain this ability while you control 3 or more units, including this one.)",
+    "keywords": [
+      "Coordinate"
+    ],
+    "unique": false,
+    "rules": "Abilities that refer to a card's cost always refer to its printed cost, regardless of modifiers.\n"
+  },
+  "satine-kryze--committed-to-peace": {
+    "text": "Each unit (including enemy units) gains: “Action [Exhaust]: Discard cards from an opponent's deck equal to half this unit's remaining HP, rounded up.”",
+    "keywords": [],
+    "unique": true,
+    "rules": "Always discard from the top of a deck, unless an ability specifies otherwise.\n"
+  },
+  "saw-gerrera--extremist": {
+    "text": "As an additional cost for each opponent to play an event, they must deal 2 damage to their base.",
+    "keywords": [],
+    "unique": true,
+    "rules": "If an opponent’s base is defeated by the cost of playing an event, the event’s ability does not resolve.\n"
+  },
+  "saw-gerrera--resistance-is-not-terrorism": {
+    "text": "Raid 2\nOn Attack: If your base has 15 or more damage on it, deal 1 damage to each enemy ground unit.",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "scanning-officer": {
+    "text": "When Played: Reveal 3 enemy resources. Defeat each resource with the Smuggle keyword revealed this way. For each resource defeated this way, its controller puts the top card of their deck into play as a resource.",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": false,
+    "rules": "New resources enter play exhausted, regardless of whether the defeated resource was ready.\nScanning Officer defeats any cards with Smuggle, including resources that have gained Smuggle due to another card’s effect.\n"
+  },
+  "search-your-feelings": {
+    "text": "Search your deck for a card and draw it. (Then, shuffle your deck.)",
+    "keywords": [],
+    "unique": false,
+    "rules": "After searching your deck, shuffle it.\n"
+  },
+  "seasoned-shoretrooper": {
+    "text": "While you control 6 or more resources, this unit gets +2/+0.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "second-chance": {
+    "text": "Attach to a non-leader unit.\nAttached unit gains: “When Defeated: For this phase, this unit's owner may play it from their discard pile for free.”",
+    "keywords": [],
+    "unique": false,
+    "rules": "“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\nIf the attached unit is played from the discard pile, it enters play as a new copy of that unit. If it is defeated again in the same phase, it cannot be replayed from the discard pile as the new copy does not have Second Chance’s ability.\n"
+  },
+  "self-destruct": {
+    "text": "Defeat a friendly unit. If you do, deal 4 damage to a unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "senatorial-corvette": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\nWhen Defeated: Each opponent discards a card from their hand.",
+    "keywords": [
+      "Saboteur"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "separatist-commando": {
+    "text": "While you control another Separatist unit, this unit gains Raid 2. (It gets +2/+0 while attacking.)",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "separatist-super-tank": {
+    "text": "Exploit 3 (While playing this card, defeat up to 3 units you control. This card costs 2 resources less for each unit defeated this way.)",
+    "keywords": [
+      "Exploit"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "seventh-sister--implacable-inquisitor": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\n\nWhen this unit deals combat damage to an opponent's base: You may deal 3 damage to a ground unit that opponent controls.",
+    "keywords": [
+      "Saboteur"
+    ],
+    "unique": true,
+    "rules": "“Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\n"
+  },
+  "shaak-ti--unity-wins-wars": {
+    "text": "Each friendly token unit gets +1/+0.\nOn Attack: Create a Clone Trooper token.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "shadowed-intentions": {
+    "text": "Attached unit gains: “This unit can't be captured, defeated, or returned to its owner's hand by enemy card abilities.”",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "slaver-s-freighter": {
+    "text": "When Played: You may ready another unit with power equal to or less than the number of upgrades on enemy units.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s power include temporary modifiers.\n"
+  },
+  "sly-moore--secretive-advisor": {
+    "text": "When Played: Take contol of an enemy token unit and ready it. At the start of the regroup phase, that token unit's owner takes control of it.",
+    "keywords": [],
+    "unique": true,
+    "rules": "The delayed effect of Sly Moore's \"When Played\" ability remains active even if Sly Moore is defeated.\n"
+  },
+  "smoke-and-cinders": {
+    "text": "Each player discards all but 2 cards (of their choice) from their hand.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "smuggler-s-starfighter": {
+    "text": "When Played: If you control another Underworld unit, give an enemy unit –3/–0 for this phase.\nSmuggle [4 resources Cunning] (If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "smuggling-compartment": {
+    "text": "Attach to a VEHICLE unit.\n\nAttached unit gains: \"On Attack: Ready a resource.\"",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "snapshot-reflexes": {
+    "text": "When Played: You may attack with attached unit. (It can only attack if it's ready.)",
+    "keywords": [],
+    "unique": false,
+    "rules": "You can only attack with your own readied units, so playing Snapshot Reflexes on an enemy unit does not trigger an attack."
+  },
+  "snowspeeder": {
+    "text": "Ambush (After you play this unit, it may ready and attack an enemy unit.)\n\nOn Attack: Exhaust an enemy Vehicle ground unit.",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": false,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "snowtrooper-lieutenant": {
+    "text": "When Played: You may attack with a unit. If it's an Imperial unit, it gets +2/+0 for this attack. (You can only attack with a ready friendly unit.)",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "soulless-one--customized-for-grievous": {
+    "text": "On Attack: You may exhaust a friendly Droid unit or General Grievous (leader or unit). If you do, this unit gets +2/+0 for this attack.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "spare-the-target": {
+    "text": "Return an enemy non-leader unit to its owner's hand. Collect that unit's Bounties.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that return a card to hand must choose a card in play unless otherwise specified.\n"
+  },
+  "spark-of-hope": {
+    "text": "Choose a unit in your discard pile. If it was defeated this phase, put it into play as a resource.",
+    "keywords": [],
+    "unique": false,
+    "rules": "The chosen unit must have been defeated as a unit this phase in order to put it into play as a resource. Spark of Hope cannot return a unit that was defeated as a resource or discarded in some other way.\n"
+  },
+  "spark-of-rebellion": {
+    "text": "Look at an opponent's hand and discard a card from it.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "specforce-soldier": {
+    "text": "When Played: A unit loses Sentinel for this phase.",
+    "keywords": [],
+    "unique": false,
+    "rules": "The chosen unit can still gain Sentinel later in the phase from another ability.\n"
+  },
+  "squad-support": {
+    "text": "Attach to a non-leader unit.\nAttached unit gains: “This unit gets +1/+1 for each Trooper unit you control.”",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "squadron-of-vultures": {
+    "text": "Exploit 3 (While playing this card, defeat up to 3 units you control. This card costs 2 resources less for each unit defeated this way.)",
+    "keywords": [
+      "Exploit"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "star-wing-scout": {
+    "text": "When Defeated: If you have the initiative, draw 2 cards.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "steadfast-battalion": {
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\n\nOn Attack: If you control a leader unit, give a friendly unit +2/+2 for this phase.",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "unique": false,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "steadfast-senator": {
+    "text": "Action [2 resources, Exhaust]: Attack with a unit. It gets +2/+0 for this attack.",
+    "keywords": [],
+    "unique": false,
+    "rules": "If you use Steadfast Senator's ability, you must attack with a unit, if able. Units must be ready in order to attack.\n"
+  },
+  "steela-gerrera--beloved-tactician": {
+    "text": "When Played/When Defeated: You may deal 2 damage to your base. If you do, search the top 8 cards of your deck for a Tactic card, reveal it, and draw it. (Put the other cards on the bottom of your deck in a random order.)",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "stolen-landspeeder": {
+    "text": "When Played: If you played this unit from your hand, an opponent takes control of it.\nBounty — If you own this unit, play it from your discard pile for free and give an Experience token to it.",
+    "keywords": [
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": "If there are multiple opponents, the controlling player chooses which one will be “an opponent.”\n“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\nIf Stolen Landspeeder is given Ambush, you may choose to resolve its attack prior to resolving its “When Played”. If you choose to resolve its “When Played” first, you may no longer attack with the unit, since you do not control it.\nStolen Landspeeder’s Bounty is only triggered if you own the unit and collect its Bounty while it is controlled by an opponent.\n"
+  },
+  "strafing-gunship": {
+    "text": "This unit can attack units in the ground arena. While this unit is attacking a ground unit, the defender gets –2/–0.",
+    "keywords": [],
+    "unique": false,
+    "rules": "If an enemy space unit has Sentinel, Strafing Gunship cannot attack non-Sentinel ground units. Enemy ground units with Sentinel do not affect Strafing Gunship’s ability to attack ground units.\n"
+  },
+  "strategic-acumen": {
+    "text": "Attached unit gains: “Action [Exhaust]: Play a unit from your hand. It costs 1 resource less.”",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "strike-true": {
+    "text": "A friendly unit deals damage equal to its power to an enemy unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "subjugating-starfighter": {
+    "text": "Ambush (When you play this unit, it may ready and attack an enemy unit.)\nWhen Played: If you have the initiative, create a Battle Droid token.",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": false,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "sugi--hired-guardian": {
+    "text": "While an enemy unit is upgraded, this unit gains Sentinel.\nSmuggle [6 resources Vigilance] (If this card is a resource, you may play her for her smuggle cost. Replace her with the top card of your deck.)",
+    "keywords": [
+      "Sentinel",
+      "Smuggle"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "supercommando-squad": {
+    "text": "Shielded (When you play this unit, give a Shield token to it.)\nWhile this unit is upgraded, it gains Sentinel. (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": [
+      "Shielded",
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "superlaser-blast": {
+    "text": "Defeat all units.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "supreme-leader-snoke--shadow-ruler": {
+    "text": "Each enemy non-leader unit gets –2/–2.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "survivors--gauntlet": {
+    "text": "When Played/On Attack: You may attach an upgrade on a unit to another eligible unit controlled by the same player.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "swoop-down": {
+    "text": "Attack with a space unit. It gains Saboteur and can attack ground units for this attack. If it attacks a ground unit, it gets +2/+0 and the defender gets –2/–0 for this attack.",
+    "keywords": [
+      "Saboteur"
+    ],
+    "unique": false,
+    "rules": "You must attack with a space unit, if able. Units must be ready in order to attack.\n"
+  },
+  "sword-and-shield-maneuver": {
+    "text": "Give each friendly Trooper unit Raid 1 for this phase.\nGive each friendly Jedi unit Sentinel for this phase.",
+    "keywords": [
+      "Raid",
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "synara-san--loyal-to-kragan": {
+    "text": "Grit\nWhile this unit is exhausted, she gains, “Bounty — Deal 5 damage to a base.” (When this unit is defeated or captured, your opponent collects its bounty.)",
+    "keywords": [
+      "Grit",
+      "Bounty"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "synchronized-strike": {
+    "text": "Deal damage to an enemy unit equal to the number of units you control in its arena.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "tactical-advantage": {
+    "text": "Give a unit +2/+2 for this phase.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "tactical-droid-commander": {
+    "text": "Exploit 2\nWhen you play another Separatist unit: You may exhaust a unit that costs the same as or less than the played unit.",
+    "keywords": [
+      "Exploit"
+    ],
+    "unique": false,
+    "rules": "Abilities that refer to a card's cost always refer to its printed cost, regardless of modifiers.\n"
+  },
+  "take-captive": {
+    "text": "A friendly unit captures an enemy non-leader unit in the same arena. (Put the captured card facedown under that unit until that unit leaves play.)",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "takedown": {
+    "text": "Defeat a unit with 5 or less remaining HP.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "tarfful--kashyyyk-chieftain": {
+    "text": "Restore 2\nWhen a friendly Wookiee unit is dealt combat damage and isn't defeated: That unit deals that much damage to an enemy ground unit.",
+    "keywords": [
+      "Restore"
+    ],
+    "unique": true,
+    "rules": "Combat damage” is only the damage dealt during the “deal combat damage” step of an attack.\n"
+  },
+  "the-armorer--survival-is-strength": {
+    "text": "When Played: Give a Shield token to each of up to 3 Mandalorian units.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "the-chaos-of-war": {
+    "text": "Deal damage to each player's base equal to the number of cards in that player's hand.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "the-client--dictated-by-discretion": {
+    "text": "Shielded\nAction [Exhaust]: Choose a unit. For this phase, it gains: “Bounty — Heal 5 damage from a base.” (When that unit is defeated or captured, its opponent collects its bounty.)",
+    "keywords": [
+      "Shielded",
+      "Bounty"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "the-clone-wars": {
+    "text": "Pay any number of resources. Create that many Clone Trooper tokens. Each opponent creates that many Battle Droid tokens.",
+    "keywords": [],
+    "unique": false,
+    "rules": "The cost of the event doesn't count toward the number of tokens created.\n"
+  },
+  "the-darksaber": {
+    "text": "Attach to a non-Vehicle unit.\nWhile playing this upgrade on a Mandalorian unit, ignore its aspect penalty.\nAttached unit gains, “On Attack: Give an Experience token to each other friendly Mandalorian unit.”",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "the-emperor-s-legion": {
+    "text": "Return each unit in your discard pile that was defeated this phase to your hand.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "the-force-is-with-me": {
+    "text": "Choose a friendly unit and give 2 Experience tokens to it. If you control a FORCE unit, also give a Shield token to the chosen unit. You may attack with the chosen unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Units must be ready in order to attack.\n"
+  },
+  "the-ghost--spectre-home-base": {
+    "text": "Shielded (When you play this unit, give a Shield token to it.)\n\nWhen Played/On Attack: You may give a Shield token to another SPECTRE unit.",
+    "keywords": [
+      "Shielded"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "the-invasion-of-christophsis": {
+    "text": "Exploit 4\nChoose an opponent. Defeat each unit that player controls.",
+    "keywords": [
+      "Exploit"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "the-invisible-hand--imposing-flagship": {
+    "text": "When Played: Create 4 Battle Droid tokens.\nOn Attack: Exhaust any number of friendly Separatist units. Deal 1 damage to the defending player's base for each unit exhausted this way.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "the-mandalorian--wherever-i-go--he-goes": {
+    "text": "Sentinel\n\nWhen Played: You may heal all damage from a unit that costs 2 or less and give 2 Shield tokens to it.",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "the-mandalorian-s-rifle": {
+    "text": "Attach to a friendly non-VEHICLE unit.\n\nWhen Played: If attached unit is The Mandalorian, he captures an exhausted enemy non-leader unit. (Put the captured card facedown under him until he leaves play.)",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "the-marauder--shuttling-the-bad-batch": {
+    "text": "Ambush\nWhen Played: Choose a card in your discard pile. Put it into play as a resource if it shares a name with a unit you control.",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": true,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\nAbilities that refer to a card’s “name” do not include the subtitle of the card.\n"
+  },
+  "the-zillo-beast--awoken-from-the-depths": {
+    "text": "When Played: Give each enemy ground unit –5/–0 for this phase.\nWhen the regroup phase starts: Heal 5 damage from this unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "this-is-the-way": {
+    "text": "Search the top 8 cards of your deck for up to 2 Mandalorian and/or upgrade cards, reveal them, and draw them. (Put the other cards on the bottom of your deck in a random order.)",
+    "keywords": [],
+    "unique": false,
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\n"
+  },
+  "tie-advanced": {
+    "text": "When Played: Give 2 Experience tokens to another friendly IMPERIAL unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "timely-intervention": {
+    "text": "Play a unit from your hand. Give it Ambush for this phase. (When you play it, it may ready and attack an enemy unit.)\n\nSmuggle [2 resources, command] (If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)",
+    "keywords": [
+      "Ambush",
+      "Smuggle"
+    ],
+    "unique": false,
+    "rules": "Abilities that let you play a card require you to pay that card’s cost unless specified otherwise.\nAmbush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does boba not ready.\n"
+  },
+  "tobias-beckett--i-trust-no-one": {
+    "text": "When you play a non-unit card: You may exhaust a unit that costs the same as or less than the card you played. Use this ability only once each round.\nSmuggle [5 resources Vigilance]",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": true,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n"
+  },
+  "top-target": {
+    "text": "Attached unit gains: “Bounty — Heal 4 damage from a unit or base. If this unit is unique, heal 6 damage instead.” (When this unit is defeated or captured, its opponent collects its bounty.)",
+    "keywords": [
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "toro-calican--ambitious-upstart": {
+    "text": "When you play another Bounty Hunter unit: You may deal 1 damage to it. If you do, ready this unit. Use this ability only once each round.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "trade-federation-shuttle": {
+    "text": "When Played: If you control a damaged unit, create a Battle Droid token.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "traitorous": {
+    "text": "When this upgrade becomes attached to a non‑leader unit that costs 3 or less: Take control of that unit.\n\nWhen this upgrade becomes unattached from a unit: That unit's owner takes control of it.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n"
+  },
+  "trandoshan-hunters": {
+    "text": "Overwhelm (When attacking an enemy unit, deal excess damage to the opponent's base.)\nWhen Played: If an enemy unit has a Bounty, give an Experience token to this unit.",
+    "keywords": [
+      "Overwhelm",
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "tranquility--inspiring-flagship": {
+    "text": "When Played: You may return a Republic unit from your discard pile to your hand.\nOn Attack: Each of the next 3 Republic cards you play this phase costs 1 resource less.",
+    "keywords": [],
+    "unique": true,
+    "rules": "The cost reduction from Tranquility's “On Attack” ability remains active even if Tranquility is defeated.\n"
+  },
+  "tri-droid-suppressor": {
+    "text": "Exploit 2 (While playing this card, defeat up to 2 units you control. This card costs 2 resources less for each unit defeated this way.)\nWhen Played: Exhaust an enemy ground unit.",
+    "keywords": [
+      "Exploit"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "triple-dark-raid": {
+    "text": "Search the top 7 cards of your deck for a Vehicle and play it. (Put the other cards on the bottom of your deck in a random order.) It costs 5 resources less and enters play ready. Return it to its owner's hand at the end of the phase.",
+    "keywords": [],
+    "unique": false,
+    "rules": "After searching, put any cards not chosen on the bottom of your deck in a random order.\nAbilities that return a card to hand must choose a card in play unless otherwise specified.\n"
+  },
+  "twice-the-pride": {
+    "text": "When Played: Deal 2 damage to attached unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "u-wing-reinforcement": {
+    "text": "Search the top 10 cards of your deck for up to 3 units with combined cost 7 or less and play each of them for free. (Put the other cards on the bottom of your deck in a random order.)",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that refer to a card’s cost always refer to its printed cost, regardless of modifiers.\n“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\nFor abilities that encompass multiple actions, resolve each action (and any resulting triggers) sequentially.\nAfter searching, put any cards not chosen on the bottom of your deck in a random order.\n"
+  },
+  "unexpected-escape": {
+    "text": "Exhaust a unit. You may rescue a captured card guarded by that unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "unlicensed-headhunter": {
+    "text": "Saboteur\nWhile this unit is exhausted, it gains: “Bounty — Heal 5 damage from your base.” (When this unit is defeated or captured, your opponent collects its bounty.)",
+    "keywords": [
+      "Saboteur",
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "unlimited-power": {
+    "text": "Deal 4 damage to a unit, 3 damage to a second unit, 2 damage to a third unit, and 1 damage to a fourth unit. (All damage is dealt simultaneously.)",
+    "keywords": [],
+    "unique": false,
+    "rules": "All damage dealt by Unlimited Power is dealt simultaneously.\n"
+  },
+  "unmasking-the-conspiracy": {
+    "text": "Discard a card from your hand. If you do, look at an opponent's hand and discard a card from it.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "unnatural-life": {
+    "text": "Play a unit that was defeated this phase from your discard pile. It costs 2 resources less and enters play ready. At the start of the regroup phase, defeat it.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "unrefusable-offer": {
+    "text": "Attach to a non-leader unit.\nAttached unit gains: “Bounty — Play this unit for free (under your control). It enters play ready. At the start of the regroup phase, defeat it.”",
+    "keywords": [
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": "“Play for free” ignores all resource costs, including the aspect penalty, but not other additional costs.\n"
+  },
+  "unshakeable-will": {
+    "text": "Attached unit gains Sentinel. (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "vader-s-lightsaber": {
+    "text": "Attach to a non-Vehicle unit.\n\nWhen Played: If attached unit is Darth Vader, you may deal 4 damage to a ground unit. ",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "val--loyal-to-the-end": {
+    "text": "Bounty — Deal 3 damage to a unit.\nWhen Defeated: Give 2 Experience tokens to a friendly unit. (The active player chooses the order of Val's abilities.)",
+    "keywords": [
+      "Bounty"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "valiant-assault-ship": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\nOn Attack: If the defending player controls more resources than you, this unit gets +2/+0 for this attack.",
+    "keywords": [
+      "Saboteur"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "vambrace-flamethrower": {
+    "text": "Attach to a non-Vehicle unit.\nAttached unit gains: “On Attack: You may deal 3 damage divided as you choose among enemy ground units.”",
+    "keywords": [],
+    "unique": false,
+    "rules": "You can choose to assign more damage to a unit than it has remaining HP.\nAll damage dealt by a single ability is dealt simultaneously.\n"
+  },
+  "vambrace-grappleshot": {
+    "text": "Attach to a non-Vehicle unit.\nAttached unit gains: “On Attack: Exhaust the defender.”",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "vanguard-ace": {
+    "text": "When Played: For each other card you played this phase, give an Experience token to this unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": "If Vanguard Ace is played by an event, that event counts as another card played this phase.\n"
+  },
+  "vanguard-droid-bomber": {
+    "text": "When Played: If you control another Separatist unit, deal 2 damage to an enemy base.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "vanguard-infantry": {
+    "text": "When Defeated: You may give an Experience token to a unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "vanquish": {
+    "text": "Defeat a non-leader unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "vigilance": {
+    "text": "Choose two, in any order:\n\nDiscard 6 cards from an opponent's deck.\nHeal 5 damage from a base.\nDefeat a unit with 3 or less remaining HP.\nGive a Shield token to a unit.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "vigilant-honor-guards": {
+    "text": "While this unit is undamaged, it gains Sentinel. (Units in this arena can't attack your non-Sentinel units or your base.)",
+    "keywords": [
+      "Sentinel"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "vigilant-pursuit-craft": {
+    "text": "Sentinel (Units in this arena can't attack your non-Sentinel units or your base.)\n\nSmuggle [7 resources, vigilance] (If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)",
+    "keywords": [
+      "Sentinel",
+      "Smuggle"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "volunteer-soldier": {
+    "text": "Raid 1 (This unit gets +1/+0 while attacking.)\nIf you control a Trooper unit, this unit costs 1 resource less to play.",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "vulture-interceptor-wing": {
+    "text": "On Attack: Give an enemy unit –1/–1 for this phase.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "wanted-insurgents": {
+    "text": "Bounty — Deal 2 damage to a unit. (When this unit is defeated or captured, your opponent collects its bounty.)",
+    "keywords": [
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "wanted": {
+    "text": "Attached unit gains: “Bounty — Ready 2 friendly resources.” (When this unit is defeated or captured, its opponent collects its bounty.)",
+    "keywords": [
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "warbird-stowaway": {
+    "text": "While you have the initiative, this unit gets +2/+0.\nSmuggle [4 resources Command Villainy] (If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "wartime-profiteering": {
+    "text": "Look at cards from the top of your deck equal to the number of units that were defeated this phase. Draw 1 and put the others on the bottom of your deck in a random order.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "waylay": {
+    "text": "Return a non-leader unit to its owner's hand.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  },
+  "wedge-antilles--star-of-the-rebellion": {
+    "text": "Each friendly VEHICLE unit gets +1/+1 and gains Ambush. (After you play that unit, it may ready and attack an enemy unit.)",
+    "keywords": [
+      "Ambush"
+    ],
+    "unique": true,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "weequay-pirate-gang": {
+    "text": "Ambush (When you play this unit, it may ready and attack an enemy unit.)\nSmuggle [5 resources Command] (If this card is a resource, you may play it for its smuggle cost. Replace it with the top card of your deck.)",
+    "keywords": [
+      "Ambush",
+      "Smuggle"
+    ],
+    "unique": false,
+    "rules": "Ambush is an ability that triggers at the same time as “When Played” abilities. If there is no enemy unit that can be attacked, the unit does not ready.\n"
+  },
+  "wild-rancor": {
+    "text": "Overwhelm\nWhen Played: Deal 2 damage to each other ground unit.",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "unique": false,
+    "rules": "Shields prevent all damage from a unit with Overwhelm. There is no excess damage since the defender is not defeated.\nIf the defender is defeated during an attack before combat damage is dealt, all combat damage is considered excess damage for Overwhelm.\n"
+  },
+  "wolf-pack-escort": {
+    "text": "When Played: You may return a friendly non-leader, non-Vehicle unit to its owner's hand.",
+    "keywords": [],
+    "unique": false,
+    "rules": "Abilities that return a card to hand must choose a card in play unless otherwise specified.\n"
+  },
+  "wolffe--suspicious-veteran": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\n\nWhen Played/On Attack: Bases can't be healed for this phase.",
+    "keywords": [
+      "Saboteur"
+    ],
+    "unique": true,
+    "rules": "Bases can’t be healed for the phase even if Wolffe is defeated after triggering his ability.\n"
+  },
+  "wrecker--boom-": {
+    "text": "Overwhelm\nWhen Played: You may defeat a friendly resource. If you do, deal 5 damage to a ground unit.",
+    "keywords": [
+      "Overwhelm"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "xanadu-blood--cad-bane-s-reward": {
+    "text": "Raid 2\nWhen Played/On Attack: You may return another friendly non-leader Underworld unit to its owner's hand. If you do, exhaust an enemy unit or resource.",
+    "keywords": [
+      "Raid"
+    ],
+    "unique": true,
+    "rules": "Abilities that return a card to hand must choose a card in play unless otherwise specified.\n"
+  },
+  "yoda--old-master": {
+    "text": "Restore 2 (When this unit attacks, heal 2 damage from your base.)\n\nWhen Defeated: Choose any number of players. They each draw a card.",
+    "keywords": [
+      "Restore"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "zeb-orrelios--headstrong-warrior": {
+    "text": "When this unit completes an attack: If the defender was defeated, you may deal 4 damage to a ground unit.",
+    "keywords": [],
+    "unique": true,
+    "rules": "A unit must survive an attack to trigger its “when this unit completes an attack” abilities.\n"
+  },
+  "ziro-the-hutt--colorful-schemer": {
+    "text": "When Played: For each opponent, you may exhaust a unit that player controls.\nOn Attack: For each opponent, you may exhaust a resource that player controls.",
+    "keywords": [],
+    "unique": true,
+    "rules": null
+  },
+  "zorii-bliss--valiant-smuggler": {
+    "text": "On Attack: Draw a card. At the start of the regroup phase, discard a card from your hand.\nSmuggle [6 resources Cunning Heroism]",
+    "keywords": [
+      "Smuggle"
+    ],
+    "unique": true,
+    "rules": "Zorii’s ability’s requirement to discard a card remains active even if she is defeated or leaves play before the start of the next regroup phase.\n"
+  },
+  "zuckuss--bounty-hunter-for-hire": {
+    "text": "Saboteur (When this unit attacks, ignore Sentinel and defeat the defender's Shields.)\nEach friendly unit named 4-LOM gets +1/+1 and gains Saboteur.",
+    "keywords": [
+      "Saboteur"
+    ],
+    "unique": true,
+    "rules": null
+  },
+  "rich-reward": {
+    "text": "Attached unit gains: “Bounty — Give an Experience token to each of up to 2 units.” (When this unit is defeated or captured, its opponent collects its bounty.)",
+    "keywords": [
+      "Bounty"
+    ],
+    "unique": false,
+    "rules": null
+  },
+  "force-throw": {
+    "text": "Choose a player. That player discards a card from their hand. Then, if you control a FORCE unit, you may deal damage to a unit equal to the cost of the discarded card.",
+    "keywords": [],
+    "unique": false,
+    "rules": null
+  }
+}

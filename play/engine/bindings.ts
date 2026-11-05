@@ -17,6 +17,11 @@ export function boundReference(
 ): CardReference | undefined {
   if (!context) return;
   if (name === 'source') return context.source;
+  if ((name === 'own-base' || name === 'enemy-base') && state) {
+    const controller = context.playerId ?? context.source.controller;
+    const player = name === 'own-base' ? controller : state.seats.find(id => id !== controller)!;
+    return state.cards[state.players[player]!.base];
+  }
   if (name === 'own-deck-top' && state) {
     const id = state.players[context.playerId ?? context.source.controller]!.deck[0];
     const card = id && state.cards[id];
@@ -73,7 +78,7 @@ export function boundUnit(
     const unit = parent && state.cards[parent.instanceId];
     return unit && unit.incarnation === parent.incarnation ? unit : undefined;
   }
-  const ref = boundReference(context, name),
+  const ref = boundReference(context, name, state),
     unit = ref && state.cards[ref.instanceId];
   return unit && unit.incarnation === ref.incarnation ? unit : undefined;
 }

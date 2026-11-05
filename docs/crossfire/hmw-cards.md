@@ -13,7 +13,8 @@ registry entry. Rules behavior follows the repository's pinned SWU v8.0 baseline
 
 ## Release and preview identity transition
 
-Runtime and card data are **1.2.0**, with `requiredEngine: 1.2.0`.
+These additions originally shipped in runtime/card release **1.2.0**. Current
+card bundles require **1.5.0**; contracts 1.0–1.4 have been retired.
 Deploy the compatible API/game worker before activating the card bundle.
 Exporting or merging source does not activate a release; follow
 [card releases](card-releases.md) for export, publication and administrator activation.
@@ -72,8 +73,8 @@ fields represent zero modifiers.
 - `upgrades-count.lastKnown` can read the departed incarnation's recorded
   attachments. Progenitor still counts its Weaknesses if the new token defeats it.
 
-All extensions are optional data fields/new numeric variants. Contracts for
-1.0 and 1.1 remain retained; historical definitions do not opt into these changes.
+All extensions are optional data fields/new numeric variants, included in the
+retained 1.5 contract. Earlier contracts are retired.
 Choices use existing serializable engine continuations.
 
 ## New definitions
@@ -172,10 +173,11 @@ Choices use existing serializable engine continuations.
 `play/testing/hmw-official.test.ts` checks official coverage, IDs, keyword and
 vanilla profiles, conditional traits/stats, new effects, optional branches and
 multi-step choices. It resumes representative pending choices in a fresh
-process and checks private inspection projections. The two old preview IDs also
-have fixed recordings captured with the unmodified 1.1.0 runtime at commit
-`7e675925`; a cold 1.2.0 process verifies their original hashes and facts. The existing HMW regression,
-catalog, and fixed historical replay tests remain part of `bun run play:check`.
+process and checks private inspection projections. The fixed preview-ID fixture
+was captured with runtime 1.1.0 at commit `7e675925` and is retained unchanged
+as evidence that retired bundles are rejected. It is no longer admitted for
+cold recovery. HMW regression, catalog and built-in baseline replay tests remain
+part of `bun run play:check`.
 
 Relevant commands:
 

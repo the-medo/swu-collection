@@ -1,3 +1,4 @@
+import { instanceDefinition } from './instance-definition.ts';
 import { spendingPower } from './credits.ts';
 import { printedUnitStats } from './printed-stats.ts';
 import { contextController } from './bindings.ts';
@@ -8,6 +9,7 @@ import { readyResourceCount, credits } from './credits.ts';
 import { opponent } from './state.ts';
 import { effectiveAbilities, keywordNames } from './effective-abilities.ts';
 import { cardTitle } from '../cards/catalog.ts';
+import { supportsEngine } from './release.ts';
 import type { Evaluation } from './evaluation.ts';
 import { attachedUpgrades } from './attachments.ts';
 import { printedCost, hasPrintedCost, matchesCard } from './inspection.ts';
@@ -24,6 +26,41 @@ export function numericValue(
   evaluation?: Evaluation,
 ): number {
   if (typeof value === 'number') return value;
+  if (value.kind === 'cards-played-count') {
+    const player =
+      value.player === 'self'
+        ? contextController(context)
+        : opponent(state, contextController(context));
+    return state.phaseHistory.played.filter(entry => entry.playerId === player).length;
+  }
+  if (value.kind === 'resources-paid') {
+    const ref = boundReference(context, value.target, state);
+    if (!ref) return 0;
+    if (
+      ref.instanceId === context.source.instanceId &&
+      ref.incarnation === context.source.incarnation
+    )
+      return context.source.resourcesPaid ?? 0;
+    const card = state.cards[ref.instanceId];
+    return card?.incarnation === ref.incarnation ? (card.resourcesPaid ?? 0) : 0;
+  }
+  if (value.kind === 'group-defeated-count') {
+    const controller =
+      value.controller === 'self'
+        ? contextController(context)
+        : opponent(state, contextController(context));
+    return (context.groups?.[value.group] ?? []).filter(ref =>
+      state.phaseHistory.defeated.some(
+        card =>
+          card.instanceId === ref.instanceId &&
+          card.incarnation === ref.incarnation &&
+          card.controller === controller,
+      ),
+    ).length;
+  }
+  if (value.kind === 'group-aspects-count')
+    return new Set((context.groups?.[value.group] ?? []).flatMap(ref => cardAspects(state, ref)))
+      .size;
   if (value.kind === 'spending-power')
     return spendingPower(
       state,
@@ -80,6 +117,8 @@ export function numericValue(
       ? keywordNames(state, card, evaluation).length
       : 0;
   }
+  if (value.kind === 'ceil-divide')
+    return Math.ceil(numericValue(state, context, value.value, evaluation) / value.divisor);
   if (value.kind === 'floor-divide')
     return Math.floor(numericValue(state, context, value.value, evaluation) / value.divisor);
   if (value.kind === 'phase-count') {
@@ -96,7 +135,10 @@ export function numericValue(
       ] ?? 0
     );
   }
-  if (value.kind === 'group-size') return context.groups?.[value.group]?.length ?? 0;
+  if (value.kind === 'group-size')
+    return (context.groups?.[value.group] ?? []).filter(
+      ref => !value.filter || matchesCard(state, ref, value.filter, context),
+    ).length;
   if (value.kind === 'group-stat-sum')
     return (context.groups?.[value.group] ?? []).reduce((sum, ref) => {
       const card = state.cards[ref.instanceId];
@@ -159,7 +201,7 @@ export function numericValue(
           d.reference.instanceId === ref.instanceId && d.reference.incarnation === ref.incarnation,
       );
     if (departed) return value.stat === 'power' ? departed.printedPower : departed.printedHp;
-    const definition = ref && cardDefinition(state, ref.cardId);
+    const definition = ref && instanceDefinition(state, ref);
     return definition?.kind === 'unit'
       ? definition[value.stat]
       : definition?.kind === 'leader'
@@ -253,7 +295,7 @@ export function numericValue(
           : [];
     return upgrades.filter(
       upgrade =>
-        (!value.trait || cardDefinition(state, upgrade.cardId).traits.includes(value.trait)) &&
+        (!value.trait || instanceDefinition(state, upgrade).traits.includes(value.trait)) &&
         (!value.cardId || upgrade.cardId === value.cardId) &&
         (!value.notCardId || upgrade.cardId !== value.notCardId),
     ).length;
@@ -289,6 +331,17 @@ export function numericValue(
   const ref = boundReference(context, value.target, state),
     card = ref && state.cards[ref.instanceId];
   if (!ref || !card) return 0;
+  const definition = instanceDefinition(state, card);
+  if (
+    supportsEngine('1.4.0', state.versions.engine) &&
+    definition.kind === 'base' &&
+    card.incarnation === ref.incarnation
+  )
+    return value.stat === 'remaining-hp'
+      ? Math.max(0, definition.hp - card.damage)
+      : value.stat === 'damage'
+        ? card.damage
+        : 0;
   if (value.stat === 'damage')
     return card.incarnation === ref.incarnation && isUnit(state, card)
       ? card.damage

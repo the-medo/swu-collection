@@ -9,7 +9,11 @@ import {
   DEVELOPMENT_BASELINE_PIN,
   type CardCatalog,
 } from '../cards/catalog.ts';
-import { validateCatalog } from '../cards/validate.ts';
+import {
+  supportsCardContract,
+  UnsupportedCardContractError,
+  validateCatalog,
+} from '../cards/validate.ts';
 import { bundleVersionsSchema, type BundleVersions } from '../cards/version-contract.ts';
 
 export const ACTIVE_CARD_BUNDLE = 'crossfire_card_bundle_version';
@@ -71,6 +75,10 @@ export async function loadCardBundle(sql: Database, requested: string): Promise<
   if (!row) throw new CardBundleError('Card bundle is not installed');
   if (!supportsEngine(row.required_engine))
     throw new CardBundleError('Card bundle requires a newer or different major engine');
+  if (!supportsCardContract(row.required_engine))
+    throw new CardBundleError(
+      'Unsupported card data contract; the minimum supported feature line is 1.5',
+    );
   const catalog = validateCatalog(row.definitions, row.checksum);
   if (catalog.pin !== pin || catalog.data.requiredEngine !== row.required_engine)
     throw new CardBundleError('Stored card bundle metadata does not match');
@@ -87,7 +95,8 @@ export async function loadGameVersions(sql: Database, raw: unknown): Promise<boo
   try {
     await loadCardBundle(sql, parsed.data.cards);
   } catch (error) {
-    if (error instanceof CardBundleError) return false;
+    if (error instanceof CardBundleError || error instanceof UnsupportedCardContractError)
+      return false;
     throw error;
   }
   return compatibleVersions(parsed.data);

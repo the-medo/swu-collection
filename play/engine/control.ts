@@ -1,3 +1,4 @@
+import { attackDefenders } from './combat.ts';
 import { isUpgrade } from './roles.ts';
 import { effectiveAbilities } from './effective-abilities.ts';
 import { cardDefinition } from '../cards/catalog.ts';
@@ -23,7 +24,7 @@ function commitControl(state: GameState, card: CardInstance, playerId: string) {
   }
   for (const attack of state.attacks)
     if (
-      [attack.attacker, attack.defender].some(
+      [attack.attacker, ...attackDefenders(attack)].some(
         ref => ref.instanceId === card.instanceId && ref.incarnation === card.incarnation,
       ) &&
       !attack.removedFromCombat.some(

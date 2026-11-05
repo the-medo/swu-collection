@@ -151,7 +151,8 @@ Publication only uploads; administrators activate through the release screen.
 If credentials are missing, finish the export and report the missing setup.
 Use `bun run play:cards:install <file>` for local worktree testing without R2.
 For engine changes, regenerate the current minor's contract with
-`bun run play:cards:schema`, retain older minor contracts, and verify unchanged
-historical recordings. Use `bun run play:archive` after committing runtime changes
+`bun run play:cards:schema`, retain supported contracts from the 1.5 baseline
+onward, and verify unchanged historical recordings. Contracts 1.0–1.4 are
+intentionally retired. Use `bun run play:archive` after committing runtime changes
 for the current executable smoke check; card-only updates do not need an archive
 or deployment.

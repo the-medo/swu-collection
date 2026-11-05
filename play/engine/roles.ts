@@ -1,3 +1,4 @@
+import { instanceDefinition } from './instance-definition.ts';
 import type { CatalogContext } from '../cards/catalog.ts';
 import { unitIsLeader } from './attributes.ts';
 import { cardDefinition } from '../cards/catalog.ts';
@@ -18,7 +19,7 @@ export function historicalOwnerMatches(
   current: CardInstance,
   snapshot: CardInstance,
 ) {
-  const definition = cardDefinition(state, current.cardId);
+  const definition = instanceDefinition(state, current);
   return (
     state.seats.includes(snapshot.owner) &&
     (current.owner === snapshot.owner || (definition.kind === 'upgrade' && definition.token))
@@ -35,7 +36,7 @@ export function isToken(definition: CardDefinition): boolean {
 export function isUpgrade(state: CatalogContext, card: CardInstance): boolean {
   return (
     (card.zone === 'ground' || card.zone === 'space' || card.zone === 'base') &&
-    (cardDefinition(state, card.cardId).kind === 'upgrade' || card.attachedTo !== null)
+    (instanceDefinition(state, card).kind === 'upgrade' || card.attachedTo !== null)
   );
 }
 
@@ -48,7 +49,7 @@ export function exhaustibleLeaders(
       card.controller === playerId &&
       !card.exhausted &&
       !card.attachedTo &&
-      (cardDefinition(state, card.cardId).kind === 'leader' || unitIsLeader(state, card)) &&
+      (instanceDefinition(state, card).kind === 'leader' || unitIsLeader(state, card)) &&
       ['base', 'ground', 'space'].includes(card.zone),
   );
 }

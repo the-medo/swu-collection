@@ -1,3 +1,4 @@
+import { attackDefenders, inCombat } from './combat.ts';
 import { numericValue } from './values.ts';
 import { matchingInPlayCards } from './in-play.ts';
 import { cardTraits, unitIsLeader } from './attributes.ts';
@@ -133,6 +134,10 @@ export function conditionMatches(
                 : 'defeated'
         ].filter(
           card =>
+            (!condition.by ||
+              ('defeatedBy' in card &&
+                card.defeatedBy ===
+                  (condition.by === 'self' ? playerId : opponent(state, playerId)))) &&
             (condition.player === 'any' || card.controller === controller) &&
             (condition.leader === undefined || card.leaderUnit === condition.leader) &&
             (condition.token === undefined ||
@@ -193,15 +198,21 @@ export function conditionMatches(
           a.attacker.instanceId === context.source.instanceId &&
           a.attacker.incarnation === context.source.incarnation,
       );
-      const defender = attack && state.cards[attack.defender.instanceId];
       return (
         !!attack &&
-        !!defender &&
-        defender.incarnation === attack.defender.incarnation &&
         !attack.removedFromCombat.some(
-          r => r.instanceId === defender.instanceId || r.instanceId === context.source.instanceId,
+          ref =>
+            ref.instanceId === context.source.instanceId &&
+            ref.incarnation === context.source.incarnation,
         ) &&
-        matchesUnit(state, defender, playerId, condition.filter, context, evaluation)
+        attackDefenders(attack).some(ref => {
+          const defender = state.cards[ref.instanceId];
+          return (
+            !!defender &&
+            inCombat(state, attack, defender, ref) &&
+            matchesUnit(state, defender, playerId, condition.filter, context, evaluation)
+          );
+        })
       );
     }
     case 'unit-had-trait': {
@@ -275,6 +286,11 @@ export function conditionMatches(
       return controllers.some(
         controller => instance(state, state.players[controller]!.base).damage >= condition.amount,
       );
+    }
+    case 'own-base-remaining-hp-at-most': {
+      const base = instance(state, state.players[playerId]!.base);
+      const definition = cardDefinition(state, base.cardId);
+      return definition.kind === 'base' && definition.hp - base.damage <= condition.amount;
     }
     case 'own-base-upgraded':
       return attachedUpgrades(state, instance(state, state.players[playerId]!.base)).length > 0;
@@ -366,15 +382,17 @@ export function conditionMatches(
               ref.incarnation === context.source.incarnation,
           ),
       );
-      const defender = attack && state.cards[attack.defender.instanceId];
       return (
-        !!defender &&
-        !attack!.removedFromCombat.some(
-          ref => ref.instanceId === defender.instanceId && ref.incarnation === defender.incarnation,
+        !!attack &&
+        !attack.removedFromCombat.some(
+          ref =>
+            ref.instanceId === context.source.instanceId &&
+            ref.incarnation === context.source.incarnation,
         ) &&
-        isUnit(state, defender) &&
-        defender.incarnation === attack!.defender.incarnation &&
-        defender.damage > 0
+        attackDefenders(attack).some(ref => {
+          const defender = state.cards[ref.instanceId];
+          return !!defender && inCombat(state, attack, defender, ref) && defender.damage > 0;
+        })
       );
     }
     case 'discard-aspect':
@@ -396,6 +414,18 @@ export function conditionMatches(
         matchingUnits(state, playerId, { arena: condition.arena, controller: 'enemy' }).length >
         matchingUnits(state, playerId, { arena: condition.arena, controller: 'friendly' }).length
       );
+    case 'discarded-from-hand': {
+      const ref = boundReference(context, condition.target, state);
+      return (
+        !!ref &&
+        state.phaseHistory.discarded.some(
+          entry =>
+            entry.from === 'hand' &&
+            entry.card.instanceId === ref.instanceId &&
+            entry.card.incarnation === ref.incarnation,
+        )
+      );
+    }
     case 'initiative-unclaimed':
       return !state.initiative.claimed;
     case 'initiative':

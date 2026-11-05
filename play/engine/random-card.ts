@@ -29,7 +29,7 @@ export function planRandomCard(
 ): RandomCard | undefined {
   const { kind, effect, ...context } = frame;
   if (effect.kind !== 'random-card') throw new Error('Expected random card effect');
-  const cards = effect.units
+  let cards = effect.units
     ? matchingUnits(state, contextController(frame), effect.units, frame).map(reference)
     : effect.group
       ? [...(frame.groups?.[effect.group] ?? [])]
@@ -37,6 +37,8 @@ export function planRandomCard(
           const ref = boundReference(frame, name, state);
           return ref ? [reference(ref)] : [];
         });
+  if (effect.bases)
+    cards = [...cards, ...state.seats.map(p => reference(state.cards[state.players[p]!.base]!))];
   if (!cards.length || (effect.targets && cards.length !== effect.targets.length)) return;
   const next: RandomCard = {
     ...context,

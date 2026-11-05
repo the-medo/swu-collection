@@ -1,3 +1,4 @@
+import { cardPrintedTitle } from './identity.ts';
 import { cardTitle } from '../cards/catalog.ts';
 import { cardDefinition } from '../cards/catalog.ts';
 import { unitIsLeader } from './attributes.ts';
@@ -26,7 +27,7 @@ export function namedAbilityLoss(state: GameState, card: CardInstance) {
     e =>
       e.restriction === 'lose-abilities' &&
       (e.appliesTo === 'each' || e.playerId !== card.owner) &&
-      e.name === cardTitle(state, card.cardId),
+      e.name === cardPrintedTitle(state, card),
   );
   // An upgrade imposing leader status has its own abilities. This does not
   // depend on the host retaining any abilities (v8 §3.6).

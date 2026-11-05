@@ -1,4 +1,5 @@
 import { supportsHandReveal } from '../engine/release.ts';
+import { instanceDefinition } from '../engine/instance-definition.ts';
 import { unitDefeatChoice } from '../engine/unit-defeat.ts';
 import { cardMarkers } from './card-markers.ts';
 import { effectPresentation } from './effect-presentation.ts';
@@ -87,9 +88,9 @@ export class Projector {
     );
   }
   private face(state: GameState, card: CardInstance): NonNullable<VisibleCard['face']> {
-    const definition = cardDefinition(state, card.cardId);
+    const definition = instanceDefinition(state, card);
     return {
-      cardId: card.cardId,
+      cardId: card.copiedCardId ?? card.cardId,
       ...cardMarkers(state, card),
       name: cardName(state, card),
       side: card.leaderSide === 'back' || card.deployedAs !== null ? 'back' : 'front',
@@ -135,7 +136,7 @@ export class Projector {
       card.zone !== 'resources' ||
       cardDefinition(state, card.cardId).kind === 'player-token' ||
       (this.#viewer.role === 'player' && this.#viewer.playerId === card.controller);
-    const definition = cardDefinition(state, card.cardId);
+    const definition = instanceDefinition(state, card);
     // Printed limits are public for leaders/bases. Include every printed face
     // so a deployed or returned leader retains its deployment-use marker.
     // Unlimited and once-per-round actions must never be labelled Epic/spent.
@@ -308,7 +309,10 @@ export class Projector {
         ...(effect.kind === 'victory-at-regroup' ? { arena: effect.arena } : {}),
         ...('amount' in effect ? { amount: effect.amount } : {}),
         source: visibleReference(effect.source),
-        target: effect.target ? visibleReference(effect.target) : null,
+        target:
+          effect.target && (!('targetZone' in effect) || this.#viewer.role === 'player')
+            ? visibleReference(effect.target)
+            : null,
       })),
       events,
       decision: ownDecision
@@ -373,6 +377,8 @@ export class Projector {
                           frame?.kind === 'create-tokens' ||
                           frame?.kind === 'ability-payment' ||
                           frame?.kind === 'unit-tax' ||
+                          frame?.kind === 'combat-replacement' ||
+                          frame?.kind === 'regroup-ready' ||
                           frame?.kind === 'combat-order' ||
                           frame?.kind === 'arrange-deck' ||
                           frame?.kind === 'effect' ||
@@ -533,7 +539,11 @@ export class Projector {
                 delayed: delayed
                   ? {
                       source: visibleReference(delayed.source),
-                      target: delayed.target ? visibleReference(delayed.target) : null,
+                      target:
+                        delayed.target &&
+                        (!('targetZone' in delayed) || this.#viewer.role === 'player')
+                          ? visibleReference(delayed.target)
+                          : null,
                     }
                   : null,
                 mode: intent.kind === 'choose-mode' ? intent.mode : null,

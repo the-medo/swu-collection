@@ -1,3 +1,4 @@
+import { instanceDefinition } from './instance-definition.ts';
 import type { CatalogContext } from '../cards/catalog.ts';
 import { abilityResourcePayment } from './resource-payment.ts';
 import { conditionMatches } from './conditions.ts';
@@ -36,7 +37,7 @@ export function hitPoints(card: CardDefinition): number {
       : unitProfile(card).hp;
 }
 export function activeAbilities(state: CatalogContext, card: CardInstance): Abilities {
-  const definition = cardDefinition(state, card.cardId);
+  const definition = instanceDefinition(state, card);
   if (card.attachedTo) return upgradeProfile(definition) ?? {};
   if (definition.kind === 'leader' && card.leaderSide === 'back')
     return definition.faces.alternate ?? {};
@@ -85,6 +86,8 @@ function totalCosts(ability: ActionDefinition) {
       case 'defeat-friendly-upgrade':
       case 'defeat-resource':
       case 'return-friendly-unit':
+      case 'damage-friendly-unit':
+      case 'defeat-upgrade':
       case 'defeat-friendly-credit':
       case 'defeat-friendly-token':
         chosen++;
@@ -253,7 +256,7 @@ export function canUseAbility(
     return true;
   return ability.effects.some(effect =>
     effect.kind === 'deploy'
-      ? cardDefinition(state, card.cardId).kind === 'leader' &&
+      ? instanceDefinition(state, card).kind === 'leader' &&
         card.deployedAs === null &&
         deployCondition(state, card.controller, effect)
       : effect.kind === 'play-card'

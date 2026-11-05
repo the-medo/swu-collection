@@ -1,3 +1,5 @@
+import { attackDefenders, inCombat } from './combat.ts';
+import { instanceDefinition } from './instance-definition.ts';
 import type { CatalogContext } from '../cards/catalog.ts';
 import { printedUnitStats } from './printed-stats.ts';
 import { deferUpgradeDefeat } from './upgrade-defeat.ts';
@@ -22,7 +24,7 @@ import type { CardInstance, CardReference, GameState } from './model.ts';
 import { addCard, fact, instance, isArena, move } from './state.ts';
 
 export function isUnit(state: CatalogContext, card: CardInstance): boolean {
-  const definition = cardDefinition(state, card.cardId);
+  const definition = instanceDefinition(state, card);
   return (
     isArena(card.zone) &&
     card.attachedTo === null &&
@@ -42,7 +44,7 @@ export function attachedUpgrades(state: GameState, unit: CardInstance): CardInst
 export function unitStats(state: GameState, unit: CardInstance, evaluation?: Evaluation) {
   let { power, hp } = printedUnitStats(state, unit, evaluation);
   for (const upgrade of attachedUpgrades(state, unit)) {
-    const profile = upgradeProfile(cardDefinition(state, upgrade.cardId));
+    const profile = upgradeProfile(instanceDefinition(state, upgrade));
     if (!profile) throw new Error('Unsupported attachment role');
     power += profile.modifiers.power;
     hp += profile.modifiers.hp;
@@ -102,8 +104,17 @@ export function unitStats(state: GameState, unit: CardInstance, evaluation?: Eva
       !attack.removedFromCombat.some(
         ref => ref.instanceId === unit.instanceId && ref.incarnation === unit.incarnation,
       )
-    )
+    ) {
       power += attack.powerBonus;
+      for (const ref of attackDefenders(attack)) {
+        const defender = state.cards[ref.instanceId];
+        if (defender && inCombat(state, attack, defender, ref))
+          power += activeLasting(state, defender).reduce(
+            (sum, effect) => sum + (effect.defendingAttackerPower ?? 0),
+            0,
+          );
+      }
+    }
   }
   if (
     state.attacks.some(
@@ -121,8 +132,8 @@ export function unitStats(state: GameState, unit: CardInstance, evaluation?: Eva
 }
 // Eligibility is evaluated when attaching, not continuously (v8 §3.6.3).
 export function canAttach(state: GameState, upgrade: CardInstance, unit: CardInstance): boolean {
-  const profile = upgradeProfile(cardDefinition(state, upgrade.cardId));
-  const definition = cardDefinition(state, unit.cardId);
+  const profile = upgradeProfile(instanceDefinition(state, upgrade));
+  const definition = instanceDefinition(state, unit);
   const base = definition.kind === 'base' && unit.zone === 'base';
   if (
     !profile ||
@@ -153,7 +164,7 @@ export function canAttach(state: GameState, upgrade: CardInstance, unit: CardIns
       unit.instanceId === upgrade.attachmentRestriction.host.instanceId &&
       unit.incarnation === upgrade.attachmentRestriction.host.incarnation
     );
-  if (cardDefinition(state, upgrade.cardId).kind === 'upgrade' && namedAbilityLoss(state, upgrade))
+  if (instanceDefinition(state, upgrade).kind === 'upgrade' && namedAbilityLoss(state, upgrade))
     return true;
   if (
     profile.attachFilter &&
@@ -195,7 +206,7 @@ export function attach(state: GameState, upgrade: CardInstance, unit: CardInstan
   move(state, upgrade, unit.zone);
   upgrade.attachedTo = { instanceId: unit.instanceId, incarnation: unit.incarnation };
   upgrade.exhausted = false;
-  const definition = cardDefinition(state, upgrade.cardId);
+  const definition = instanceDefinition(state, upgrade);
   if (definition.kind === 'upgrade' && definition.token)
     upgrade.owner = upgrade.controller = unit.controller;
   fact(state, 'attached', upgrade.controller, [upgrade, unit]);
@@ -214,15 +225,18 @@ export function giveTokens(
   creator = unit.controller,
   notify = true,
 ) {
-  if (!isUnit(state, unit) || count <= 0) return;
+  if (!isUnit(state, unit) || count <= 0) return [];
+  const created: CardInstance[] = [];
   for (let n = 0; n < count; n++) {
     const upgrade = addCard(state, unit.controller, token, 'set-aside');
     attach(state, upgrade, unit, false);
+    created.push(upgrade);
     recordTokenCreation(state, creator);
     const given = (state.phaseHistory.tokenUpgradesGiven ??= []);
     if (!given.includes(creator)) given.push(creator);
   }
   if (notify) collectTriggers(state, 'upgrades-attached', [unit]);
+  return created;
 }
 export function giveToken(
   state: GameState,
@@ -243,7 +257,7 @@ export function baseUpgradeProtectors(state: GameState, card: CardInstance) {
   const host = card.attachedTo && state.cards[card.attachedTo.instanceId];
   return host &&
     host.incarnation === card.attachedTo?.incarnation &&
-    cardDefinition(state, host.cardId).kind === 'base'
+    instanceDefinition(state, host).kind === 'base'
     ? abilitySources(state).filter(
         candidate =>
           candidate.controller === card.controller &&
@@ -310,7 +324,7 @@ export function commitUpgradeDefeat(
         origins: observer.origins,
       });
   fact(state, 'defeated', card.controller, [card]);
-  if (cardDefinition(state, card.cardId).kind === 'leader') {
+  if (instanceDefinition(state, card).kind === 'leader') {
     move(state, card, 'base');
     card.deployedAs = null;
     card.exhausted = true;

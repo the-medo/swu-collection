@@ -98,3 +98,27 @@ test('concurrent publishers cannot reuse a runtime version for different executa
   expect(results.filter(r => r.status === 'fulfilled')).toHaveLength(1);
   expect((await availableReleases(storage)).releases).toHaveLength(1);
 });
+
+test('retired contracts cannot be published or downloaded as usable releases', async () => {
+  const storage = new MemoryObjects(),
+    r = release(version(908));
+  const data = { ...r.catalog.data, version: '1.4.999', requiredEngine: '1.4.0' };
+  const catalog = new CardCatalog(data);
+  const metadata = {
+    ...r.metadata,
+    version: data.version,
+    requiredEngine: data.requiredEngine,
+    checksum: catalog.hash,
+  };
+  await expect(publishCardRelease(storage, catalog, metadata)).rejects.toThrow(
+    'minimum supported feature line is 1.5',
+  );
+  expect(storage.files.size).toBe(0);
+  storage.files.set(releaseKey(metadata), {
+    etag: 'retired',
+    bytes: gzipSync(JSON.stringify(data)),
+  });
+  await expect(downloadRelease(storage, metadata)).rejects.toThrow(
+    'definition or checksum validation',
+  );
+});

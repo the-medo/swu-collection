@@ -48,10 +48,12 @@ export function scheduleRegroupEffects(
   playerId: string,
   source: CardInstance,
   effects: readonly import('../cards/definition.ts').CardEffect[],
+  origin?: import('./model.ts').AbilityOrigin,
 ) {
   state.delayedEffects.push({
     id: allocateId(state, 'l'),
     kind: 'effects-at-regroup',
+    ...(origin ? { origin: structuredClone(origin) } : {}),
     playerId,
     source: structuredClone(source),
     target: null,
@@ -147,14 +149,21 @@ export function collectDepartureEffects(state: GameState) {
 export function containsControlSchedule(
   value: unknown,
   timing: 'regroup' | 'source-leaves',
+  targetZone?: 'resources',
 ): boolean {
   if (!value || typeof value !== 'object') return false;
   return (
     ('kind' in value &&
-      value.kind === 'take-control' &&
+      value.kind === (targetZone === 'resources' ? 'take-control-resources' : 'take-control') &&
       'returnWhen' in value &&
       value.returnWhen === timing) ||
-    Object.values(value).some(v => containsControlSchedule(v, timing))
+    ('kind' in value &&
+      targetZone !== 'resources' &&
+      value.kind === 'exchange-control' &&
+      'returnAtRegroup' in value &&
+      value.returnAtRegroup === true &&
+      timing === 'regroup') ||
+    Object.values(value).some(v => containsControlSchedule(v, timing, targetZone))
   );
 }
 

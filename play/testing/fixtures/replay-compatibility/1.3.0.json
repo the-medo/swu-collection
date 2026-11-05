@@ -1,0 +1,124 @@
+{
+  "sourceRevision": "eb6e406ba2aa2d1d4de4e11f923d045fa8b74bf3",
+  "cases": [
+    {
+      "name": "regroup-ready",
+      "checkpoint": "{\"versions\":{\"state\":109,\"engine\":\"1.3.0\",\"cards\":\"1.0.0@67e5bbc0f6f9a98c4627628324c6700868425fc99887fc5120bf4778cd6a4a50\",\"rules\":\"swu-8.0\",\"format\":\"core-practice\"},\"gameId\":\"main-1-3-regroup-ready\",\"revision\":0,\"nextId\":8,\"seats\":[\"alice\",\"bob\"],\"players\":{\"alice\":{\"id\":\"alice\",\"base\":\"c1\",\"leader\":\"c2\",\"tokens\":[],\"deck\":[],\"hand\":[],\"resources\":[],\"discard\":[]},\"bob\":{\"id\":\"bob\",\"base\":\"c4\",\"leader\":\"c5\",\"tokens\":[],\"deck\":[],\"hand\":[],\"resources\":[],\"discard\":[]}},\"cards\":{\"c1\":{\"instanceId\":\"c1\",\"cardId\":\"command-center\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c2\":{\"instanceId\":\"c2\",\"cardId\":\"sabine-wren--galvanized-revolutionary\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c3\":{\"instanceId\":\"c3\",\"cardId\":\"battlefield-marine\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"ground\",\"incarnation\":1,\"visibility\":0,\"damage\":2,\"exhausted\":true,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c4\":{\"instanceId\":\"c4\",\"cardId\":\"command-center\",\"owner\":\"bob\",\"controller\":\"bob\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c5\":{\"instanceId\":\"c5\",\"cardId\":\"sabine-wren--galvanized-revolutionary\",\"owner\":\"bob\",\"controller\":\"bob\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}}},\"attacks\":[],\"delayedEffects\":[],\"printedStatActivations\":[],\"keywordGrants\":[],\"lastingEffects\":[],\"namedEffects\":[],\"traitLosses\":[],\"phaseHistory\":{\"lastActions\":{},\"defeatedAttacking\":[],\"damageAttempts\":[],\"damagedUnits\":[],\"basesDamaged\":[],\"basesAttacked\":[],\"baseAttackers\":[],\"upgradesDefeated\":[],\"cardsDrawn\":{},\"discarded\":[],\"enemyBaseDamage\":{},\"unitEntries\":[],\"left\":[],\"defeated\":[],\"attacks\":[],\"forceUsed\":{},\"actionsTaken\":{},\"entered\":[],\"baseDamageSources\":[],\"enemyBaseDamaged\":[],\"indirectDamage\":[],\"tokensCreated\":[],\"ownCardsDiscarded\":[],\"played\":[]},\"actionHistory\":null,\"departedUnits\":[],\"departedUpgrades\":[],\"defeatedAbilityBatches\":[],\"usedDefeatedAbilities\":[],\"usedAttackAbilities\":[],\"usedPlayedAbilities\":[],\"phaseTriggers\":[],\"usedBounties\":[],\"captured\":[],\"setAside\":[],\"searching\":[],\"roundHistory\":{\"plays\":[],\"triggerUses\":[],\"actionUses\":[]},\"playPayment\":null,\"playModifiers\":[],\"playRestrictions\":[],\"phaseStatModifiers\":[],\"grantedPlays\":[],\"ground\":[\"c3\"],\"space\":[],\"phase\":\"regroup\",\"round\":1,\"activePlayer\":\"alice\",\"initiative\":{\"holder\":\"alice\",\"claimed\":false},\"consecutivePasses\":0,\"lastPassPlayer\":null,\"execution\":{\"frames\":[{\"kind\":\"effect\",\"playerId\":\"alice\",\"source\":{\"instanceId\":\"c3\",\"cardId\":\"battlefield-marine\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"ground\",\"incarnation\":1,\"visibility\":0,\"damage\":2,\"exhausted\":true,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"effect\":{\"kind\":\"choose-mode\",\"options\":[{\"id\":\"resolve\",\"effects\":[{\"kind\":\"ready-units\",\"filter\":{\"controller\":\"friendly\"}}]}]}},{\"kind\":\"action\"}],\"pendingTriggers\":[],\"decision\":{\"id\":\"d7\",\"playerId\":\"alice\",\"kind\":\"effect\",\"selection\":null,\"options\":[{\"id\":\"o0\",\"intent\":{\"kind\":\"choose-mode\",\"mode\":\"resolve\"}}]},\"random\":null},\"disclosure\":{\"handsToPlayers\":false,\"handsToSpectators\":false},\"result\":null,\"facts\":[]}",
+      "input": {
+        "type": "decision",
+        "gameId": "main-1-3-regroup-ready",
+        "expectedRevision": 0,
+        "playerId": "alice",
+        "decisionId": "d7",
+        "optionId": "o0",
+        "selections": []
+      },
+      "stateHash": "a90fb767e49670484141e1698e9374b39ff44e139c4bf9e3afb4ec05f0db1f76",
+      "facts": [
+        {
+          "seq": 0,
+          "type": "mode-chosen",
+          "actor": "alice",
+          "cards": [
+            {
+              "instanceId": "c3",
+              "cardId": "battlefield-marine",
+              "incarnation": 1,
+              "visibility": 0
+            }
+          ],
+          "amount": null,
+          "audience": "public",
+          "mode": "resolve"
+        },
+        {
+          "seq": 1,
+          "type": "readied",
+          "actor": "alice",
+          "cards": [
+            {
+              "instanceId": "c3",
+              "cardId": "battlefield-marine",
+              "incarnation": 1,
+              "visibility": 0
+            },
+            {
+              "instanceId": "c3",
+              "cardId": "battlefield-marine",
+              "incarnation": 1,
+              "visibility": 0
+            }
+          ],
+          "amount": null,
+          "audience": "public"
+        }
+      ]
+    },
+    {
+      "name": "unit-healing",
+      "checkpoint": "{\"versions\":{\"state\":109,\"engine\":\"1.3.0\",\"cards\":\"1.0.0@67e5bbc0f6f9a98c4627628324c6700868425fc99887fc5120bf4778cd6a4a50\",\"rules\":\"swu-8.0\",\"format\":\"core-practice\"},\"gameId\":\"main-1-3-unit-healing\",\"revision\":0,\"nextId\":9,\"seats\":[\"alice\",\"bob\"],\"players\":{\"alice\":{\"id\":\"alice\",\"base\":\"c1\",\"leader\":\"c2\",\"tokens\":[],\"deck\":[],\"hand\":[],\"resources\":[],\"discard\":[]},\"bob\":{\"id\":\"bob\",\"base\":\"c4\",\"leader\":\"c5\",\"tokens\":[],\"deck\":[],\"hand\":[],\"resources\":[],\"discard\":[]}},\"cards\":{\"c1\":{\"instanceId\":\"c1\",\"cardId\":\"command-center\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c2\":{\"instanceId\":\"c2\",\"cardId\":\"sabine-wren--galvanized-revolutionary\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c3\":{\"instanceId\":\"c3\",\"cardId\":\"battlefield-marine\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"ground\",\"incarnation\":1,\"visibility\":0,\"damage\":2,\"exhausted\":true,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c4\":{\"instanceId\":\"c4\",\"cardId\":\"command-center\",\"owner\":\"bob\",\"controller\":\"bob\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c5\":{\"instanceId\":\"c5\",\"cardId\":\"sabine-wren--galvanized-revolutionary\",\"owner\":\"bob\",\"controller\":\"bob\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}}},\"attacks\":[],\"delayedEffects\":[],\"printedStatActivations\":[],\"keywordGrants\":[],\"lastingEffects\":[{\"id\":\"m7\",\"source\":{\"instanceId\":\"c3\",\"cardId\":\"battlefield-marine\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"ground\",\"incarnation\":1,\"visibility\":0,\"damage\":2,\"exhausted\":true,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"target\":{\"instanceId\":\"c3\",\"cardId\":\"battlefield-marine\",\"incarnation\":1,\"visibility\":0},\"power\":0,\"hp\":0,\"loseAbilities\":false,\"cannotHeal\":true,\"expires\":{\"kind\":\"phase\",\"phase\":\"action\",\"round\":1}}],\"namedEffects\":[],\"traitLosses\":[],\"phaseHistory\":{\"lastActions\":{},\"defeatedAttacking\":[],\"damageAttempts\":[],\"damagedUnits\":[],\"basesDamaged\":[],\"basesAttacked\":[],\"baseAttackers\":[],\"upgradesDefeated\":[],\"cardsDrawn\":{},\"discarded\":[],\"enemyBaseDamage\":{},\"unitEntries\":[],\"left\":[],\"defeated\":[],\"attacks\":[],\"forceUsed\":{},\"actionsTaken\":{},\"entered\":[],\"baseDamageSources\":[],\"enemyBaseDamaged\":[],\"indirectDamage\":[],\"tokensCreated\":[],\"ownCardsDiscarded\":[],\"played\":[]},\"actionHistory\":null,\"departedUnits\":[],\"departedUpgrades\":[],\"defeatedAbilityBatches\":[],\"usedDefeatedAbilities\":[],\"usedAttackAbilities\":[],\"usedPlayedAbilities\":[],\"phaseTriggers\":[],\"usedBounties\":[],\"captured\":[],\"setAside\":[],\"searching\":[],\"roundHistory\":{\"plays\":[],\"triggerUses\":[],\"actionUses\":[]},\"playPayment\":null,\"playModifiers\":[],\"playRestrictions\":[],\"phaseStatModifiers\":[],\"grantedPlays\":[],\"ground\":[\"c3\"],\"space\":[],\"phase\":\"action\",\"round\":1,\"activePlayer\":\"alice\",\"initiative\":{\"holder\":\"alice\",\"claimed\":false},\"consecutivePasses\":0,\"lastPassPlayer\":null,\"execution\":{\"frames\":[{\"kind\":\"effect\",\"playerId\":\"alice\",\"source\":{\"instanceId\":\"c3\",\"cardId\":\"battlefield-marine\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"ground\",\"incarnation\":1,\"visibility\":0,\"damage\":2,\"exhausted\":true,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"effect\":{\"kind\":\"choose-mode\",\"options\":[{\"id\":\"resolve\",\"effects\":[{\"kind\":\"on-unit\",\"target\":\"source\",\"operation\":{\"kind\":\"heal\",\"amount\":2}}]}]}},{\"kind\":\"action\"}],\"pendingTriggers\":[],\"decision\":{\"id\":\"d8\",\"playerId\":\"alice\",\"kind\":\"effect\",\"selection\":null,\"options\":[{\"id\":\"o0\",\"intent\":{\"kind\":\"choose-mode\",\"mode\":\"resolve\"}}]},\"random\":null},\"disclosure\":{\"handsToPlayers\":false,\"handsToSpectators\":false},\"result\":null,\"facts\":[{\"seq\":0,\"type\":\"modified\",\"actor\":\"alice\",\"cards\":[{\"instanceId\":\"c3\",\"cardId\":\"battlefield-marine\",\"incarnation\":1,\"visibility\":0},{\"instanceId\":\"c3\",\"cardId\":\"battlefield-marine\",\"incarnation\":1,\"visibility\":0}],\"amount\":null,\"audience\":\"public\"}]}",
+      "input": {
+        "type": "decision",
+        "gameId": "main-1-3-unit-healing",
+        "expectedRevision": 0,
+        "playerId": "alice",
+        "decisionId": "d8",
+        "optionId": "o0",
+        "selections": []
+      },
+      "stateHash": "1d2ef7667d7d6e172cb36743c13a88d399aac06775f6773b85576decaa13a7c5",
+      "facts": [
+        {
+          "seq": 1,
+          "type": "mode-chosen",
+          "actor": "alice",
+          "cards": [
+            {
+              "instanceId": "c3",
+              "cardId": "battlefield-marine",
+              "incarnation": 1,
+              "visibility": 0
+            }
+          ],
+          "amount": null,
+          "audience": "public",
+          "mode": "resolve"
+        },
+        {
+          "seq": 2,
+          "type": "healed",
+          "actor": "alice",
+          "cards": [
+            {
+              "instanceId": "c3",
+              "cardId": "battlefield-marine",
+              "incarnation": 1,
+              "visibility": 0
+            },
+            {
+              "instanceId": "c3",
+              "cardId": "battlefield-marine",
+              "incarnation": 1,
+              "visibility": 0
+            }
+          ],
+          "amount": 2,
+          "audience": "public"
+        }
+      ]
+    },
+    {
+      "name": "hand-reveal",
+      "checkpoint": "{\"versions\":{\"state\":109,\"engine\":\"1.3.0\",\"cards\":\"1.0.0@67e5bbc0f6f9a98c4627628324c6700868425fc99887fc5120bf4778cd6a4a50\",\"rules\":\"swu-8.0\",\"format\":\"core-practice\"},\"gameId\":\"main-1-3-hand-reveal\",\"revision\":0,\"nextId\":7,\"seats\":[\"alice\",\"bob\"],\"players\":{\"alice\":{\"id\":\"alice\",\"base\":\"c1\",\"leader\":\"c2\",\"tokens\":[],\"deck\":[],\"hand\":[],\"resources\":[],\"discard\":[]},\"bob\":{\"id\":\"bob\",\"base\":\"c4\",\"leader\":\"c5\",\"tokens\":[],\"deck\":[],\"hand\":[],\"resources\":[],\"discard\":[]}},\"cards\":{\"c1\":{\"instanceId\":\"c1\",\"cardId\":\"command-center\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c2\":{\"instanceId\":\"c2\",\"cardId\":\"sabine-wren--galvanized-revolutionary\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c3\":{\"instanceId\":\"c3\",\"cardId\":\"battlefield-marine\",\"owner\":\"alice\",\"controller\":\"alice\",\"zone\":\"ground\",\"incarnation\":1,\"visibility\":0,\"damage\":2,\"exhausted\":true,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c4\":{\"instanceId\":\"c4\",\"cardId\":\"command-center\",\"owner\":\"bob\",\"controller\":\"bob\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}},\"c5\":{\"instanceId\":\"c5\",\"cardId\":\"sabine-wren--galvanized-revolutionary\",\"owner\":\"bob\",\"controller\":\"bob\",\"zone\":\"base\",\"incarnation\":1,\"visibility\":0,\"damage\":0,\"exhausted\":false,\"deployedAs\":null,\"capturedBy\":null,\"attachedTo\":null,\"abilityUses\":{}}},\"attacks\":[],\"delayedEffects\":[],\"printedStatActivations\":[],\"keywordGrants\":[],\"lastingEffects\":[],\"namedEffects\":[],\"traitLosses\":[],\"phaseHistory\":{\"lastActions\":{},\"defeatedAttacking\":[],\"damageAttempts\":[],\"damagedUnits\":[],\"basesDamaged\":[],\"basesAttacked\":[],\"baseAttackers\":[],\"upgradesDefeated\":[],\"cardsDrawn\":{},\"discarded\":[],\"enemyBaseDamage\":{},\"unitEntries\":[],\"left\":[],\"defeated\":[],\"attacks\":[],\"forceUsed\":{},\"actionsTaken\":{},\"entered\":[],\"baseDamageSources\":[],\"enemyBaseDamaged\":[],\"indirectDamage\":[],\"tokensCreated\":[],\"ownCardsDiscarded\":[],\"played\":[]},\"actionHistory\":null,\"departedUnits\":[],\"departedUpgrades\":[],\"defeatedAbilityBatches\":[],\"usedDefeatedAbilities\":[],\"usedAttackAbilities\":[],\"usedPlayedAbilities\":[],\"phaseTriggers\":[],\"usedBounties\":[],\"captured\":[],\"setAside\":[],\"searching\":[],\"roundHistory\":{\"plays\":[],\"triggerUses\":[],\"actionUses\":[]},\"playPayment\":null,\"playModifiers\":[],\"playRestrictions\":[],\"phaseStatModifiers\":[],\"grantedPlays\":[],\"ground\":[\"c3\"],\"space\":[],\"phase\":\"action\",\"round\":1,\"activePlayer\":\"alice\",\"initiative\":{\"holder\":\"alice\",\"claimed\":false},\"consecutivePasses\":0,\"lastPassPlayer\":null,\"execution\":{\"frames\":[{\"kind\":\"action\"}],\"pendingTriggers\":[],\"decision\":{\"id\":\"d6\",\"playerId\":\"alice\",\"kind\":\"action\",\"selection\":null,\"options\":[{\"id\":\"o0\",\"intent\":{\"kind\":\"use-ability\",\"card\":\"c2\",\"abilityId\":\"damage-bases\"}},{\"id\":\"o1\",\"intent\":{\"kind\":\"use-ability\",\"card\":\"c2\",\"abilityId\":\"deploy\"}},{\"id\":\"o2\",\"intent\":{\"kind\":\"take-initiative\"}},{\"id\":\"o3\",\"intent\":{\"kind\":\"pass\"}}]},\"random\":null},\"disclosure\":{\"handsToPlayers\":false,\"handsToSpectators\":false},\"result\":null,\"facts\":[]}",
+      "input": {
+        "type": "set-hand-reveal",
+        "gameId": "main-1-3-hand-reveal",
+        "expectedRevision": 0,
+        "playerId": "bob",
+        "revealed": true
+      },
+      "stateHash": "7121e82cd281cff59a9db0e8a89110371835d0769349e46c72275224bc7a0adf",
+      "facts": []
+    }
+  ]
+}

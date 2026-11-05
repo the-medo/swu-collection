@@ -1,0 +1,610 @@
+{
+  "source": "https://swudb.com/search/set:IC27?sortorder=preview&sortdir=desc",
+  "retrievedAt": "2026-11-04",
+  "printings": [
+    {
+      "number": "001",
+      "cardId": "darth-vader--no-one-to-stop-us"
+    },
+    {
+      "number": "002",
+      "cardId": "rey--in-balance"
+    },
+    {
+      "number": "003",
+      "cardId": "kylo-ren--supreme-leader"
+    },
+    {
+      "number": "004",
+      "cardId": "mace-windu--here-with-backup"
+    },
+    {
+      "number": "006",
+      "cardId": "luke-skywalker--i-have-to-face-him"
+    },
+    {
+      "number": "007",
+      "cardId": "asajj-ventress--bald-and-beautiful"
+    },
+    {
+      "number": "008",
+      "cardId": "princess-leia--on-a-diplomatic-mission"
+    },
+    {
+      "number": "009",
+      "cardId": "city-in-the-clouds"
+    },
+    {
+      "number": "010",
+      "cardId": "echo-base"
+    },
+    {
+      "number": "011",
+      "cardId": "kcm-mining-facility"
+    },
+    {
+      "number": "012",
+      "cardId": "mos-eisley"
+    },
+    {
+      "number": "013",
+      "cardId": "nute-gunray--ring-ring--space-calling"
+    },
+    {
+      "number": "014",
+      "cardId": "dryden-vos--thumb-spiking-the-scale"
+    },
+    {
+      "number": "015",
+      "cardId": "onyx-squadron-brute"
+    },
+    {
+      "number": "016",
+      "cardId": "rune-haako--scheming-second"
+    },
+    {
+      "number": "017",
+      "cardId": "death-trooper"
+    },
+    {
+      "number": "018",
+      "cardId": "magistrate-s-scout"
+    },
+    {
+      "number": "019",
+      "cardId": "soulless-one--soulless-fun"
+    },
+    {
+      "number": "020",
+      "cardId": "admiral-piett--in-command-now"
+    },
+    {
+      "number": "021",
+      "cardId": "general-grievous--four-armed-menace"
+    },
+    {
+      "number": "022",
+      "cardId": "moff-gideon--cold-calling"
+    },
+    {
+      "number": "023",
+      "cardId": "grand-moff-tarkin--cracking-down-on-lothal"
+    },
+    {
+      "number": "024",
+      "cardId": "grand-admiral-thrawn--listen-to-me-carefully"
+    },
+    {
+      "number": "025",
+      "cardId": "blizzard-one--veers-at-the-helm"
+    },
+    {
+      "number": "026",
+      "cardId": "darth-sidious--move-against-the-jedi"
+    },
+    {
+      "number": "027",
+      "cardId": "at-at-suppressor"
+    },
+    {
+      "number": "028",
+      "cardId": "avenger--hunting-the-rebels"
+    },
+    {
+      "number": "029",
+      "cardId": "chimaera--grand-admiral-s-might"
+    },
+    {
+      "number": "030",
+      "cardId": "lethal-crackdown"
+    },
+    {
+      "number": "031",
+      "cardId": "bb-8--frazzled-friend"
+    },
+    {
+      "number": "032",
+      "cardId": "kaydel-connix--keep-going"
+    },
+    {
+      "number": "033",
+      "cardId": "clan-wren-rescuer"
+    },
+    {
+      "number": "034",
+      "cardId": "obi-wan-s-interceptor--nothing-too-fancy"
+    },
+    {
+      "number": "035",
+      "cardId": "yoda--a-disturbing-puzzle"
+    },
+    {
+      "number": "036",
+      "cardId": "concord-dawn-interceptors"
+    },
+    {
+      "number": "037",
+      "cardId": "finn--stand-and-fight"
+    },
+    {
+      "number": "038",
+      "cardId": "admiral-holdo--we-are-the-spark"
+    },
+    {
+      "number": "039",
+      "cardId": "ahsoka-tano--not-on-my-death-watch"
+    },
+    {
+      "number": "040",
+      "cardId": "rose--in-the-fight"
+    },
+    {
+      "number": "041",
+      "cardId": "captain-rex--staunch-advocate"
+    },
+    {
+      "number": "045",
+      "cardId": "qi-ra--survivor"
+    },
+    {
+      "number": "046",
+      "cardId": "vigilant-defense"
+    },
+    {
+      "number": "047",
+      "cardId": "moisture-farmer"
+    },
+    {
+      "number": "048",
+      "cardId": "desperate-commando"
+    },
+    {
+      "number": "049",
+      "cardId": "dexter-jettster--obi-wannnn"
+    },
+    {
+      "number": "052",
+      "cardId": "resilient"
+    },
+    {
+      "number": "053",
+      "cardId": "disciples--devotion"
+    },
+    {
+      "number": "055",
+      "cardId": "betrayed-trust"
+    },
+    {
+      "number": "056",
+      "cardId": "allegiant-general-pryde--heartless-efficiency"
+    },
+    {
+      "number": "057",
+      "cardId": "director-krennic--architect-of-annihilation"
+    },
+    {
+      "number": "058",
+      "cardId": "general-veers--prepared"
+    },
+    {
+      "number": "059",
+      "cardId": "exegol-patroller"
+    },
+    {
+      "number": "060",
+      "cardId": "jabba-the-hutt--bounties-left-and-right"
+    },
+    {
+      "number": "061",
+      "cardId": "knight-of-ren"
+    },
+    {
+      "number": "062",
+      "cardId": "admiral-motti--conan-in-command"
+    },
+    {
+      "number": "063",
+      "cardId": "kylo-s-tie-silencer--follow-my-lead"
+    },
+    {
+      "number": "064",
+      "cardId": "captain-phasma--on-my-command"
+    },
+    {
+      "number": "065",
+      "cardId": "darth-maul--mindful-apprentice"
+    },
+    {
+      "number": "066",
+      "cardId": "mother-talzin--the-time-has-come"
+    },
+    {
+      "number": "067",
+      "cardId": "darth-vader--useless-to-resist"
+    },
+    {
+      "number": "068",
+      "cardId": "devastator--lord-vader-s-flagship"
+    },
+    {
+      "number": "069",
+      "cardId": "apology-accepted"
+    },
+    {
+      "number": "070",
+      "cardId": "c-3po--impulse-buy"
+    },
+    {
+      "number": "071",
+      "cardId": "avar-kriss--for-light-and-life"
+    },
+    {
+      "number": "073",
+      "cardId": "phoenix-squadron-a-wing"
+    },
+    {
+      "number": "075",
+      "cardId": "red-leader---wait-for-my-signal"
+    },
+    {
+      "number": "076",
+      "cardId": "clone-commander-cody--loyal-to-the-republic"
+    },
+    {
+      "number": "077",
+      "cardId": "mon-mothma--truth-is-an-abyss"
+    },
+    {
+      "number": "078",
+      "cardId": "anakin-skywalker--destined-for-darkness"
+    },
+    {
+      "number": "079",
+      "cardId": "qui-gon-jinn--unwavering-belief"
+    },
+    {
+      "number": "080",
+      "cardId": "bright-hope--narrow-escape"
+    },
+    {
+      "number": "081",
+      "cardId": "mace-windu--dropping-by"
+    },
+    {
+      "number": "082",
+      "cardId": "luke-skywalker--do-you-read-me-"
+    },
+    {
+      "number": "084",
+      "cardId": "negotiator--prepare-the-troops"
+    },
+    {
+      "number": "085",
+      "cardId": "inspiring-mentor"
+    },
+    {
+      "number": "086",
+      "cardId": "enfys-nest--no-more"
+    },
+    {
+      "number": "087",
+      "cardId": "issue-a-command"
+    },
+    {
+      "number": "089",
+      "cardId": "maz-kanata--it-calls-to-you"
+    },
+    {
+      "number": "090",
+      "cardId": "homestead-militia"
+    },
+    {
+      "number": "093",
+      "cardId": "academy-training"
+    },
+    {
+      "number": "094",
+      "cardId": "dogfight"
+    },
+    {
+      "number": "097",
+      "cardId": "death-star-stormtrooper"
+    },
+    {
+      "number": "098",
+      "cardId": "commander-pyre--golden-menace"
+    },
+    {
+      "number": "099",
+      "cardId": "eighth-brother--ill-fated-escape"
+    },
+    {
+      "number": "100",
+      "cardId": "special-forces-tie-fighter"
+    },
+    {
+      "number": "101",
+      "cardId": "general-hux--fire-ventral-cannons"
+    },
+    {
+      "number": "103",
+      "cardId": "grand-inquisitor--how-the-mighty-will-fall"
+    },
+    {
+      "number": "104",
+      "cardId": "the-inquisitor-s-tie--would-rather-win"
+    },
+    {
+      "number": "105",
+      "cardId": "general-veers--leading-the-assault"
+    },
+    {
+      "number": "107",
+      "cardId": "aurra-sing--getting-even"
+    },
+    {
+      "number": "108",
+      "cardId": "savage-opress--monster"
+    },
+    {
+      "number": "110",
+      "cardId": "supremacy--destroy-the-resistance"
+    },
+    {
+      "number": "111",
+      "cardId": "battle-fury"
+    },
+    {
+      "number": "113",
+      "cardId": "ezra-bridger--down-with-the-freedom"
+    },
+    {
+      "number": "115",
+      "cardId": "poe-dameron--hero-of-the-resistance"
+    },
+    {
+      "number": "116",
+      "cardId": "black-one--draw-fire--twice"
+    },
+    {
+      "number": "118",
+      "cardId": "jedi-knight"
+    },
+    {
+      "number": "119",
+      "cardId": "sabine-wren--liberator-of-krownest"
+    },
+    {
+      "number": "120",
+      "cardId": "rey--embracing-destiny"
+    },
+    {
+      "number": "121",
+      "cardId": "kanan-jarrus--sometimes-i-hate-being-right"
+    },
+    {
+      "number": "122",
+      "cardId": "the-ghost--whale-watching"
+    },
+    {
+      "number": "123",
+      "cardId": "jyn-erso--her-father-s-revenge"
+    },
+    {
+      "number": "124",
+      "cardId": "k-2so--evacuate-the-vault-door"
+    },
+    {
+      "number": "126",
+      "cardId": "saw-gerrera--for-the-cause"
+    },
+    {
+      "number": "127",
+      "cardId": "act-of-aggression"
+    },
+    {
+      "number": "129",
+      "cardId": "drk-1-probe-droid"
+    },
+    {
+      "number": "131",
+      "cardId": "cham-syndulla--rallying-ryloth"
+    },
+    {
+      "number": "133",
+      "cardId": "infiltrator-s-skill"
+    },
+    {
+      "number": "136",
+      "cardId": "open-fire"
+    },
+    {
+      "number": "138",
+      "cardId": "banshee--scream-machine"
+    },
+    {
+      "number": "142",
+      "cardId": "greedo--big-timer"
+    },
+    {
+      "number": "143",
+      "cardId": "wat-tambor--warped-warbling"
+    },
+    {
+      "number": "144",
+      "cardId": "jango-fett--straight-shooter"
+    },
+    {
+      "number": "145",
+      "cardId": "poggle-the-lesser--secret-designs"
+    },
+    {
+      "number": "146",
+      "cardId": "boba-fett--compensated-if-he-dies"
+    },
+    {
+      "number": "147",
+      "cardId": "asajj-ventress--death-from-above"
+    },
+    {
+      "number": "148",
+      "cardId": "count-dooku--silver-tongued"
+    },
+    {
+      "number": "149",
+      "cardId": "the-invisible-hand--confederate-might"
+    },
+    {
+      "number": "150",
+      "cardId": "frozen-in-carbonite"
+    },
+    {
+      "number": "153",
+      "cardId": "greef-karga--i-celebrate-your-success"
+    },
+    {
+      "number": "154",
+      "cardId": "grogu--irresistible"
+    },
+    {
+      "number": "157",
+      "cardId": "the-mandalorian--from-the-shadows"
+    },
+    {
+      "number": "158",
+      "cardId": "millennium-falcon--ya-hoo"
+    },
+    {
+      "number": "159",
+      "cardId": "princess-leia--calculated-distraction"
+    },
+    {
+      "number": "161",
+      "cardId": "han-solo--scruffy-looking-nerf-herder"
+    },
+    {
+      "number": "163",
+      "cardId": "bo-katan-kryze--right-place--right-time"
+    },
+    {
+      "number": "164",
+      "cardId": "millennium-falcon--bucket-of-bolts"
+    },
+    {
+      "number": "166",
+      "cardId": "i-ve-got-a-bad-feeling"
+    },
+    {
+      "number": "167",
+      "cardId": "lando-calrissian--check-this-out"
+    },
+    {
+      "number": "168",
+      "cardId": "cunning-ploy"
+    },
+    {
+      "number": "169",
+      "cardId": "a-wing"
+    },
+    {
+      "number": "173",
+      "cardId": "hidden-sharpshooter"
+    },
+    {
+      "number": "175",
+      "cardId": "shoot-first"
+    },
+    {
+      "number": "176",
+      "cardId": "breaking-in"
+    },
+    {
+      "number": "178",
+      "cardId": "tie-ln-fighter"
+    },
+    {
+      "number": "180",
+      "cardId": "super-battle-droid"
+    },
+    {
+      "number": "181",
+      "cardId": "rogue-class-starfighter"
+    },
+    {
+      "number": "182",
+      "cardId": "hk-87-assassin-droid"
+    },
+    {
+      "number": "184",
+      "cardId": "consumed-by-the-dark-side"
+    },
+    {
+      "number": "185",
+      "cardId": "i-am-your-father"
+    },
+    {
+      "number": "186",
+      "cardId": "r2-d2--ignoring-protocol"
+    },
+    {
+      "number": "187",
+      "cardId": "jar-jar-binks--bumbling-representative"
+    },
+    {
+      "number": "188",
+      "cardId": "c-3po--protocol-droid"
+    },
+    {
+      "number": "189",
+      "cardId": "phase-i-clone-trooper"
+    },
+    {
+      "number": "190",
+      "cardId": "dilapidated-ski-speeder"
+    },
+    {
+      "number": "191",
+      "cardId": "medical-frigate"
+    },
+    {
+      "number": "192",
+      "cardId": "eta-2-light-interceptor"
+    },
+    {
+      "number": "194",
+      "cardId": "you-re-my-only-hope"
+    },
+    {
+      "number": "587",
+      "cardId": "cassian-andor--blending-in"
+    },
+    {
+      "number": "T01",
+      "cardId": "experience"
+    },
+    {
+      "number": "T02",
+      "cardId": "shield"
+    }
+  ]
+}

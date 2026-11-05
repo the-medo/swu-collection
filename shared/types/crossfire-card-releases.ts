@@ -49,6 +49,7 @@ export type CardReleasePreview = {
   version: string;
   checksum: string;
   currentVersion: string;
+  comparisonAvailable: boolean;
   total: number;
   added: { cardId: string; name: string }[];
   changed: { cardId: string; name: string }[];

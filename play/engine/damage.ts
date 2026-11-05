@@ -1,3 +1,7 @@
+import { remainingHpRecord } from './remaining-hp.ts';
+import { supportsEngine } from './release.ts';
+import { instanceDefinition } from './instance-definition.ts';
+import { conditionMatches } from './conditions.ts';
 import { losesOwnAbilities } from './lasting.ts';
 import { activeLasting, survivesZeroHp } from './lasting.ts';
 import { upgradeProfile } from './roles.ts';
@@ -27,7 +31,9 @@ export type PreventionOption = {
     | 'double'
     | 'prevent-next'
     | 'prevent'
-    | 'increase';
+    | 'increase'
+    | 'redirect';
+  redirectTarget?: CardInstance;
   abilityId?: string;
   amount?: number;
   lastingId?: string;
@@ -54,7 +60,7 @@ export function preventionOptions(
   if (!isUnit(state, target)) return [];
   const shields = (unit: CardInstance) =>
     attachedUpgrades(state, unit).filter(card => {
-      const definition = cardDefinition(state, card.cardId);
+      const definition = instanceDefinition(state, card);
       return (
         definition.kind === 'upgrade' &&
         definition.replacement?.kind === 'shield' &&
@@ -107,10 +113,31 @@ function damageOptions(
   const options: PreventionOption[] = assignment.unpreventable
     ? []
     : preventionOptions(state, target, reserved);
+  const attack = frame.combatAttackId && state.attacks.find(a => a.id === frame.combatAttackId);
+  if (attack)
+    for (const [index, redirect] of (attack.combatRedirections ?? []).entries()) {
+      const recipient = state.cards[redirect.to.instanceId];
+      const abilityId = `combat-redirection-${attack.id}-${index}`;
+      if (
+        redirect.from.instanceId === target.instanceId &&
+        redirect.from.incarnation === target.incarnation &&
+        recipient?.incarnation === redirect.to.incarnation &&
+        isUnit(state, recipient) &&
+        !applied.some(replacement => replacement.abilityId === abilityId)
+      )
+        options.push({
+          card: recipient,
+          source: redirect.source,
+          kind: 'redirect',
+          amount: assignment.amount,
+          abilityId,
+          redirectTarget: recipient,
+        });
+    }
   for (const upgrade of attachedUpgrades(state, target))
     if (
       !losesOwnAbilities(state, upgrade) &&
-      upgradeProfile(cardDefinition(state, upgrade.cardId))?.doubleHostDamage &&
+      upgradeProfile(instanceDefinition(state, upgrade))?.doubleHostDamage &&
       !applied.some(
         r =>
           r.kind === 'double' &&
@@ -131,13 +158,23 @@ function damageOptions(
           lastingId: lasting.id,
         });
   if (!assignment.unpreventable)
-    for (const lasting of activeLasting(state, target))
-      if (lasting.preventAllDamage && !applied.some(r => r.abilityId === lasting.id))
+    for (const lasting of [
+      ...activeLasting(state, target),
+      ...(frame.combatAttackId && assignment.source
+        ? activeLasting(state, assignment.source).filter(e => e.preventCombatDamage)
+        : []),
+    ])
+      if (
+        (lasting.preventDamage ||
+          lasting.preventAllDamage ||
+          (frame.combatAttackId && lasting.preventCombatDamage)) &&
+        !applied.some(r => r.abilityId === lasting.id)
+      )
         options.push({
           card: lasting.source,
           source: lasting.source,
           kind: 'prevent',
-          amount: assignment.amount,
+          amount: lasting.preventDamage ?? assignment.amount,
           abilityId: lasting.id,
         });
   const first =
@@ -160,14 +197,22 @@ function damageOptions(
       const self = host.instanceId === target.instanceId && host.incarnation === target.incarnation;
       const targetRole = rule.targetRole ?? 'unit';
       if (
+        rule.condition &&
+        !conditionMatches(state, host.controller, rule.condition, { source: host })
+      )
+        continue;
+      if (
         (targetRole === 'unit' && !isUnit(state, target)) ||
-        (targetRole === 'base' && cardDefinition(state, target.cardId).kind !== 'base') ||
+        (targetRole === 'base' && instanceDefinition(state, target).kind !== 'base') ||
         (rule.minimumAmount !== undefined && assignment.amount < rule.minimumAmount) ||
         (!rule.dealtByFriendlyAbility &&
-          (rule.target === 'self'
-            ? !self
-            : host.controller !== target.controller ||
-              (rule.target === 'other-friendly' && self))) ||
+          (rule.target === 'attached'
+            ? host.attachedTo?.instanceId !== target.instanceId ||
+              host.attachedTo?.incarnation !== target.incarnation
+            : rule.target === 'self'
+              ? !self
+              : host.controller !== target.controller ||
+                (rule.target === 'other-friendly' && self))) ||
         (rule.dealtByFriendlyAbility &&
           (frame.combatAttackId ||
             !assignment.source ||
@@ -234,11 +279,17 @@ export function damagePreventionChoice(state: GameState, frame: DamageFrame) {
   for (const assignment of frame.assignments) {
     const target = instance(state, assignment.target.instanceId);
     if (
+      !frame.multiExcessResolved &&
+      state.attacks.find(a => a.id === frame.combatAttackId)?.additionalDefender &&
+      instanceDefinition(state, target).kind === 'base'
+    )
+      continue;
+    if (
       !assignment.amount ||
       assignment.preventedBy ||
       assignment.preventionDeclined ||
       target.incarnation !== assignment.target.incarnation ||
-      (!isUnit(state, target) && cardDefinition(state, target.cardId).kind !== 'base')
+      (!isUnit(state, target) && instanceDefinition(state, target).kind !== 'base')
     )
       continue;
     const options = damageOptions(state, assignment, reserved, frame);
@@ -273,6 +324,7 @@ export function damagePreventionChoice(state: GameState, frame: DamageFrame) {
           o =>
             (optionalReplacement(state, o) && o.source.controller !== target.controller) ||
             o.kind === 'shield' ||
+            o.kind === 'redirect' ||
             o.kind === 'double' ||
             o.kind === 'prevent-next' ||
             o.kind === 'prevent' ||
@@ -289,7 +341,22 @@ export function reservePrevention(
   assignment: DamageFrame['assignments'][number],
   option: PreventionOption,
 ) {
-  if (
+  if (option.kind === 'redirect') {
+    if (!option.redirectTarget) throw new Error('Missing damage redirection target');
+    assignment.originalAmount ??= assignment.amount;
+    assignment.originalTarget ??= assignment.target;
+    (assignment.replacements ??= []).push({
+      kind: 'redirect',
+      source: reference(option.source),
+      amount: assignment.amount,
+      abilityId: option.abilityId!,
+      redirectTarget: reference(option.redirectTarget),
+    });
+    assignment.target = reference(option.redirectTarget);
+    delete assignment.declinedReplacements;
+    delete assignment.optionalReplacement;
+    delete assignment.preventionDeclined;
+  } else if (
     option.kind === 'double' ||
     option.kind === 'prevent-next' ||
     option.kind === 'prevent' ||
@@ -346,6 +413,7 @@ export function assertDamageReplacements(state: GameState, frame: DamageFrame) {
       throw new Error('Invalid damage replacement history');
     const replay = {
       ...assignment,
+      target: assignment.originalTarget ?? assignment.target,
       amount: assignment.originalAmount ?? assignment.amount + (assignment.redirectedAmount ?? 0),
       replacements: [] as NonNullable<typeof assignment.replacements>,
     };
@@ -359,13 +427,27 @@ export function assertDamageReplacements(state: GameState, frame: DamageFrame) {
           o.source.visibility === step.source.visibility &&
           o.abilityId === step.abilityId &&
           o.lastingId === step.lastingId &&
-          o.amount === step.amount,
+          o.amount === step.amount &&
+          (o.redirectTarget
+            ? !!step.redirectTarget &&
+              o.redirectTarget.instanceId === step.redirectTarget.instanceId &&
+              o.redirectTarget.incarnation === step.redirectTarget.incarnation &&
+              o.redirectTarget.cardId === step.redirectTarget.cardId &&
+              o.redirectTarget.visibility === step.redirectTarget.visibility
+            : !step.redirectTarget),
       );
       if (!option || !replay.amount) throw new Error('Invalid damage transformation');
       reservePrevention(replay, option);
       if (step.lastingId) reserved.add(step.lastingId);
     }
-    if (replay.amount !== assignment.amount + (assignment.redirectedAmount ?? 0))
+    if (
+      replay.target.instanceId !== assignment.target.instanceId ||
+      replay.target.incarnation !== assignment.target.incarnation ||
+      replay.target.cardId !== assignment.target.cardId ||
+      replay.target.visibility !== assignment.target.visibility ||
+      !!assignment.originalTarget !== steps.some(step => step.kind === 'redirect') ||
+      replay.amount !== assignment.amount + (assignment.redirectedAmount ?? 0)
+    )
       throw new Error('Invalid transformed damage amount');
     if (
       assignment.preventionDeclined &&
@@ -374,6 +456,7 @@ export function assertDamageReplacements(state: GameState, frame: DamageFrame) {
           (optionalReplacement(state, o) &&
             o.source.controller !== instance(state, assignment.target.instanceId).controller) ||
           o.kind === 'shield' ||
+          o.kind === 'redirect' ||
           o.kind === 'double' ||
           o.kind === 'prevent-next' ||
           o.kind === 'prevent' ||
@@ -445,7 +528,7 @@ export function applyDamage(state: GameState, frame: DamageFrame) {
     const limit = limits.get(target.controller);
     if (
       unpreventable ||
-      cardDefinition(state, target.cardId).kind !== 'base' ||
+      instanceDefinition(state, target).kind !== 'base' ||
       !limit ||
       amount <= limit.amount
     )
@@ -489,12 +572,12 @@ export function applyDamage(state: GameState, frame: DamageFrame) {
         origins: abilityOrigins(state, source),
       }));
   const baseObservers = frame.assignments.some(
-    a => a.excess || cardDefinition(state, a.target.cardId).kind === 'base',
+    a => a.excess || instanceDefinition(state, a.target).kind === 'base',
   )
     ? state.seats.flatMap(player => triggerObservers(state, 'own-base-damaged', player))
     : [];
   const enemyBaseObservers = frame.assignments.some(
-    a => a.excess || cardDefinition(state, a.target.cardId).kind === 'base',
+    a => a.excess || instanceDefinition(state, a.target).kind === 'base',
   )
     ? declaredTriggerObservers(state, 'enemy-base-damage')
     : [];
@@ -504,6 +587,9 @@ export function applyDamage(state: GameState, frame: DamageFrame) {
     amount: number;
     origins: ReturnType<typeof abilityOrigins>;
   }[] = [];
+  const friendlyUnitBaseObservers = state.seats.flatMap(player =>
+    triggerObservers(state, 'friendly-unit-base-damage', player),
+  );
   const friendlyCombatObservers = frame.combatAttackId
     ? state.seats.flatMap(player =>
         triggerObservers(state, 'friendly-combat-base-damage-dealt', player),
@@ -565,7 +651,7 @@ export function applyDamage(state: GameState, frame: DamageFrame) {
     const target = instance(state, assignment.target.instanceId);
     if (
       target.incarnation !== assignment.target.incarnation ||
-      (!isUnit(state, target) && cardDefinition(state, target.cardId).kind !== 'base')
+      (!isUnit(state, target) && instanceDefinition(state, target).kind !== 'base')
     )
       continue;
     if (!assignment.amount) continue;
@@ -595,13 +681,30 @@ export function applyDamage(state: GameState, frame: DamageFrame) {
     } else {
       target.damage += assignment.amount;
       const dealer = assignment.source?.controller ?? frame.actor;
+      if (
+        supportsEngine('1.5.0', state.versions.engine) &&
+        isUnit(state, target) &&
+        assignment.amount > 0
+      )
+        target.remainingHpChange = remainingHpRecord(
+          state,
+          target,
+          // A departed/captured Bounty source is no longer a controlled unit.
+          // A unit still in play takes precedence over the ability controller.
+          assignment.source &&
+            state.cards[assignment.source.instanceId]?.incarnation ===
+              assignment.source.incarnation &&
+            isUnit(state, state.cards[assignment.source.instanceId]!)
+            ? assignment.source.controller
+            : (frame.actor ?? dealer ?? null),
+        );
       if (dealer && assignment.amount > 0)
         dealtEvents.push({ target: structuredClone(target), dealer, amount: assignment.amount });
       if (dealer && assignment.indirect)
         recordPhasePlayer(state.phaseHistory.indirectDamage, dealer);
       if (
         dealer &&
-        cardDefinition(state, target.cardId).kind === 'base' &&
+        instanceDefinition(state, target).kind === 'base' &&
         target.controller !== dealer
       )
         recordPhasePlayer(state.phaseHistory.enemyBaseDamaged, dealer);
@@ -609,7 +712,7 @@ export function applyDamage(state: GameState, frame: DamageFrame) {
         nonCombatPlayers.add(assignment.source.controller);
         if (frame.actor) nonCombatPlayers.add(frame.actor);
       }
-      if (cardDefinition(state, target.cardId).kind === 'base') {
+      if (instanceDefinition(state, target).kind === 'base') {
         recordBaseDamage(state, assignment.source);
         recordBaseEvent(target, assignment.source, assignment.amount);
       }
@@ -634,6 +737,8 @@ export function applyDamage(state: GameState, frame: DamageFrame) {
           target: reference(target),
           amount: assignment.amount,
         });
+      if (attack && assignment.source && assignment.amount > 0)
+        collectTriggers(state, 'combat-damage-dealt', [assignment.source], target);
       const source: CardInstance | null = assignment.source;
       fact(
         state,
@@ -733,6 +838,14 @@ export function applyDamage(state: GameState, frame: DamageFrame) {
         origins: observer.origins,
       });
     if (event.source) {
+      if (isUnit(state, event.source) && event.target.controller !== event.source.controller)
+        for (const observer of friendlyUnitBaseObservers.filter(
+          o => o.source.controller === event.source!.controller,
+        ))
+          collectTriggers(state, 'friendly-unit-base-damage', [observer.source], event.source, {
+            ...context,
+            origins: observer.origins,
+          });
       collectTriggers(state, 'base-damage-dealt', [event.source], undefined, {
         ...context,
         origins: event.origins,

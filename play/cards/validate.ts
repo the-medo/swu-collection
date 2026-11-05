@@ -1,7 +1,5 @@
 import { z } from 'zod';
-import baselineContract from './contracts/1.0.json';
-import previewContract from './contracts/1.1.json';
-import currentContract from './contracts/1.2.json';
+import currentContract from './contracts/1.5.json';
 import { CardCatalog, type CatalogData, checksum } from './catalog.ts';
 import { parseVersion, supportsEngine } from '../engine/release.ts';
 
@@ -16,12 +14,16 @@ type Node = {
   additional?: number | false;
 };
 const contracts: Readonly<Record<string, { root: number; nodes: Node[] }>> = {
-  '1.0': baselineContract as { root: number; nodes: Node[] },
-  '1.1': previewContract as { root: number; nodes: Node[] },
-  '1.2': currentContract as { root: number; nodes: Node[] },
+  '1.5': currentContract as { root: number; nodes: Node[] },
 };
+export class UnsupportedCardContractError extends Error {}
+export function supportsCardContract(requiredEngine: string): boolean {
+  if (!supportsEngine(requiredEngine)) return false;
+  const [major, minor] = parseVersion(requiredEngine);
+  return Object.hasOwn(contracts, `${major}.${minor}`);
+}
 function matches(value: unknown, index: number, nodes: Node[], depth = 0): boolean {
-  if (depth > 64) return false;
+  if (depth > 256) return false;
   const node = nodes[index]!;
   if ('literal' in node) return value === node.literal;
   if (node.type)
@@ -83,7 +85,10 @@ export function validateCatalog(raw: unknown, expectedHash?: string): CardCatalo
   if (!supportsEngine(parsed.requiredEngine))
     throw new Error('Card bundle requires a newer or different major engine');
   const contract = contracts[`${requiredMajor}.${requiredMinor}`];
-  if (!contract) throw new Error('Unsupported card data contract');
+  if (!contract)
+    throw new UnsupportedCardContractError(
+      'Unsupported card data contract; the minimum supported feature line is 1.5',
+    );
   for (const card of parsed.cards)
     if (!matches(card, contract.root, contract.nodes))
       throw new Error(
@@ -95,7 +100,10 @@ export function validateCatalog(raw: unknown, expectedHash?: string): CardCatalo
       throw new Error('Invalid card identity');
     if (!Object.hasOwn(data.titles, card.cardId))
       throw new Error(`Card title missing: ${card.cardId}`);
-    if (('cost' in card && card.cost < 0) || ('hp' in card && card.hp < 1))
+    if (
+      ('cost' in card && card.cost < 0) ||
+      ('hp' in card && card.hp < (card.kind === 'unit' ? 0 : 1))
+    )
       throw new Error(`Invalid card statistics: ${card.cardId}`);
   }
   const catalog = new CardCatalog(data);

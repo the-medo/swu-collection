@@ -1,9 +1,9 @@
+import { supportsEngine } from '../engine/release.ts';
 import previewIdRecording from './fixtures/replay-compatibility/hmw-preview-ids.json';
 import { validateCatalog } from '../cards/validate.ts';
-import { stateDigest } from '../storage/integrity.ts';
 import { expect, test } from 'bun:test';
 import { cardDefinition as definition } from '../cards/registry.ts';
-import { bundledCatalog, registerCatalog, versionsFor, cardDefinition } from '../cards/catalog.ts';
+import { bundledCatalog, versionsFor, cardDefinition } from '../cards/catalog.ts';
 import { advance, settle } from '../engine/advance.ts';
 import { attachedUpgrades, unitStats } from '../engine/attachments.ts';
 import { cardTraits } from '../engine/attributes.ts';
@@ -86,17 +86,19 @@ test('all 275 official HMW identities are playable, including the corrected IDs 
   for (const c of cards) expect(() => definition(c.cardId)).not.toThrow();
   expect(() => definition('garnac--let-the-hunt-begin')).toThrow();
   expect(() => definition('stormtrooper-patrol--')).toThrow();
-  expect(bundledCatalog.data.requiredEngine).toBe('1.2.0');
+  expect(supportsEngine('1.2.0', bundledCatalog.data.requiredEngine)).toBe(true);
 });
 
-test('installed catalogs keep historical preview IDs without aliasing new game identities', () => {
-  const old = registerCatalog(validateCatalog(previewIdRecording.catalog));
-  const context = { versions: versionsFor(old) };
-  expect(cardDefinition(context, 'stormtrooper-patrol--').kind).toBe('unit');
-  expect(() => cardDefinition(context, 'stormtrooper-patrol')).toThrow();
+test('retired preview bundles are rejected without aliasing current card identities', () => {
+  expect(() => validateCatalog(previewIdRecording.catalog)).toThrow(
+    'minimum supported feature line is 1.5',
+  );
   expect(
     cardDefinition({ versions: versionsFor(bundledCatalog) }, 'stormtrooper-patrol').kind,
   ).toBe('unit');
+  expect(() =>
+    cardDefinition({ versions: versionsFor(bundledCatalog) }, 'stormtrooper-patrol--'),
+  ).toThrow();
 });
 
 test.each([
@@ -925,47 +927,4 @@ test('Awakened Exogorth reduces only its defender during its attack, and Ben hea
       i.kind === 'attack' && i.attacker === b.refs.ben && i.defender === b.state.players.bob!.base,
   );
   expect(target(heal, b.refs.patient!).cards[b.refs.patient!]!.damage).toBe(1);
-});
-
-test('recordings made by runtime 1.1.0 retain old IDs, hashes and facts in a cold 1.2 process', () => {
-  registerCatalog(validateCatalog(previewIdRecording.catalog));
-  for (const recorded of previewIdRecording.cases) {
-    const result = advance(decodeState(recorded.checkpoint), recorded.input);
-    expect(stateDigest(encodeState(result.state))).toBe(recorded.stateHash);
-    expect<unknown>(result.facts).toEqual(recorded.facts);
-    expect(result.state.versions.engine).toBe('1.1.0');
-    const child = Bun.spawnSync(
-      [
-        process.execPath,
-        '-e',
-        [
-          "import { registerCatalog } from './play/cards/catalog.ts';",
-          "import { validateCatalog } from './play/cards/validate.ts';",
-          "import { decodeState } from './play/engine/checkpoint.ts';",
-          "import { advance } from './play/engine/advance.ts';",
-          'const {catalog, recorded} = await Bun.stdin.json();',
-          'registerCatalog(validateCatalog(catalog));',
-          'console.log(JSON.stringify(advance(decodeState(recorded.checkpoint), recorded.input)));',
-        ].join('\n'),
-      ],
-      {
-        cwd: new URL('../../', import.meta.url).pathname,
-        stdin: new TextEncoder().encode(
-          JSON.stringify({ catalog: previewIdRecording.catalog, recorded }),
-        ),
-        stdout: 'pipe',
-        stderr: 'pipe',
-      },
-    );
-    expect(child.stderr.toString()).toBe('');
-    expect(child.exitCode).toBe(0);
-    expect(JSON.parse(child.stdout.toString())).toEqual(result);
-  }
-});
-
-test('Homeworlds additions cannot claim the older 1.1 card-data contract', () => {
-  const data = structuredClone(bundledCatalog.data);
-  data.version = '1.1.996';
-  data.requiredEngine = '1.1.0';
-  expect(() => validateCatalog(data)).toThrow('Invalid card definition');
 });

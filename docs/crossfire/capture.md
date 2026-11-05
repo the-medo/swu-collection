@@ -68,3 +68,12 @@ departure rescues the prisoner as a new exhausted unit.
 The Top 8 optional-trigger scenarios cover decline and later use, exact duplicate
 cards, Vehicles, ownership, simultaneous guard defeat and fresh-process recovery
 before the capture. Captured identities and guard links remain public.
+
+## Copy entry on rescue
+
+Runtime 1.5 applies Clone's entry replacement during rescue. Capturing it clears
+its copied identity; rescue offers copies of eligible units currently in play.
+Its new incarnation is reserved outside play while that choice is pending, so
+the printed 0 HP does not defeat it before entry. Simultaneously rescued Clones
+choose from the same board, then enter together. Rescue still grants no When
+Played, Shielded or Ambush triggers. See [the early-set guide](early-set-cards.md).

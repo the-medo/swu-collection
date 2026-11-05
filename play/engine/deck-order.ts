@@ -23,7 +23,9 @@ export function arrangeSelection(frame: ArrangeFrame) {
             ? Math.min(frame.minDiscard ?? 0, frame.cards.length)
             : 0,
         max:
-          frame.stage === 'choose-discard' ? Math.min(1, frame.cards.length) : frame.cards.length,
+          frame.stage === 'choose-discard' && frame.mode === 'discard-one'
+            ? Math.min(1, frame.cards.length)
+            : frame.cards.length,
       }
     : null;
 }
@@ -37,7 +39,11 @@ export function assertArrange(state: GameState, frame: ArrangeFrame) {
       JSON.stringify(frame.bottom) !== JSON.stringify(frame.cards.map(c => c.instanceId)))
   )
     throw new Error('Invalid hand bottom order');
-  if (frame.minDiscard !== undefined && frame.mode !== 'discard-one')
+  if (
+    frame.minDiscard !== undefined &&
+    frame.mode !== 'discard-one' &&
+    frame.mode !== 'discard-any'
+  )
     throw new Error('Invalid required deck discard');
   const ids = frame.cards.map(c => c.instanceId);
   if (
@@ -65,7 +71,7 @@ export function assertArrange(state: GameState, frame: ArrangeFrame) {
     ) ||
     frame.topOrder.some(id => frame.bottom.includes(id)) ||
     frame.bottomOrder.some(id => !frame.bottom.includes(id)) ||
-    (frame.mode === 'discard-one' &&
+    ((frame.mode === 'discard-one' || frame.mode === 'discard-any') &&
       (frame.stage === 'choose-bottom' || frame.bottom.length > 0)) ||
     (frame.mode === 'bottom-any' && frame.stage === 'choose-discard') ||
     ((frame.stage === 'choose-discard' || frame.stage === 'choose-bottom') &&

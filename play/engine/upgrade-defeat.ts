@@ -1,3 +1,4 @@
+import { instanceDefinition } from './instance-definition.ts';
 import { cardDefinition } from '../cards/catalog.ts';
 import { commitUpgradeDefeat, isUnit, type AbilityObserver } from './attachments.ts';
 import { abilitiesFrom, abilityOrigins, assertAbilityOrigins } from './effective-abilities.ts';
@@ -45,7 +46,7 @@ export function deferUpgradeDefeat(
   )
     return true;
   const origins = abilityOrigins(state, card);
-  const definition = cardDefinition(state, card.cardId);
+  const definition = instanceDefinition(state, card);
   if (
     (definition.kind !== 'unit' && definition.kind !== 'leader') ||
     !abilitiesFrom(state, origins).defeatToUnit
@@ -88,7 +89,7 @@ export function assertUpgradeWork(
       host.incarnation !== frame.host.incarnation ||
       !isUnit(state, pilot) ||
       !isUnit(state, host) ||
-      !upgradeProfile(cardDefinition(state, pilot.cardId)) ||
+      !upgradeProfile(instanceDefinition(state, pilot)) ||
       source.cardId !== frame.source.cardId ||
       source.incarnation < frame.source.incarnation ||
       !state.seats.includes(frame.source.controller) ||
@@ -114,7 +115,7 @@ export function assertUpgradeWork(
     self.card.instanceId !== frame.card.instanceId ||
     self.card.incarnation !== frame.card.incarnation ||
     !abilitiesFrom(state, frame.origins).defeatToUnit ||
-    !upgradeProfile(cardDefinition(state, current.cardId)) ||
+    !upgradeProfile(instanceDefinition(state, current)) ||
     pendingUpgradeDefeats(state).filter(f => f.card.instanceId === current.instanceId).length !== 1
   )
     throw new Error('Invalid pending upgrade defeat');

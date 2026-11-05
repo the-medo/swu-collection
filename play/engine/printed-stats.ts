@@ -1,3 +1,4 @@
+import { instanceDefinition } from './instance-definition.ts';
 import { unitProfile } from './abilities.ts';
 import { cardDefinition } from '../cards/catalog.ts';
 import { abilityOrigins, originAbilities, potentialAbilitySources } from './effective-abilities.ts';
@@ -47,7 +48,7 @@ export function assertPrintedStats(state: GameState) {
     throw new Error('Invalid printed-stat activation history');
 }
 export function printedUnitStats(state: GameState, unit: CardInstance, evaluation?: Evaluation) {
-  const printed = unitProfile(cardDefinition(state, unit.cardId));
+  const printed = unitProfile(instanceDefinition(state, unit));
   let power = printed.power,
     hp = printed.hp,
     powerOrder = -1,

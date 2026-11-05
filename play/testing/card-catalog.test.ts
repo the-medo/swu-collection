@@ -1,3 +1,4 @@
+import mainBaseline from './fixtures/replay-compatibility/1.3.0.json';
 import releaseBaseline from './fixtures/replay-compatibility/1.0.0.json';
 import { expect, test } from 'bun:test';
 import baseline from './fixtures/replay-compatibility/development-baseline.json';
@@ -9,13 +10,14 @@ import {
   cardDefinition,
   assertCompatibleVersions,
 } from '../cards/catalog.ts';
-import { supportsEngine } from '../engine/release.ts';
+import { ENGINE_VERSION, parseVersion, supportsEngine } from '../engine/release.ts';
 import { createGame, advance } from '../engine/advance.ts';
 import { decodeState, encodeState } from '../engine/checkpoint.ts';
 import { stateDigest } from '../storage/integrity.ts';
 import { verifyHistory } from '../history/records.ts';
 import type { History } from '../history/records.ts';
 import { config } from './helpers.ts';
+import { UnsupportedCardContractError, validateCatalog } from '../cards/validate.ts';
 
 test('minor compatibility is directional and never crosses majors', () => {
   expect(supportsEngine('1.0.0', '1.2.0')).toBe(true);
@@ -27,6 +29,16 @@ test('minor compatibility is directional and never crosses majors', () => {
 });
 for (const fixture of [...baseline.cases, ...releaseBaseline.cases])
   test(`pre-refactor replay: ${fixture.name}`, () => {
+    const state = decodeState(fixture.checkpoint);
+    const next = advance(state, fixture.input);
+    expect(stateDigest(encodeState(next.state))).toBe(fixture.stateHash);
+    expect<unknown>(next.facts).toEqual(fixture.facts);
+    expect(next.state.versions).toEqual(state.versions);
+  });
+// Captured with origin/main's 1.3.0 runtime before the IC27 integration.
+// Preserve its exact results even though the feature branch initially reused that minor.
+for (const fixture of mainBaseline.cases)
+  test(`main 1.3.0 replay: ${fixture.name}`, () => {
     const state = decodeState(fixture.checkpoint);
     const next = advance(state, fixture.input);
     expect(stateDigest(encodeState(next.state))).toBe(fixture.stateHash);
@@ -63,8 +75,7 @@ test('two games use different immutable definitions without changing each other'
   expect(() => assertCompatibleVersions({ ...newGame.versions, cards: 'missing' })).toThrow();
 });
 
-test('download validation covers every card property and nested effect', async () => {
-  const { validateCatalog } = await import('../cards/validate.ts');
+test('download validation covers every card property and nested effect', () => {
   expect(validateCatalog(bundledCatalog.data, bundledCatalog.hash).pin).toBe(bundledCatalog.pin);
   const modified = () => JSON.parse(JSON.stringify(bundledCatalog.data));
   const unknown = modified();
@@ -75,13 +86,31 @@ test('download validation covers every card property and nested effect', async (
   event.effects = [{ kind: 'execute-code', code: 'bad' }];
   expect(() => validateCatalog(effect)).toThrow('Invalid card definition');
   const future = modified();
-  future.version = '1.999.0';
-  future.requiredEngine = '1.999.0';
+  const [major, minor] = parseVersion(ENGINE_VERSION);
+  future.version = `${major}.${minor + 1}.0`;
+  future.requiredEngine = future.version;
   expect(() => validateCatalog(future)).toThrow('requires');
   const duplicate = modified();
   duplicate.cards.push(duplicate.cards[0]);
   expect(() => validateCatalog(duplicate)).toThrow('Duplicate');
   expect(() => validateCatalog(bundledCatalog.data, '0'.repeat(64))).toThrow('checksum');
+});
+
+test.each(['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0'])(
+  'card bundles cannot claim retired contract %s',
+  version => {
+    const data = structuredClone(bundledCatalog.data);
+    data.version = version;
+    data.requiredEngine = version;
+    expect(() => validateCatalog(data)).toThrow(UnsupportedCardContractError);
+    expect(() => validateCatalog(data)).toThrow('minimum supported feature line is 1.5');
+  },
+);
+
+test('card-only patch releases use the retained 1.5 contract', () => {
+  const data = structuredClone(bundledCatalog.data);
+  data.version = '1.5.999';
+  expect(validateCatalog(data).data).toEqual(data);
 });
 
 test('release 1.0.0 journal remains replay-compatible', () => {

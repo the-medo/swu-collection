@@ -3,11 +3,16 @@ import type { CardDefinition } from './definition.ts';
 import { supportedCards } from './registry.ts';
 import titles from './catalog-names.json';
 import hmwCatalog from './hmw/catalog.json';
+import ic27Catalog from './ic27/catalog.json';
+import ic27ReprintAdditions from './ic27/reprint-additions.json';
 import release from './release.json';
+import earlySetAdditions from './early-set-additions.json';
+import earlySetCompletion from './early-set-completion.json';
 
 const currentTitles = {
   ...titles,
   ...Object.fromEntries(hmwCatalog.map(card => [card.cardId, card.title])),
+  ...Object.fromEntries(ic27Catalog.map(card => [card.cardId, card.title])),
   beast: 'Beast',
   weakness: 'Weakness',
 };
@@ -83,12 +88,20 @@ export const bundledCatalog = new CardCatalog({
 export const DEVELOPMENT_BASELINE_PIN =
   '1.0.0@67e5bbc0f6f9a98c4627628324c6700868425fc99887fc5120bf4778cd6a4a50';
 const hmwCardIds = new Set(hmwCatalog.map(card => card.cardId));
+const ic27CardIds = new Set(ic27Catalog.map(card => card.cardId));
 const developmentBaselineCatalog = new CardCatalog({
   schema: 1,
   version: '1.0.0',
   requiredEngine: '1.0.0',
   cards: supportedCards.filter(
-    card => !hmwCardIds.has(card.cardId) && card.cardId !== 'beast' && card.cardId !== 'weakness',
+    card =>
+      !ic27CardIds.has(card.cardId) &&
+      !ic27ReprintAdditions.includes(card.cardId) &&
+      !earlySetAdditions.includes(card.cardId) &&
+      !earlySetCompletion.includes(card.cardId) &&
+      !hmwCardIds.has(card.cardId) &&
+      card.cardId !== 'beast' &&
+      card.cardId !== 'weakness',
   ),
   titles,
 });

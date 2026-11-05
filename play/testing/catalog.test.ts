@@ -1,3 +1,5 @@
+import earlySetCompletion from './fixtures/early-set-completion.json';
+import earlySetFoundations from './fixtures/early-set-foundations.json';
 import ibh from './fixtures/ibh.json';
 import jtlPayments from './fixtures/jtl-payments.json';
 import jtlDefeats from './fixtures/jtl-defeats.json';
@@ -125,6 +127,8 @@ const metaPins: Record<
     rules?: string | null;
   }
 > = {
+  ...earlySetCompletion,
+  ...earlySetFoundations,
   ...ibh,
   ...secFoundations,
   ...secEffects,
@@ -270,9 +274,13 @@ test('each supported card has a dedicated file and agrees with its pinned catalo
     arenas: string[];
   }[];
   const hmwById = Object.fromEntries(hmw.map(card => [card.cardId, card]));
-  const catalog = { ...official, ...hmwById };
+  const icons = await Bun.file(new URL('../cards/ic27/catalog.json', import.meta.url)).json();
+  const iconsById = Object.fromEntries(
+    icons.map((card: { cardId: string }) => [card.cardId, card]),
+  );
+  const catalog = { ...official, ...hmwById, ...iconsById };
   expect(hmw).toHaveLength(268);
-  expect(supportedCards).toHaveLength(1768);
+  expect(supportedCards).toHaveLength(2473);
   expect(coverage.map(row => row.cardId)).toEqual(supportedCards.map(card => card.cardId));
   for (const definition of supportedCards) {
     if (definition.cardId === 'beast' || definition.cardId === 'weakness') {
@@ -312,11 +320,14 @@ test('each supported card has a dedicated file and agrees with its pinned catalo
       );
     expect([...card.aspects].sort()).toEqual([...definition.aspects].sort());
     expect([...card.traits].sort()).toEqual([...definition.traits].sort());
-    const printings = hmwCard
-      ? [{ set: 'hmw' }]
-      : (Object.values(card.variants) as { baseSet: boolean; set: string }[]).filter(
-          variant => variant.baseSet,
-        );
+    const printings =
+      definition.cardId in iconsById
+        ? [{ set: 'ic27' }]
+        : hmwCard
+          ? [{ set: 'hmw' }]
+          : (Object.values(card.variants) as { baseSet: boolean; set: string }[]).filter(
+              variant => variant.baseSet,
+            );
     expect(
       (
         await Promise.all(
@@ -328,7 +339,7 @@ test('each supported card has a dedicated file and agrees with its pinned catalo
         )
       ).some(Boolean),
     ).toBe(true);
-    if (hmwCard) {
+    if (hmwCard || definition.cardId in iconsById) {
       if (definition.kind === 'event') expect(card.cost).toBe(definition.cost);
       if (definition.kind === 'unit') {
         expect(card.cost).toBe(definition.cost);
@@ -359,46 +370,21 @@ test('each supported card has a dedicated file and agrees with its pinned catalo
         !definition.minimumDeckIncrease &&
         !definition.startingHandReduction) ||
       (definition.kind === 'unit' &&
-        !definition.damageReplacements?.length &&
-        !definition.resourcePaymentTraits?.length &&
-        !definition.protectSingleFriendlyUpgrade &&
-        !definition.protectFromAttackUnlessSentinel &&
-        !definition.printedStats &&
-        !definition.traitGrants &&
-        !definition.lookAtDeckTop &&
-        !definition.triggers &&
-        !definition.keywords &&
-        !definition.piloting &&
-        !definition.raid &&
-        !definition.restore &&
-        !definition.entersReady &&
-        !definition.actions &&
-        !definition.constant &&
-        !definition.auras &&
-        !definition.extraPilotSlots &&
-        !definition.extraRegroups &&
-        !definition.playReductions &&
-        !definition.indirectBonus &&
-        !definition.assignsOpponentIndirect &&
-        !definition.enemyAbilityImmunity &&
-        !definition.cannotChangeController &&
-        !definition.preventSelfByTraitSacrifice &&
-        !definition.preventFriendlyByShield &&
-        !definition.unpreventableDamageTraits &&
-        !definition.blankEnemyCredits &&
-        !definition.blankFriendlyAdvantages &&
-        !definition.searchMultiplier &&
-        !definition.smuggle &&
-        !definition.resourceSmuggle &&
-        !definition.costReductions &&
-        !definition.bounties &&
-        !definition.exploit &&
-        !definition.doubleTokensBySelfDefeat &&
-        !definition.cannotAttack &&
-        !definition.keywordSharing &&
-        !definition.friendlyRaidMultiplier &&
-        !definition.baseDamageLimit &&
-        !definition.regroupReadyPower)
+        Object.keys(definition).every(key =>
+          [
+            'cardId',
+            'name',
+            'kind',
+            'aspects',
+            'traits',
+            'unique',
+            'token',
+            'cost',
+            'power',
+            'hp',
+            'arena',
+          ].includes(key),
+        ))
     ) {
       expect(card.text ?? '').toBe('');
       expect(card.keywords).toEqual([]);
@@ -570,3 +556,17 @@ test('every canonical card with a JTL printing has a registered playable definit
   expect(jtl).toHaveLength(266);
   for (const card of jtl) expect(() => cardDefinition(card.cardId)).not.toThrow();
 });
+
+for (const set of ['sor', 'shd', 'twi'])
+  test(`every canonical card with a ${set.toUpperCase()} printing has a registered playable definition`, async () => {
+    const official = await Bun.file(
+      new URL('../../server/db/json/card-list.json', import.meta.url),
+    ).json();
+    const implemented = new Set(supportedCards.map(card => card.cardId));
+    const missing = Object.values(official).filter(
+      (card: any) =>
+        Object.values(card.variants).some((variant: any) => variant.set === set) &&
+        !implemented.has(card.cardId),
+    );
+    expect(missing).toEqual([]);
+  });

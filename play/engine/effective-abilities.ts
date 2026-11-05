@@ -1,3 +1,4 @@
+import { instanceDefinition } from './instance-definition.ts';
 import type { CatalogContext } from '../cards/catalog.ts';
 import { scheduledDefinition } from './scheduled-definition.ts';
 import { smuggleOptions } from './smuggle.ts';
@@ -22,6 +23,16 @@ export function originAbilities(
   state: CatalogContext,
   origin: AbilityOrigin,
 ): Abilities | undefined {
+  if (origin.epicOnly) {
+    const actions = originAbilities(state, { ...origin, epicOnly: undefined })?.actions ?? [];
+    return {
+      actions: actions.filter(
+        action =>
+          action.limit === 'once-per-game' ||
+          (typeof action.limit === 'object' && action.limit?.per === 'game'),
+      ),
+    };
+  }
   if (origin.gritOnly)
     return {
       keywords:
@@ -30,12 +41,12 @@ export function originAbilities(
         ) ?? [],
     };
   if (origin.profile === 'attack-grant') {
-    const card = cardDefinition(state, origin.card.cardId);
+    const card = instanceDefinition(state, origin.card);
     return { triggers: card.kind === 'event' ? (card.attackGrants ?? []) : [] };
   }
   if (origin.profile === 'attack-override')
     return {
-      triggers: upgradeProfile(cardDefinition(state, origin.card.cardId))?.attackOverride ?? [],
+      triggers: upgradeProfile(instanceDefinition(state, origin.card))?.attackOverride ?? [],
     };
   if (origin.profile === 'scheduled') {
     const effect = scheduledDefinition(state, origin.card, origin.scheduledId);
@@ -55,12 +66,12 @@ export function originAbilities(
     return activeAbilities(state, origin.card);
   if (origin.profile === 'aura')
     return auraDefinitions(state, origin).find(a => a.id === origin.auraId)?.abilities ?? {};
-  return upgradeProfile(cardDefinition(state, origin.card.cardId))?.grants;
+  return upgradeProfile(instanceDefinition(state, origin.card))?.grants;
 }
 function auraDefinitions(state: CatalogContext, origin: AbilityOrigin) {
   return (
     (origin.auraProfile === 'granted'
-      ? upgradeProfile(cardDefinition(state, origin.card.cardId))?.grants?.auras
+      ? upgradeProfile(instanceDefinition(state, origin.card))?.grants?.auras
       : activeAbilities(state, origin.card).auras) ?? []
   );
 }
@@ -72,9 +83,9 @@ function baseOrigins(
   const origins: AbilityOrigin[] = [
     { id: 'self', card: structuredClone(card), profile: 'printed', withoutSupport: false },
   ];
-  if (isUnit(state, card) || cardDefinition(state, card.cardId).kind === 'base') {
+  if (isUnit(state, card) || instanceDefinition(state, card).kind === 'base') {
     for (const upgrade of attachedUpgrades(state, card)) {
-      const profile = upgradeProfile(cardDefinition(state, upgrade.cardId));
+      const profile = upgradeProfile(instanceDefinition(state, upgrade));
       if (
         profile?.grants &&
         !losesOwnAbilities(state, upgrade) &&
@@ -147,8 +158,7 @@ function baseOrigins(
           abilities: structuredClone(grant.abilities),
         });
     }
-  if (namedAbilityLoss(state, card) || effects.some(effect => effect.loseAbilities))
-    for (const origin of origins) origin.suppressed = true;
+  if (losesOwnAbilities(state, card)) for (const origin of origins) origin.suppressed = true;
   if (card.cardId === 'credit' || card.cardId === 'advantage') {
     const host = card.attachedTo && state.cards[card.attachedTo.instanceId];
     const blanked = Object.values(state.cards).some(
@@ -164,16 +174,45 @@ function baseOrigins(
     );
     if (blanked) for (const origin of origins) origin.suppressed = true;
   }
+  restrictLeaderAbilities(state, card, origins, evaluation);
   restrictToGrit(state, card, origins);
   return origins;
+}
+export function leaderAbilitiesRestricted(
+  state: GameState,
+  card: CardInstance,
+  evaluation?: Evaluation,
+): boolean {
+  if (instanceDefinition(state, card).kind !== 'leader') return false;
+  return potentialAbilitySources(state, 'blankLeadersExceptEpic').some(
+    source =>
+      evaluate(
+        evaluation,
+        `leader-blank:${source.instanceId}:${source.incarnation}`,
+        next => !!effectiveAbilities(state, source, next).blankLeadersExceptEpic,
+      ) ?? false,
+  );
+}
+function restrictLeaderAbilities(
+  state: GameState,
+  card: CardInstance,
+  origins: AbilityOrigin[],
+  evaluation?: Evaluation,
+) {
+  if (!leaderAbilitiesRestricted(state, card, evaluation)) return;
+  for (const origin of origins) {
+    if (origin.profile === 'printed') {
+      origin.epicOnly = true;
+      delete origin.resolved;
+    } else origin.suppressed = true;
+  }
 }
 function restrictToGrit(state: GameState, card: CardInstance, origins: AbilityOrigin[]) {
   if (
     !isUnit(state, card) ||
     !attachedUpgrades(state, card).some(
       u =>
-        upgradeProfile(cardDefinition(state, u.cardId))?.hostOnlyGrit &&
-        !losesOwnAbilities(state, u),
+        upgradeProfile(instanceDefinition(state, u))?.hostOnlyGrit && !losesOwnAbilities(state, u),
     )
   )
     return;
@@ -195,10 +234,7 @@ function auraHosts(state: GameState): CardInstance[] {
   for (const card of Object.values(state.cards)) {
     if (!['base', 'ground', 'space'].includes(card.zone)) continue;
     if (activeAbilities(state, card).auras?.length) hosts.add(card.instanceId);
-    if (
-      card.attachedTo &&
-      upgradeProfile(cardDefinition(state, card.cardId))?.grants?.auras?.length
-    )
+    if (card.attachedTo && upgradeProfile(instanceDefinition(state, card))?.grants?.auras?.length)
       hosts.add(card.attachedTo.instanceId);
   }
   for (const attack of state.attacks)
@@ -256,6 +292,9 @@ export function abilityOrigins(
             defenderCombatFirst: constant.abilities?.defenderCombatFirst ?? false,
             surviveZeroHp: constant.abilities?.surviveZeroHp ?? false,
             cannotReady: constant.abilities?.cannotReady ?? false,
+            cannotAttack: constant.abilities?.cannotAttack ?? false,
+            attackBothArenas: constant.abilities?.attackBothArenas ?? false,
+            attackTwoUnits: constant.abilities?.attackTwoUnits ?? false,
             friendlyUnitsEnterReady: constant.abilities?.friendlyUnitsEnterReady ?? false,
             enemyAbilityImmunity: constant.abilities?.enemyAbilityImmunity ?? [],
             losesKeywords: [...(constant.losesKeywords ?? [])],
@@ -278,6 +317,9 @@ export function abilityOrigins(
       resolved.abilities.defenderCombatFirst ||= value.defenderCombatFirst;
       resolved.abilities.surviveZeroHp ||= value.surviveZeroHp;
       resolved.abilities.cannotReady ||= value.cannotReady;
+      if (value.cannotAttack) resolved.abilities.cannotAttack = true;
+      if (value.attackBothArenas) resolved.abilities.attackBothArenas = true;
+      if (value.attackTwoUnits) resolved.abilities.attackTwoUnits = true;
       resolved.abilities.friendlyUnitsEnterReady ||= value.friendlyUnitsEnterReady;
       if (value.enemyAbilityImmunity.length)
         resolved.abilities.enemyAbilityImmunity = [
@@ -374,16 +416,20 @@ export function abilityOrigins(
       origin.lostKeywords = [...new Set([...(origin.lostKeywords ?? []), ...lostKeywords])];
   if (activeLasting(state, card).some(effect => effect.loseKeywords))
     for (const origin of origins) origin.keywordsSuppressed = true;
-  if (
-    namedAbilityLoss(state, card) ||
-    activeLasting(state, card).some(effect => effect.loseAbilities)
-  )
-    for (const origin of origins) origin.suppressed = true;
+  if (losesOwnAbilities(state, card)) for (const origin of origins) origin.suppressed = true;
+  restrictLeaderAbilities(state, card, origins, evaluation);
   restrictToGrit(state, card, origins);
   return origins;
 }
 export function abilitiesFrom(state: CatalogContext, origins: readonly AbilityOrigin[]): Abilities {
   const result: Required<Abilities> = {
+    enemyEventPlayDamage: 0,
+    blankLeadersExceptEpic: false,
+    captureReplacement: [],
+    startingHandIncrease: 0,
+    regroupDrawIncrease: 0,
+    enemyRegroupReadyLimit: Number.MAX_SAFE_INTEGER,
+    combatDamageLast: false,
     lookAtDeckTop: false,
     resourcePaymentTraits: [],
     damageReplacements: [],
@@ -401,6 +447,7 @@ export function abilitiesFrom(state: CatalogContext, origins: readonly AbilityOr
     resourceSmuggle: [],
     friendlyRescueReady: false,
     friendlyUnitsEnterReady: false,
+    friendlyTokenUnitsEnterReady: false,
     surviveZeroHp: false,
     protectFromAttackUnlessSentinel: [],
     baseDamageLimit: Number.MAX_SAFE_INTEGER,
@@ -422,6 +469,7 @@ export function abilitiesFrom(state: CatalogContext, origins: readonly AbilityOr
     doubleTokensBySelfDefeat: false,
     cannotAttack: false,
     attackBothArenas: false,
+    attackTwoUnits: false,
     cannotAttackBases: false,
     ambushCanAttackBases: false,
     preventBaseHealing: false,
@@ -436,6 +484,9 @@ export function abilitiesFrom(state: CatalogContext, origins: readonly AbilityOr
     auras: [],
     playReductions: [],
     ignoreAspectPenalties: [],
+    ownPlayAspectExceptions: [],
+    blankFirstEnemyEvent: false,
+    enemyPlayCostIncreases: [],
     extraPilotSlots: 0,
     extraRegroups: 0,
     indirectBonus: 0,
@@ -540,6 +591,9 @@ export function abilitiesFrom(state: CatalogContext, origins: readonly AbilityOr
       result.surviveZeroHp ||= origin.resolved.abilities.surviveZeroHp ?? false;
       result.friendlyUnitsEnterReady ||= origin.resolved.abilities.friendlyUnitsEnterReady ?? false;
       result.cannotReady ||= origin.resolved.abilities.cannotReady ?? false;
+      result.cannotAttack ||= origin.resolved.abilities.cannotAttack ?? false;
+      result.attackBothArenas ||= origin.resolved.abilities.attackBothArenas ?? false;
+      result.attackTwoUnits ||= origin.resolved.abilities.attackTwoUnits ?? false;
       if (origin.resolved.abilities.enemyAbilityImmunity?.length)
         result.enemyAbilityImmunity = [
           ...new Set([
@@ -562,6 +616,17 @@ export function abilitiesFrom(state: CatalogContext, origins: readonly AbilityOr
     result.ignoreAspectPenalties = [
       ...result.ignoreAspectPenalties,
       ...(abilities.ignoreAspectPenalties ?? []),
+    ];
+    result.enemyEventPlayDamage += abilities.enemyEventPlayDamage ?? 0;
+    result.blankLeadersExceptEpic ||= abilities.blankLeadersExceptEpic ?? false;
+    result.captureReplacement = [
+      ...result.captureReplacement,
+      ...(abilities.captureReplacement ?? []),
+    ];
+    result.blankFirstEnemyEvent ||= abilities.blankFirstEnemyEvent ?? false;
+    result.enemyPlayCostIncreases = [
+      ...result.enemyPlayCostIncreases,
+      ...(abilities.enemyPlayCostIncreases ?? []),
     ];
     result.playReductions = [
       ...result.playReductions,
@@ -596,13 +661,22 @@ export function abilitiesFrom(state: CatalogContext, origins: readonly AbilityOr
     result.searchMultiplier *= abilities.searchMultiplier ?? 1;
     result.cannotAttack ||= abilities.cannotAttack ?? false;
     result.attackBothArenas ||= abilities.attackBothArenas ?? false;
+    result.attackTwoUnits ||= abilities.attackTwoUnits ?? false;
     result.cannotAttackBases ||= abilities.cannotAttackBases ?? false;
     result.ambushCanAttackBases ||= abilities.ambushCanAttackBases ?? false;
     result.preventBaseHealing ||= abilities.preventBaseHealing ?? false;
     result.friendlyUnitsEnterReady ||= abilities.friendlyUnitsEnterReady ?? false;
+    result.friendlyTokenUnitsEnterReady ||= abilities.friendlyTokenUnitsEnterReady ?? false;
     result.cannotAttackUndamaged ||= abilities.cannotAttackUndamaged ?? false;
     result.extraPilotSlots += abilities.extraPilotSlots ?? 0;
     result.extraRegroups += abilities.extraRegroups ?? 0;
+    result.startingHandIncrease += abilities.startingHandIncrease ?? 0;
+    result.regroupDrawIncrease += abilities.regroupDrawIncrease ?? 0;
+    result.enemyRegroupReadyLimit = Math.min(
+      result.enemyRegroupReadyLimit,
+      abilities.enemyRegroupReadyLimit ?? Number.MAX_SAFE_INTEGER,
+    );
+    result.combatDamageLast ||= abilities.combatDamageLast ?? false;
     result.indirectBonus += abilities.indirectBonus ?? 0;
     result.assignsOpponentIndirect ||= abilities.assignsOpponentIndirect ?? false;
     result.assignsOwnIndirect ||= abilities.assignsOwnIndirect ?? false;
@@ -617,6 +691,10 @@ export function abilitiesFrom(state: CatalogContext, origins: readonly AbilityOr
 // Conservative capability checks do not evaluate conditions or suppression;
 // effectiveAbilities remains the authority. These fields cannot come from auras.
 type RareAbility =
+  | 'enemyEventPlayDamage'
+  | 'blankLeadersExceptEpic'
+  | 'enemyPlayCostIncreases'
+  | 'blankFirstEnemyEvent'
   | 'halveResourcePayments'
   | 'regroupReadyPower'
   | 'lookAtDeckTop'
@@ -646,7 +724,7 @@ export function potentialAbilitySources(state: GameState, key: RareAbility): Car
     if (containsAbility(activeAbilities(state, card), key)) ids.add(card.instanceId);
     if (
       card.attachedTo &&
-      containsAbility(upgradeProfile(cardDefinition(state, card.cardId))?.grants, key)
+      containsAbility(upgradeProfile(instanceDefinition(state, card))?.grants, key)
     )
       ids.add(card.attachedTo.instanceId);
   }
@@ -676,7 +754,7 @@ export function mayHaveAbility(state: GameState, card: CardInstance, key: RareAb
   if (isUnit(state, card)) {
     if (
       attachedUpgrades(state, card).some(upgrade =>
-        containsAbility(upgradeProfile(cardDefinition(state, upgrade.cardId))?.grants, key),
+        containsAbility(upgradeProfile(instanceDefinition(state, upgrade))?.grants, key),
       )
     )
       return true;
@@ -791,7 +869,7 @@ export function assertAbilityOrigins(state: GameState, origins: readonly Ability
       throw new Error('Invalid aura origin');
     if (
       origin.profile === 'discarded-unit' &&
-      (cardDefinition(state, origin.card.cardId).kind !== 'unit' ||
+      (instanceDefinition(state, origin.card).kind !== 'unit' ||
         origin.card.zone !== 'discard' ||
         origin.card.attachedTo)
     )
@@ -800,7 +878,7 @@ export function assertAbilityOrigins(state: GameState, origins: readonly Ability
     else if (origin.scheduledId !== undefined)
       throw new Error('Unexpected scheduled ability identity');
     if (origin.profile === 'attack-grant') {
-      const definition = cardDefinition(state, origin.card.cardId);
+      const definition = instanceDefinition(state, origin.card);
       if (
         definition.kind !== 'event' ||
         !definition.attackGrants?.length ||
@@ -813,12 +891,12 @@ export function assertAbilityOrigins(state: GameState, origins: readonly Ability
     if (
       origin.profile === 'attack-override' &&
       (!origin.card.attachedTo ||
-        !upgradeProfile(cardDefinition(state, current.cardId))?.attackOverride)
+        !upgradeProfile(instanceDefinition(state, current))?.attackOverride)
     )
       throw new Error('Invalid attack override');
     if (
       origin.profile === 'granted' &&
-      (!origin.card.attachedTo || !upgradeProfile(cardDefinition(state, current.cardId))?.grants)
+      (!origin.card.attachedTo || !upgradeProfile(instanceDefinition(state, current))?.grants)
     )
       throw new Error('Invalid granted ability origin');
   }

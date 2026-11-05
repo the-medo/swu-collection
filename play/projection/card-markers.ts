@@ -21,6 +21,7 @@ export function cardMarkers(state: GameState, card: CardInstance) {
         ),
       ]
     : [];
+  if (card.copiedCardId) notes.push('Clone copy: gains the Clone trait and is not unique.');
   const warnings: string[] = [];
   if (losesOwnAbilities(state, card)) {
     warnings.push('This card has lost its abilities.');

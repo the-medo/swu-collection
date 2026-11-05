@@ -1,3 +1,625 @@
+import { earlyComplete97ThLegionKeepingThePeaceOnSullust } from './sor/97th-legion--keeping-the-peace-on-sullust.ts';
+import { earlyCompleteAdmiralPiettCaptainOfTheExecutor } from './sor/admiral-piett--captain-of-the-executor.ts';
+import { earlyCompleteAdmiralYularenAdvisingCaution } from './twi/admiral-yularen--advising-caution.ts';
+import { earlyCompleteAnakinSInterceptorWhereTheFunBegins } from './twi/anakin-s-interceptor--where-the-fun-begins.ts';
+import { earlyCompleteBazeMalbusTempleGuardian } from './sor/baze-malbus--temple-guardian.ts';
+import { earlyCompleteBoKatanKryzeDeathWatchLieutenant } from './twi/bo-katan-kryze--death-watch-lieutenant.ts';
+import { earlyCompleteConfederateTriFighter } from './twi/confederate-tri-fighter.ts';
+import { earlyCompleteDroidekaSecurity } from './twi/droideka-security.ts';
+import { earlyCompleteDuchessSChampion } from './twi/duchess-s-champion.ts';
+import { earlyCompleteEmperorSRoyalGuard } from './sor/emperor-s-royal-guard.ts';
+import { earlyCompleteEscortSkiff } from './sor/escort-skiff.ts';
+import { earlyCompleteFrontierAtRt } from './sor/frontier-at-rt.ts';
+import { earlyCompleteGamorreanGuards } from './sor/gamorrean-guards.ts';
+import { earlyCompleteDroidCommando } from './twi/droid-commando.ts';
+import { earlyCompleteFirstLegionSnowtrooper } from './sor/first-legion-snowtrooper.ts';
+import { earlyCompleteGorGrievousSPet } from './twi/gor--grievous-s-pet.ts';
+import { earlyCompleteHanSoloReluctantHero } from './sor/han-solo--reluctant-hero.ts';
+import { earlyCompleteIncineratorTrooper } from './shd/incinerator-trooper.ts';
+import { earlyCompleteInfantryOfThe212Th } from './twi/infantry-of-the-212th.ts';
+import { earlyCompleteCoruscantGuard } from './twi/coruscant-guard.ts';
+import { earlyCompleteJynErsoStardust } from './twi/jyn-erso--stardust.ts';
+import { earlyCompleteNiteOwlSkirmisher } from './shd/nite-owl-skirmisher.ts';
+import { earlyCompletePartisanInsurgent } from './sor/partisan-insurgent.ts';
+import { earlyCompletePirateBattleTank } from './shd/pirate-battle-tank.ts';
+import { earlyCompleteRedThreeUnstoppable } from './sor/red-three--unstoppable.ts';
+import { earlyCompleteRelentlessRocketDroid } from './twi/relentless-rocket-droid.ts';
+import { earlyCompleteRepublicAttackPod } from './twi/republic-attack-pod.ts';
+import { earlyCompleteRepublicDefenseCarrier } from './twi/republic-defense-carrier.ts';
+import { earlyCompleteSeasonedShoretrooper } from './sor/seasoned-shoretrooper.ts';
+import { earlyCompleteSeparatistCommando } from './twi/separatist-commando.ts';
+import { earlyCompleteSeparatistSuperTank } from './twi/separatist-super-tank.ts';
+import { earlyCompleteSquadronOfVultures } from './twi/squadron-of-vultures.ts';
+import { earlyCompleteStrafingGunship } from './sor/strafing-gunship.ts';
+import { earlyCompleteSugiHiredGuardian } from './shd/sugi--hired-guardian.ts';
+import { earlyCompleteSupremeLeaderSnokeShadowRuler } from './shd/supreme-leader-snoke--shadow-ruler.ts';
+import { earlyCompleteVigilantHonorGuards } from './sor/vigilant-honor-guards.ts';
+import { earlyCompleteVigilantPursuitCraft } from './shd/vigilant-pursuit-craft.ts';
+import { earlyCompleteVolunteerSoldier } from './sor/volunteer-soldier.ts';
+import { earlyCompleteWarbirdStowaway } from './shd/warbird-stowaway.ts';
+import { earlyCompleteWedgeAntillesStarOfTheRebellion } from './sor/wedge-antilles--star-of-the-rebellion.ts';
+import { earlyCompleteB2Legionnaires } from './twi/b2-legionnaires.ts';
+import { earlyCompleteBaktoidSpiderDroid } from './twi/baktoid-spider-droid.ts';
+import { earlyCompleteClanChallengers } from './shd/clan-challengers.ts';
+import { earlyCompleteDaughterOfDathomir } from './twi/daughter-of-dathomir.ts';
+import { earlyComplete4LomBountyHunterForHire } from './shd/4-lom--bounty-hunter-for-hire.ts';
+import { earlyCompleteCloneCommanderCodyCommandingThe212Th } from './twi/clone-commander-cody--commanding-the-212th.ts';
+import { earlyCompleteFoundling } from './shd/foundling.ts';
+import { earlyCompleteProtector } from './sor/protector.ts';
+import { earlyCompleteUnshakeableWill } from './twi/unshakeable-will.ts';
+import { earlyCompleteNamelessValor } from './twi/nameless-valor.ts';
+import { earlyCompletePerilousPosition } from './twi/perilous-position.ts';
+import { earlyCompleteTwiceThePride } from './twi/twice-the-pride.ts';
+import { earlyCompleteOldAccessCodes } from './twi/old-access-codes.ts';
+import { earlyCompleteOnTopOfThings } from './twi/on-top-of-things.ts';
+import { earlyCompleteMaceWinduSLightsaber } from './twi/mace-windu-s-lightsaber.ts';
+import { earlyCompleteMandalorianArmor } from './shd/mandalorian-armor.ts';
+import { earlyCompleteLukeSLightsaber } from './sor/luke-s-lightsaber.ts';
+import { earlyCompleteVaderSLightsaber } from './sor/vader-s-lightsaber.ts';
+import { earlyCompleteAhsokaSPadawanLightsaber } from './twi/ahsoka-s-padawan-lightsaber.ts';
+import { earlyCompleteSnapshotReflexes } from './sor/snapshot-reflexes.ts';
+import { earlyCompleteHoldOutBlaster } from './twi/hold-out-blaster.ts';
+import { earlyCompleteVambraceFlamethrower } from './shd/vambrace-flamethrower.ts';
+import { earlyCompleteVambraceGrappleshot } from './shd/vambrace-grappleshot.ts';
+import { earlyCompleteSmugglingCompartment } from './sor/smuggling-compartment.ts';
+import { earlyCompleteArmedToTheTeeth } from './shd/armed-to-the-teeth.ts';
+import { earlyCompleteCloneCohort } from './twi/clone-cohort.ts';
+import { earlyCompleteDroidCohort } from './twi/droid-cohort.ts';
+import { earlyCompleteStrategicAcumen } from './twi/strategic-acumen.ts';
+import { earlyCompleteGeneralSBlade } from './twi/general-s-blade.ts';
+import { earlyCompleteFallenLightsaber } from './sor/fallen-lightsaber.ts';
+import { earlyCompleteJediLightsaber } from './sor/jedi-lightsaber.ts';
+import { earlyCompleteSquadSupport } from './twi/squad-support.ts';
+import { earlyCompleteForTheRepublic } from './twi/for-the-republic.ts';
+import { earlyCompletePriceOnYourHead } from './shd/price-on-your-head.ts';
+import { earlyCompletePublicEnemy } from './shd/public-enemy.ts';
+import { earlyCompleteWanted } from './shd/wanted.ts';
+import { earlyCompleteRichReward } from './shd/rich-reward.ts';
+import { earlyCompleteElectrostaff } from './sor/electrostaff.ts';
+import { earlyCompleteAsteroidSanctuary } from './sor/asteroid-sanctuary.ts';
+import { earlyCompleteBravado } from './shd/bravado.ts';
+import { earlyCompleteKeepFighting } from './sor/keep-fighting.ts';
+import { earlyCompleteCovertStrength } from './shd/covert-strength.ts';
+import { earlyCompleteCreativeThinking } from './twi/creative-thinking.ts';
+import { earlyCompleteCrippleAuthority } from './shd/cripple-authority.ts';
+import { earlyCompleteDeathByDroids } from './twi/death-by-droids.ts';
+import { earlyCompleteDetentionBlockRescue } from './shd/detention-block-rescue.ts';
+import { earlyCompleteDisruptiveBurst } from './twi/disruptive-burst.ts';
+import { earlyCompleteEncouragingLeadership } from './twi/encouraging-leadership.ts';
+import { earlyCompleteEnforcedLoyalty } from './shd/enforced-loyalty.ts';
+import { earlyCompleteSelfDestruct } from './twi/self-destruct.ts';
+import { earlyCompleteEvacuate } from './shd/evacuate.ts';
+import { earlyCompleteForceChoke } from './sor/force-choke.ts';
+import { earlyCompleteForceLightning } from './sor/force-lightning.ts';
+import { earlyCompleteForcedSurrender } from './sor/forced-surrender.ts';
+import { earlyCompleteGalacticAmbition } from './sor/galactic-ambition.ts';
+import { earlyCompleteGrenadeStrike } from './twi/grenade-strike.ts';
+import { earlyCompleteGrievousReassembly } from './twi/grievous-reassembly.ts';
+import { earlyCompleteGuardingTheWay } from './twi/guarding-the-way.ts';
+import { earlyCompleteHelloThere } from './twi/hello-there.ts';
+import { earlyCompleteInPursuit } from './twi/in-pursuit.ts';
+import { earlyCompleteItBindsAllThings } from './sor/it-binds-all-things.ts';
+import { earlyCompleteKarabast } from './sor/karabast.ts';
+import { earlyCompleteLookTheOtherWay } from './shd/look-the-other-way.ts';
+import { earlyCompleteMaKlounkee } from './shd/ma-klounkee.ts';
+import { earlyCompleteMakeAnOpening } from './sor/make-an-opening.ts';
+import { earlyCompleteManufacturedSoldiers } from './twi/manufactured-soldiers.ts';
+import { earlyCompleteMaximumFirepower } from './sor/maximum-firepower.ts';
+import { earlyCompleteMedalCeremony } from './sor/medal-ceremony.ts';
+import { earlyCompleteMercilessContest } from './twi/merciless-contest.ts';
+import { earlyCompleteMidnightRepairs } from './shd/midnight-repairs.ts';
+import { earlyCompleteMissionBriefing } from './sor/mission-briefing.ts';
+import { earlyCompleteMomentOfPeace } from './sor/moment-of-peace.ts';
+import { earlyCompleteMysticReflection } from './shd/mystic-reflection.ts';
+import { earlyCompleteNoBargain } from './shd/no-bargain.ts';
+import { earlyCompleteNoGoodToMeDead } from './sor/no-good-to-me-dead.ts';
+import { earlyCompleteNowThereAreTwoOfThem } from './twi/now-there-are-two-of-them.ts';
+import { earlyCompleteOnTheDoorstep } from './twi/on-the-doorstep.ts';
+import { earlyCompleteOutmaneuver } from './sor/outmaneuver.ts';
+import { earlyCompleteBombingRun } from './sor/bombing-run.ts';
+import { earlyCompleteOverwhelmingBarrage } from './sor/overwhelming-barrage.ts';
+import { earlyCompletePalpatineSReturn } from './shd/palpatine-s-return.ts';
+import { earlyCompletePetitionTheSenate } from './twi/petition-the-senate.ts';
+import { earlyCompletePillage } from './shd/pillage.ts';
+import { earlyCompletePlanetaryInvasion } from './twi/planetary-invasion.ts';
+import { earlyCompletePoliticalPressure } from './twi/political-pressure.ts';
+import { earlyCompletePowerFailure } from './sor/power-failure.ts';
+import { earlyCompletePowerOfTheDarkSide } from './sor/power-of-the-dark-side.ts';
+import { earlyCompletePrivateManufacturing } from './twi/private-manufacturing.ts';
+import { earlyCompleteRallyingCry } from './sor/rallying-cry.ts';
+import { earlyCompleteReprocess } from './twi/reprocess.ts';
+import { earlyCompleteRestock } from './sor/restock.ts';
+import { earlyCompleteSearchYourFeelings } from './sor/search-your-feelings.ts';
+import { earlyCompleteSparkOfHope } from './shd/spark-of-hope.ts';
+import { earlyCompleteSparkOfRebellion } from './sor/spark-of-rebellion.ts';
+import { earlyCompleteStrikeTrue } from './sor/strike-true.ts';
+import { earlyCompleteSuperlaserBlast } from './sor/superlaser-blast.ts';
+import { earlyCompleteSwordAndShieldManeuver } from './twi/sword-and-shield-maneuver.ts';
+import { earlyCompleteSynchronizedStrike } from './twi/synchronized-strike.ts';
+import { earlyCompleteTacticalAdvantage } from './sor/tactical-advantage.ts';
+import { earlyCompleteTakedown } from './sor/takedown.ts';
+import { earlyCompleteTheChaosOfWar } from './shd/the-chaos-of-war.ts';
+import { earlyCompleteTheCloneWars } from './twi/the-clone-wars.ts';
+import { earlyCompleteTheEmperorSLegion } from './sor/the-emperor-s-legion.ts';
+import { earlyCompleteTheForceIsWithMe } from './sor/the-force-is-with-me.ts';
+import { earlyCompleteTheInvasionOfChristophsis } from './twi/the-invasion-of-christophsis.ts';
+import { earlyCompleteTimelyIntervention } from './shd/timely-intervention.ts';
+import { earlyCompleteTripleDarkRaid } from './shd/triple-dark-raid.ts';
+import { earlyCompleteUWingReinforcement } from './sor/u-wing-reinforcement.ts';
+import { earlyCompleteUnmaskingTheConspiracy } from './twi/unmasking-the-conspiracy.ts';
+import { earlyCompleteUnnaturalLife } from './twi/unnatural-life.ts';
+import { earlyCompleteVanquish } from './sor/vanquish.ts';
+import { earlyCompleteWaylay } from './sor/waylay.ts';
+import { earlyCompleteWartimeProfiteering } from './twi/wartime-profiteering.ts';
+import { earlyCompleteChangeOfHeart } from './sor/change-of-heart.ts';
+import { earlyCompleteChooseSides } from './shd/choose-sides.ts';
+import { earlyCompleteTakeCaptive } from './shd/take-captive.ts';
+import { earlyCompleteRelentlessPursuit } from './shd/relentless-pursuit.ts';
+import { earlyCompletePrisonerOfWar } from './twi/prisoner-of-war.ts';
+import { earlyCompleteRuleWithRespect } from './shd/rule-with-respect.ts';
+import { earlyCompleteDesperateAttack } from './shd/desperate-attack.ts';
+import { earlyCompleteGrimResolve } from './twi/grim-resolve.ts';
+import { earlyCompletePrecisionFire } from './sor/precision-fire.ts';
+import { earlyCompleteOutflank } from './shd/outflank.ts';
+import { earlyCompleteRebelAssault } from './sor/rebel-assault.ts';
+import { earlyCompleteHeadhunting } from './shd/headhunting.ts';
+import { earlyCompleteAggression } from './sor/aggression.ts';
+import { earlyCompleteVigilance } from './sor/vigilance.ts';
+import { earlyCompleteCunning } from './sor/cunning.ts';
+import { earlyCompleteCommand } from './sor/command.ts';
+import { earlyCompleteAttackPatternDelta } from './sor/attack-pattern-delta.ts';
+import { earlyCompleteHeroesOnBothSides } from './twi/heroes-on-both-sides.ts';
+import { earlyCompleteIHaveTheHighGround } from './twi/i-have-the-high-ground.ts';
+import { earlyComplete501StLiberator } from './twi/501st-liberator.ts';
+import { earlyCompleteAcademyDefenseWalker } from './sor/academy-defense-walker.ts';
+import { earlyCompleteAdelphiPatrolWing } from './shd/adelphi-patrol-wing.ts';
+import { earlyCompleteAdmiralAckbarBrilliantStrategist } from './sor/admiral-ackbar--brilliant-strategist.ts';
+import { earlyCompleteAllianceDispatcher } from './sor/alliance-dispatcher.ts';
+import { earlyCompleteAtTeVanguard } from './twi/at-te-vanguard.ts';
+import { earlyCompleteAvengerHuntingStarDestroyer } from './sor/avenger--hunting-star-destroyer.ts';
+import { earlyCompleteBailOrganaRebelCouncilor } from './sor/bail-organa--rebel-councilor.ts';
+import { earlyCompleteBenthicTwoTubesPartisanLieutenant } from './sor/benthic--two-tubes---partisan-lieutenant.ts';
+import { earlyCompleteBibFortunaJabbaSMajordomo } from './sor/bib-fortuna--jabba-s-majordomo.ts';
+import { earlyCompleteBoKatanKryzeFightingForMandalore } from './shd/bo-katan-kryze--fighting-for-mandalore.ts';
+import { earlyCompleteBodhiRookImperialDefector } from './sor/bodhi-rook--imperial-defector.ts';
+import { earlyCompleteBountyGuildInitiate } from './shd/bounty-guild-initiate.ts';
+import { earlyCompleteBrightHopeTheLastTransport } from './sor/bright-hope--the-last-transport.ts';
+import { earlyCompleteCaptainTyphoProtectingTheSenator } from './twi/captain-typho--protecting-the-senator.ts';
+import { earlyCompleteCargoJuggernaut } from './sor/cargo-juggernaut.ts';
+import { earlyCompleteCartelSpacer } from './sor/cartel-spacer.ts';
+import { earlyCompleteChainCodeCollector } from './shd/chain-code-collector.ts';
+import { earlyCompleteChewbaccaLoyalCompanion } from './sor/chewbacca--loyal-companion.ts';
+import { earlyCompleteChewbaccaPykesbane } from './shd/chewbacca--pykesbane.ts';
+import { earlyCompleteClanSaxonGauntlet } from './shd/clan-saxon-gauntlet.ts';
+import { earlyCompleteCloneDeserter } from './shd/clone-deserter.ts';
+import { earlyCompleteCompassionateSenator } from './twi/compassionate-senator.ts';
+import { earlyCompleteCoruscantDissident } from './shd/coruscant-dissident.ts';
+import { earlyCompleteCountDookuDarthTyranus } from './sor/count-dooku--darth-tyranus.ts';
+import { earlyCompleteCovetousRivals } from './shd/covetous-rivals.ts';
+import { earlyCompleteCriminalMuscle } from './shd/criminal-muscle.ts';
+import { earlyCompleteCrosshairFollowingOrders } from './shd/crosshair--following-orders.ts';
+import { earlyCompleteDarthVaderCommandingTheFirstLegion } from './sor/darth-vader--commanding-the-first-legion.ts';
+import { earlyCompleteDevastatingGunship } from './twi/devastating-gunship.ts';
+import { earlyCompleteDevastatorInescapable } from './sor/devastator--inescapable.ts';
+import { earlyCompleteDisaffectedSenator } from './twi/disaffected-senator.ts';
+import { earlyCompleteDiscerningVeteran } from './shd/discerning-veteran.ts';
+import { earlyCompleteDoctorEvazanWantedOnTwelveSystems } from './shd/doctor-evazan--wanted-on-twelve-systems.ts';
+import { earlyCompleteEliteP38Starfighter } from './twi/elite-p-38-starfighter.ts';
+import { earlyCompleteEmperorPalpatineMasterOfTheDarkSide } from './sor/emperor-palpatine--master-of-the-dark-side.ts';
+import { earlyCompleteEnfysNestChampionOfJustice } from './twi/enfys-nest--champion-of-justice.ts';
+import { earlyCompleteFavorableDelegate } from './twi/favorable-delegate.ts';
+import { earlyCompleteFettSFiresprayPursuingTheBounty } from './sor/fett-s-firespray--pursuing-the-bounty.ts';
+import { earlyCompleteFleetLieutenant } from './sor/fleet-lieutenant.ts';
+import { earlyCompleteSnowtrooperLieutenant } from './sor/snowtrooper-lieutenant.ts';
+import { earlyCompleteFreelanceAssassin } from './twi/freelance-assassin.ts';
+import { earlyCompleteFreetownBackup } from './shd/freetown-backup.ts';
+import { earlyCompleteRazorCrestReliableGunship } from './shd/razor-crest--reliable-gunship.ts';
+import { earlyCompleteRecklessGunslinger } from './shd/reckless-gunslinger.ts';
+import { earlyCompleteRepublicTacticalOfficer } from './twi/republic-tactical-officer.ts';
+import { earlyCompleteRepublicCommando } from './twi/republic-commando.ts';
+import { earlyCompleteReputableHunter } from './shd/reputable-hunter.ts';
+import { earlyCompleteRogueOperative } from './sor/rogue-operative.ts';
+import { earlyCompleteRogueSquadronSkirmisher } from './sor/rogue-squadron-skirmisher.ts';
+import { earlyCompleteRoyalGuardAttach } from './twi/royal-guard-attach-.ts';
+import { earlyCompleteRuggedSurvivors } from './sor/rugged-survivors.ts';
+import { earlyCompleteRushClovisBankingClanScion } from './twi/rush-clovis--banking-clan-scion.ts';
+import { earlyCompleteRuthlessAssassin } from './shd/ruthless-assassin.ts';
+import { earlyCompleteSanHillChairmanOfTheBankingClan } from './twi/san-hill--chairman-of-the-banking-clan.ts';
+import { earlyCompleteSawGerreraResistanceIsNotTerrorism } from './twi/saw-gerrera--resistance-is-not-terrorism.ts';
+import { earlyCompleteSenatorialCorvette } from './twi/senatorial-corvette.ts';
+import { earlyCompleteSeventhSisterImplacableInquisitor } from './sor/seventh-sister--implacable-inquisitor.ts';
+import { earlyCompleteShaakTiUnityWinsWars } from './twi/shaak-ti--unity-wins-wars.ts';
+import { earlyCompleteSlyMooreSecretiveAdvisor } from './twi/sly-moore--secretive-advisor.ts';
+import { earlyCompleteSmugglerSStarfighter } from './shd/smuggler-s-starfighter.ts';
+import { earlyCompleteSnowspeeder } from './sor/snowspeeder.ts';
+import { earlyCompleteSpecforceSoldier } from './sor/specforce-soldier.ts';
+import { earlyCompleteStarWingScout } from './sor/star-wing-scout.ts';
+import { earlyCompleteSteadfastBattalion } from './sor/steadfast-battalion.ts';
+import { earlyCompleteSteadfastSenator } from './twi/steadfast-senator.ts';
+import { earlyCompleteSubjugatingStarfighter } from './twi/subjugating-starfighter.ts';
+import { earlyCompleteSupercommandoSquad } from './shd/supercommando-squad.ts';
+import { earlyCompleteSynaraSanLoyalToKragan } from './shd/synara-san--loyal-to-kragan.ts';
+import { earlyCompleteTheArmorerSurvivalIsStrength } from './shd/the-armorer--survival-is-strength.ts';
+import { earlyCompleteTheClientDictatedByDiscretion } from './shd/the-client--dictated-by-discretion.ts';
+import { earlyCompleteTheGhostSpectreHomeBase } from './sor/the-ghost--spectre-home-base.ts';
+import { earlyCompleteTheMandalorianWhereverIGoHeGoes } from './shd/the-mandalorian--wherever-i-go--he-goes.ts';
+import { earlyCompleteTheZilloBeastAwokenFromTheDepths } from './twi/the-zillo-beast--awoken-from-the-depths.ts';
+import { earlyCompleteTieAdvanced } from './sor/tie-advanced.ts';
+import { earlyCompleteTradeFederationShuttle } from './twi/trade-federation-shuttle.ts';
+import { earlyCompleteTrandoshanHunters } from './shd/trandoshan-hunters.ts';
+import { earlyCompleteTriDroidSuppressor } from './twi/tri-droid-suppressor.ts';
+import { earlyCompleteUnlicensedHeadhunter } from './shd/unlicensed-headhunter.ts';
+import { earlyCompleteValLoyalToTheEnd } from './shd/val--loyal-to-the-end.ts';
+import { earlyCompleteValiantAssaultShip } from './shd/valiant-assault-ship.ts';
+import { earlyCompleteVanguardDroidBomber } from './twi/vanguard-droid-bomber.ts';
+import { earlyCompleteVanguardInfantry } from './sor/vanguard-infantry.ts';
+import { earlyCompleteVultureInterceptorWing } from './twi/vulture-interceptor-wing.ts';
+import { earlyCompleteWantedInsurgents } from './shd/wanted-insurgents.ts';
+import { earlyCompleteWeequayPirateGang } from './shd/weequay-pirate-gang.ts';
+import { earlyCompleteWildRancor } from './shd/wild-rancor.ts';
+import { earlyCompleteWolfPackEscort } from './twi/wolf-pack-escort.ts';
+import { earlyCompleteWolffeSuspiciousVeteran } from './sor/wolffe--suspicious-veteran.ts';
+import { earlyCompleteWreckerBoom } from './shd/wrecker--boom-.ts';
+import { earlyCompleteZiroTheHuttColorfulSchemer } from './twi/ziro-the-hutt--colorful-schemer.ts';
+import { earlyCompleteZoriiBlissValiantSmuggler } from './shd/zorii-bliss--valiant-smuggler.ts';
+import { earlyCompleteZuckussBountyHunterForHire } from './shd/zuckuss--bounty-hunter-for-hire.ts';
+import { earlyCompleteAaylaSecuraMasterOfTheBlade } from './twi/aayla-secura--master-of-the-blade.ts';
+import { earlyCompleteAnakinSkywalkerMaverickMentor } from './twi/anakin-skywalker--maverick-mentor.ts';
+import { earlyCompleteAdmiralOzzelOverconfident } from './sor/admiral-ozzel--overconfident.ts';
+import { earlyCompleteAdmiralTrenchHoldingTheLine } from './twi/admiral-trench--holding-the-line.ts';
+import { earlyCompleteAggrievedParliamentarian } from './twi/aggrieved-parliamentarian.ts';
+import { earlyCompleteAhsokaTanoAlwaysReadyForTrouble } from './twi/ahsoka-tano--always-ready-for-trouble.ts';
+import { earlyCompleteAsajjVentressCountDookuSAssassin } from './twi/asajj-ventress--count-dooku-s-assassin.ts';
+import { earlyCompleteAurraSingCrackshotSniper } from './twi/aurra-sing--crackshot-sniper.ts';
+import { earlyCompleteBazineNetalSpyForTheFirstOrder } from './shd/bazine-netal--spy-for-the-first-order.ts';
+import { earlyCompleteBosskDeadlyStalker } from './sor/bossk--deadly-stalker.ts';
+import { earlyCompleteBountyHunterCrew } from './sor/bounty-hunter-crew.ts';
+import { earlyCompleteCalculatingMagnaguard } from './twi/calculating-magnaguard.ts';
+import { earlyCompleteChimaeraFlagshipOfTheSeventhFleet } from './sor/chimaera--flagship-of-the-seventh-fleet.ts';
+import { earlyCompleteChopperMetalMenace } from './sor/chopper--metal-menace.ts';
+import { earlyCompleteCloneDiveTrooper } from './twi/clone-dive-trooper.ts';
+import { earlyCompleteCobbVanthTheMarshal } from './shd/cobb-vanth--the-marshal.ts';
+import { earlyCompleteColonelYularenIsbDirector } from './sor/colonel-yularen--isb-director.ts';
+import { earlyCompleteEchoRestored } from './shd/echo--restored.ts';
+import { earlyCompleteEmboStoicAndResolute } from './shd/embo--stoic-and-resolute.ts';
+import { earlyCompleteEnterprisingLackeys } from './shd/enterprising-lackeys.ts';
+import { earlyCompleteEphantMonHeadOfSecurity } from './shd/ephant-mon--head-of-security.ts';
+import { earlyCompleteEzraBridgerResourcefulTroublemaker } from './sor/ezra-bridger--resourceful-troublemaker.ts';
+import { earlyCompleteFennRauProtectorOfConcordDawn } from './shd/fenn-rau--protector-of-concord-dawn.ts';
+import { earlyCompleteFennecShandLoyalSharpshooter } from './shd/fennec-shand--loyal-sharpshooter.ts';
+import { earlyCompleteFifthBrotherFearHunter } from './sor/fifth-brother--fear-hunter.ts';
+import { earlyCompleteFightersForFreedom } from './sor/fighters-for-freedom.ts';
+import { earlyCompleteFinalizerMightOfTheFirstOrder } from './shd/finalizer--might-of-the-first-order.ts';
+import { earlyCompleteFivesInSearchOfTruth } from './twi/fives--in-search-of-truth.ts';
+import { earlyCompleteFrontierTrader } from './shd/frontier-trader.ts';
+import { earlyCompleteFrontlineShuttle } from './sor/frontline-shuttle.ts';
+import { earlyCompleteGeneralKrellHeartlessTactician } from './sor/general-krell--heartless-tactician.ts';
+import { earlyCompleteGeneralRieekanDefensiveStrategist } from './shd/general-rieekan--defensive-strategist.ts';
+import { earlyCompleteGeneralSGuardian } from './twi/general-s-guardian.ts';
+import { earlyCompleteGeneralTaggeConcernedCommander } from './sor/general-tagge--concerned-commander.ts';
+import { earlyCompleteGentleGiant } from './shd/gentle-giant.ts';
+import { earlyCompleteGeonosisPatrolFighter } from './twi/geonosis-patrol-fighter.ts';
+import { earlyCompleteGideonHaskRuthlessLoyalist } from './sor/gideon-hask--ruthless-loyalist.ts';
+import { earlyCompleteGideonSLightCruiserDarkTroopersStation } from './shd/gideon-s-light-cruiser--dark-troopers--station.ts';
+import { earlyCompleteGladiatorStarDestroyer } from './sor/gladiator-star-destroyer.ts';
+import { earlyCompleteGrandMoffTarkinDeathStarOverseer } from './sor/grand-moff-tarkin--death-star-overseer.ts';
+import { earlyCompleteGreedoSlowOnTheDraw } from './sor/greedo--slow-on-the-draw.ts';
+import { earlyCompleteGreySquadronYWing } from './shd/grey-squadron-y-wing.ts';
+import { earlyCompleteGuavianAntagonizer } from './shd/guavian-antagonizer.ts';
+import { earlyCompleteGuerillaAttackPod } from './sor/guerilla-attack-pod.ts';
+import { earlyCompleteHeavyPersuaderTank } from './twi/heavy-persuader-tank.ts';
+import { earlyCompleteHevyStaunchMartyr } from './twi/hevy--staunch-martyr.ts';
+import { earlyCompleteHomeOneAllianceFlagship } from './sor/home-one--alliance-flagship.ts';
+import { earlyCompleteCassianAndorRebellionsAreBuiltOnHope } from './shd/cassian-andor--rebellions-are-built-on-hope.ts';
+import { earlyCompleteHunterOfTheHaxionBrood } from './shd/hunter-of-the-haxion-brood.ts';
+import { earlyCompleteHuyangEnduringInstructor } from './twi/huyang--enduring-instructor.ts';
+import { earlyCompleteHylobonEnforcer } from './shd/hylobon-enforcer.ts';
+import { earlyCompleteImperialInterceptor } from './sor/imperial-interceptor.ts';
+import { earlyCompleteIndependentSenator } from './twi/independent-senator.ts';
+import { earlyCompleteInfernoFourUnforgetting } from './sor/inferno-four--unforgetting.ts';
+import { earlyCompleteInfiltratingDemolisher } from './twi/infiltrating-demolisher.ts';
+import { earlyCompleteJabbaSRancorPateesa } from './shd/jabba-s-rancor--pateesa.ts';
+import { earlyCompleteJabbaTheHuttCunningDaimyo } from './sor/jabba-the-hutt--cunning-daimyo.ts';
+import { earlyCompleteJedhaAgitator } from './sor/jedha-agitator.ts';
+import { earlyCompleteJesseHardFightingPatriot } from './twi/jesse--hard-fighting-patriot.ts';
+import { earlyCompleteK2SoCassianSCounterpart } from './sor/k-2so--cassian-s-counterpart.ts';
+import { earlyCompleteKalaniAnalyticalGeneral } from './twi/kalani--analytical-general.ts';
+import { earlyCompleteKashyyykDefender } from './twi/kashyyyk-defender.ts';
+import { earlyCompleteKetsuOnyoOldFriend } from './shd/ketsu-onyo--old-friend.ts';
+import { earlyCompleteKihraxzHeavyFighter } from './shd/kihraxz-heavy-fighter.ts';
+import { earlyCompleteKintanIntimidator } from './shd/kintan-intimidator.ts';
+import { earlyCompleteKitFistoTheSmilingJedi } from './twi/kit-fisto--the-smiling-jedi.ts';
+import { earlyCompleteKnightOfTheRepublic } from './twi/knight-of-the-republic.ts';
+import { earlyCompleteKoskaReevesLoyalNiteOwl } from './shd/koska-reeves--loyal-nite-owl.ts';
+import { earlyCompleteKraganGorrWarbirdCaptain } from './shd/kragan-gorr--warbird-captain.ts';
+import { earlyCompleteKrakenConfederateTactician } from './twi/kraken--confederate-tactician.ts';
+import { earlyCompleteKraytDragon } from './shd/krayt-dragon.ts';
+import { earlyCompleteKrrsantanMuscleForHire } from './shd/krrsantan--muscle-for-hire.ts';
+import { earlyCompleteKyloSTieSilencerRuthlesslyEfficient } from './shd/kylo-s-tie-silencer--ruthlessly-efficient.ts';
+import { earlyCompleteLadyProximaWhiteWormMatriarch } from './shd/lady-proxima--white-worm-matriarch.ts';
+import { earlyCompleteLandoCalrissianResponsibleBusinessman } from './sor/lando-calrissian--responsible-businessman.ts';
+import { earlyCompleteLeiaOrganaDefiantPrincess } from './sor/leia-organa--defiant-princess.ts';
+import { earlyCompleteLieutenantChildsenDeathStarPrisonWarden } from './sor/lieutenant-childsen--death-star-prison-warden.ts';
+import { earlyCompleteLomPykeDealerInTruths } from './shd/lom-pyke--dealer-in-truths.ts';
+import { earlyCompleteLothalInsurgent } from './sor/lothal-insurgent.ts';
+import { earlyCompleteLowAltitudeGunship } from './twi/low-altitude-gunship.ts';
+import { earlyCompleteLukeSkywalkerJediKnight } from './sor/luke-skywalker--jedi-knight.ts';
+import { earlyCompleteLuminaraUnduliSoftSpokenMaster } from './twi/luminara-unduli--soft-spoken-master.ts';
+import { earlyCompleteMagnaguardWingLeader } from './twi/magnaguard-wing-leader.ts';
+import { earlyCompleteMasAmeddaViceChair } from './twi/mas-amedda--vice-chair.ts';
+import { earlyCompleteMazKanataPirateQueen } from './shd/maz-kanata--pirate-queen.ts';
+import { earlyCompleteMercenaryGunship } from './shd/mercenary-gunship.ts';
+import { earlyCompleteMiningGuildTieFighter } from './sor/mining-guild-tie-fighter.ts';
+import { earlyCompleteMisterBonesIPerformedViolence } from './twi/mister-bones--i-performed-violence.ts';
+import { earlyCompleteMonMothmaVoiceOfTheRebellion } from './sor/mon-mothma--voice-of-the-rebellion.ts';
+import { earlyCompleteMorganElsbethKeeperOfManySecrets } from './twi/morgan-elsbeth--keeper-of-many-secrets.ts';
+import { earlyCompleteMultiTroopTransport } from './twi/multi-troop-transport.ts';
+import { earlyCompleteObedientVanguard } from './twi/obedient-vanguard.ts';
+import { earlyCompleteObiWanKenobiFollowingFate } from './sor/obi-wan-kenobi--following-fate.ts';
+import { earlyCompleteOomSeriesOfficer } from './twi/oom-series-officer.ts';
+import { earlyCompleteOuterRimHeadhunter } from './sor/outer-rim-headhunter.ts';
+import { earlyCompleteOutlawCorona } from './shd/outlaw-corona.ts';
+import { earlyCompleteOutspokenRepresentative } from './twi/outspoken-representative.ts';
+import { earlyCompletePadmAmidalaPursuingPeace } from './twi/padm--amidala--pursuing-peace.ts';
+import { earlyCompletePeltaSupplyFrigate } from './twi/pelta-supply-frigate.ts';
+import { earlyCompletePiratedStarfighter } from './sor/pirated-starfighter.ts';
+import { earlyCompletePloKoonKohToYah } from './twi/plo-koon--koh-to-yah-.ts';
+import { earlyCompletePoggleTheLesserArchdukeOfTheStalgasinHive } from './twi/poggle-the-lesser--archduke-of-the-stalgasin-hive.ts';
+import { earlyCompletePrincipledOutlaw } from './shd/principled-outlaw.ts';
+import { earlyCompleteProvidenceDestroyer } from './twi/providence-destroyer.ts';
+import { earlyCompletePunishingOneDengarSJumpmaster } from './shd/punishing-one--dengar-s-jumpmaster.ts';
+import { earlyCompleteR2D2FullOfSolutions } from './twi/r2-d2--full-of-solutions.ts';
+import { earlyCompleteRecklessTorrent } from './twi/reckless-torrent.ts';
+import { earlyCompleteRegionalGovernor } from './sor/regional-governor.ts';
+import { earlyCompleteReinforcementWalker } from './sor/reinforcement-walker.ts';
+import { earlyCompleteResoluteUnderAnakinSCommand } from './twi/resolute--under-anakin-s-command.ts';
+import { earlyCompleteRoseTicoDedicatedToTheCause } from './shd/rose-tico--dedicated-to-the-cause.ts';
+import { earlyCompleteSanctionerSShuttle } from './twi/sanctioner-s-shuttle.ts';
+import { earlyCompleteSteelaGerreraBelovedTactician } from './twi/steela-gerrera--beloved-tactician.ts';
+import { earlyCompleteTacticalDroidCommander } from './twi/tactical-droid-commander.ts';
+import { earlyCompleteTobiasBeckettITrustNoOne } from './shd/tobias-beckett--i-trust-no-one.ts';
+import { earlyCompleteToroCalicanAmbitiousUpstart } from './shd/toro-calican--ambitious-upstart.ts';
+import { earlyCompleteYodaOldMaster } from './sor/yoda--old-master.ts';
+import { earlyCompleteZebOrreliosHeadstrongWarrior } from './sor/zeb-orrelios--headstrong-warrior.ts';
+import { earlyCompleteBountyHunterSQuarry } from './shd/bounty-hunter-s-quarry.ts';
+import { earlyCompleteBrutalTraditions } from './shd/brutal-traditions.ts';
+import { earlyCompleteEnticingReward } from './shd/enticing-reward.ts';
+import { earlyCompleteForesight } from './twi/foresight.ts';
+import { earlyCompleteGrievousSWheelBike } from './twi/grievous-s-wheel-bike.ts';
+import { earlyCompleteGuildTarget } from './shd/guild-target.ts';
+import { earlyCompleteHardpointHeavyBlaster } from './sor/hardpoint-heavy-blaster.ts';
+import { earlyCompleteLegalAuthority } from './shd/legal-authority.ts';
+import { earlyCompleteSecondChance } from './shd/second-chance.ts';
+import { earlyCompleteTheMandalorianSRifle } from './shd/the-mandalorian-s-rifle.ts';
+import { earlyCompleteTopTarget } from './shd/top-target.ts';
+import { earlyCompleteANewAdventure } from './shd/a-new-adventure.ts';
+import { earlyCompleteAidFromTheInnocent } from './twi/aid-from-the-innocent.ts';
+import { earlyCompleteBountyPosting } from './shd/bounty-posting.ts';
+import { earlyCompleteCalculatedLethality } from './shd/calculated-lethality.ts';
+import { earlyCompleteClearTheField } from './twi/clear-the-field.ts';
+import { earlyCompleteCommission } from './shd/commission.ts';
+import { earlyCompleteConsolidationOfPower } from './twi/consolidation-of-power.ts';
+import { earlyCompleteEndlessLegions } from './shd/endless-legions.ts';
+import { earlyCompleteGuerillaInsurgency } from './twi/guerilla-insurgency.ts';
+import { earlyCompleteLetTheWookieeWin } from './shd/let-the-wookiee-win.ts';
+import { earlyCompleteSmokeAndCinders } from './sor/smoke-and-cinders.ts';
+import { earlyCompleteForceThrow } from './sor/force-throw.ts';
+import { earlyCompleteBenduTheOneInTheMiddle } from './sor/bendu--the-one-in-the-middle.ts';
+import { earlyCompleteBlackOneScourgeOfStarkillerBase } from './sor/black-one--scourge-of-starkiller-base.ts';
+import { earlyCompleteKiAdiMundiComposedAndConfident } from './twi/ki-adi-mundi--composed-and-confident.ts';
+import { earlyCompleteRuthlessRaider } from './sor/ruthless-raider.ts';
+import { earlyCompleteTheInvisibleHandImposingFlagship } from './twi/the-invisible-hand--imposing-flagship.ts';
+import { earlyCompleteXanaduBloodCadBaneSReward } from './shd/xanadu-blood--cad-bane-s-reward.ts';
+import { earlyCompleteBarrissOffeeUnassumingApprentice } from './twi/barriss-offee--unassuming-apprentice.ts';
+import { earlyCompleteBobaFettDisintegrator } from './sor/boba-fett--disintegrator.ts';
+import { earlyCompleteSlaverSFreighter } from './shd/slaver-s-freighter.ts';
+import { earlyCompleteOsiSobeckWardenOfTheCitadel } from './twi/osi-sobeck--warden-of-the-citadel.ts';
+import { earlyCompleteLuxBonteriRenegadeSeparatist } from './twi/lux-bonteri--renegade-separatist.ts';
+import { earlyCompleteVanguardAce } from './sor/vanguard-ace.ts';
+import { earlyCompleteKananJarrusRevealedJedi } from './sor/kanan-jarrus--revealed-jedi.ts';
+import { earlyCompleteThisIsTheWay } from './shd/this-is-the-way.ts';
+import { earlyCompleteInDefenseOfKamino } from './twi/in-defense-of-kamino.ts';
+import { earlyCompletePyrrhicAssault } from './twi/pyrrhic-assault.ts';
+import { earlyCompleteCaughtInTheCrossfire } from './twi/caught-in-the-crossfire.ts';
+import { earlyCompleteUnlimitedPower } from './twi/unlimited-power.ts';
+import { earlyCompleteObiWanSAetherspriteThisIsWhyIHateFlying } from './twi/obi-wan-s-aethersprite--this-is-why-i-hate-flying.ts';
+import { earlyCompleteAlteringTheDeal } from './shd/altering-the-deal.ts';
+import { earlyCompleteUnexpectedEscape } from './shd/unexpected-escape.ts';
+import { earlyCompleteL337DroidRevolutionary } from './shd/l3-37--droid-revolutionary.ts';
+import { earlyCompleteCadBaneHostageTaker } from './twi/cad-bane--hostage-taker.ts';
+import { earlyCompleteDrydenVosOfferingNoEscape } from './shd/dryden-vos--offering-no-escape.ts';
+import { earlyCompleteUnrefusableOffer } from './shd/unrefusable-offer.ts';
+import { earlyCompleteAgentKallusSeekingTheRebels } from './sor/agent-kallus--seeking-the-rebels.ts';
+import { earlyCompleteMigsMayfeldTriggerman } from './shd/migs-mayfeld--triggerman.ts';
+import { earlyCompleteMaceWinduPartyCrasher } from './sor/mace-windu--party-crasher.ts';
+import { earlyCompleteArquitensAssaultCruiser } from './shd/arquitens-assault-cruiser.ts';
+import { earlyCompleteBlizzardAssaultAtAt } from './sor/blizzard-assault-at-at.ts';
+import { earlyCompleteRuthlessness } from './shd/ruthlessness.ts';
+import { earlyCompleteJangoFettRenownedBountyHunter } from './shd/jango-fett--renowned-bounty-hunter.ts';
+import { earlyCompleteRukhThrawnSAssassin } from './sor/rukh--thrawn-s-assassin.ts';
+import { earlyCompleteHeroicSacrifice } from './sor/heroic-sacrifice.ts';
+import { earlyCompletePhaseIiiDarkTrooper } from './shd/phase-iii-dark-trooper.ts';
+import { earlyCompleteTarffulKashyyykChieftain } from './shd/tarfful--kashyyyk-chieftain.ts';
+import { earlyCompleteChancellorPalpatineWartimeChancellor } from './twi/chancellor-palpatine--wartime-chancellor.ts';
+import { earlyCompleteMalevolenceGrievousSSecretWeapon } from './twi/malevolence--grievous-s-secret-weapon.ts';
+import { earlyCompleteJarJarBinksFoolishGungan } from './twi/jar-jar-binks--foolish-gungan.ts';
+import { earlyCompleteKuiilIHaveSpoken } from './shd/kuiil--i-have-spoken.ts';
+import { earlyCompleteSabineWrenYouCanCountOnMe } from './twi/sabine-wren--you-can-count-on-me.ts';
+import { earlyCompleteSabineWrenExplosivesArtist } from './sor/sabine-wren--explosives-artist.ts';
+import { earlyCompleteSalaciousCrumbObnoxiousPet } from './shd/salacious-crumb--obnoxious-pet.ts';
+import { earlyCompleteTheMarauderShuttlingTheBadBatch } from './shd/the-marauder--shuttling-the-bad-batch.ts';
+import { earlyCompleteEntrenched } from './sor/entrenched.ts';
+import { earlyCompleteImprisoned } from './shd/imprisoned.ts';
+import { earlyCompleteBobaFettSArmor } from './shd/boba-fett-s-armor.ts';
+import { earlyCompleteShadowedIntentions } from './twi/shadowed-intentions.ts';
+import { earlyCompleteLurkingTiePhantom } from './shd/lurking-tie-phantom.ts';
+import { earlyCompleteFinnOnTheRun } from './twi/finn--on-the-run.ts';
+import { earlyCompleteCornerThePrey } from './twi/corner-the-prey.ts';
+import { earlyCompleteSwoopDown } from './shd/swoop-down.ts';
+import { earlyCompleteEnfysNestMarauder } from './shd/enfys-nest--marauder.ts';
+import { earlyCompleteSatineKryzeCommittedToPeace } from './twi/satine-kryze--committed-to-peace.ts';
+import { earlyCompleteOmegaPartOfTheSquad } from './shd/omega--part-of-the-squad.ts';
+import { earlyCompleteKyloRenKillingThePast } from './shd/kylo-ren--killing-the-past.ts';
+import { earlyCompleteReyKeepingThePast } from './shd/rey--keeping-the-past.ts';
+import { earlyCompleteTheDarksaber } from './shd/the-darksaber.ts';
+import { earlyCompleteGeneralGrievousTrophyCollector } from './twi/general-grievous--trophy-collector.ts';
+import { earlyCompleteDengarTheDemolisher } from './shd/dengar--the-demolisher.ts';
+import { earlyCompleteMillenniumFalconLandoSPride } from './shd/millennium-falcon--lando-s-pride.ts';
+import { earlyCompleteStolenLandspeeder } from './shd/stolen-landspeeder.ts';
+import { earlyCompleteRedemptionMedicalFrigate } from './sor/redemption--medical-frigate.ts';
+import { earlyCompleteTraitorous } from './sor/traitorous.ts';
+import { earlyCompleteRogerRoger } from './twi/roger-roger.ts';
+import { earlyCompleteSurvivorsGauntlet } from './shd/survivors--gauntlet.ts';
+import { earlyCompleteEvidenceOfTheCrime } from './shd/evidence-of-the-crime.ts';
+import { earlyCompleteSpareTheTarget } from './shd/spare-the-target.ts';
+import { earlyCompleteImproprietyAmongThieves } from './twi/impropriety-among-thieves.ts';
+import { earlyCompleteIHadNoChoice } from './sor/i-had-no-choice.ts';
+import { earlyCompleteBoldResistance } from './twi/bold-resistance.ts';
+import { earlyCompleteEqualize } from './twi/equalize.ts';
+import { earlyCompleteAFineAddition } from './twi/a-fine-addition.ts';
+import { earlyCompleteJetpack } from './shd/jetpack.ts';
+import { earlyCompleteDelMeekoProvidingOverwatch } from './sor/del-meeko--providing-overwatch.ts';
+import { earlyCompleteRelentlessKonstantineSFolly } from './sor/relentless--konstantine-s-folly.ts';
+import { earlyCompleteQiRaPlayingHerPart } from './shd/qi-ra--playing-her-part.ts';
+import { earlyCompleteTranquilityInspiringFlagship } from './twi/tranquility--inspiring-flagship.ts';
+import { earlyCompleteFinalShowdown } from './shd/final-showdown.ts';
+import { earlyCompleteDoctorPershingExperimentingWithLife } from './shd/doctor-pershing--experimenting-with-life.ts';
+import { earlyCompleteHeroicResolve } from './shd/heroic-resolve.ts';
+import { earlyCompletePreVizslaPowerHungry } from './shd/pre-vizsla--power-hungry.ts';
+import { earlyCompleteSoullessOneCustomizedForGrievous } from './twi/soulless-one--customized-for-grievous.ts';
+import { earlyCompleteScanningOfficer } from './shd/scanning-officer.ts';
+import { earlyCompleteForACauseIBelieveIn } from './sor/for-a-cause-i-believe-in.ts';
+import { earlyCompleteBrainInvaders } from './twi/brain-invaders.ts';
+import { earlyCompleteIg11ICannotBeCaptured } from './shd/ig-11--i-cannot-be-captured.ts';
+import { earlyCompleteMillenniumFalconPieceOfJunk } from './sor/millennium-falcon--piece-of-junk.ts';
+import { earlyCompleteExecuteOrder66 } from './twi/execute-order-66.ts';
+import { earlyCompleteDjBlatantThief } from './shd/dj--blatant-thief.ts';
+import { earlyCompleteCountDookuFallenJedi } from './twi/count-dooku--fallen-jedi.ts';
+import { earlyCompleteGiveInToYourAnger } from './shd/give-in-to-your-anger.ts';
+import { earlyCompleteDonTGetCocky } from './sor/don-t-get-cocky.ts';
+import { earlyCompleteMaulShadowCollectiveVisionary } from './shd/maul--shadow-collective-visionary.ts';
+import { earlyCompletePoeDameronQuickToImprovise } from './shd/poe-dameron--quick-to-improvise.ts';
+import { earlyCompleteBamboozle } from './sor/bamboozle.ts';
+import { earlyCompleteSawGerreraExtremist } from './sor/saw-gerrera--extremist.ts';
+import { earlyCompleteFirstLightHeadquartersOfTheCrimsonDawn } from './shd/first-light--headquarters-of-the-crimson-dawn.ts';
+import { earlyCompleteClone } from './twi/clone.ts';
+import { earlyCompleteDarthMaulRevengeAtLast } from './twi/darth-maul--revenge-at-last.ts';
+import { earlySetAtSt } from './sor/at-st.ts';
+import { earlySetAuzituckLiberatorGunship } from './sor/auzituck-liberator-gunship.ts';
+import { earlySetSyndicateLackeys } from './sor/syndicate-lackeys.ts';
+import { earlySetCellBlockGuard } from './sor/cell-block-guard.ts';
+import { earlySetCloudCityWingGuard } from './sor/cloud-city-wing-guard.ts';
+import { earlySetEchoBaseDefender } from './sor/echo-base-defender.ts';
+import { earlySetSystemPatrolCraft } from './sor/system-patrol-craft.ts';
+import { earlySetCraftySmuggler } from './sor/crafty-smuggler.ts';
+import { earlySetSeventhFleetDefender } from './sor/seventh-fleet-defender.ts';
+import { earlySetWildernessFighter } from './sor/wilderness-fighter.ts';
+import { earlySetJawaScavenger } from './sor/jawa-scavenger.ts';
+import { earlySetScoutBikePursuer } from './sor/scout-bike-pursuer.ts';
+import { earlySetMercenaryCompany } from './sor/mercenary-company.ts';
+import { earlySetCantinaBraggart } from './sor/cantina-braggart.ts';
+import { earlySetGreenSquadronAWing } from './sor/green-squadron-a-wing.ts';
+import { earlySetRegionalSympathizers } from './sor/regional-sympathizers.ts';
+import { earlySetRestoredArc170 } from './sor/restored-arc-170.ts';
+import { earlySetUnderworldThug } from './sor/underworld-thug.ts';
+import { earlySet21BSurgicalDroid } from './sor/2-1b-surgical-droid.ts';
+import { earlySetAdmiralMottiBrazenAndScornful } from './sor/admiral-motti--brazen-and-scornful.ts';
+import { earlySetArdentSympathizer } from './sor/ardent-sympathizer.ts';
+import { earlySetCantinaBouncer } from './sor/cantina-bouncer.ts';
+import { earlySetConfiscate } from './sor/confiscate.ts';
+import { earlySetDisablingFangFighter } from './sor/disabling-fang-fighter.ts';
+import { earlySetDisarm } from './sor/disarm.ts';
+import { earlySetDistantPatroller } from './sor/distant-patroller.ts';
+import { earlySetGeneralDodonnaMassassiGroupCommander } from './sor/general-dodonna--massassi-group-commander.ts';
+import { earlySetGeneralVeersBlizzardForceCommander } from './sor/general-veers--blizzard-force-commander.ts';
+import { earlySetPatrollingVWing } from './sor/patrolling-v-wing.ts';
+import { earlySetWingLeader } from './sor/wing-leader.ts';
+import { earlySetBlackSunStarfighter } from './shd/black-sun-starfighter.ts';
+import { earlySetNiimaOutpostConstables } from './shd/niima-outpost-constables.ts';
+import { earlySetPykeSentinel } from './shd/pyke-sentinel.ts';
+import { earlySetCloudRider } from './shd/cloud-rider.ts';
+import { earlySetHeroicRenegade } from './shd/heroic-renegade.ts';
+import { earlySetWroshyrTreeTender } from './shd/wroshyr-tree-tender.ts';
+import { earlySetHouseKastSoldier } from './shd/house-kast-soldier.ts';
+import { earlySetResourcefulPursuers } from './shd/resourceful-pursuers.ts';
+import { earlySetHuttSHenchmen } from './shd/hutt-s-henchmen.ts';
+import { earlySetDeathWatchLoyalist } from './shd/death-watch-loyalist.ts';
+import { earlySetVillageProtectors } from './shd/village-protectors.ts';
+import { earlySetModdedCohort } from './shd/modded-cohort.ts';
+import { earlySetSundariPeacekeeper } from './shd/sundari-peacekeeper.ts';
+import { earlySetTwinPodCloudCar } from './shd/twin-pod-cloud-car.ts';
+import { earlySetDesperadoFreighter } from './shd/desperado-freighter.ts';
+import { earlySetHwk290Freighter } from './shd/hwk-290-freighter.ts';
+import { earlySetLiberatedSlaves } from './shd/liberated-slaves.ts';
+import { earlySetWarzoneLieutenant } from './shd/warzone-lieutenant.ts';
+import { earlySetFollowerOfTheWay } from './shd/follower-of-the-way.ts';
+import { earlySetProtectorOfTheThrone } from './shd/protector-of-the-throne.ts';
+import { earlySetGamorreanRetainer } from './shd/gamorrean-retainer.ts';
+import { earlySetPrivateerScyk } from './shd/privateer-scyk.ts';
+import { earlySetDaringRaid } from './shd/daring-raid.ts';
+import { earlySetMomentOfGlory } from './shd/moment-of-glory.ts';
+import { earlySetRivalSFall } from './shd/rival-s-fall.ts';
+import { earlySetFellTheDragon } from './shd/fell-the-dragon.ts';
+import { earlySetMandalorianWarrior } from './shd/mandalorian-warrior.ts';
+import { earlySetOutlandTieVanguard } from './shd/outland-tie-vanguard.ts';
+import { earlySetRhokaiGunship } from './shd/rhokai-gunship.ts';
+import { earlySetWookieeWarrior } from './shd/wookiee-warrior.ts';
+import { earlySetAdvancedReconCommando } from './twi/advanced-recon-commando.ts';
+import { earlySetDendupSLoyalist } from './twi/dendup-s-loyalist.ts';
+import { earlySetArmoredSaberTank } from './twi/armored-saber-tank.ts';
+import { earlySetB1SecurityTeam } from './twi/b1-security-team.ts';
+import { earlySetFalchionIonTank } from './twi/falchion-ion-tank.ts';
+import { earlySetPatrollingAat } from './twi/patrolling-aat.ts';
+import { earlySetBoldReconCommando } from './twi/bold-recon-commando.ts';
+import { earlySetDroidStarfighter } from './twi/droid-starfighter.ts';
+import { earlySetDwarfSpiderDroid } from './twi/dwarf-spider-droid.ts';
+import { earlySetPhaseIiCloneTrooper } from './twi/phase-ii-clone-trooper.ts';
+import { earlySetRylothMilitia } from './twi/ryloth-militia.ts';
+import { earlySetSoldierOfThe501St } from './twi/soldier-of-the-501st.ts';
+import { earlySetB1AttackPlatform } from './twi/b1-attack-platform.ts';
+import { earlySetHeadhunterSquadron } from './twi/headhunter-squadron.ts';
+import { earlySetHotshotVWing } from './twi/hotshot-v-wing.ts';
+import { earlySetRepublicArc170 } from './twi/republic-arc-170.ts';
+import { earlySetWarriorDrone } from './twi/warrior-drone.ts';
+import { earlySet332NdStalwart } from './twi/332nd-stalwart.ts';
+import { earlySet41StEliteCorps } from './twi/41st-elite-corps.ts';
+import { earlySetCloneHeavyGunner } from './twi/clone-heavy-gunner.ts';
+import { earlySetEchoValiantArcTrooper } from './twi/echo--valiant-arc-trooper.ts';
+import { earlySetBatchBrothers } from './twi/batch-brothers.ts';
+import { earlySetCaptainRexLeadByExample } from './twi/captain-rex--lead-by-example.ts';
+import { earlySetBattleDroidEscort } from './twi/battle-droid-escort.ts';
+import { earlySetConfederateCourier } from './twi/confederate-courier.ts';
+import { earlySetWartimeTradeOfficial } from './twi/wartime-trade-official.ts';
+import { earlySetDroidDeployment } from './twi/droid-deployment.ts';
+import { earlySetDropIn } from './twi/drop-in.ts';
+import { earlySetBloodSport } from './twi/blood-sport.ts';
+import { earlySetStrategicAnalysis } from './twi/strategic-analysis.ts';
+import { ic27ReprintRuneHaakoSchemingSecond } from './twi/rune-haako--scheming-second.ts';
+import { ic27ReprintAtAtSuppressor } from './sor/at-at-suppressor.ts';
+import { ic27ReprintLethalCrackdown } from './twi/lethal-crackdown.ts';
+import { ic27ReprintClanWrenRescuer } from './shd/clan-wren-rescuer.ts';
+import { ic27ReprintConcordDawnInterceptors } from './shd/concord-dawn-interceptors.ts';
+import { ic27ReprintMoistureFarmer } from './shd/moisture-farmer.ts';
+import { ic27ReprintResilient } from './shd/resilient.ts';
+import { ic27ReprintInspiringMentor } from './shd/inspiring-mentor.ts';
+import { ic27ReprintSavageOpressMonster } from './twi/savage-opress--monster.ts';
+import { ic27ReprintInfiltratorSSkill } from './sor/infiltrator-s-skill.ts';
+import { ic27ReprintFrozenInCarbonite } from './shd/frozen-in-carbonite.ts';
+import { ic27ReprintGroguIrresistible } from './shd/grogu--irresistible.ts';
+import { ic27ReprintHiddenSharpshooter } from './twi/hidden-sharpshooter.ts';
+import { ic27ReprintShootFirst } from './sor/shoot-first.ts';
+import { ic27ReprintBreakingIn } from './twi/breaking-in.ts';
+import { ic27ReprintSuperBattleDroid } from './twi/super-battle-droid.ts';
+import { ic27ReprintIAmYourFather } from './sor/i-am-your-father.ts';
+import { ic27ReprintR2D2IgnoringProtocol } from './sor/r2-d2--ignoring-protocol.ts';
+import { ic27ReprintC3poProtocolDroid } from './sor/c-3po--protocol-droid.ts';
+import { ic27ReprintPhaseICloneTrooper } from './twi/phase-i-clone-trooper.ts';
+import { ic27ReprintEta2LightInterceptor } from './twi/eta-2-light-interceptor.ts';
+import { ic27ReprintYouReMyOnlyHope } from './sor/you-re-my-only-hope.ts';
+import { ic27CloneCommanderCodyLoyalToTheRepublic } from './ic27/clone-commander-cody--loyal-to-the-republic.ts';
+import { ic27JynErsoHerFatherSRevenge } from './ic27/jyn-erso--her-father-s-revenge.ts';
+import { ic27K2soEvacuateTheVaultDoor } from './ic27/k-2so--evacuate-the-vault-door.ts';
+import { ic27CassianAndorBlendingIn } from './ic27/cassian-andor--blending-in.ts';
 import release from './release.json';
 import { theStarhawkPrototypeBattleship } from './jtl/the-starhawk--prototype-battleship.ts';
 import { jumpToLightspeed } from './jtl/jump-to-lightspeed.ts';
@@ -1796,7 +2418,716 @@ function freeze<T extends object>(value: T): T {
   return Object.freeze(value);
 }
 
-const definitions: CardDefinition[] = [];
+import { ic27DarthVaderNoOneToStopUs } from './ic27/darth-vader--no-one-to-stop-us.ts';
+import { ic27ReyInBalance } from './ic27/rey--in-balance.ts';
+import { ic27KyloRenSupremeLeader } from './ic27/kylo-ren--supreme-leader.ts';
+import { ic27MaceWinduHereWithBackup } from './ic27/mace-windu--here-with-backup.ts';
+import { ic27LukeSkywalkerIHaveToFaceHim } from './ic27/luke-skywalker--i-have-to-face-him.ts';
+import { ic27AsajjVentressBaldAndBeautiful } from './ic27/asajj-ventress--bald-and-beautiful.ts';
+import { ic27PrincessLeiaOnADiplomaticMission } from './ic27/princess-leia--on-a-diplomatic-mission.ts';
+import { ic27NuteGunrayRingRingSpaceCalling } from './ic27/nute-gunray--ring-ring--space-calling.ts';
+import { ic27DrydenVosThumbSpikingTheScale } from './ic27/dryden-vos--thumb-spiking-the-scale.ts';
+import { ic27SoullessOneSoullessFun } from './ic27/soulless-one--soulless-fun.ts';
+import { ic27GeneralGrievousFourArmedMenace } from './ic27/general-grievous--four-armed-menace.ts';
+import { ic27MoffGideonColdCalling } from './ic27/moff-gideon--cold-calling.ts';
+import { ic27GrandMoffTarkinCrackingDownOnLothal } from './ic27/grand-moff-tarkin--cracking-down-on-lothal.ts';
+import { ic27GrandAdmiralThrawnListenToMeCarefully } from './ic27/grand-admiral-thrawn--listen-to-me-carefully.ts';
+import { ic27DarthSidiousMoveAgainstTheJedi } from './ic27/darth-sidious--move-against-the-jedi.ts';
+import { ic27ChimaeraGrandAdmiralSMight } from './ic27/chimaera--grand-admiral-s-might.ts';
+import { ic27Bb8FrazzledFriend } from './ic27/bb-8--frazzled-friend.ts';
+import { ic27KaydelConnixKeepGoing } from './ic27/kaydel-connix--keep-going.ts';
+import { ic27ObiWanSInterceptorNothingTooFancy } from './ic27/obi-wan-s-interceptor--nothing-too-fancy.ts';
+import { ic27YodaADisturbingPuzzle } from './ic27/yoda--a-disturbing-puzzle.ts';
+import { ic27FinnStandAndFight } from './ic27/finn--stand-and-fight.ts';
+import { ic27AhsokaTanoNotOnMyDeathWatch } from './ic27/ahsoka-tano--not-on-my-death-watch.ts';
+import { ic27RoseInTheFight } from './ic27/rose--in-the-fight.ts';
+import { ic27QiRaSurvivor } from './ic27/qi-ra--survivor.ts';
+import { ic27VigilantDefense } from './ic27/vigilant-defense.ts';
+import { ic27DexterJettsterObiWannnn } from './ic27/dexter-jettster--obi-wannnn.ts';
+import { ic27AllegiantGeneralPrydeHeartlessEfficiency } from './ic27/allegiant-general-pryde--heartless-efficiency.ts';
+import { ic27DirectorKrennicArchitectOfAnnihilation } from './ic27/director-krennic--architect-of-annihilation.ts';
+import { ic27GeneralVeersPrepared } from './ic27/general-veers--prepared.ts';
+import { ic27JabbaTheHuttBountiesLeftAndRight } from './ic27/jabba-the-hutt--bounties-left-and-right.ts';
+import { ic27AdmiralMottiConanInCommand } from './ic27/admiral-motti--conan-in-command.ts';
+import { ic27KyloSTieSilencerFollowMyLead } from './ic27/kylo-s-tie-silencer--follow-my-lead.ts';
+import { ic27DarthMaulMindfulApprentice } from './ic27/darth-maul--mindful-apprentice.ts';
+import { ic27MotherTalzinTheTimeHasCome } from './ic27/mother-talzin--the-time-has-come.ts';
+import { ic27DarthVaderUselessToResist } from './ic27/darth-vader--useless-to-resist.ts';
+import { ic27DevastatorLordVaderSFlagship } from './ic27/devastator--lord-vader-s-flagship.ts';
+import { ic27C3poImpulseBuy } from './ic27/c-3po--impulse-buy.ts';
+import { ic27AvarKrissForLightAndLife } from './ic27/avar-kriss--for-light-and-life.ts';
+import { ic27RedLeaderWaitForMySignal } from './ic27/red-leader---wait-for-my-signal.ts';
+import { ic27MonMothmaTruthIsAnAbyss } from './ic27/mon-mothma--truth-is-an-abyss.ts';
+import { ic27AnakinSkywalkerDestinedForDarkness } from './ic27/anakin-skywalker--destined-for-darkness.ts';
+import { ic27QuiGonJinnUnwaveringBelief } from './ic27/qui-gon-jinn--unwavering-belief.ts';
+import { ic27MaceWinduDroppingBy } from './ic27/mace-windu--dropping-by.ts';
+import { ic27NegotiatorPrepareTheTroops } from './ic27/negotiator--prepare-the-troops.ts';
+import { ic27EnfysNestNoMore } from './ic27/enfys-nest--no-more.ts';
+import { ic27IssueACommand } from './ic27/issue-a-command.ts';
+import { ic27MazKanataItCallsToYou } from './ic27/maz-kanata--it-calls-to-you.ts';
+import { ic27CommanderPyreGoldenMenace } from './ic27/commander-pyre--golden-menace.ts';
+import { ic27EighthBrotherIllFatedEscape } from './ic27/eighth-brother--ill-fated-escape.ts';
+import { ic27GeneralHuxFireVentralCannons } from './ic27/general-hux--fire-ventral-cannons.ts';
+import { ic27TheInquisitorSTieWouldRatherWin } from './ic27/the-inquisitor-s-tie--would-rather-win.ts';
+import { ic27AurraSingGettingEven } from './ic27/aurra-sing--getting-even.ts';
+import { ic27SupremacyDestroyTheResistance } from './ic27/supremacy--destroy-the-resistance.ts';
+import { ic27EzraBridgerDownWithTheFreedom } from './ic27/ezra-bridger--down-with-the-freedom.ts';
+import { ic27PoeDameronHeroOfTheResistance } from './ic27/poe-dameron--hero-of-the-resistance.ts';
+import { ic27BlackOneDrawFireTwice } from './ic27/black-one--draw-fire--twice.ts';
+import { ic27SabineWrenLiberatorOfKrownest } from './ic27/sabine-wren--liberator-of-krownest.ts';
+import { ic27ReyEmbracingDestiny } from './ic27/rey--embracing-destiny.ts';
+import { ic27KananJarrusSometimesIHateBeingRight } from './ic27/kanan-jarrus--sometimes-i-hate-being-right.ts';
+import { ic27TheGhostWhaleWatching } from './ic27/the-ghost--whale-watching.ts';
+import { ic27SawGerreraForTheCause } from './ic27/saw-gerrera--for-the-cause.ts';
+import { ic27ActOfAggression } from './ic27/act-of-aggression.ts';
+import { ic27BansheeScreamMachine } from './ic27/banshee--scream-machine.ts';
+import { ic27GreedoBigTimer } from './ic27/greedo--big-timer.ts';
+import { ic27WatTamborWarpedWarbling } from './ic27/wat-tambor--warped-warbling.ts';
+import { ic27JangoFettStraightShooter } from './ic27/jango-fett--straight-shooter.ts';
+import { ic27PoggleTheLesserSecretDesigns } from './ic27/poggle-the-lesser--secret-designs.ts';
+import { ic27BobaFettCompensatedIfHeDies } from './ic27/boba-fett--compensated-if-he-dies.ts';
+import { ic27AsajjVentressDeathFromAbove } from './ic27/asajj-ventress--death-from-above.ts';
+import { ic27CountDookuSilverTongued } from './ic27/count-dooku--silver-tongued.ts';
+import { ic27TheInvisibleHandConfederateMight } from './ic27/the-invisible-hand--confederate-might.ts';
+import { ic27GreefKargaICelebrateYourSuccess } from './ic27/greef-karga--i-celebrate-your-success.ts';
+import { ic27TheMandalorianFromTheShadows } from './ic27/the-mandalorian--from-the-shadows.ts';
+import { ic27MillenniumFalconYaHoo } from './ic27/millennium-falcon--ya-hoo.ts';
+import { ic27PrincessLeiaCalculatedDistraction } from './ic27/princess-leia--calculated-distraction.ts';
+import { ic27BoKatanKryzeRightPlaceRightTime } from './ic27/bo-katan-kryze--right-place--right-time.ts';
+import { ic27IVeGotABadFeeling } from './ic27/i-ve-got-a-bad-feeling.ts';
+import { ic27LandoCalrissianCheckThisOut } from './ic27/lando-calrissian--check-this-out.ts';
+import { ic27CunningPloy } from './ic27/cunning-ploy.ts';
+import { ic27JarJarBinksBumblingRepresentative } from './ic27/jar-jar-binks--bumbling-representative.ts';
+import { ic27CaptainRexStaunchAdvocate } from './ic27/captain-rex--staunch-advocate.ts';
+import { ic27GrandInquisitorHowTheMightyWillFall } from './ic27/grand-inquisitor--how-the-mighty-will-fall.ts';
+import { ic27AdmiralHoldoWeAreTheSpark } from './ic27/admiral-holdo--we-are-the-spark.ts';
+
+const definitions: CardDefinition[] = [
+  earlyComplete97ThLegionKeepingThePeaceOnSullust,
+  earlyCompleteAdmiralPiettCaptainOfTheExecutor,
+  earlyCompleteAdmiralYularenAdvisingCaution,
+  earlyCompleteAnakinSInterceptorWhereTheFunBegins,
+  earlyCompleteBazeMalbusTempleGuardian,
+  earlyCompleteBoKatanKryzeDeathWatchLieutenant,
+  earlyCompleteConfederateTriFighter,
+  earlyCompleteDroidekaSecurity,
+  earlyCompleteDuchessSChampion,
+  earlyCompleteEmperorSRoyalGuard,
+  earlyCompleteEscortSkiff,
+  earlyCompleteFrontierAtRt,
+  earlyCompleteGamorreanGuards,
+  earlyCompleteDroidCommando,
+  earlyCompleteFirstLegionSnowtrooper,
+  earlyCompleteGorGrievousSPet,
+  earlyCompleteHanSoloReluctantHero,
+  earlyCompleteIncineratorTrooper,
+  earlyCompleteInfantryOfThe212Th,
+  earlyCompleteCoruscantGuard,
+  earlyCompleteJynErsoStardust,
+  earlyCompleteNiteOwlSkirmisher,
+  earlyCompletePartisanInsurgent,
+  earlyCompletePirateBattleTank,
+  earlyCompleteRedThreeUnstoppable,
+  earlyCompleteRelentlessRocketDroid,
+  earlyCompleteRepublicAttackPod,
+  earlyCompleteRepublicDefenseCarrier,
+  earlyCompleteSeasonedShoretrooper,
+  earlyCompleteSeparatistCommando,
+  earlyCompleteSeparatistSuperTank,
+  earlyCompleteSquadronOfVultures,
+  earlyCompleteStrafingGunship,
+  earlyCompleteSugiHiredGuardian,
+  earlyCompleteSupremeLeaderSnokeShadowRuler,
+  earlyCompleteVigilantHonorGuards,
+  earlyCompleteVigilantPursuitCraft,
+  earlyCompleteVolunteerSoldier,
+  earlyCompleteWarbirdStowaway,
+  earlyCompleteWedgeAntillesStarOfTheRebellion,
+  earlyCompleteB2Legionnaires,
+  earlyCompleteBaktoidSpiderDroid,
+  earlyCompleteClanChallengers,
+  earlyCompleteDaughterOfDathomir,
+  earlyComplete4LomBountyHunterForHire,
+  earlyCompleteCloneCommanderCodyCommandingThe212Th,
+  earlyCompleteFoundling,
+  earlyCompleteProtector,
+  earlyCompleteUnshakeableWill,
+  earlyCompleteNamelessValor,
+  earlyCompletePerilousPosition,
+  earlyCompleteTwiceThePride,
+  earlyCompleteOldAccessCodes,
+  earlyCompleteOnTopOfThings,
+  earlyCompleteMaceWinduSLightsaber,
+  earlyCompleteMandalorianArmor,
+  earlyCompleteLukeSLightsaber,
+  earlyCompleteVaderSLightsaber,
+  earlyCompleteAhsokaSPadawanLightsaber,
+  earlyCompleteSnapshotReflexes,
+  earlyCompleteHoldOutBlaster,
+  earlyCompleteVambraceFlamethrower,
+  earlyCompleteVambraceGrappleshot,
+  earlyCompleteSmugglingCompartment,
+  earlyCompleteArmedToTheTeeth,
+  earlyCompleteCloneCohort,
+  earlyCompleteDroidCohort,
+  earlyCompleteStrategicAcumen,
+  earlyCompleteGeneralSBlade,
+  earlyCompleteFallenLightsaber,
+  earlyCompleteJediLightsaber,
+  earlyCompleteSquadSupport,
+  earlyCompleteForTheRepublic,
+  earlyCompletePriceOnYourHead,
+  earlyCompletePublicEnemy,
+  earlyCompleteWanted,
+  earlyCompleteRichReward,
+  earlyCompleteElectrostaff,
+  earlyCompleteAsteroidSanctuary,
+  earlyCompleteBravado,
+  earlyCompleteKeepFighting,
+  earlyCompleteCovertStrength,
+  earlyCompleteCreativeThinking,
+  earlyCompleteCrippleAuthority,
+  earlyCompleteDeathByDroids,
+  earlyCompleteDetentionBlockRescue,
+  earlyCompleteDisruptiveBurst,
+  earlyCompleteEncouragingLeadership,
+  earlyCompleteEnforcedLoyalty,
+  earlyCompleteSelfDestruct,
+  earlyCompleteEvacuate,
+  earlyCompleteForceChoke,
+  earlyCompleteForceLightning,
+  earlyCompleteForcedSurrender,
+  earlyCompleteGalacticAmbition,
+  earlyCompleteGrenadeStrike,
+  earlyCompleteGrievousReassembly,
+  earlyCompleteGuardingTheWay,
+  earlyCompleteHelloThere,
+  earlyCompleteInPursuit,
+  earlyCompleteItBindsAllThings,
+  earlyCompleteKarabast,
+  earlyCompleteLookTheOtherWay,
+  earlyCompleteMaKlounkee,
+  earlyCompleteMakeAnOpening,
+  earlyCompleteManufacturedSoldiers,
+  earlyCompleteMaximumFirepower,
+  earlyCompleteMedalCeremony,
+  earlyCompleteMercilessContest,
+  earlyCompleteMidnightRepairs,
+  earlyCompleteMissionBriefing,
+  earlyCompleteMomentOfPeace,
+  earlyCompleteMysticReflection,
+  earlyCompleteNoBargain,
+  earlyCompleteNoGoodToMeDead,
+  earlyCompleteNowThereAreTwoOfThem,
+  earlyCompleteOnTheDoorstep,
+  earlyCompleteOutmaneuver,
+  earlyCompleteBombingRun,
+  earlyCompleteOverwhelmingBarrage,
+  earlyCompletePalpatineSReturn,
+  earlyCompletePetitionTheSenate,
+  earlyCompletePillage,
+  earlyCompletePlanetaryInvasion,
+  earlyCompletePoliticalPressure,
+  earlyCompletePowerFailure,
+  earlyCompletePowerOfTheDarkSide,
+  earlyCompletePrivateManufacturing,
+  earlyCompleteRallyingCry,
+  earlyCompleteReprocess,
+  earlyCompleteRestock,
+  earlyCompleteSearchYourFeelings,
+  earlyCompleteSparkOfHope,
+  earlyCompleteSparkOfRebellion,
+  earlyCompleteStrikeTrue,
+  earlyCompleteSuperlaserBlast,
+  earlyCompleteSwordAndShieldManeuver,
+  earlyCompleteSynchronizedStrike,
+  earlyCompleteTacticalAdvantage,
+  earlyCompleteTakedown,
+  earlyCompleteTheChaosOfWar,
+  earlyCompleteTheCloneWars,
+  earlyCompleteTheEmperorSLegion,
+  earlyCompleteTheForceIsWithMe,
+  earlyCompleteTheInvasionOfChristophsis,
+  earlyCompleteTimelyIntervention,
+  earlyCompleteTripleDarkRaid,
+  earlyCompleteUWingReinforcement,
+  earlyCompleteUnmaskingTheConspiracy,
+  earlyCompleteUnnaturalLife,
+  earlyCompleteVanquish,
+  earlyCompleteWaylay,
+  earlyCompleteWartimeProfiteering,
+  earlyCompleteChangeOfHeart,
+  earlyCompleteChooseSides,
+  earlyCompleteTakeCaptive,
+  earlyCompleteRelentlessPursuit,
+  earlyCompletePrisonerOfWar,
+  earlyCompleteRuleWithRespect,
+  earlyCompleteDesperateAttack,
+  earlyCompleteGrimResolve,
+  earlyCompletePrecisionFire,
+  earlyCompleteOutflank,
+  earlyCompleteRebelAssault,
+  earlyCompleteHeadhunting,
+  earlyCompleteAggression,
+  earlyCompleteVigilance,
+  earlyCompleteCunning,
+  earlyCompleteCommand,
+  earlyCompleteAttackPatternDelta,
+  earlyCompleteHeroesOnBothSides,
+  earlyCompleteIHaveTheHighGround,
+  earlyComplete501StLiberator,
+  earlyCompleteAcademyDefenseWalker,
+  earlyCompleteAdelphiPatrolWing,
+  earlyCompleteAdmiralAckbarBrilliantStrategist,
+  earlyCompleteAllianceDispatcher,
+  earlyCompleteAtTeVanguard,
+  earlyCompleteAvengerHuntingStarDestroyer,
+  earlyCompleteBailOrganaRebelCouncilor,
+  earlyCompleteBenthicTwoTubesPartisanLieutenant,
+  earlyCompleteBibFortunaJabbaSMajordomo,
+  earlyCompleteBoKatanKryzeFightingForMandalore,
+  earlyCompleteBodhiRookImperialDefector,
+  earlyCompleteBountyGuildInitiate,
+  earlyCompleteBrightHopeTheLastTransport,
+  earlyCompleteCaptainTyphoProtectingTheSenator,
+  earlyCompleteCargoJuggernaut,
+  earlyCompleteCartelSpacer,
+  earlyCompleteChainCodeCollector,
+  earlyCompleteChewbaccaLoyalCompanion,
+  earlyCompleteChewbaccaPykesbane,
+  earlyCompleteClanSaxonGauntlet,
+  earlyCompleteCloneDeserter,
+  earlyCompleteCompassionateSenator,
+  earlyCompleteCoruscantDissident,
+  earlyCompleteCountDookuDarthTyranus,
+  earlyCompleteCovetousRivals,
+  earlyCompleteCriminalMuscle,
+  earlyCompleteCrosshairFollowingOrders,
+  earlyCompleteDarthVaderCommandingTheFirstLegion,
+  earlyCompleteDevastatingGunship,
+  earlyCompleteDevastatorInescapable,
+  earlyCompleteDisaffectedSenator,
+  earlyCompleteDiscerningVeteran,
+  earlyCompleteDoctorEvazanWantedOnTwelveSystems,
+  earlyCompleteEliteP38Starfighter,
+  earlyCompleteEmperorPalpatineMasterOfTheDarkSide,
+  earlyCompleteEnfysNestChampionOfJustice,
+  earlyCompleteFavorableDelegate,
+  earlyCompleteFettSFiresprayPursuingTheBounty,
+  earlyCompleteFleetLieutenant,
+  earlyCompleteSnowtrooperLieutenant,
+  earlyCompleteFreelanceAssassin,
+  earlyCompleteFreetownBackup,
+  earlyCompleteRazorCrestReliableGunship,
+  earlyCompleteRecklessGunslinger,
+  earlyCompleteRepublicTacticalOfficer,
+  earlyCompleteRepublicCommando,
+  earlyCompleteReputableHunter,
+  earlyCompleteRogueOperative,
+  earlyCompleteRogueSquadronSkirmisher,
+  earlyCompleteRoyalGuardAttach,
+  earlyCompleteRuggedSurvivors,
+  earlyCompleteRushClovisBankingClanScion,
+  earlyCompleteRuthlessAssassin,
+  earlyCompleteSanHillChairmanOfTheBankingClan,
+  earlyCompleteSawGerreraResistanceIsNotTerrorism,
+  earlyCompleteSenatorialCorvette,
+  earlyCompleteSeventhSisterImplacableInquisitor,
+  earlyCompleteShaakTiUnityWinsWars,
+  earlyCompleteSlyMooreSecretiveAdvisor,
+  earlyCompleteSmugglerSStarfighter,
+  earlyCompleteSnowspeeder,
+  earlyCompleteSpecforceSoldier,
+  earlyCompleteStarWingScout,
+  earlyCompleteSteadfastBattalion,
+  earlyCompleteSteadfastSenator,
+  earlyCompleteSubjugatingStarfighter,
+  earlyCompleteSupercommandoSquad,
+  earlyCompleteSynaraSanLoyalToKragan,
+  earlyCompleteTheArmorerSurvivalIsStrength,
+  earlyCompleteTheClientDictatedByDiscretion,
+  earlyCompleteTheGhostSpectreHomeBase,
+  earlyCompleteTheMandalorianWhereverIGoHeGoes,
+  earlyCompleteTheZilloBeastAwokenFromTheDepths,
+  earlyCompleteTieAdvanced,
+  earlyCompleteTradeFederationShuttle,
+  earlyCompleteTrandoshanHunters,
+  earlyCompleteTriDroidSuppressor,
+  earlyCompleteUnlicensedHeadhunter,
+  earlyCompleteValLoyalToTheEnd,
+  earlyCompleteValiantAssaultShip,
+  earlyCompleteVanguardDroidBomber,
+  earlyCompleteVanguardInfantry,
+  earlyCompleteVultureInterceptorWing,
+  earlyCompleteWantedInsurgents,
+  earlyCompleteWeequayPirateGang,
+  earlyCompleteWildRancor,
+  earlyCompleteWolfPackEscort,
+  earlyCompleteWolffeSuspiciousVeteran,
+  earlyCompleteWreckerBoom,
+  earlyCompleteZiroTheHuttColorfulSchemer,
+  earlyCompleteZoriiBlissValiantSmuggler,
+  earlyCompleteZuckussBountyHunterForHire,
+  earlyCompleteAaylaSecuraMasterOfTheBlade,
+  earlyCompleteAnakinSkywalkerMaverickMentor,
+  earlyCompleteAdmiralOzzelOverconfident,
+  earlyCompleteAdmiralTrenchHoldingTheLine,
+  earlyCompleteAggrievedParliamentarian,
+  earlyCompleteAhsokaTanoAlwaysReadyForTrouble,
+  earlyCompleteAsajjVentressCountDookuSAssassin,
+  earlyCompleteAurraSingCrackshotSniper,
+  earlyCompleteBazineNetalSpyForTheFirstOrder,
+  earlyCompleteBosskDeadlyStalker,
+  earlyCompleteBountyHunterCrew,
+  earlyCompleteCalculatingMagnaguard,
+  earlyCompleteChimaeraFlagshipOfTheSeventhFleet,
+  earlyCompleteChopperMetalMenace,
+  earlyCompleteCloneDiveTrooper,
+  earlyCompleteCobbVanthTheMarshal,
+  earlyCompleteColonelYularenIsbDirector,
+  earlyCompleteEchoRestored,
+  earlyCompleteEmboStoicAndResolute,
+  earlyCompleteEnterprisingLackeys,
+  earlyCompleteEphantMonHeadOfSecurity,
+  earlyCompleteEzraBridgerResourcefulTroublemaker,
+  earlyCompleteFennRauProtectorOfConcordDawn,
+  earlyCompleteFennecShandLoyalSharpshooter,
+  earlyCompleteFifthBrotherFearHunter,
+  earlyCompleteFightersForFreedom,
+  earlyCompleteFinalizerMightOfTheFirstOrder,
+  earlyCompleteFivesInSearchOfTruth,
+  earlyCompleteFrontierTrader,
+  earlyCompleteFrontlineShuttle,
+  earlyCompleteGeneralKrellHeartlessTactician,
+  earlyCompleteGeneralRieekanDefensiveStrategist,
+  earlyCompleteGeneralSGuardian,
+  earlyCompleteGeneralTaggeConcernedCommander,
+  earlyCompleteGentleGiant,
+  earlyCompleteGeonosisPatrolFighter,
+  earlyCompleteGideonHaskRuthlessLoyalist,
+  earlyCompleteGideonSLightCruiserDarkTroopersStation,
+  earlyCompleteGladiatorStarDestroyer,
+  earlyCompleteGrandMoffTarkinDeathStarOverseer,
+  earlyCompleteGreedoSlowOnTheDraw,
+  earlyCompleteGreySquadronYWing,
+  earlyCompleteGuavianAntagonizer,
+  earlyCompleteGuerillaAttackPod,
+  earlyCompleteHeavyPersuaderTank,
+  earlyCompleteHevyStaunchMartyr,
+  earlyCompleteHomeOneAllianceFlagship,
+  earlyCompleteCassianAndorRebellionsAreBuiltOnHope,
+  earlyCompleteHunterOfTheHaxionBrood,
+  earlyCompleteHuyangEnduringInstructor,
+  earlyCompleteHylobonEnforcer,
+  earlyCompleteImperialInterceptor,
+  earlyCompleteIndependentSenator,
+  earlyCompleteInfernoFourUnforgetting,
+  earlyCompleteInfiltratingDemolisher,
+  earlyCompleteJabbaSRancorPateesa,
+  earlyCompleteJabbaTheHuttCunningDaimyo,
+  earlyCompleteJedhaAgitator,
+  earlyCompleteJesseHardFightingPatriot,
+  earlyCompleteK2SoCassianSCounterpart,
+  earlyCompleteKalaniAnalyticalGeneral,
+  earlyCompleteKashyyykDefender,
+  earlyCompleteKetsuOnyoOldFriend,
+  earlyCompleteKihraxzHeavyFighter,
+  earlyCompleteKintanIntimidator,
+  earlyCompleteKitFistoTheSmilingJedi,
+  earlyCompleteKnightOfTheRepublic,
+  earlyCompleteKoskaReevesLoyalNiteOwl,
+  earlyCompleteKraganGorrWarbirdCaptain,
+  earlyCompleteKrakenConfederateTactician,
+  earlyCompleteKraytDragon,
+  earlyCompleteKrrsantanMuscleForHire,
+  earlyCompleteKyloSTieSilencerRuthlesslyEfficient,
+  earlyCompleteLadyProximaWhiteWormMatriarch,
+  earlyCompleteLandoCalrissianResponsibleBusinessman,
+  earlyCompleteLeiaOrganaDefiantPrincess,
+  earlyCompleteLieutenantChildsenDeathStarPrisonWarden,
+  earlyCompleteLomPykeDealerInTruths,
+  earlyCompleteLothalInsurgent,
+  earlyCompleteLowAltitudeGunship,
+  earlyCompleteLukeSkywalkerJediKnight,
+  earlyCompleteLuminaraUnduliSoftSpokenMaster,
+  earlyCompleteMagnaguardWingLeader,
+  earlyCompleteMasAmeddaViceChair,
+  earlyCompleteMazKanataPirateQueen,
+  earlyCompleteMercenaryGunship,
+  earlyCompleteMiningGuildTieFighter,
+  earlyCompleteMisterBonesIPerformedViolence,
+  earlyCompleteMonMothmaVoiceOfTheRebellion,
+  earlyCompleteMorganElsbethKeeperOfManySecrets,
+  earlyCompleteMultiTroopTransport,
+  earlyCompleteObedientVanguard,
+  earlyCompleteObiWanKenobiFollowingFate,
+  earlyCompleteOomSeriesOfficer,
+  earlyCompleteOuterRimHeadhunter,
+  earlyCompleteOutlawCorona,
+  earlyCompleteOutspokenRepresentative,
+  earlyCompletePadmAmidalaPursuingPeace,
+  earlyCompletePeltaSupplyFrigate,
+  earlyCompletePiratedStarfighter,
+  earlyCompletePloKoonKohToYah,
+  earlyCompletePoggleTheLesserArchdukeOfTheStalgasinHive,
+  earlyCompletePrincipledOutlaw,
+  earlyCompleteProvidenceDestroyer,
+  earlyCompletePunishingOneDengarSJumpmaster,
+  earlyCompleteR2D2FullOfSolutions,
+  earlyCompleteRecklessTorrent,
+  earlyCompleteRegionalGovernor,
+  earlyCompleteReinforcementWalker,
+  earlyCompleteResoluteUnderAnakinSCommand,
+  earlyCompleteRoseTicoDedicatedToTheCause,
+  earlyCompleteSanctionerSShuttle,
+  earlyCompleteSteelaGerreraBelovedTactician,
+  earlyCompleteTacticalDroidCommander,
+  earlyCompleteTobiasBeckettITrustNoOne,
+  earlyCompleteToroCalicanAmbitiousUpstart,
+  earlyCompleteYodaOldMaster,
+  earlyCompleteZebOrreliosHeadstrongWarrior,
+  earlyCompleteBountyHunterSQuarry,
+  earlyCompleteBrutalTraditions,
+  earlyCompleteEnticingReward,
+  earlyCompleteForesight,
+  earlyCompleteGrievousSWheelBike,
+  earlyCompleteGuildTarget,
+  earlyCompleteHardpointHeavyBlaster,
+  earlyCompleteLegalAuthority,
+  earlyCompleteSecondChance,
+  earlyCompleteTheMandalorianSRifle,
+  earlyCompleteTopTarget,
+  earlyCompleteANewAdventure,
+  earlyCompleteAidFromTheInnocent,
+  earlyCompleteBountyPosting,
+  earlyCompleteCalculatedLethality,
+  earlyCompleteClearTheField,
+  earlyCompleteCommission,
+  earlyCompleteConsolidationOfPower,
+  earlyCompleteEndlessLegions,
+  earlyCompleteGuerillaInsurgency,
+  earlyCompleteLetTheWookieeWin,
+  earlyCompleteSmokeAndCinders,
+  earlyCompleteForceThrow,
+  earlyCompleteBenduTheOneInTheMiddle,
+  earlyCompleteBlackOneScourgeOfStarkillerBase,
+  earlyCompleteKiAdiMundiComposedAndConfident,
+  earlyCompleteRuthlessRaider,
+  earlyCompleteTheInvisibleHandImposingFlagship,
+  earlyCompleteXanaduBloodCadBaneSReward,
+  earlyCompleteBarrissOffeeUnassumingApprentice,
+  earlyCompleteBobaFettDisintegrator,
+  earlyCompleteSlaverSFreighter,
+  earlyCompleteOsiSobeckWardenOfTheCitadel,
+  earlyCompleteLuxBonteriRenegadeSeparatist,
+  earlyCompleteVanguardAce,
+  earlyCompleteKananJarrusRevealedJedi,
+  earlyCompleteThisIsTheWay,
+  earlyCompleteInDefenseOfKamino,
+  earlyCompletePyrrhicAssault,
+  earlyCompleteCaughtInTheCrossfire,
+  earlyCompleteUnlimitedPower,
+  earlyCompleteObiWanSAetherspriteThisIsWhyIHateFlying,
+  earlyCompleteAlteringTheDeal,
+  earlyCompleteUnexpectedEscape,
+  earlyCompleteL337DroidRevolutionary,
+  earlyCompleteCadBaneHostageTaker,
+  earlyCompleteDrydenVosOfferingNoEscape,
+  earlyCompleteUnrefusableOffer,
+  earlyCompleteAgentKallusSeekingTheRebels,
+  earlyCompleteMigsMayfeldTriggerman,
+  earlyCompleteMaceWinduPartyCrasher,
+  earlyCompleteArquitensAssaultCruiser,
+  earlyCompleteBlizzardAssaultAtAt,
+  earlyCompleteRuthlessness,
+  earlyCompleteJangoFettRenownedBountyHunter,
+  earlyCompleteRukhThrawnSAssassin,
+  earlyCompleteHeroicSacrifice,
+  earlyCompletePhaseIiiDarkTrooper,
+  earlyCompleteTarffulKashyyykChieftain,
+  earlyCompleteChancellorPalpatineWartimeChancellor,
+  earlyCompleteMalevolenceGrievousSSecretWeapon,
+  earlyCompleteJarJarBinksFoolishGungan,
+  earlyCompleteKuiilIHaveSpoken,
+  earlyCompleteSabineWrenYouCanCountOnMe,
+  earlyCompleteSabineWrenExplosivesArtist,
+  earlyCompleteSalaciousCrumbObnoxiousPet,
+  earlyCompleteTheMarauderShuttlingTheBadBatch,
+  earlyCompleteEntrenched,
+  earlyCompleteImprisoned,
+  earlyCompleteBobaFettSArmor,
+  earlyCompleteShadowedIntentions,
+  earlyCompleteLurkingTiePhantom,
+  earlyCompleteFinnOnTheRun,
+  earlyCompleteCornerThePrey,
+  earlyCompleteSwoopDown,
+  earlyCompleteEnfysNestMarauder,
+  earlyCompleteSatineKryzeCommittedToPeace,
+  earlyCompleteOmegaPartOfTheSquad,
+  earlyCompleteKyloRenKillingThePast,
+  earlyCompleteReyKeepingThePast,
+  earlyCompleteTheDarksaber,
+  earlyCompleteGeneralGrievousTrophyCollector,
+  earlyCompleteDengarTheDemolisher,
+  earlyCompleteMillenniumFalconLandoSPride,
+  earlyCompleteStolenLandspeeder,
+  earlyCompleteRedemptionMedicalFrigate,
+  earlyCompleteTraitorous,
+  earlyCompleteRogerRoger,
+  earlyCompleteSurvivorsGauntlet,
+  earlyCompleteEvidenceOfTheCrime,
+  earlyCompleteSpareTheTarget,
+  earlyCompleteImproprietyAmongThieves,
+  earlyCompleteIHadNoChoice,
+  earlyCompleteBoldResistance,
+  earlyCompleteEqualize,
+  earlyCompleteAFineAddition,
+  earlyCompleteJetpack,
+  earlyCompleteDelMeekoProvidingOverwatch,
+  earlyCompleteRelentlessKonstantineSFolly,
+  earlyCompleteQiRaPlayingHerPart,
+  earlyCompleteTranquilityInspiringFlagship,
+  earlyCompleteFinalShowdown,
+  earlyCompleteDoctorPershingExperimentingWithLife,
+  earlyCompleteHeroicResolve,
+  earlyCompletePreVizslaPowerHungry,
+  earlyCompleteSoullessOneCustomizedForGrievous,
+  earlyCompleteScanningOfficer,
+  earlyCompleteForACauseIBelieveIn,
+  earlyCompleteBrainInvaders,
+  earlyCompleteIg11ICannotBeCaptured,
+  earlyCompleteMillenniumFalconPieceOfJunk,
+  earlyCompleteExecuteOrder66,
+  earlyCompleteDjBlatantThief,
+  earlyCompleteCountDookuFallenJedi,
+  earlyCompleteGiveInToYourAnger,
+  earlyCompleteDonTGetCocky,
+  earlyCompleteMaulShadowCollectiveVisionary,
+  earlyCompletePoeDameronQuickToImprovise,
+  earlyCompleteBamboozle,
+  earlyCompleteSawGerreraExtremist,
+  earlyCompleteFirstLightHeadquartersOfTheCrimsonDawn,
+  earlyCompleteClone,
+  earlyCompleteDarthMaulRevengeAtLast,
+
+  earlySetAtSt,
+  earlySetAuzituckLiberatorGunship,
+  earlySetSyndicateLackeys,
+  earlySetCellBlockGuard,
+  earlySetCloudCityWingGuard,
+  earlySetEchoBaseDefender,
+  earlySetSystemPatrolCraft,
+  earlySetCraftySmuggler,
+  earlySetSeventhFleetDefender,
+  earlySetWildernessFighter,
+  earlySetJawaScavenger,
+  earlySetScoutBikePursuer,
+  earlySetMercenaryCompany,
+  earlySetCantinaBraggart,
+  earlySetGreenSquadronAWing,
+  earlySetRegionalSympathizers,
+  earlySetRestoredArc170,
+  earlySetUnderworldThug,
+  earlySet21BSurgicalDroid,
+  earlySetAdmiralMottiBrazenAndScornful,
+  earlySetArdentSympathizer,
+  earlySetCantinaBouncer,
+  earlySetConfiscate,
+  earlySetDisablingFangFighter,
+  earlySetDisarm,
+  earlySetDistantPatroller,
+  earlySetGeneralDodonnaMassassiGroupCommander,
+  earlySetGeneralVeersBlizzardForceCommander,
+  earlySetPatrollingVWing,
+  earlySetWingLeader,
+  earlySetBlackSunStarfighter,
+  earlySetNiimaOutpostConstables,
+  earlySetPykeSentinel,
+  earlySetCloudRider,
+  earlySetHeroicRenegade,
+  earlySetWroshyrTreeTender,
+  earlySetHouseKastSoldier,
+  earlySetResourcefulPursuers,
+  earlySetHuttSHenchmen,
+  earlySetDeathWatchLoyalist,
+  earlySetVillageProtectors,
+  earlySetModdedCohort,
+  earlySetSundariPeacekeeper,
+  earlySetTwinPodCloudCar,
+  earlySetDesperadoFreighter,
+  earlySetHwk290Freighter,
+  earlySetLiberatedSlaves,
+  earlySetWarzoneLieutenant,
+  earlySetFollowerOfTheWay,
+  earlySetProtectorOfTheThrone,
+  earlySetGamorreanRetainer,
+  earlySetPrivateerScyk,
+  earlySetDaringRaid,
+  earlySetMomentOfGlory,
+  earlySetRivalSFall,
+  earlySetFellTheDragon,
+  earlySetMandalorianWarrior,
+  earlySetOutlandTieVanguard,
+  earlySetRhokaiGunship,
+  earlySetWookieeWarrior,
+  earlySetAdvancedReconCommando,
+  earlySetDendupSLoyalist,
+  earlySetArmoredSaberTank,
+  earlySetB1SecurityTeam,
+  earlySetFalchionIonTank,
+  earlySetPatrollingAat,
+  earlySetBoldReconCommando,
+  earlySetDroidStarfighter,
+  earlySetDwarfSpiderDroid,
+  earlySetPhaseIiCloneTrooper,
+  earlySetRylothMilitia,
+  earlySetSoldierOfThe501St,
+  earlySetB1AttackPlatform,
+  earlySetHeadhunterSquadron,
+  earlySetHotshotVWing,
+  earlySetRepublicArc170,
+  earlySetWarriorDrone,
+  earlySet332NdStalwart,
+  earlySet41StEliteCorps,
+  earlySetCloneHeavyGunner,
+  earlySetEchoValiantArcTrooper,
+  earlySetBatchBrothers,
+  earlySetCaptainRexLeadByExample,
+  earlySetBattleDroidEscort,
+  earlySetConfederateCourier,
+  earlySetWartimeTradeOfficial,
+  earlySetDroidDeployment,
+  earlySetDropIn,
+  earlySetBloodSport,
+  earlySetStrategicAnalysis,
+
+  ic27ReprintRuneHaakoSchemingSecond,
+  ic27ReprintAtAtSuppressor,
+  ic27ReprintLethalCrackdown,
+  ic27ReprintClanWrenRescuer,
+  ic27ReprintConcordDawnInterceptors,
+  ic27ReprintMoistureFarmer,
+  ic27ReprintResilient,
+  ic27ReprintInspiringMentor,
+  ic27ReprintSavageOpressMonster,
+  ic27ReprintInfiltratorSSkill,
+  ic27ReprintFrozenInCarbonite,
+  ic27ReprintGroguIrresistible,
+  ic27ReprintHiddenSharpshooter,
+  ic27ReprintShootFirst,
+  ic27ReprintBreakingIn,
+  ic27ReprintSuperBattleDroid,
+  ic27ReprintIAmYourFather,
+  ic27ReprintR2D2IgnoringProtocol,
+  ic27ReprintC3poProtocolDroid,
+  ic27ReprintPhaseICloneTrooper,
+  ic27ReprintEta2LightInterceptor,
+  ic27ReprintYouReMyOnlyHope,
+  ic27CloneCommanderCodyLoyalToTheRepublic,
+  ic27JynErsoHerFatherSRevenge,
+  ic27K2soEvacuateTheVaultDoor,
+  ic27CassianAndorBlendingIn,
+];
 definitions.push(
   admiralOzzelAsClumsyAsHeIsStupid,
   admiralPiettInCommandNow,
@@ -3607,6 +4938,91 @@ definitions.push(
   hmwFriendlyEopie,
   hmwWildSpaceWanderer,
   hmwLandingPad,
+);
+definitions.push(
+  ic27DarthVaderNoOneToStopUs,
+  ic27ReyInBalance,
+  ic27KyloRenSupremeLeader,
+  ic27MaceWinduHereWithBackup,
+  ic27LukeSkywalkerIHaveToFaceHim,
+  ic27AsajjVentressBaldAndBeautiful,
+  ic27PrincessLeiaOnADiplomaticMission,
+  ic27NuteGunrayRingRingSpaceCalling,
+  ic27DrydenVosThumbSpikingTheScale,
+  ic27SoullessOneSoullessFun,
+  ic27GeneralGrievousFourArmedMenace,
+  ic27MoffGideonColdCalling,
+  ic27GrandMoffTarkinCrackingDownOnLothal,
+  ic27GrandAdmiralThrawnListenToMeCarefully,
+  ic27DarthSidiousMoveAgainstTheJedi,
+  ic27ChimaeraGrandAdmiralSMight,
+  ic27Bb8FrazzledFriend,
+  ic27KaydelConnixKeepGoing,
+  ic27ObiWanSInterceptorNothingTooFancy,
+  ic27YodaADisturbingPuzzle,
+  ic27FinnStandAndFight,
+  ic27AhsokaTanoNotOnMyDeathWatch,
+  ic27RoseInTheFight,
+  ic27QiRaSurvivor,
+  ic27VigilantDefense,
+  ic27DexterJettsterObiWannnn,
+  ic27AllegiantGeneralPrydeHeartlessEfficiency,
+  ic27DirectorKrennicArchitectOfAnnihilation,
+  ic27GeneralVeersPrepared,
+  ic27JabbaTheHuttBountiesLeftAndRight,
+  ic27AdmiralMottiConanInCommand,
+  ic27KyloSTieSilencerFollowMyLead,
+  ic27DarthMaulMindfulApprentice,
+  ic27MotherTalzinTheTimeHasCome,
+  ic27DarthVaderUselessToResist,
+  ic27DevastatorLordVaderSFlagship,
+  ic27C3poImpulseBuy,
+  ic27AvarKrissForLightAndLife,
+  ic27RedLeaderWaitForMySignal,
+  ic27MonMothmaTruthIsAnAbyss,
+  ic27AnakinSkywalkerDestinedForDarkness,
+  ic27QuiGonJinnUnwaveringBelief,
+  ic27MaceWinduDroppingBy,
+  ic27NegotiatorPrepareTheTroops,
+  ic27EnfysNestNoMore,
+  ic27IssueACommand,
+  ic27MazKanataItCallsToYou,
+  ic27CommanderPyreGoldenMenace,
+  ic27EighthBrotherIllFatedEscape,
+  ic27GeneralHuxFireVentralCannons,
+  ic27TheInquisitorSTieWouldRatherWin,
+  ic27AurraSingGettingEven,
+  ic27SupremacyDestroyTheResistance,
+  ic27EzraBridgerDownWithTheFreedom,
+  ic27PoeDameronHeroOfTheResistance,
+  ic27BlackOneDrawFireTwice,
+  ic27SabineWrenLiberatorOfKrownest,
+  ic27ReyEmbracingDestiny,
+  ic27KananJarrusSometimesIHateBeingRight,
+  ic27TheGhostWhaleWatching,
+  ic27SawGerreraForTheCause,
+  ic27ActOfAggression,
+  ic27BansheeScreamMachine,
+  ic27GreedoBigTimer,
+  ic27WatTamborWarpedWarbling,
+  ic27JangoFettStraightShooter,
+  ic27PoggleTheLesserSecretDesigns,
+  ic27BobaFettCompensatedIfHeDies,
+  ic27AsajjVentressDeathFromAbove,
+  ic27CountDookuSilverTongued,
+  ic27TheInvisibleHandConfederateMight,
+  ic27GreefKargaICelebrateYourSuccess,
+  ic27TheMandalorianFromTheShadows,
+  ic27MillenniumFalconYaHoo,
+  ic27PrincessLeiaCalculatedDistraction,
+  ic27BoKatanKryzeRightPlaceRightTime,
+  ic27IVeGotABadFeeling,
+  ic27LandoCalrissianCheckThisOut,
+  ic27CunningPloy,
+  ic27JarJarBinksBumblingRepresentative,
+  ic27CaptainRexStaunchAdvocate,
+  ic27GrandInquisitorHowTheMightyWillFall,
+  ic27AdmiralHoldoWeAreTheSpark,
 );
 freeze(definitions);
 const registry = new Map(definitions.map(card => [card.cardId, card]));

@@ -25,10 +25,11 @@ published card `version` and `requiredEngine`.
 - A breaking change increments the runtime major. Supporting older majors needs
   an explicit compatibility implementation or separate retained replay runtime.
 
-A newer engine can read older minor releases in the same major. It cannot load
-cards needing a newer minor. This is a compatibility obligation, not permission
-to suppress verification failures. State format 109 currently remains supported;
-future changes to state/commands require compatible codecs or adapters.
+A newer engine can read older minor releases in the same major when their card
+data contract is still supported. The minimum accepted card-bundle feature line
+is **1.5**; contracts 1.0 through 1.4 have been retired. Cards requiring a newer
+runtime are also rejected. State format 109 remains supported; future changes
+to state/commands require compatible codecs or adapters.
 
 Every invitation freezes its engine and card pin. Joining an invitation and later
 BO3 games retain those versions. New invitations and new rematches select the
@@ -41,7 +42,9 @@ catalog. Catalog data is frozen and shared in process memory, so it is not read
 from PostgreSQL for each action. A cold process loads the required bundle before
 recovering a state. The previous development tuple (engine crossfire-0.129.0,
 cards crossfire-core-125) has an explicit alias to the exact 1.0.0 catalog checksum.
-Earlier experimental engines remain unsupported.
+Earlier experimental engines remain unsupported. This built-in baseline is a
+separate compatibility path, not an exception allowing old JSON bundles to be
+installed or published.
 
 ## Storage and activation
 
@@ -55,6 +58,14 @@ release. Startup installs the compiled catalog if needed and initializes a missi
 selection. It never replaces an existing active release on restart. Published
 versions cannot acquire different contents. There is no bundle deletion UI;
 retain historical bundles referenced by games, invitations and replays.
+
+Retiring contracts 1.0–1.4 does not delete or rewrite stored bundles or game pins.
+Imports, downloads, publication and cold database loads reject those contracts.
+Games and invitations depending on them can no longer load. If the active
+selection still points to a retired bundle, activate a supported 1.5 release
+before admitting new games; startup does not silently change that selection.
+The admin preview still permits that activation, reports the retired current
+version for the concurrency check, and marks the card comparison unavailable.
 
 The administrator uses `/admin?page=crossfire-cards`. The API endpoints are:
 
@@ -118,7 +129,7 @@ Local development can use `.env` plus the generated `.env.worktree`:
 
 ```bash
 bun run play:cards:export
-bun run play:cards:install .swubase/crossfire-releases/1.0.0.json
+bun run play:cards:install .swubase/crossfire-releases/1.5.0.json
 ```
 
 The install command refuses non-local/non-worktree database targets and uses the
@@ -128,11 +139,15 @@ seeds its own compiled catalog.
 
 ## Compatibility checks for engine contributors
 
-Card data contracts are retained in `play/cards/contracts/<major>.<minor>.json`.
-The current one is generated from `definition.ts` by
-`bun run play:cards:schema`. A new minor adds its contract to the validator's
-contract map; retain older contracts. A card claiming to require an older minor
-must validate against that older contract, even on a newer engine.
+The only retained card-data contract is `play/cards/contracts/1.5.json`, generated
+from `definition.ts` by `bun run play:cards:schema`. The validator selects a
+contract using the bundle's `requiredEngine` major/minor; it never falls back to
+1.5 for an older declaration. Patch releases such as card version 1.5.1 requiring
+engine 1.5.0 use the same 1.5 contract.
+
+Future minor releases add their contract to the validator's contract map. Retain
+supported contracts from the 1.5 baseline onward unless support is explicitly
+retired; do not restore 1.0–1.4 as a compatibility fallback.
 
 `play/testing/fixtures/replay-compatibility/` contains recordings captured before
 this refactor and at release 1.0.0. Do not regenerate expected historical hashes

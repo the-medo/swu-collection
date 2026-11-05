@@ -45,6 +45,7 @@ export const cardSchema = z.strictObject({
   instanceId: idSchema,
   cardId: cardIdSchema,
   leaderSide: z.literal('back').optional(),
+  copiedCardId: cardIdSchema.optional(),
   owner: idSchema,
   controller: idSchema,
   zone: zoneSchema,
@@ -52,6 +53,16 @@ export const cardSchema = z.strictObject({
   visibility: count,
   damage: count,
   resourcesPaid: count.optional(),
+  enteredRound: count.optional(),
+  remainingHpChange: z
+    .strictObject({
+      remaining: z.number().int(),
+      playerId: idSchema.nullable(),
+      survived: z.literal(true).optional(),
+      expired: z.literal(true).optional(),
+      sourceBonuses: z.array(z.strictObject({ id: idSchema, hp: count.positive() })).optional(),
+    })
+    .optional(),
   exhausted: z.boolean(),
   deployedAs: z.enum(['unit', 'upgrade']).nullable(),
   capturedBy: z.strictObject({ instanceId: idSchema, incarnation: count }).nullable(),
@@ -166,6 +177,7 @@ export const simpleAbilitiesSchema = z.strictObject({
       z.strictObject({
         id: idSchema,
         cost: count,
+        damageFriendlyUnit: count.positive().optional(),
         aspects: z.array(
           z.enum(['Vigilance', 'Command', 'Aggression', 'Cunning', 'Heroism', 'Villainy']),
         ),
@@ -187,7 +199,15 @@ export const simpleAbilitiesSchema = z.strictObject({
     .array(
       z.strictObject({
         id: idSchema,
-        timing: z.enum(['attack', 'attacked', 'played']),
+        timing: z.enum([
+          'attack',
+          'attacked',
+          'played',
+          'defeated',
+          'attacking-unit-damage-dealt',
+          'attack-defeated-unit',
+          'combat-damage-dealt',
+        ]),
         optional: z.boolean().optional(),
         condition: z.lazy(() => conditionSchema).optional(),
         limit: z.enum(['once-per-round', 'once-per-phase']).optional(),
@@ -199,8 +219,13 @@ export const simpleAbilitiesSchema = z.strictObject({
     .array(z.strictObject({ id: idSchema, effects: z.array(z.lazy(() => effectSchema)) }))
     .optional(),
   surviveZeroHp: z.boolean().optional(),
-  enemyAbilityImmunity: z.array(z.enum(['defeat', 'return-to-hand', 'exhaust'])).optional(),
+  enemyAbilityImmunity: z
+    .array(z.enum(['defeat', 'return-to-hand', 'exhaust', 'capture']))
+    .optional(),
   cannotReady: z.boolean().optional(),
+  cannotAttack: z.boolean().optional(),
+  attackBothArenas: z.boolean().optional(),
+  attackTwoUnits: z.boolean().optional(),
   friendlyUnitsEnterReady: z.boolean().optional(),
   defenderCombatFirst: z.boolean().optional(),
   firstCombatDamage: z.boolean().optional(),
@@ -243,6 +268,7 @@ export const abilityOriginSchema = z.strictObject({
   auraProfile: z.enum(['printed', 'granted']).optional(),
   abilities: simpleAbilitiesSchema.optional(),
   gritOnly: z.boolean().optional(),
+  epicOnly: z.boolean().optional(),
   suppressed: z.boolean().optional(),
   keywordsSuppressed: z.boolean().optional(),
   lostKeywords: z.array(z.string()).optional(),
@@ -258,6 +284,7 @@ export const abilityOriginSchema = z.strictObject({
 });
 export type AbilityOrigin = z.infer<typeof abilityOriginSchema>;
 export const referenceSchema = z.strictObject({
+  copiedCardId: cardIdSchema.optional(),
   leaderSide: z.literal('back').optional(),
   instanceId: idSchema,
   incarnation: count,
@@ -279,6 +306,7 @@ export const triggerSchema = z.strictObject({
 });
 export type Trigger = z.infer<typeof triggerSchema>;
 export const searchEffectSchema = z.strictObject({
+  min: count.optional(),
   name: z.string().min(1).optional(),
   reveal: z.boolean().optional(),
   anyAspect: z
@@ -313,15 +341,22 @@ export const resolvedSearchEffectSchema = searchEffectSchema.extend({
   count: z.number().int().min(0).max(120),
 });
 export const cardFilterSchema: z.ZodType<CardFilter> = z.strictObject({
+  anyOf: z.lazy(() => z.array(cardFilterSchema)).optional(),
+  withoutAspects: z
+    .array(z.enum(['Vigilance', 'Command', 'Aggression', 'Cunning', 'Heroism', 'Villainy']))
+    .optional(),
   otherThan: idSchema.optional(),
   sharesTraitWith: idSchema.optional(),
   sharesFriendlyUnitTrait: z.boolean().optional(),
   sharesFriendlyUnitAspect: z.boolean().optional(),
   withoutTrait: z.string().min(1).optional(),
   notName: z.string().min(1).optional(),
+  costEquals: z.lazy(() => numericValueSchema).optional(),
   costAtMost: z.lazy(() => numericValueSchema).optional(),
   owner: z.enum(['self', 'enemy']).optional(),
-  hasKeyword: simpleAbilitiesSchema.shape.keywords.unwrap().element.optional(),
+  hasKeyword: z
+    .union([simpleAbilitiesSchema.shape.keywords.unwrap().element, z.literal('Smuggle')])
+    .optional(),
   printedKeyword: z
     .enum([
       'Sentinel',
@@ -376,8 +411,12 @@ export const inPlayFilterSchema: z.ZodType<InPlayFilter> = z.strictObject({
   roles: z.array(z.enum(['unit', 'upgrade', 'leader'])),
 });
 export const unitFilterSchema: z.ZodType<UnitFilter> = z.strictObject({
+  ambushing: z.boolean().optional(),
+  healedThisPhase: z.boolean().optional(),
+  enteredThisRound: z.boolean().optional(),
   noAbilities: z.boolean().optional(),
   sharesTraitWith: idSchema.optional(),
+  sharesTraitsWithAll: z.array(idSchema).min(1).optional(),
   sharesTraitWithGroup: idSchema.optional(),
   powerEquals: z.lazy(() => numericValueSchema).optional(),
   remainingHpEquals: z.lazy(() => numericValueSchema).optional(),
@@ -444,7 +483,7 @@ export const unitFilterSchema: z.ZodType<UnitFilter> = z.strictObject({
     .min(1)
     .optional(),
   name: z.string().min(1).optional(),
-  powerAtMost: count.optional(),
+  powerAtMost: z.lazy(() => numericValueSchema).optional(),
   powerAtMostUnit: idSchema.optional(),
   arena: z.enum(['ground', 'space']).optional(),
   controller: z.enum(['friendly', 'enemy']).optional(),
@@ -504,6 +543,7 @@ export const conditionSchema: z.ZodType<Condition> = z.lazy(() =>
     }),
     z.strictObject({
       kind: z.literal('unit-history-at-least'),
+      by: z.enum(['self', 'enemy']).optional(),
       leader: z.boolean().optional(),
       event: z.enum(['attacked', 'defeated', 'entered', 'left']),
       aspect: z
@@ -576,6 +616,7 @@ export const conditionSchema: z.ZodType<Condition> = z.lazy(() =>
       amount: count,
       player: z.enum(['self', 'enemy', 'any']).optional(),
     }),
+    z.strictObject({ kind: z.literal('own-base-remaining-hp-at-most'), amount: count }),
     z.strictObject({ kind: z.literal('own-base-upgraded') }),
     z.strictObject({
       kind: z.literal('leader-or-base-aspect'),
@@ -614,10 +655,19 @@ export const conditionSchema: z.ZodType<Condition> = z.lazy(() =>
     }),
     z.strictObject({ kind: z.literal('initiative') }),
     z.strictObject({ kind: z.literal('initiative-unclaimed') }),
+    z.strictObject({ kind: z.literal('discarded-from-hand'), target: idSchema }),
     z.strictObject({ kind: z.literal('unit-matches'), target: idSchema, filter: unitFilterSchema }),
   ]),
 );
 export const numericValueSchema: z.ZodType<NumericValue> = z.union([
+  z.strictObject({ kind: z.literal('cards-played-count'), player: z.enum(['self', 'enemy']) }),
+  z.strictObject({ kind: z.literal('resources-paid'), target: idSchema }),
+  z.strictObject({ kind: z.literal('group-aspects-count'), group: idSchema }),
+  z.strictObject({
+    kind: z.literal('group-defeated-count'),
+    group: idSchema,
+    controller: z.enum(['self', 'enemy']),
+  }),
   z.strictObject({
     kind: z.literal('unit-keyword-value'),
     target: idSchema,
@@ -641,7 +691,7 @@ export const numericValueSchema: z.ZodType<NumericValue> = z.union([
     right: z.lazy(() => numericValueSchema),
   }),
   z.strictObject({
-    kind: z.literal('floor-divide'),
+    kind: z.enum(['floor-divide', 'ceil-divide']),
     value: z.lazy(() => numericValueSchema),
     divisor: z.number().int().positive(),
   }),
@@ -650,7 +700,11 @@ export const numericValueSchema: z.ZodType<NumericValue> = z.union([
     event: z.enum(['cards-drawn', 'enemy-base-damage', 'hand-cards-discarded']),
     player: z.enum(['self', 'enemy']),
   }),
-  z.strictObject({ kind: z.literal('group-size'), group: idSchema }),
+  z.strictObject({
+    kind: z.literal('group-size'),
+    group: idSchema,
+    filter: cardFilterSchema.optional(),
+  }),
   z.strictObject({
     kind: z.literal('group-stat-sum'),
     group: idSchema,
@@ -734,6 +788,20 @@ export const numericValueSchema: z.ZodType<NumericValue> = z.union([
     stat: z.enum(['power', 'remaining-hp', 'damage']),
   }),
 ]);
+export const upgradeFilterSchema = z.strictObject({
+  trait: z.string().min(1).optional(),
+  hostKind: z.enum(['unit', 'base']).optional(),
+  cardId: cardIdSchema.optional(),
+  maxCost: count.optional(),
+  token: z.boolean().optional(),
+  controller: z.enum(['friendly', 'enemy']).optional(),
+  sameAs: idSchema.optional(),
+  withoutTrait: z.string().min(1).optional(),
+  attachedTo: idSchema.optional(),
+  otherThan: idSchema.optional(),
+  nonLeader: z.boolean().optional(),
+  unique: z.boolean().optional(),
+});
 export const abilityCostsSchema = z.array(
   z.discriminatedUnion('kind', [
     z.strictObject({ kind: z.literal('resources'), amount: count }),
@@ -741,6 +809,8 @@ export const abilityCostsSchema = z.array(
     z.strictObject({ kind: z.literal('defeat-self') }),
     z.strictObject({ kind: z.literal('damage-own-base'), amount: count.positive() }),
     z.strictObject({ kind: z.literal('exhaust-friendly-unit') }),
+    z.strictObject({ kind: z.literal('damage-friendly-unit'), amount: count.positive() }),
+    z.strictObject({ kind: z.literal('defeat-upgrade'), filter: upgradeFilterSchema }),
     z.strictObject({ kind: z.literal('force') }),
     z.strictObject({ kind: z.literal('discard-deck'), count: count.positive() }),
     z.strictObject({
@@ -771,10 +841,13 @@ export const modifyOperationSchema = z.strictObject({
   cannotAttackBases: z.boolean().optional(),
   cannotBeAttacked: z.boolean().optional(),
   cannotDealCombatDamage: z.boolean().optional(),
+  preventCombatDamage: z.boolean().optional(),
+  defendingAttackerPower: z.number().int().optional(),
   cannotHeal: z.boolean().optional(),
   surviveZeroHp: z.boolean().optional(),
   preventNextDamage: z.union([count, z.literal('all')]).optional(),
   preventAllDamage: z.boolean().optional(),
+  preventDamage: count.positive().optional(),
   skipRegroupReady: z.boolean().optional(),
   duration: z.enum(['phase', 'round', 'attack', 'source-in-play', 'next-regroup']),
 });
@@ -801,6 +874,7 @@ export const unitOperationSchema = z.discriminatedUnion('kind', [
   }),
   z.strictObject({
     kind: z.literal('give-token'),
+    group: idSchema.optional(),
     token: z.enum(['shield', 'experience', 'advantage', 'weakness']),
     count: numericValueSchema,
   }),
@@ -808,6 +882,7 @@ export const unitOperationSchema = z.discriminatedUnion('kind', [
 ]);
 export const distributeEffectSchema = z.strictObject({
   kind: z.literal('distribute'),
+  bases: z.boolean().optional(),
   exact: z.boolean().optional(),
   benefit: z.enum(['advantage', 'experience', 'weakness', 'heal', 'damage']),
   quantum: count.positive().optional(),
@@ -863,6 +938,16 @@ export const discloseEffectSchema = z.strictObject({
 });
 export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
   z.discriminatedUnion('kind', [
+    z.strictObject({
+      kind: z.literal('damage-assignments'),
+      assignments: z.array(
+        z.strictObject({
+          target: idSchema,
+          amount: numericValueSchema,
+          source: idSchema.optional(),
+        }),
+      ),
+    }),
     z.strictObject({
       kind: z.literal('resource-cards'),
       group: idSchema,
@@ -920,7 +1005,18 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
     }),
     z.strictObject({ kind: z.literal('extra-action') }),
     z.strictObject({
+      kind: z.literal('simultaneous-choices'),
+      damage: z.strictObject({ target: idSchema, amount: count }).optional(),
+      defeatUpgrades: idSchema.optional(),
+      discardHand: idSchema.optional(),
+    }),
+    z.strictObject({ kind: z.literal('redirect-combat-damage'), from: idSchema, to: idSchema }),
+    z.strictObject({ kind: z.literal('require-next-attack'), target: idSchema }),
+    z.strictObject({ kind: z.literal('each-player-discards'), count, handSizeAtLeast: count }),
+    z.strictObject({ kind: z.literal('replace-attacker') }),
+    z.strictObject({
       kind: z.literal('exchange-control'),
+      returnAtRegroup: z.boolean().optional(),
       first: idSchema,
       second: idSchema,
       effects: z.array(effectSchema),
@@ -931,13 +1027,20 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
       effects: z.array(effectSchema),
     }),
     z.strictObject({ kind: z.literal('after-attack'), effects: z.array(effectSchema) }),
-    z.strictObject({ kind: z.literal('resource-departed'), target: idSchema }),
+    z.strictObject({ kind: z.enum(['resource-departed', 'resource-card']), target: idSchema }),
     z.strictObject({
       kind: z.literal('schedule-regroup-operation'),
       target: idSchema,
       operation: z.enum(['bottom', 'defeat']),
     }),
     z.strictObject({ kind: z.literal('prevent-base-healing') }),
+    z.strictObject({ kind: z.literal('lose-game') }),
+    z.strictObject({
+      kind: z.literal('pay-resources'),
+      amount: numericValueSchema,
+      optional: z.boolean(),
+      effects: z.array(effectSchema),
+    }),
     z.strictObject({ kind: z.literal('lose-enemy-trait'), trait: z.string().min(1) }),
     z.strictObject({ kind: z.literal('bottom-hand'), group: idSchema }),
     z.strictObject({
@@ -973,6 +1076,8 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
       upgrades: idSchema,
       freeNextCopy: z.boolean(),
     }),
+    z.strictObject({ kind: z.literal('return-nonleader-units'), filter: unitFilterSchema }),
+    z.strictObject({ kind: z.literal('discard-groups'), groups: z.array(idSchema) }),
     z.strictObject({ kind: z.literal('return-bound'), targets: z.array(idSchema) }),
     z.strictObject({
       kind: z.literal('attach-pilot'),
@@ -985,11 +1090,16 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
     z.strictObject({ kind: z.literal('draw-card'), target: idSchema }),
     z.strictObject({
       kind: z.literal('reattach-upgrade'),
+      fromDiscard: z.boolean().optional(),
       chooser: z.literal('controller').optional(),
       target: idSchema,
       filter: unitFilterSchema.optional(),
     }),
-    z.strictObject({ kind: z.literal('exhaust-leader'), effects: z.array(effectSchema) }),
+    z.strictObject({
+      kind: z.literal('exhaust-leader'),
+      filter: cardFilterSchema.optional(),
+      effects: z.array(effectSchema),
+    }),
     z.strictObject({ kind: z.literal('damage-chosen-bases'), amount: count }),
     discloseEffectSchema,
     z.strictObject({ kind: z.literal('plot-play') }),
@@ -1014,6 +1124,7 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
     }),
     z.strictObject({
       kind: z.literal('next-play'),
+      uses: count.positive().optional(),
       discountIfSharesKeyword: z.boolean().optional(),
       using: z.enum(['plot', 'smuggle']).optional(),
       phaseAbilities: simpleAbilitiesSchema.optional(),
@@ -1023,6 +1134,7 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
     }),
     z.strictObject({
       kind: z.literal('play-card'),
+      preserveOptionalChoice: z.boolean().optional(),
       player: z.enum(['self', 'enemy', 'owner']).optional(),
       sharesKeywordWith: idSchema.optional(),
       beforePlayed: z.array(effectSchema).optional(),
@@ -1047,7 +1159,7 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
         .optional(),
       replaceResource: z.boolean().optional(),
       takeControl: z.boolean().optional(),
-      from: z.enum(['hand', 'discard', 'deck', 'resources']),
+      from: z.enum(['hand', 'discard', 'deck', 'resources', 'captured']),
       target: idSchema.optional(),
       filter: cardFilterSchema,
       discount: numericValueSchema.optional(),
@@ -1067,7 +1179,8 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
       appliesTo: z.enum(['enemy', 'each']).optional(),
       duration: z.enum(['source-in-play', 'phase']).optional(),
       name: idSchema,
-      restriction: z.enum(['prevent-play', 'lose-abilities']),
+      restriction: z.enum(['prevent-play', 'lose-abilities', 'increase-cost']),
+      amount: count.positive().optional(),
     }),
     z.strictObject({
       kind: z.literal('grant-discard-play'),
@@ -1084,6 +1197,8 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
     zoneSearchEffectSchema,
     z.strictObject({
       kind: z.literal('reveal-deck-cards'),
+      offset: count.optional(),
+      append: z.boolean().optional(),
       player: z.enum(['self', 'enemy']),
       count,
       group: idSchema,
@@ -1122,6 +1237,7 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
     z
       .strictObject({
         kind: z.literal('random-card'),
+        bases: z.boolean().optional(),
         units: unitFilterSchema.optional(),
         targets: z.array(idSchema).min(1).max(120).optional(),
         group: idSchema.optional(),
@@ -1158,11 +1274,28 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
       afterEvenIfEmpty: z.boolean().optional(),
       group: idSchema.optional(),
       player: z.enum(['self', 'enemy', 'defender']),
-      count: count,
+      count: numericValueSchema,
       bind: idSchema,
       effects: z.array(effectSchema),
     }),
-    z.strictObject({ kind: z.literal('unit-to-deck'), target: idSchema }),
+    z.strictObject({
+      kind: z.literal('unit-to-deck'),
+      target: idSchema,
+      position: z.enum(['bottom', 'top']).optional(),
+    }),
+    z.strictObject({ kind: z.literal('collect-bounties'), target: idSchema }),
+    z.strictObject({
+      kind: z.literal('choose-group-damage'),
+      group: idSchema,
+      filter: unitFilterSchema,
+      optional: z.boolean(),
+    }),
+    z.strictObject({
+      kind: z.literal('each-bound-card'),
+      group: idSchema,
+      bind: idSchema,
+      effects: z.array(effectSchema),
+    }),
     z.strictObject({
       kind: z.literal('divide-damage'),
       after: z.array(effectSchema).optional(),
@@ -1175,20 +1308,7 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
     z
       .strictObject({
         kind: z.literal('select-upgrades'),
-        filter: z.strictObject({
-          trait: z.string().min(1).optional(),
-          hostKind: z.enum(['unit', 'base']).optional(),
-          cardId: cardIdSchema.optional(),
-          maxCost: count.optional(),
-          token: z.boolean().optional(),
-          controller: z.enum(['friendly', 'enemy']).optional(),
-          sameAs: idSchema.optional(),
-          withoutTrait: z.string().min(1).optional(),
-          attachedTo: idSchema.optional(),
-          otherThan: idSchema.optional(),
-          nonLeader: z.boolean().optional(),
-          unique: z.boolean().optional(),
-        }),
+        filter: upgradeFilterSchema,
         min: z.union([count, z.literal('all')]),
         max: z.union([count, z.literal('all')]),
         bind: idSchema,
@@ -1207,6 +1327,8 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
     }),
     z.strictObject({
       kind: z.literal('select-resources'),
+      filter: cardFilterSchema.optional(),
+      onlyFromGroup: idSchema.optional(),
       chooser: z.enum(['self', 'owner']).optional(),
       player: z.enum(['self', 'enemy']),
       exhausted: z.union([z.boolean(), z.literal('any')]),
@@ -1221,6 +1343,11 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
       kind: z.literal('defeat-tokens'),
       countAs: idSchema,
       effects: z.array(effectSchema),
+    }),
+    z.strictObject({
+      kind: z.literal('take-control-resources'),
+      group: idSchema,
+      returnWhen: z.literal('source-leaves'),
     }),
     z.strictObject({ kind: z.literal('take-enemy-credit') }),
     z.strictObject({ kind: z.literal('gain-force') }),
@@ -1319,6 +1446,7 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
     z.strictObject({ kind: z.literal('defeat-target'), target: idSchema }),
     z.strictObject({
       kind: z.literal('choose-mode'),
+      oncePerPhase: idSchema.optional(),
       private: z.boolean().optional(),
       chooser: z.enum(['self', 'enemy']).optional(),
       chooserOf: idSchema.optional(),
@@ -1346,6 +1474,7 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
         .strictObject({
           unitsOnly: z.boolean().optional(),
           evenIfExhausted: z.boolean().optional(),
+          abilities: simpleAbilitiesSchema.optional(),
         })
         .optional(),
       otherwise: z.array(effectSchema).optional(),
@@ -1369,6 +1498,23 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
       target: idSchema,
       filter: unitFilterSchema,
     }),
+    z.strictObject({
+      kind: z.literal('select-captured'),
+      guard: idSchema.optional(),
+      guardFilter: unitFilterSchema.optional(),
+      owner: z.enum(['self', 'enemy']).optional(),
+      chooser: z.enum(['self', 'enemy']).optional(),
+      bind: idSchema,
+      optional: z.boolean(),
+      effects: z.array(effectSchema),
+      otherwise: z.array(effectSchema).optional(),
+    }),
+    z.strictObject({
+      kind: z.literal('rescue-captured'),
+      target: idSchema,
+      effects: z.array(effectSchema).optional(),
+    }),
+    z.strictObject({ kind: z.literal('discard-captured'), target: idSchema }),
     z.strictObject({ kind: z.literal('capture-pairs') }),
     z.strictObject({
       kind: z.literal('attack-series'),
@@ -1390,7 +1536,7 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
       minDiscard: count.max(1).optional(),
       player: z.enum(['self', 'enemy']).optional(),
       count: count,
-      mode: z.enum(['discard-one', 'bottom-any']),
+      mode: z.enum(['discard-one', 'discard-any', 'bottom-any']),
     }),
     z.strictObject({
       kind: z.literal('each-unit'),
@@ -1408,7 +1554,7 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
     z.strictObject({
       kind: z.literal('attack-bound'),
       preventDamage: z.boolean().optional(),
-      defenderPowerModifier: z.number().int().optional(),
+      defenderPowerModifier: numericValueSchema.optional(),
       gainsAbilitiesOf: idSchema.optional(),
       blankDefender: z.boolean().optional(),
       damageStat: z.literal('remaining-hp').optional(),
@@ -1452,6 +1598,7 @@ export const effectSchema: z.ZodType<CardEffect> = z.lazy(() =>
     z.strictObject({ kind: z.literal('damage-own-base'), amount: numericValueSchema }),
     z.strictObject({
       kind: z.literal('damage-units'),
+      bases: z.literal('enemy').optional(),
       after: z.array(effectSchema).optional(),
       bind: idSchema.optional(),
       amount: numericValueSchema,
@@ -1544,10 +1691,13 @@ export const lastingSchema = z.strictObject({
   cannotAttackBases: z.boolean().optional(),
   cannotBeAttacked: z.boolean().optional(),
   cannotDealCombatDamage: z.boolean().optional(),
+  preventCombatDamage: z.boolean().optional(),
+  defendingAttackerPower: z.number().int().optional(),
   cannotHeal: z.boolean().optional(),
   surviveZeroHp: z.boolean().optional(),
   preventNextDamage: z.union([count, z.literal('all')]).optional(),
   preventAllDamage: z.boolean().optional(),
+  preventDamage: count.positive().optional(),
   skipRegroupReady: z.boolean().optional(),
   expires: z.discriminatedUnion('kind', [
     z.strictObject({ kind: z.literal('next-regroup'), round: count }),
@@ -1562,6 +1712,10 @@ export const lastingSchema = z.strictObject({
   ]),
 });
 export const attackSchema = z.strictObject({
+  additionalDefender: referenceSchema.optional(),
+  combatRedirections: z
+    .array(z.strictObject({ source: cardSchema, from: referenceSchema, to: referenceSchema }))
+    .optional(),
   excessToUnit: z
     .strictObject({ source: cardSchema, arena: z.enum(['ground', 'space']) })
     .optional(),
@@ -1573,6 +1727,7 @@ export const attackSchema = z.strictObject({
   after: z.lazy(() => z.array(effectFrameSchema)).optional(),
   ambush: z.boolean(),
   attackerFirst: z.boolean(),
+  combatReplacementPassed: z.boolean().optional(),
   ending: z
     .strictObject({
       source: cardSchema,
@@ -1595,6 +1750,7 @@ export const attackSchema = z.strictObject({
   grantedAbilities: z.array(abilityOriginSchema),
 });
 export const damageAssignmentSchema = z.strictObject({
+  originalTarget: referenceSchema.optional(),
   redirectedAmount: count.positive().optional(),
   excessRoute: z
     .strictObject({
@@ -1608,7 +1764,8 @@ export const damageAssignmentSchema = z.strictObject({
   replacements: z
     .array(
       z.strictObject({
-        kind: z.enum(['double', 'prevent-next', 'prevent', 'increase']),
+        kind: z.enum(['double', 'prevent-next', 'prevent', 'increase', 'redirect']),
+        redirectTarget: referenceSchema.optional(),
         abilityId: idSchema.optional(),
         source: referenceSchema,
         lastingId: idSchema.optional(),
@@ -1633,6 +1790,7 @@ export const damageAssignmentSchema = z.strictObject({
   excess: z.strictObject({ target: referenceSchema, amount: count }).optional(),
 });
 const regroupDelayedSchema = z.strictObject({
+  targetZone: z.literal('resources').optional(),
   origin: abilityOriginSchema.optional(),
   id: idSchema,
   playerId: idSchema,
@@ -1704,6 +1862,7 @@ export const delayedSchema = z.discriminatedUnion('kind', [
     target: z.null(),
     dueRound: z.number().int().positive(),
     kind: z.literal('effects-at-regroup'),
+    origin: abilityOriginSchema.optional(),
     effects: z.array(effectSchema),
   }),
 ]);
@@ -1822,7 +1981,35 @@ const playPaymentSchema = z.strictObject({
   source: cardSchema,
   intent: playIntentSchema,
   continuation: abilityPaymentSchema.shape.continuation,
-  stage: z.enum(['free', 'units', 'defeats', 'special', 'credits', 'play']),
+  stage: z.enum([
+    'free',
+    'units',
+    'defeats',
+    'special',
+    'credits',
+    'play',
+    'replacement-choice',
+    'replacement-discard',
+    'additional',
+    'additional-damage',
+  ]),
+  costReplacement: z
+    .strictObject({
+      normal: z.boolean(),
+      choice: z.enum(['normal', 'replacement']).optional(),
+      discarded: cardSchema.optional(),
+    })
+    .optional(),
+  additional: z
+    .strictObject({
+      unitDamage: count,
+      baseCosts: z.array(z.strictObject({ source: cardSchema, amount: count.positive() })),
+      unit: cardSchema.optional(),
+      paid: z.literal(true).optional(),
+      credit: count.optional(),
+      unitPayment: count.optional(),
+    })
+    .optional(),
   specialBeforeExploit: z.literal(true).optional(),
   special: z
     .strictObject({
@@ -1843,9 +2030,84 @@ const playPaymentSchema = z.strictObject({
   rollback: z.string().min(1).max(8_000_000),
 });
 export type PlayPayment = z.infer<typeof playPaymentSchema>;
+export const playedEntrySchema = z.strictObject({
+  playerId: idSchema,
+  from: z.enum(['hand', 'discard', 'deck', 'resources', 'captured']),
+  using: z.enum(['plot', 'smuggle']).optional(),
+  target: idSchema.optional(),
+  replacement: idSchema.optional(),
+  replaceResource: z.boolean(),
+  paid: count,
+  roundPlayIndex: count,
+  grants: z.array(
+    z.strictObject({ source: cardSchema.optional(), abilities: simpleAbilitiesSchema }),
+  ),
+  prevention: z.strictObject({ source: cardSchema.optional(), amount: count }).optional(),
+  exploited: z.array(referenceSchema),
+});
+export type PlayedEntry = z.infer<typeof playedEntrySchema>;
+export const unitEntrySchema = z.strictObject({
+  kind: z.literal('unit-entry'),
+  playerId: idSchema,
+  card: referenceSchema,
+  ready: z.boolean(),
+  choice: cardIdSchema.nullable().optional(),
+  play: playedEntrySchema.optional(),
+  guard: referenceSchema.optional(),
+});
+export type UnitEntry = z.infer<typeof unitEntrySchema>;
+export const attackRulesSchema = z.strictObject({
+  preventDamage: z.boolean().optional(),
+  redirectExcess: z.boolean().optional(),
+  blankDefender: z.boolean().optional(),
+  defenderPowerModifier: z.number().int().optional(),
+  damageStat: z.literal('remaining-hp').optional(),
+  swapRaidRestore: z.boolean().optional(),
+  cannotAttackBases: z.boolean().optional(),
+  source: cardSchema.optional(),
+  after: z.array(effectFrameSchema).optional(),
+});
+export type AttackRules = z.infer<typeof attackRulesSchema>;
 export const frameSchema = z.discriminatedUnion('kind', [
+  z.strictObject({
+    kind: z.literal('multi-combat'),
+    attackId: idSchema,
+    stage: z.enum(['attacker', 'late-defenders']),
+    simultaneous: z.array(referenceSchema),
+    late: z.array(referenceSchema),
+  }),
+  z.strictObject({
+    kind: z.literal('attack-declaration'),
+    playerId: idSchema,
+    attacker: referenceSchema,
+    defender: referenceSchema,
+    powerBonus: count,
+    grantedAbilities: z.array(abilityOriginSchema),
+    attackerFirst: z.boolean(),
+    ambush: z.boolean(),
+    rules: attackRulesSchema,
+  }),
+  unitEntrySchema,
+  z.strictObject({
+    ...effectFrameSchema.omit({ kind: true, effect: true }).shape,
+    kind: z.literal('group-damage'),
+    filter: unitFilterSchema,
+    optional: z.boolean(),
+    dealers: z.array(z.strictObject({ card: referenceSchema, amount: count })),
+    index: count,
+    chosen: z.array(referenceSchema.nullable()),
+  }),
   exploitPlaySchema,
   z.strictObject({ kind: z.literal('free-play-choice'), playerId: idSchema }),
+  z.strictObject({
+    kind: z.enum([
+      'replacement-play-choice',
+      'replacement-play-discard',
+      'additional-play-payment',
+      'finish-additional-play-payment',
+    ]),
+    playerId: idSchema,
+  }),
   z.strictObject({ kind: z.literal('exploit-payment'), playerId: idSchema }),
   z.strictObject({
     kind: z.literal('special-play-payment'),
@@ -1884,6 +2146,7 @@ export const frameSchema = z.discriminatedUnion('kind', [
   }),
   z.strictObject({
     kind: z.literal('unit-defeat'),
+    responsibility: z.record(idSchema, idSchema.nullable()).optional(),
     prepared: defeatPreparationSchema.optional(),
     cards: z.array(cardSchema).min(1),
     pending: z.array(referenceSchema),
@@ -2046,7 +2309,7 @@ export const frameSchema = z.discriminatedUnion('kind', [
     owner: idSchema,
     playerId: idSchema,
     source: cardSchema,
-    mode: z.enum(['discard-one', 'bottom-any', 'hand-bottom']),
+    mode: z.enum(['discard-one', 'discard-any', 'bottom-any', 'hand-bottom']),
     stage: z.enum(['choose-discard', 'choose-bottom', 'order-top', 'order-bottom']),
     cards: z.array(referenceSchema).max(120),
     bottom: z.array(idSchema).max(120),
@@ -2084,7 +2347,28 @@ export const frameSchema = z.discriminatedUnion('kind', [
     playerId: idSchema.nullable(),
   }),
   actionFrameSchema,
-  z.strictObject({ kind: z.literal('ready') }),
+  z.strictObject({
+    kind: z.literal('ready-cards'),
+    playerId: idSchema,
+    source: cardSchema,
+    cards: z.array(referenceSchema),
+    excluded: z.array(referenceSchema).optional(),
+  }),
+  z.strictObject({ kind: z.literal('ready'), excluded: z.array(referenceSchema).optional() }),
+  z.strictObject({
+    kind: z.literal('regroup-ready'),
+    playerId: idSchema,
+    source: cardSchema,
+    arena: z.enum(['ground', 'space']),
+    limit: count,
+    cards: z.array(referenceSchema).min(1),
+  }),
+  z.strictObject({
+    kind: z.literal('combat-replacement'),
+    playerId: idSchema,
+    source: cardSchema,
+    attackId: idSchema,
+  }),
   z.strictObject({ kind: z.literal('flush-triggers') }),
   z.strictObject({ kind: z.literal('queue-triggers'), triggers: z.array(triggerSchema).min(1) }),
   z.strictObject({
@@ -2106,6 +2390,15 @@ export const frameSchema = z.discriminatedUnion('kind', [
   }),
   z.strictObject({
     kind: z.literal('damage'),
+    multiExcessResolved: z.literal(true).optional(),
+    simultaneous: z
+      .strictObject({
+        playerId: idSchema,
+        source: cardSchema,
+        upgrades: z.array(referenceSchema),
+        hand: z.array(referenceSchema),
+      })
+      .optional(),
     tokens: tokenCreationSchema.optional(),
     after: afterDamageSchema.optional(),
     combatAttackId: idSchema.optional(),
@@ -2231,7 +2524,8 @@ export const stateSchema = z.strictObject({
       source: referenceSchema,
       playerId: idSchema,
       name: z.string().min(1).max(512),
-      restriction: z.enum(['prevent-play', 'lose-abilities']),
+      restriction: z.enum(['prevent-play', 'lose-abilities', 'increase-cost']),
+      amount: count.positive().optional(),
     }),
   ),
   traitLosses: z
@@ -2259,6 +2553,18 @@ export const stateSchema = z.strictObject({
     .strictObject({ attacks: z.array(referenceSchema), basesAttacked: z.array(idSchema) })
     .nullable(),
   phaseHistory: z.strictObject({
+    requiredAttacks: z
+      .array(z.strictObject({ playerId: idSchema, unit: referenceSchema, source: cardSchema }))
+      .optional(),
+    regroupReadied: z
+      .array(
+        z.strictObject({
+          card: referenceSchema,
+          playerId: idSchema,
+          arena: z.enum(['ground', 'space']),
+        }),
+      )
+      .optional(),
     damageAttempts: z.array(referenceSchema),
     damagedUnits: z.array(referenceSchema),
     basesDamaged: z.array(idSchema),
@@ -2266,6 +2572,7 @@ export const stateSchema = z.strictObject({
     baseAttackers: z.array(referenceSchema).optional(),
     upgradesDefeated: z.array(idSchema),
     cardsDrawn: z.record(idSchema, count),
+    healedUnits: z.array(referenceSchema).optional(),
     discarded: z.array(
       z.strictObject({ card: referenceSchema, owner: idSchema, from: z.enum(['hand', 'deck']) }),
     ),
@@ -2277,6 +2584,15 @@ export const stateSchema = z.strictObject({
       cardSchema.extend({ traits: z.array(z.string().min(1)), leaderUnit: z.boolean() }),
     ),
     actionsTaken: z.record(idSchema, count),
+    modeUses: z
+      .array(
+        z.strictObject({
+          source: referenceSchema,
+          origin: referenceSchema,
+          key: z.string().min(1).max(161),
+        }),
+      )
+      .optional(),
     enemyBaseDamaged: z.array(idSchema),
     indirectDamage: z.array(idSchema),
     tokensCreated: z.array(idSchema),
@@ -2294,7 +2610,11 @@ export const stateSchema = z.strictObject({
     defeatedAttacking: z.array(cardSchema),
     baseDamageSources: z.array(referenceSchema),
     defeated: z.array(
-      cardSchema.extend({ traits: z.array(z.string().min(1)), leaderUnit: z.boolean() }),
+      cardSchema.extend({
+        traits: z.array(z.string().min(1)),
+        leaderUnit: z.boolean(),
+        defeatedBy: idSchema.nullable().optional(),
+      }),
     ),
     attacks: z.array(
       cardSchema.extend({ traits: z.array(z.string().min(1)), leaderUnit: z.boolean() }),
@@ -2379,6 +2699,7 @@ export const stateSchema = z.strictObject({
   playModifiers: z.array(
     z.strictObject({
       optionalFreeCopy: cardIdSchema.optional(),
+      remainingUses: count.positive().optional(),
       phaseCost: z
         .strictObject({ increase: count, recipient: z.enum(['self', 'enemy']) })
         .optional(),

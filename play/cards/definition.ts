@@ -1,6 +1,9 @@
 export type Aspect = 'Vigilance' | 'Command' | 'Aggression' | 'Cunning' | 'Heroism' | 'Villainy';
 export type Arena = 'ground' | 'space';
 export type CardFilter = {
+  anyOf?: readonly CardFilter[];
+  withoutAspects?: readonly Aspect[];
+  costEquals?: NumericValue;
   otherThan?: string;
   sharesTraitWith?: string;
   sharesFriendlyUnitAspect?: boolean;
@@ -9,7 +12,7 @@ export type CardFilter = {
   notName?: string;
   costAtMost?: NumericValue;
   owner?: 'self' | 'enemy';
-  hasKeyword?: Keyword;
+  hasKeyword?: Keyword | 'Smuggle';
   printedKeyword?: Keyword;
   differentNameFrom?: readonly string[];
   costLessThan?: NumericValue;
@@ -45,8 +48,12 @@ export type InPlayFilter = {
   roles: readonly ('unit' | 'upgrade' | 'leader')[];
 };
 export type UnitFilter = {
+  ambushing?: boolean;
+  healedThisPhase?: boolean;
+  enteredThisRound?: boolean;
   noAbilities?: boolean;
   sharesTraitWith?: string;
+  sharesTraitsWithAll?: readonly string[];
   sharesTraitWithGroup?: string;
   powerEquals?: NumericValue;
   remainingHpEquals?: NumericValue;
@@ -95,7 +102,7 @@ export type UnitFilter = {
   costGreaterThan?: string;
   anyAspect?: readonly Aspect[];
   name?: string;
-  powerAtMost?: number;
+  powerAtMost?: NumericValue;
   powerAtMostUnit?: string;
   arena?: Arena;
   controller?: 'friendly' | 'enemy';
@@ -135,6 +142,10 @@ export type UpgradeFilter = {
   unique?: boolean;
 };
 export type NumericValue =
+  | { kind: 'cards-played-count'; player: 'self' | 'enemy' }
+  | { kind: 'resources-paid'; target: string }
+  | { kind: 'group-aspects-count'; group: string }
+  | { kind: 'group-defeated-count'; group: string; controller: 'self' | 'enemy' }
   | { kind: 'unit-keyword-value'; target: string; keyword: 'Raid' | 'Restore' }
   | { kind: 'in-play-aspect-icons'; filter: InPlayFilter; aspect: Aspect }
   | { kind: 'ready-resources'; player: 'self' | 'enemy' }
@@ -149,12 +160,13 @@ export type NumericValue =
   | { kind: 'unit-sum'; filter: UnitFilter; stat: 'damage' | 'upgrades'; multiplier?: number }
   | { kind: 'keyword-count'; target: string }
   | { kind: 'floor-divide'; value: NumericValue; divisor: number }
+  | { kind: 'ceil-divide'; value: NumericValue; divisor: number }
   | {
       kind: 'phase-count';
       event: 'cards-drawn' | 'enemy-base-damage' | 'hand-cards-discarded';
       player: 'self' | 'enemy';
     }
-  | { kind: 'group-size'; group: string }
+  | { kind: 'group-size'; group: string; filter?: CardFilter }
   | { kind: 'group-stat-sum'; group: string; stat: 'power' | 'cost' }
   | { kind: 'product'; left: NumericValue; right: NumericValue }
   | { kind: 'conditional'; condition: Condition; then: NumericValue; otherwise: NumericValue }
@@ -195,7 +207,7 @@ export type Keyword = NonNullable<Abilities['keywords']>[number];
 export type AuraDefinition = {
   id: string;
   filter: UnitFilter;
-  abilities?: Pick<Abilities, 'keywords' | 'raid' | 'restore' | 'triggers'>;
+  abilities?: Pick<Abilities, 'keywords' | 'raid' | 'restore' | 'triggers' | 'actions'>;
   power?: NumericValue;
   hp?: NumericValue;
   losesKeywords?: readonly Keyword[];
@@ -224,16 +236,27 @@ export type SimpleAbilities = Pick<
   | 'surviveZeroHp'
   | 'enemyAbilityImmunity'
   | 'cannotReady'
+  | 'cannotAttack'
+  | 'attackBothArenas'
+  | 'attackTwoUnits'
   | 'friendlyUnitsEnterReady'
 > & {
   triggers?: readonly (Pick<
     TriggerDefinition,
     'id' | 'effects' | 'optional' | 'condition' | 'limit'
   > & {
-    timing: 'attack' | 'attacked' | 'played';
+    timing:
+      | 'attack'
+      | 'attacked'
+      | 'played'
+      | 'defeated'
+      | 'attacking-unit-damage-dealt'
+      | 'attack-defeated-unit'
+      | 'combat-damage-dealt';
   })[];
 };
 export type Condition =
+  | { kind: 'discarded-from-hand'; target: string }
   | { kind: 'initiative-unclaimed' }
   | { kind: 'leader-or-base-aspect'; aspect: Aspect }
   | { kind: 'enemy-last-action-attacked-base' }
@@ -251,6 +274,7 @@ export type Condition =
     }
   | {
       kind: 'unit-history-at-least';
+      by?: 'self' | 'enemy';
       event: 'attacked' | 'defeated' | 'entered' | 'left';
       leader?: boolean;
       aspect?: Aspect;
@@ -290,6 +314,7 @@ export type Condition =
       player?: 'self' | 'enemy' | 'any';
     }
   | { kind: 'base-damage-at-least'; amount: number; player?: 'self' | 'enemy' | 'any' }
+  | { kind: 'own-base-remaining-hp-at-most'; amount: number }
   | { kind: 'own-base-upgraded' }
   | { kind: 'more-cards-than-opponent'; player?: 'self' | 'enemy' }
   | { kind: 'attacked-with-trait'; trait: string; nonToken?: boolean }
@@ -324,6 +349,7 @@ export type UnitOperation =
   | { kind: 'exhaust' | 'ready' | 'return-to-hand' | 'defeat' | 'defeat-shields' }
   | {
       kind: 'give-token';
+      group?: string;
       token: 'shield' | 'experience' | 'advantage' | 'weakness';
       count: NumericValue;
     }
@@ -343,10 +369,13 @@ export type UnitOperation =
       cannotAttackBases?: boolean;
       cannotBeAttacked?: boolean;
       cannotDealCombatDamage?: boolean;
+      preventCombatDamage?: boolean;
+      defendingAttackerPower?: number;
       cannotHeal?: boolean;
       surviveZeroHp?: boolean;
       preventNextDamage?: number | 'all';
       preventAllDamage?: boolean;
+      preventDamage?: number;
       skipRegroupReady?: boolean;
       duration: 'phase' | 'round' | 'attack' | 'source-in-play' | 'next-regroup';
     };
@@ -354,6 +383,12 @@ export type UnitOperation =
 // The initial effect vocabulary is deliberately small. New mechanics add typed
 // execution frames and conformance cases, never callbacks captured in live state.
 export type CardEffect =
+  | {
+      kind: 'damage-assignments';
+      assignments: readonly { target: string; amount: NumericValue; source?: string }[];
+    }
+  | { kind: 'each-player-discards'; count: number; handSizeAtLeast: number }
+  | { kind: 'replace-attacker' }
   | {
       kind: 'schedule-phase-trigger';
       id: string;
@@ -365,12 +400,26 @@ export type CardEffect =
   | { kind: 'exhaust-units'; filter: UnitFilter }
   | { kind: 'use-played-abilities'; filter: UnitFilter }
   | { kind: 'friendly-units-damage-different-enemies'; amount: number }
-  | { kind: 'exchange-control'; first: string; second: string; effects: readonly CardEffect[] }
+  | {
+      kind: 'exchange-control';
+      first: string;
+      second: string;
+      returnAtRegroup?: boolean;
+      effects: readonly CardEffect[];
+    }
   | { kind: 'defeat-credits'; countAs: string; effects: readonly CardEffect[] }
   | { kind: 'after-attack'; effects: readonly CardEffect[] }
   | { kind: 'resource-departed'; target: string }
+  | { kind: 'resource-card'; target: string }
   | { kind: 'schedule-regroup-operation'; target: string; operation: 'bottom' | 'defeat' }
   | { kind: 'prevent-base-healing' }
+  | { kind: 'lose-game' }
+  | {
+      kind: 'pay-resources';
+      amount: NumericValue;
+      optional: boolean;
+      effects: readonly CardEffect[];
+    }
   | { kind: 'lose-enemy-trait'; trait: string }
   | { kind: 'grant-keyword-until-source-leaves'; trait: string; abilities: SimpleAbilities }
   | { kind: 'prevent-next-base-damage'; target: string }
@@ -401,6 +450,7 @@ export type CardEffect =
   | { kind: 'reveal-card'; target: string; from?: 'hand'; effects?: readonly CardEffect[] }
   | {
       kind: 'random-card';
+      bases?: boolean;
       units?: UnitFilter;
       targets?: readonly string[];
       group?: string;
@@ -421,10 +471,20 @@ export type CardEffect =
   | { kind: 'use-defeated-ability'; target: string }
   | { kind: 'schedule-regroup-victory'; arena: Arena }
   | { kind: 'extra-action' }
+  | {
+      kind: 'simultaneous-choices';
+      damage?: { target: string; amount: number };
+      defeatUpgrades?: string;
+      discardHand?: string;
+    }
+  | { kind: 'redirect-combat-damage'; from: string; to: string }
+  | { kind: 'require-next-attack'; target: string }
   | { kind: 'repeat-effects'; count: NumericValue; effects: readonly CardEffect[] }
   | { kind: 'bottom-hand'; group: string }
   | {
       kind: 'reveal-deck-cards';
+      offset?: number;
+      append?: boolean;
       player: 'self' | 'enemy';
       count: number;
       group: string;
@@ -457,6 +517,7 @@ export type CardEffect =
     }
   | {
       kind: 'distribute';
+      bases?: boolean;
       exact?: boolean;
       benefit: 'advantage' | 'experience' | 'weakness' | 'heal' | 'damage';
       quantum?: number;
@@ -487,7 +548,8 @@ export type CardEffect =
   | {
       kind: 'restrict-named-card';
       name: string;
-      restriction: 'prevent-play' | 'lose-abilities';
+      restriction: 'prevent-play' | 'lose-abilities' | 'increase-cost';
+      amount?: number;
       appliesTo?: 'enemy' | 'each';
       duration?: 'source-in-play' | 'phase';
     }
@@ -499,14 +561,22 @@ export type CardEffect =
       effects?: readonly CardEffect[];
     }
   | { kind: 'return-unit-with-upgrades'; target: string; upgrades: string; freeNextCopy: boolean }
+  | { kind: 'return-nonleader-units'; filter: UnitFilter }
+  | { kind: 'discard-groups'; groups: readonly string[] }
   | { kind: 'return-bound'; targets: readonly string[] }
   | { kind: 'attach-pilot'; host: string; optional?: boolean }
   | { kind: 'detach-pilot' }
   | { kind: 'flip-leader' }
   | { kind: 'attach-leader' }
   | { kind: 'draw-card'; target: string }
-  | { kind: 'reattach-upgrade'; target: string; filter?: UnitFilter; chooser?: 'controller' }
-  | { kind: 'exhaust-leader'; effects: readonly CardEffect[] }
+  | {
+      kind: 'reattach-upgrade';
+      fromDiscard?: boolean;
+      target: string;
+      filter?: UnitFilter;
+      chooser?: 'controller';
+    }
+  | { kind: 'exhaust-leader'; filter?: CardFilter; effects: readonly CardEffect[] }
   | { kind: 'damage-chosen-bases'; amount: number }
   | { kind: 'create-credits'; amount: NumericValue; player?: 'self' | 'enemy' }
   | {
@@ -527,6 +597,7 @@ export type CardEffect =
   | { kind: 'plot-play' }
   | {
       kind: 'next-play';
+      uses?: number;
       discountIfSharesKeyword?: boolean;
       using?: 'plot' | 'smuggle';
       filter: CardFilter;
@@ -536,6 +607,7 @@ export type CardEffect =
     }
   | {
       kind: 'play-card';
+      preserveOptionalChoice?: boolean;
       player?: 'self' | 'enemy' | 'owner';
       sharesKeywordWith?: string;
       beforePlayed?: readonly CardEffect[];
@@ -553,7 +625,7 @@ export type CardEffect =
       attachTo?: string;
       ignoreOneColoredPenalty?: boolean;
       ignoreAspectPenalties?: boolean | readonly Aspect[];
-      from: 'hand' | 'discard' | 'deck' | 'resources';
+      from: 'hand' | 'discard' | 'deck' | 'resources' | 'captured';
       replaceResource?: boolean;
       takeControl?: boolean;
       target?: string;
@@ -596,11 +668,14 @@ export type CardEffect =
       afterEvenIfEmpty?: boolean;
       player: 'self' | 'enemy' | 'defender';
       group?: string;
-      count: number;
+      count: NumericValue;
       bind: string;
       effects: readonly CardEffect[];
     }
-  | { kind: 'unit-to-deck'; target: string }
+  | { kind: 'unit-to-deck'; target: string; position?: 'bottom' | 'top' }
+  | { kind: 'collect-bounties'; target: string }
+  | { kind: 'choose-group-damage'; group: string; filter: UnitFilter; optional: boolean }
+  | { kind: 'each-bound-card'; group: string; bind: string; effects: readonly CardEffect[] }
   | {
       kind: 'divide-damage';
       after?: readonly CardEffect[];
@@ -627,6 +702,8 @@ export type CardEffect =
     }
   | {
       kind: 'select-resources';
+      filter?: CardFilter;
+      onlyFromGroup?: string;
       chooser?: 'self' | 'owner';
       player: 'self' | 'enemy';
       exhausted: boolean | 'any';
@@ -637,6 +714,7 @@ export type CardEffect =
       countAs?: string;
       effects?: readonly CardEffect[];
     }
+  | { kind: 'take-control-resources'; group: string; returnWhen: 'source-leaves' }
   | { kind: 'take-enemy-credit' }
   | { kind: 'gain-force' }
   | {
@@ -708,6 +786,7 @@ export type CardEffect =
   | { kind: 'defeat-target'; target: string }
   | {
       kind: 'choose-mode';
+      oncePerPhase?: string;
       private?: boolean;
       chooser?: 'self' | 'enemy';
       chooserOf?: string;
@@ -723,7 +802,7 @@ export type CardEffect =
   | {
       kind: 'select-unit';
       leastRemainingHp?: boolean;
-      forAttack?: { unitsOnly?: boolean; evenIfExhausted?: boolean };
+      forAttack?: { unitsOnly?: boolean; evenIfExhausted?: boolean; abilities?: SimpleAbilities };
       otherwise?: readonly CardEffect[];
       chooser?: 'self' | 'enemy';
       chooserOf?: string;
@@ -736,6 +815,19 @@ export type CardEffect =
   | { kind: 'exhaust-group'; group: string; countAs?: string; effects?: readonly CardEffect[] }
   | { kind: 'ready-units'; filter: UnitFilter }
   | { kind: 'units-damage-target'; target: string; filter: UnitFilter }
+  | {
+      kind: 'select-captured';
+      guard?: string;
+      guardFilter?: UnitFilter;
+      owner?: 'self' | 'enemy';
+      chooser?: 'self' | 'enemy';
+      bind: string;
+      optional: boolean;
+      effects: readonly CardEffect[];
+      otherwise?: readonly CardEffect[];
+    }
+  | { kind: 'rescue-captured'; target: string; effects?: readonly CardEffect[] }
+  | { kind: 'discard-captured'; target: string }
   | { kind: 'capture-pairs' }
   | { kind: 'attack-series'; filter: UnitFilter; unitsOnly: boolean; evenIfExhausted: boolean }
   | { kind: 'capture-group'; guard: string; group: string }
@@ -752,7 +844,7 @@ export type CardEffect =
       minDiscard?: number;
       player?: 'self' | 'enemy';
       count: number;
-      mode: 'discard-one' | 'bottom-any';
+      mode: 'discard-one' | 'discard-any' | 'bottom-any';
     }
   | { kind: 'each-unit'; filter: UnitFilter; bind: string; effects: readonly CardEffect[] }
   | {
@@ -765,7 +857,7 @@ export type CardEffect =
   | {
       kind: 'attack-bound';
       preventDamage?: boolean;
-      defenderPowerModifier?: number;
+      defenderPowerModifier?: NumericValue;
       gainsAbilitiesOf?: string;
       blankDefender?: boolean;
       damageStat?: 'remaining-hp';
@@ -798,6 +890,7 @@ export type CardEffect =
   | { kind: 'damage-own-base'; amount: NumericValue }
   | {
       kind: 'damage-units';
+      bases?: 'enemy';
       after?: readonly CardEffect[];
       bind?: string;
       amount: NumericValue;
@@ -816,6 +909,7 @@ export type CardEffect =
   | { kind: 'play-unit'; discount: number; ready: boolean; defeatAtRegroup: boolean }
   | {
       kind: 'search-deck';
+      min?: number;
       afterEach?: readonly CardEffect[];
       cardFilter?: CardFilter;
       hasKeyword?: Keyword;
@@ -856,6 +950,8 @@ export type CardEffect =
       condition: { kind: 'resources-at-least'; amount: number; reducedBy?: NumericValue } | null;
     };
 export type ChosenCardCost =
+  | { kind: 'damage-friendly-unit'; amount: number }
+  | { kind: 'defeat-upgrade'; filter: UpgradeFilter }
   | { kind: 'ready-enemy-unit' }
   | { kind: 'defeat-friendly-upgrade' }
   | { kind: 'exhaust-friendly-unit' }
@@ -888,6 +984,20 @@ export type ActionDefinition = {
   effects: readonly CardEffect[];
 };
 export type Abilities = {
+  enemyEventPlayDamage?: number;
+  blankLeadersExceptEpic?: boolean;
+  captureReplacement?: readonly CardEffect[];
+  blankFirstEnemyEvent?: boolean;
+  enemyPlayCostIncreases?: readonly { filter: CardFilter; amount: number }[];
+  ownPlayAspectExceptions?: readonly {
+    aspects?: readonly Aspect[];
+    host?: UnitFilter;
+    condition?: Condition;
+  }[];
+  startingHandIncrease?: number;
+  regroupDrawIncrease?: number;
+  enemyRegroupReadyLimit?: number;
+  combatDamageLast?: boolean;
   protectSingleFriendlyUpgrade?: boolean;
   protectBaseUpgradeBySelfDefeat?: boolean;
   lookAtDeckTop?: boolean;
@@ -911,13 +1021,24 @@ export type Abilities = {
   cannotReady?: boolean;
   bounties?: readonly { id: string; effects: readonly CardEffect[] }[];
   piloting?: readonly { id: string; cost: number; aspects: readonly Aspect[] }[];
-  smuggle?: readonly { id: string; cost: number; aspects: readonly Aspect[] }[];
+  smuggle?: readonly {
+    id: string;
+    cost: number;
+    aspects: readonly Aspect[];
+    damageFriendlyUnit?: number;
+  }[];
   resourceSmuggle?: readonly number[];
   friendlyRescueReady?: boolean;
   friendlyUnitsEnterReady?: boolean;
+  friendlyTokenUnitsEnterReady?: boolean;
   surviveZeroHp?: boolean;
   protectFromAttackUnlessSentinel?: readonly UnitFilter[];
-  ignoreAspectPenalties?: readonly { filter: CardFilter; condition?: Condition }[];
+  ignoreAspectPenalties?: readonly {
+    filter: CardFilter;
+    condition?: Condition;
+    host?: UnitFilter;
+    firstEachRound?: boolean;
+  }[];
   defeatToUnit?: boolean;
   defeatToUpgrade?: boolean;
   halveResourcePayments?: boolean;
@@ -931,16 +1052,18 @@ export type Abilities = {
   searchMultiplier?: number;
   cannotAttack?: boolean;
   attackBothArenas?: boolean;
+  attackTwoUnits?: boolean;
   cannotAttackBases?: boolean;
   ambushCanAttackBases?: boolean;
   preventBaseHealing?: boolean;
   firstCombatDamage?: boolean;
   providesAspects?: boolean;
-  enemyAbilityImmunity?: readonly ('defeat' | 'return-to-hand' | 'exhaust')[];
+  enemyAbilityImmunity?: readonly ('defeat' | 'return-to-hand' | 'exhaust' | 'capture')[];
   cannotChangeController?: boolean;
   damageReplacements?: readonly {
     id: string;
-    target: 'self' | 'other-friendly' | 'friendly';
+    target: 'self' | 'other-friendly' | 'friendly' | 'attached';
+    condition?: Condition;
     friendlySourceTrait?: string;
     operation: 'prevent' | 'increase';
     amount: number | 'all';
@@ -1004,6 +1127,13 @@ export type TriggerDefinition = {
   limit?: 'once-per-round' | 'once-per-phase';
   id: string;
   timing:
+    | 'unit-defeated'
+    | 'hand-card-discarded'
+    | 'attack-defeated-unit'
+    | 'combat-damage-dealt'
+    | 'own-base-healed'
+    | 'card-resourced'
+    | 'friendly-unit-base-damage'
     | 'drawn'
     | 'played-ability-used'
     | 'damaged'
@@ -1026,6 +1156,7 @@ export type TriggerDefinition = {
     | 'cards-drawn'
     | 'friendly-attack-ended'
     | 'regroup-start'
+    | 'regroup-ready'
     | 'action-start'
     | 'played'
     | 'deployed'
@@ -1076,6 +1207,9 @@ type Identity = {
 export type UnitDefinition = Identity &
   Abilities & {
     kind: 'unit';
+    copyOnEntry?: { filter: UnitFilter; traits: readonly string[]; unique: false };
+    discardAbilities?: Pick<Abilities, 'ignoreAspectPenalties'>;
+    handCombatReplacement?: { cost: number; aspects: readonly Aspect[]; attacker: UnitFilter };
     costReductions?: readonly { condition: Condition; amount: NumericValue }[];
     token?: true;
     cost: number;
@@ -1083,6 +1217,7 @@ export type UnitDefinition = Identity &
     hp: number;
     arena: Arena;
     entersReady?: Condition;
+    handPlayAbilities?: SimpleAbilities;
     defeatReadyResourceDiscount?: number;
     damageFriendlyUnitDiscount?: number;
     bottomDiscardForPlayedAbilities?: { max: number; maxCost: number };
@@ -1126,6 +1261,8 @@ export type UpgradeProfile = Abilities & {
   ignorePilotLimit?: boolean;
   hostModifiers?: readonly { condition: Condition; power?: NumericValue; hp?: NumericValue }[];
   hostCannotReady?: boolean;
+  hostCannotAttackBases?: boolean;
+  hostLosesAbilities?: boolean;
   doubleHostDamage?: boolean;
   defendingAttackerLosesOverwhelm?: boolean;
   grantsCondition?: Condition;
@@ -1151,6 +1288,7 @@ export type UpgradeDefinition = Identity &
 export type EventDefinition = Identity &
   Abilities & {
     kind: 'event';
+    alternateDiscardCost?: CardFilter;
     costReductions?: readonly { condition: Condition; amount: NumericValue }[];
     playOnlyFirstAction?: boolean;
     cannotPlayFromHand?: boolean;
