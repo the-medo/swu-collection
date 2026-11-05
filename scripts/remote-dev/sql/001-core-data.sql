@@ -363,6 +363,18 @@ SET
 
 TRUNCATE TABLE integration_game_data;
 
+-- App registrations, callback URLs, consent and credentials are private even
+-- when their owner opts into sharing development data. Support older backups.
+DO $integration_apps$
+BEGIN
+  IF to_regclass('public.integration_app_refresh_use') IS NOT NULL THEN
+    TRUNCATE TABLE integration_app_refresh_use, integration_app_code, integration_app_connection, integration_app;
+  ELSIF to_regclass('public.integration_app') IS NOT NULL THEN
+    TRUNCATE TABLE integration_app_code, integration_app_connection, integration_app;
+  END IF;
+END
+$integration_apps$;
+
 DELETE FROM karabast_lobby_match klm
 USING development_cleanup_user dcu
 WHERE klm.user_id = dcu.user_id
@@ -607,6 +619,18 @@ DROP TABLE development_card_pools_to_delete;
 
 DO $$
 BEGIN
+  IF to_regclass('public.integration_app_refresh_use') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM integration_app_refresh_use) THEN
+      RAISE EXCEPTION 'Third-party refresh token history remains after sanitization.';
+    END IF;
+  END IF;
+  IF to_regclass('public.integration_app') IS NOT NULL THEN
+    IF EXISTS (SELECT 1 FROM integration_app)
+      OR EXISTS (SELECT 1 FROM integration_app_code)
+      OR EXISTS (SELECT 1 FROM integration_app_connection) THEN
+      RAISE EXCEPTION 'Third-party app credentials remain after sanitization.';
+    END IF;
+  END IF;
   IF to_regclass('public.mcp_mutation') IS NOT NULL THEN
     IF EXISTS (SELECT 1 FROM mcp_mutation) THEN
       RAISE EXCEPTION 'MCP mutation receipts remain after sanitization.';

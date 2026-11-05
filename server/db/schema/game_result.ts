@@ -107,6 +107,7 @@ export type GameResultDeckInfo = {
 };
 
 export type GameResultOtherData = {
+  integrationApp?: { clientId: string; name: string };
   crossfire?: CrossfireGameStatistics;
   karabastLobbyId?: string;
   roundNumber?: number;

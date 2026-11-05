@@ -18,6 +18,10 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      headers: {
+        'X-Frame-Options': 'DENY',
+        'Content-Security-Policy': "frame-ancestors 'none'",
+      },
       proxy: {
         '/.well-known/oauth-authorization-server/api/auth': {
           target: env.VITE_BACKEND_URL || 'http://127.0.0.1:3010',
@@ -37,6 +41,12 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           ws: true,
         },
+      },
+    },
+    preview: {
+      headers: {
+        'X-Frame-Options': 'DENY',
+        'Content-Security-Policy': "frame-ancestors 'none'",
       },
     },
   };

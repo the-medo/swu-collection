@@ -2,6 +2,11 @@
 
 This document describes the workflow for linking a Swubase account with a Karabast account for stat tracking.
 
+For self-service app registration, account linking, and generic game-result
+submission, see [Third-party apps](../third-party-integrations.md). Those apps
+have separate credentials and permissions; this legacy Karabast contract is
+unchanged.
+
 ## Overview
 
 The integration follows an OAuth2-like flow where Karabast redirects the user to Swubase for approval, and Swubase then provides a temporary token back to Karabast to finalize the link and exchange it for API tokens.

@@ -9,6 +9,7 @@ import HomeLocationSettings from './HomeLocationSettings.tsx';
 import SidebarSettings from './SidebarSettings.tsx';
 import FeaturesSettings from './FeaturesSettings.tsx';
 import IntegrationsSettings from './IntegrationsSettings.tsx';
+import DeveloperApps from '@/components/app/integration-apps/DeveloperApps.tsx';
 import { SettingsNavigation } from './SettingsNavigation.tsx';
 import { settingsItems } from './settingsNavigation.ts';
 import { CalendarWeekStart } from '@/components/app/tournaments/calendar/CalendarWeekStart.tsx';
@@ -86,6 +87,7 @@ export function SettingsPage() {
               {page === 'profile' && <UserSettings />}
               {page === 'security' && <SecuritySettings />}
               {page === 'integrations' && <IntegrationsSettings />}
+              {page === 'apps' && <DeveloperApps />}
               {page === 'watched-players' && <WatchedPlayersSettings />}
               {page === 'calendar' && <CalendarWeekStart />}
               {page === 'sidebar' && <SidebarSettings />}
