@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group.tsx';
-import { BarChart, TableIcon, TrendingUp } from 'lucide-react';
+import { BarChart, ChartScatter, TableIcon, TrendingUp } from 'lucide-react';
 
 export type ViewMode = 'chart' | 'table';
-export type TournamentViewMode = ViewMode | 'apr';
+export type TournamentViewMode = ViewMode | 'apr' | 'map';
 
 type ViewModeSelectorProps =
   | { showApr?: false; value: ViewMode; onChange: (value: ViewMode) => void }
@@ -12,7 +12,7 @@ type ViewModeSelectorProps =
 const ViewModeSelector: React.FC<ViewModeSelectorProps> = props => {
   const onValueChange = (value: string) => {
     if (value === 'chart' || value === 'table') props.onChange(value);
-    else if (value === 'apr' && props.showApr) props.onChange(value);
+    else if ((value === 'apr' || value === 'map') && props.showApr) props.onChange(value);
   };
 
   return (
@@ -30,6 +30,12 @@ const ViewModeSelector: React.FC<ViewModeSelectorProps> = props => {
         <TableIcon className="h-4 w-4 mr-2" />
         Table
       </ToggleGroupItem>
+      {props.showApr && (
+        <ToggleGroupItem value="map" aria-label="Plot — Win rate and meta share">
+          <ChartScatter className="h-4 w-4 mr-2" />
+          Plot
+        </ToggleGroupItem>
+      )}
       {props.showApr && (
         <ToggleGroupItem value="apr" aria-label="APR — Adjusted performance rate">
           <TrendingUp className="h-4 w-4 mr-2" />
