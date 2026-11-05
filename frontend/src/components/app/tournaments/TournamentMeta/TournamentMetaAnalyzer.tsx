@@ -5,12 +5,14 @@ import { TournamentDeckResponse } from '@/api/tournaments/useGetTournamentDecks.
 import { getDeckKeys } from '@/components/app/tournaments/TournamentMeta/tournamentMetaLib.ts';
 import MetaPartSelector, { MetaPart } from './MetaPartSelector';
 import MetaInfoSelector, { MetaInfo } from './MetaInfoSelector';
-import ViewModeSelector, { ViewMode } from './ViewModeSelector';
+import ViewModeSelector, { TournamentViewMode } from './ViewModeSelector';
 import { useCardList } from '@/api/lists/useCardList.ts';
 import { useCallback, useDeferredValue, useMemo, useState, useId } from 'react';
 import TournamentMetaDataTable from './TournamentMetaDataTable';
 import TournamentMetaChart from './TournamentMetaChart';
 import TournamentMetaPieChart from './TournamentMetaPieChart';
+import TournamentMetaAprChart from './TournamentMetaAprChart';
+import { aprMetricValues, type AprTournaments } from './tournamentMetaApr.ts';
 import { Alert } from '@/components/ui/alert.tsx';
 import { InfoIcon, SearchIcon } from 'lucide-react';
 import { useSearch, useNavigate } from '@tanstack/react-router';
@@ -30,7 +32,7 @@ export interface EmbeddedMetaSettings {
 interface TournamentMetaAnalyzerProps {
   embedded?: { settings: EmbeddedMetaSettings; onChange: (settings: EmbeddedMetaSettings) => void };
   decks: TournamentDeckResponse[];
-  tournaments: Record<string, { tournament: { days: number; dayTwoPlayerCount: number | null } }>;
+  tournaments: AprTournaments;
 }
 
 const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({
@@ -44,7 +46,9 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({
   // Use URL parameters with fallbacks to default values
   const metaPart = embedded?.settings.metaPart ?? ((search.maMetaPart as MetaPart) || 'all');
   const metaInfo = embedded?.settings.metaInfo ?? ((search.maMetaInfo as MetaInfo) || 'leaders');
-  const viewMode = embedded ? 'chart' : (search.maViewMode as ViewMode) || 'chart';
+  const viewMode = embedded ? 'chart' : (search.maViewMode as TournamentViewMode) || 'chart';
+  const isApr = viewMode === 'apr';
+  const aprSort = aprMetricValues.find(value => value === (search.maAprSort ?? search.maAprStage));
   const fieldId = useId();
 
   const showDay2Selector = useMemo(() => {
@@ -85,7 +89,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({
     });
   };
 
-  const setViewMode = (value: ViewMode) => {
+  const setViewMode = (value: TournamentViewMode) => {
     navigate({
       to: '.',
       search: prev => ({ ...prev, maViewMode: value }),
@@ -96,7 +100,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({
 
   // Compute filtered decks for all meta parts
   const metaPartsDecks = useMemo(() => {
-    if (!decks.length) return { all: [], top8: [], day2: [], top64: [], champions: [] };
+    if (isApr || !decks.length) return { all: [], top8: [], day2: [], top64: [], champions: [] };
 
     const top8Decks = decks.filter(
       deck => deck.tournamentDeck.placement !== null && deck.tournamentDeck.placement <= 8,
@@ -110,7 +114,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({
       const tournamentId = deck.tournamentDeck.tournamentId;
       const tournament = tournaments[tournamentId];
       return (
-        tournament?.tournament.dayTwoPlayerCount !== null &&
+        tournament?.tournament.dayTwoPlayerCount != null &&
         deck.tournamentDeck.placement !== null &&
         deck.tournamentDeck.placement <= tournament.tournament.dayTwoPlayerCount
       );
@@ -127,7 +131,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({
       top64: top64Decks,
       champions: championsDecks,
     };
-  }, [decks, tournaments]);
+  }, [decks, tournaments, isApr]);
 
   // Get filtered decks based on selected meta part
   const filteredDecks = useMemo(() => {
@@ -179,7 +183,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({
 
   // Analyze all meta parts
   const allMetaPartsAnalysis = useMemo(() => {
-    if (!cardListData) return { all: [], top8: [], day2: [], top64: [], champions: [] };
+    if (isApr || !cardListData) return { all: [], top8: [], day2: [], top64: [], champions: [] };
 
     return {
       all: analyzeDecks(metaPartsDecks.all, metaInfo),
@@ -188,7 +192,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({
       top64: analyzeDecks(metaPartsDecks.top64, metaInfo),
       champions: analyzeDecks(metaPartsDecks.champions, metaInfo),
     };
-  }, [metaPartsDecks, metaInfo, analyzeDecks, cardListData]);
+  }, [metaPartsDecks, metaInfo, analyzeDecks, cardListData, isApr]);
 
   const totalDeckCount = metaPartsDecks.all.length;
   const top8DeckCount = metaPartsDecks.top8.length;
@@ -283,84 +287,101 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({
       >
         {!embedded && (
           <MobileCard>
-            <ViewModeSelector value={viewMode} onChange={setViewMode} />
+            <ViewModeSelector value={viewMode} onChange={setViewMode} showApr />
           </MobileCard>
         )}
-        <MobileCard>
-          <MetaPartSelector value={metaPart} onChange={setMetaPart} showDay2={showDay2Selector} />
-        </MobileCard>
+        {!isApr && (
+          <MobileCard>
+            <MetaPartSelector value={metaPart} onChange={setMetaPart} showDay2={showDay2Selector} />
+          </MobileCard>
+        )}
         <MobileCard>
           <MetaInfoSelector value={metaInfo} onChange={setMetaInfo} />
         </MobileCard>
       </div>
 
-      <div
-        className={
-          embedded ? 'flex flex-col gap-2' : 'flex items-center gap-4 flex-wrap justify-between'
-        }
-      >
-        <span className="text-[10px] w-auto">Total decks analyzed: {filteredDecks.length}</span>
-        {viewMode === 'table' && (
-          <div className="flex items-center gap-2">
-            <label htmlFor={`${fieldId}-minDeckCount`} className="text-[10px] w-[130px]">
-              Min. deck count:
-            </label>
-            <Input
-              id={`${fieldId}-minDeckCount`}
-              type="number"
-              className="h-6 w-20 text-xs"
-              min={1}
-              value={minDeckCount || ''}
-              onChange={e => setMinDeckCount(e.target.value ? Number(e.target.value) : undefined)}
-            />
-          </div>
-        )}
-        <div className="ml-auto flex min-w-0 flex-1 flex-wrap items-center justify-end gap-2">
-          {showLeaderSearch && (
-            <div className="w-full sm:w-56 shrink-0">
-              <label htmlFor={`${fieldId}-metaLeaderSearch`} className="sr-only">
-                Highlight leader
+      {!isApr && (
+        <div
+          className={
+            embedded ? 'flex flex-col gap-2' : 'flex items-center gap-4 flex-wrap justify-between'
+          }
+        >
+          <span className="text-[10px] w-auto">Total decks analyzed: {filteredDecks.length}</span>
+          {viewMode === 'table' && (
+            <div className="flex items-center gap-2">
+              <label htmlFor={`${fieldId}-minDeckCount`} className="text-[10px] w-[130px]">
+                Min. deck count:
               </label>
               <Input
-                id={`${fieldId}-metaLeaderSearch`}
-                type="search"
-                maxLength={embedded ? 100 : undefined}
-                icon={SearchIcon}
-                className="h-7 text-xs"
-                placeholder="Highlight leader…"
-                value={leaderSearch}
-                onChange={event => setLeaderSearch(event.target.value)}
+                id={`${fieldId}-minDeckCount`}
+                type="number"
+                className="h-6 w-20 text-xs"
+                min={1}
+                value={minDeckCount || ''}
+                onChange={e => setMinDeckCount(e.target.value ? Number(e.target.value) : undefined)}
               />
             </div>
           )}
-          <Alert
-            role="note"
-            variant="info"
-            size="xs"
-            className={
-              embedded
-                ? 'w-auto max-w-full'
-                : cn('w-auto max-w-full', competitionStyles.methodology)
-            }
-          >
-            <InfoIcon className="size-4 top-0 left-0" />{' '}
-            <ul className="">
-              <li>
-                Winrates are computed from filtered decks, so decks in top 8 will have naturally
-                higher winrates than others. Mirror matches are not cleared from this view.
-              </li>
-              {metaInfo === 'aspects' && (
+          <div className="ml-auto flex min-w-0 flex-1 flex-wrap items-center justify-end gap-2">
+            {showLeaderSearch && (
+              <div className="w-full sm:w-56 shrink-0">
+                <label htmlFor={`${fieldId}-metaLeaderSearch`} className="sr-only">
+                  Highlight leader
+                </label>
+                <Input
+                  id={`${fieldId}-metaLeaderSearch`}
+                  type="search"
+                  maxLength={embedded ? 100 : undefined}
+                  icon={SearchIcon}
+                  className="h-7 text-xs"
+                  placeholder="Highlight leader…"
+                  value={leaderSearch}
+                  onChange={event => setLeaderSearch(event.target.value)}
+                />
+              </div>
+            )}
+            <Alert
+              role="note"
+              variant="info"
+              size="xs"
+              className={
+                embedded
+                  ? 'w-auto max-w-full'
+                  : cn('w-auto max-w-full', competitionStyles.methodology)
+              }
+            >
+              <InfoIcon className="size-4 top-0 left-0" />{' '}
+              <ul className="">
                 <li>
-                  In case of double aspect decks, aspect is counted twice. Percentages can be skewed
-                  because of this.
+                  Winrates are computed from filtered decks, so decks in top 8 will have naturally
+                  higher winrates than others. Mirror matches are not cleared from this view.
                 </li>
-              )}
-            </ul>
-          </Alert>
+                {metaInfo === 'aspects' && (
+                  <li>
+                    In case of double aspect decks, aspect is counted twice. Percentages can be
+                    skewed because of this.
+                  </li>
+                )}
+              </ul>
+            </Alert>
+          </div>
         </div>
-      </div>
+      )}
 
-      {viewMode === 'chart' ? (
+      {isApr ? (
+        <TournamentMetaAprChart
+          decks={decks}
+          tournaments={tournaments}
+          metaInfo={metaInfo}
+          sortBy={aprSort}
+          onSortChange={metric =>
+            navigate({
+              to: '.',
+              search: prev => ({ ...prev, maAprSort: metric, maAprStage: undefined }),
+            })
+          }
+        />
+      ) : viewMode === 'chart' ? (
         <div className="flex flex-col md:flex-row gap-4">
           <div className={embedded ? 'w-full' : 'w-full md:w-1/2'}>
             <TournamentMetaPieChart
