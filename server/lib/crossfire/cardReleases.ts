@@ -1,5 +1,6 @@
 import type { Sql } from 'postgres';
-import { ENGINE_VERSION, parseVersion, supportsEngine } from '../../../play/engine/release.ts';
+import { ENGINE_VERSION, parseVersion } from '../../../play/engine/release.ts';
+import { supportsCardContract } from '../../../play/cards/validate.ts';
 import { canonicalJson, type CardCatalog } from '../../../play/cards/catalog.ts';
 import {
   ACTIVE_CARD_BUNDLE,
@@ -40,7 +41,7 @@ export class CrossfireCardReleases {
       sourceCommit: r.source_commit,
       createdAt: r.created_at.toISOString(),
       installed: true,
-      compatible: supportsEngine(r.required_engine),
+      compatible: supportsCardContract(r.required_engine),
     }));
     let remoteError: string | null = null;
     if (this.objects) {
@@ -59,7 +60,7 @@ export class CrossfireCardReleases {
             sourceCommit: remote.sourceCommit,
             createdAt: remote.publishedAt,
             installed: false,
-            compatible: supportsEngine(remote.requiredEngine),
+            compatible: supportsCardContract(remote.requiredEngine),
           });
         }
       } catch {
@@ -85,9 +86,9 @@ export class CrossfireCardReleases {
       const [row] = await this
         .sql`SELECT source_commit, r2_key, required_engine FROM play.card_bundles WHERE version = ${selection.version} AND checksum = ${selection.checksum}`;
       if (!row) throw new CardBundleError('The selected release is not installed');
-      if (!supportsEngine(row.required_engine))
+      if (!supportsCardContract(row.required_engine))
         throw new CardBundleError(
-          'This release requires a newer or different major engine deployment',
+          'This release requires an unsupported card-data contract or engine deployment',
         );
       return {
         catalog: await loadCardBundle(this.sql, `${selection.version}@${selection.checksum}`),
@@ -103,9 +104,9 @@ export class CrossfireCardReleases {
       throw new CardBundleError(
         'The published release changed or is unavailable; check for updates',
       );
-    if (!supportsEngine(release.requiredEngine))
+    if (!supportsCardContract(release.requiredEngine))
       throw new CardBundleError(
-        'This release requires a newer or different major engine deployment',
+        'This release requires an unsupported card-data contract or engine deployment',
       );
     return {
       catalog: await downloadRelease(this.objects, release),
@@ -116,8 +117,20 @@ export class CrossfireCardReleases {
   async preview(selection: CardReleaseSelection): Promise<CardReleasePreview> {
     const { catalog } = await this.resolve(selection);
     const [row] = await this
-      .sql`SELECT b.version,b.checksum FROM public.application_configuration c JOIN play.card_bundles b ON b.version = c.value WHERE c.key = ${ACTIVE_CARD_BUNDLE}`;
-    const current = await loadCardBundle(this.sql, `${row!.version}@${row!.checksum}`);
+      .sql`SELECT b.version,b.checksum,b.required_engine FROM public.application_configuration c JOIN play.card_bundles b ON b.version = c.value WHERE c.key = ${ACTIVE_CARD_BUNDLE}`;
+    if (!row) throw new CardBundleError('No active card release is installed');
+    if (!supportsCardContract(row.required_engine))
+      return {
+        version: catalog.data.version,
+        checksum: catalog.hash,
+        currentVersion: row.version,
+        comparisonAvailable: false,
+        total: catalog.data.cards.length,
+        added: [],
+        changed: [],
+        removed: [],
+      };
+    const current = await loadCardBundle(this.sql, `${row.version}@${row.checksum}`);
     return releaseDifference(current, catalog);
   }
   async activate(selection: CardReleaseSelection & { expectedActive: string }): Promise<void> {
@@ -137,6 +150,7 @@ export function releaseDifference(current: CardCatalog, next: CardCatalog): Card
     version: next.data.version,
     checksum: next.hash,
     currentVersion: current.data.version,
+    comparisonAvailable: true,
     total: next.data.cards.length,
     added: next.data.cards.filter(c => !current.find(c.cardId)).map(summarize),
     changed: next.data.cards

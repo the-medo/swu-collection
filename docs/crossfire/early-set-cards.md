@@ -77,7 +77,9 @@ replacement payments and incremental reveals also appear in the shared recovery
 workload. Focused scenarios compare fresh-process continuations.
 
 Runtime and card release `1.5.0` introduce the required shared capabilities and
-retain the older card contracts. Optional state additions continue to use state
+use 1.5 as the minimum accepted card-bundle contract. Contracts 1.0–1.4 are
+retired; see [card releases](card-releases.md) for the effect on stored games.
+Optional state additions continue to use state
 format 109 and the existing browser choice protocol. Historical replay recordings
 must remain unchanged. The [completion manifest](../../play/cards/early-set-completion.json)
 and [foundation manifest](../../play/cards/early-set-additions.json) exclude these

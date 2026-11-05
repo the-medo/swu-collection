@@ -77,7 +77,7 @@ export function CrossfireCardsPage() {
             <Badge>Active cards {releases.data.activeVersion}</Badge>
           </div>
           <p className="text-sm text-muted-foreground">
-            Existing matches and replays keep their original card definitions. Earlier installed
+            Existing matches and replays keep their original card definitions. Earlier supported
             releases can be activated for new matches.
           </p>
           {!releases.data.remoteConfigured && (
@@ -108,7 +108,7 @@ export function CrossfireCardsPage() {
                   <p className="mt-1 text-xs text-muted-foreground">
                     Requires engine {release.requiredEngine} ·{' '}
                     {new Date(release.createdAt).toLocaleDateString()}
-                    {!release.compatible && ' · Deploy a compatible engine to use this release'}
+                    {!release.compatible && ' · Not supported by this deployment'}
                   </p>
                 </div>
                 <Button
@@ -156,32 +156,43 @@ export function CrossfireCardsPage() {
             <>
               <div className="flex flex-wrap gap-2 text-sm">
                 <Badge variant="secondary">{preview.data.total} implemented cards</Badge>
-                <Badge variant="outline">{preview.data.added.length} added</Badge>
-                <Badge variant="outline">{preview.data.changed.length} changed</Badge>
-                <Badge variant="outline">{preview.data.removed.length} removed</Badge>
-              </div>
-              <div className="max-h-72 space-y-4 overflow-auto">
-                {(['added', 'changed', 'removed'] as const).map(
-                  kind =>
-                    preview.data[kind].length > 0 && (
-                      <section key={kind}>
-                        <h3 className="mb-1 font-medium capitalize">{kind}</h3>
-                        <ul className="space-y-1 text-sm text-muted-foreground">
-                          {preview.data[kind].map(card => (
-                            <li key={card.cardId}>{card.name}</li>
-                          ))}
-                        </ul>
-                      </section>
-                    ),
+                {preview.data.comparisonAvailable !== false && (
+                  <>
+                    <Badge variant="outline">{preview.data.added.length} added</Badge>
+                    <Badge variant="outline">{preview.data.changed.length} changed</Badge>
+                    <Badge variant="outline">{preview.data.removed.length} removed</Badge>
+                  </>
                 )}
-                {!preview.data.added.length &&
-                  !preview.data.changed.length &&
-                  !preview.data.removed.length && (
-                    <p className="text-sm text-muted-foreground">
-                      No card behavior changes. This release may update card-naming metadata.
-                    </p>
-                  )}
               </div>
+              {preview.data.comparisonAvailable === false ? (
+                <p className="text-sm text-muted-foreground">
+                  Active release {preview.data.currentVersion} is no longer supported. A card
+                  comparison is unavailable, but you can activate this release for new matches.
+                </p>
+              ) : (
+                <div className="max-h-72 space-y-4 overflow-auto">
+                  {(['added', 'changed', 'removed'] as const).map(
+                    kind =>
+                      preview.data[kind].length > 0 && (
+                        <section key={kind}>
+                          <h3 className="mb-1 font-medium capitalize">{kind}</h3>
+                          <ul className="space-y-1 text-sm text-muted-foreground">
+                            {preview.data[kind].map(card => (
+                              <li key={card.cardId}>{card.name}</li>
+                            ))}
+                          </ul>
+                        </section>
+                      ),
+                  )}
+                  {!preview.data.added.length &&
+                    !preview.data.changed.length &&
+                    !preview.data.removed.length && (
+                      <p className="text-sm text-muted-foreground">
+                        No card behavior changes. This release may update card-naming metadata.
+                      </p>
+                    )}
+                </div>
+              )}
               <p className="text-xs text-muted-foreground">
                 Replaces active release {preview.data.currentVersion}. Running games and BO3 matches
                 retain their current release.

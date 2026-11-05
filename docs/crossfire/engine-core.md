@@ -180,8 +180,9 @@ coverage for every possible ability.
 
 Current version pins are state 109, runtime `1.5.0`, an immutable card
 version/checksum, and browser protocol 41. [Card releases](card-releases.md)
-describes dynamic installation and backwards-compatible minor versions. The
-pre-refactor engine/card tuple remains supported against its exact baseline data.
+describes dynamic installation and the minimum accepted card-bundle contract,
+1.5. Contracts 1.0–1.4 are retired. The pre-refactor engine/card tuple remains
+supported through its separate built-in baseline data.
 Checkpoint decoding and advancement verify supported versions and preserve
 historical state hashes and facts. [Leader abilities](leader-abilities.md)
 explains explicit faces, costs and deployment conditions.

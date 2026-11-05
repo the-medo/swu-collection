@@ -28,11 +28,11 @@ Kanan Jarrus, Sometimes I Hate Being Right has no printed ability; the empty
 text was checked against his
 [card image](https://images.swubase.com/cards/preview/kanan-jarrus--sometimes-i-hate-being-right-preview-standard-front-1793827646955.webp).
 
-The complete snapshot ships in card release **1.4.0**, requiring engine **1.4.0**.
-State format 109 and browser protocol 39 remain compatible. The 1.4 card contract
-adds printed-cost equality, own-base HP conditions, private optional-play
-choices, and simultaneous unit/base damage;
-earlier minor contracts are retained. Publishing and activation follow
+The complete snapshot is included in card release **1.5.0**, requiring engine
+**1.5.0**. State format 109 and browser protocol 41 remain compatible. The current
+1.5 card contract includes printed-cost equality, own-base HP conditions, private
+optional-play choices, and simultaneous unit/base damage. Contracts 1.0–1.4
+have been retired. Publishing and activation follow
 [card releases](card-releases.md); exporting a local bundle does not activate it.
 
 ## Reprints and additional previews

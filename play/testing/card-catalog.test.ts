@@ -17,6 +17,7 @@ import { stateDigest } from '../storage/integrity.ts';
 import { verifyHistory } from '../history/records.ts';
 import type { History } from '../history/records.ts';
 import { config } from './helpers.ts';
+import { UnsupportedCardContractError, validateCatalog } from '../cards/validate.ts';
 
 test('minor compatibility is directional and never crosses majors', () => {
   expect(supportsEngine('1.0.0', '1.2.0')).toBe(true);
@@ -74,8 +75,7 @@ test('two games use different immutable definitions without changing each other'
   expect(() => assertCompatibleVersions({ ...newGame.versions, cards: 'missing' })).toThrow();
 });
 
-test('download validation covers every card property and nested effect', async () => {
-  const { validateCatalog } = await import('../cards/validate.ts');
+test('download validation covers every card property and nested effect', () => {
   expect(validateCatalog(bundledCatalog.data, bundledCatalog.hash).pin).toBe(bundledCatalog.pin);
   const modified = () => JSON.parse(JSON.stringify(bundledCatalog.data));
   const unknown = modified();
@@ -94,6 +94,23 @@ test('download validation covers every card property and nested effect', async (
   duplicate.cards.push(duplicate.cards[0]);
   expect(() => validateCatalog(duplicate)).toThrow('Duplicate');
   expect(() => validateCatalog(bundledCatalog.data, '0'.repeat(64))).toThrow('checksum');
+});
+
+test.each(['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0'])(
+  'card bundles cannot claim retired contract %s',
+  version => {
+    const data = structuredClone(bundledCatalog.data);
+    data.version = version;
+    data.requiredEngine = version;
+    expect(() => validateCatalog(data)).toThrow(UnsupportedCardContractError);
+    expect(() => validateCatalog(data)).toThrow('minimum supported feature line is 1.5');
+  },
+);
+
+test('card-only patch releases use the retained 1.5 contract', () => {
+  const data = structuredClone(bundledCatalog.data);
+  data.version = '1.5.999';
+  expect(validateCatalog(data).data).toEqual(data);
 });
 
 test('release 1.0.0 journal remains replay-compatible', () => {

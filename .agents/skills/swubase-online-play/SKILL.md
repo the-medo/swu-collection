@@ -77,8 +77,10 @@ changing versioning, catalogs, engine behavior or publication. New games pin the
 active release; invitations and all games in one BO3 retain their original pins.
 Minor engine releases preserve older-minor replay behavior within the same major.
 Do not regenerate historical replay fixtures or bypass hash/fact checks to accept
-a changed result. Card lookups require the state's catalog context. Keep prior
-card data contracts and installed JSON bundles; executable archive tooling still
+a changed result. Card lookups require the state's catalog context. Keep supported
+card data contracts from the 1.5 baseline onward and installed JSON bundles.
+Contracts 1.0–1.4 are intentionally retired; do not restore them as a fallback.
+Executable archive tooling still
 keeps only the newest committed runtime smoke artifact. The explicit pre-refactor
 baseline remains compatible; older experimental builds are not promised support.
 Archive only committed original engine code; bundle paths and
