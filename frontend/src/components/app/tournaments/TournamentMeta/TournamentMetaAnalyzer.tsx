@@ -12,6 +12,7 @@ import TournamentMetaDataTable from './TournamentMetaDataTable';
 import TournamentMetaChart from './TournamentMetaChart';
 import TournamentMetaPieChart from './TournamentMetaPieChart';
 import TournamentMetaAprChart from './TournamentMetaAprChart';
+import TournamentMetaMap from './TournamentMetaMap';
 import { aprMetricValues, type AprTournaments } from './tournamentMetaApr.ts';
 import { Alert } from '@/components/ui/alert.tsx';
 import { InfoIcon, SearchIcon } from 'lucide-react';
@@ -96,7 +97,7 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({
     });
   };
 
-  const { data: cardListData } = useCardList();
+  const { data: cardListData, isPending: cardsPending, isError: cardsError } = useCardList();
 
   // Compute filtered decks for all meta parts
   const metaPartsDecks = useMemo(() => {
@@ -251,7 +252,8 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({
     championsDeckCount,
   ]);
 
-  const showLeaderSearch = viewMode === 'chart' && supportsLeaderSearch(metaInfo);
+  const showLeaderSearch =
+    (viewMode === 'chart' || viewMode === 'map') && supportsLeaderSearch(metaInfo);
   const isHighlightingLeaders =
     showLeaderSearch && normalizeLeaderSearch(deferredLeaderSearch).length > 0;
   const highlightedLeaderKeys = useMemo(
@@ -381,6 +383,23 @@ const TournamentMetaAnalyzer: React.FC<TournamentMetaAnalyzerProps> = ({
             })
           }
         />
+      ) : viewMode === 'map' ? (
+        cardsPending ? (
+          <p role="status">Loading card data…</p>
+        ) : cardsError ? (
+          <Alert variant="destructive">
+            Card data could not be loaded. Please reload to try again.
+          </Alert>
+        ) : (
+          <TournamentMetaMap
+            key={`${metaInfo}:${metaPart}`}
+            analysisData={analysisData}
+            totalDecks={filteredDecks.length}
+            metaInfo={metaInfo}
+            highlightedKeys={highlightedLeaderKeys}
+            isHighlighting={isHighlightingLeaders}
+          />
+        )
       ) : viewMode === 'chart' ? (
         <div className="flex flex-col md:flex-row gap-4">
           <div className={embedded ? 'w-full' : 'w-full md:w-1/2'}>

@@ -76,7 +76,8 @@ export function useTournamentMetaStore() {
 }
 
 export function useSelectedDeckKey() {
-  return useStore(store, state => state.selectedDeckKey);
+  // Re-selecting the same group is a fresh interaction for the actions panel.
+  return useStore(store, state => state.selectedDeckKey, { equal: Object.is });
 }
 
 export function useTournamentMetaActions() {
