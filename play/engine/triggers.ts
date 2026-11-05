@@ -1,3 +1,4 @@
+import { instanceDefinition } from './instance-definition.ts';
 import type { CatalogContext } from '../cards/catalog.ts';
 import { takePhaseTriggers } from './phase-triggers.ts';
 import { repeatedBounty } from './bounty.ts';
@@ -106,7 +107,7 @@ export function declaredTriggerObservers(
   for (const source of sources) {
     consider(source.instanceId, activeAbilities(state, source));
     if (source.attachedTo) {
-      const profile = upgradeProfile(cardDefinition(state, source.cardId));
+      const profile = upgradeProfile(instanceDefinition(state, source));
       consider(source.attachedTo.instanceId, profile?.grants);
       consider(source.attachedTo.instanceId, { triggers: profile?.attackOverride });
     }
@@ -341,7 +342,7 @@ export function uniqueConflict(state: GameState): { playerId: string; cards: str
     const groups = new Map<string, string[]>();
     for (const card of Object.values(state.cards)) {
       if (!isUnit(state, card) && !isUpgrade(state, card)) continue;
-      if (card.controller !== playerId || !cardDefinition(state, card.cardId).unique) continue;
+      if (card.controller !== playerId || !instanceDefinition(state, card).unique) continue;
       const group = groups.get(card.cardId) ?? [];
       group.push(card.instanceId);
       groups.set(card.cardId, group);

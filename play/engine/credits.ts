@@ -1,3 +1,4 @@
+import { withPlayCandidate } from './play-cost-context.ts';
 import { resourcePayment, abilityResourcePayment } from './resource-payment.ts';
 import { isUnit } from './attachments.ts';
 import { cardTraits } from './attributes.ts';
@@ -147,7 +148,11 @@ export function paymentAmount(
       state,
       { ...instance(state, intent.card), controller: actor },
       frame.kind === 'effect'
-        ? numericValue(state, frame, effect?.discount ?? 0)
+        ? numericValue(
+            state,
+            withPlayCandidate(state, frame, instance(state, intent.card)),
+            effect?.discount ?? 0,
+          )
         : permission
           ? (permission.discount ?? 0)
           : 0,

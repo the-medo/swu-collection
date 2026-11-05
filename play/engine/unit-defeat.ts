@@ -1,3 +1,4 @@
+import { instanceDefinition } from './instance-definition.ts';
 import type { DefeatPreparation } from './model.ts';
 import { assertAbilityOrigins } from './effective-abilities.ts';
 import { cardDefinition } from '../cards/catalog.ts';
@@ -17,7 +18,7 @@ export function defeatAttachmentTargets(state: GameState, card: CardInstance) {
   if (
     !isUnit(state, card) ||
     !effectiveAbilities(state, card).defeatToUpgrade ||
-    !upgradeProfile(cardDefinition(state, card.cardId))
+    !upgradeProfile(instanceDefinition(state, card))
   )
     return [];
   return matchingUnits(state, card.controller, defeatAttachmentFilter, { source: card }).filter(
@@ -40,11 +41,13 @@ export function deferUnitDefeat(
   combatDamaged: ReturnType<typeof reference>[],
   source?: CardInstance,
   prepared?: DefeatPreparation,
+  responsibility?: Record<string, string | null>,
 ) {
   const pending = cards.filter(card => defeatAttachmentTargets(state, card).length).map(reference);
   if (!pending.length) return false;
   state.execution.frames.unshift({
     kind: 'unit-defeat',
+    ...(responsibility ? { responsibility: structuredClone(responsibility) } : {}),
     ...(prepared ? { prepared: structuredClone(prepared) } : {}),
     cards: cards.map(c => structuredClone(c)),
     pending,
@@ -54,6 +57,12 @@ export function deferUnitDefeat(
   return true;
 }
 export function assertUnitDefeat(state: GameState, frame: UnitDefeatFrame) {
+  if (
+    frame.responsibility &&
+    (Object.keys(frame.responsibility).some(id => !frame.cards.some(c => c.instanceId === id)) ||
+      Object.values(frame.responsibility).some(id => id !== null && !state.seats.includes(id)))
+  )
+    throw Error('Invalid defeat responsibility');
   const ids = new Set<string>();
   for (const card of frame.cards) {
     const current = state.cards[card.instanceId];

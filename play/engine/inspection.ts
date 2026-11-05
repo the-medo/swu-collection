@@ -1,3 +1,5 @@
+import { instanceDefinition } from './instance-definition.ts';
+import { smuggleOptions } from './smuggle.ts';
 import type { CatalogContext } from '../cards/catalog.ts';
 import { matchingUnits } from './targets.ts';
 import { contextController } from './bindings.ts';
@@ -14,11 +16,11 @@ import { boundUnit, boundReference, type EffectContext } from './bindings.ts';
 import type { CardReference, Frame, GameState } from './model.ts';
 import { instance, opponent, reference } from './state.ts';
 export function hasPrintedCost(state: CatalogContext, ref: CardReference): boolean {
-  const definition = cardDefinition(state, ref.cardId);
+  const definition = instanceDefinition(state, ref);
   return definition.kind === 'leader' ? definition.printedCost !== null : 'cost' in definition;
 }
 export function printedCost(state: CatalogContext, ref: CardReference): number {
-  const definition = cardDefinition(state, ref.cardId);
+  const definition = instanceDefinition(state, ref);
   return definition.kind === 'leader'
     ? (definition.printedCost ?? 0)
     : 'cost' in definition
@@ -31,13 +33,16 @@ export function matchesCard(
   filter: CardFilter,
   context: EffectContext,
 ): boolean {
-  const definition = cardDefinition(state, ref.cardId);
+  const definition = instanceDefinition(state, ref);
   const shared = filter.sharesAspectWith && boundReference(context, filter.sharesAspectWith, state);
   const sharedTrait =
     filter.sharesTraitWith && boundReference(context, filter.sharesTraitWith, state);
   const other = filter.otherThan && boundReference(context, filter.otherThan, state);
   const host = filter.attachesTo && boundUnit(state, context, filter.attachesTo);
   return (
+    (!filter.anyOf || filter.anyOf.some(option => matchesCard(state, ref, option, context))) &&
+    (!filter.withoutAspects ||
+      !filter.withoutAspects.some(aspect => cardAspects(state, ref).includes(aspect))) &&
     (!filter.otherThan ||
       (!!other &&
         (ref.instanceId !== other.instanceId || ref.incarnation !== other.incarnation))) &&
@@ -66,9 +71,11 @@ export function matchesCard(
           ? contextController(context)
           : opponent(state, contextController(context)))) &&
     (!filter.hasKeyword ||
-      !!effectiveAbilities(state, state.cards[ref.instanceId]!).keywords?.includes(
-        filter.hasKeyword,
-      )) &&
+      (filter.hasKeyword === 'Smuggle'
+        ? smuggleOptions(state, state.cards[ref.instanceId]!).length > 0
+        : !!effectiveAbilities(state, state.cards[ref.instanceId]!).keywords?.includes(
+            filter.hasKeyword,
+          ))) &&
     (!filter.printedKeyword ||
       !!activeAbilities(state, state.cards[ref.instanceId]!).keywords?.includes(
         filter.printedKeyword,

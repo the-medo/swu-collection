@@ -1,3 +1,5 @@
+import { attackDefenders, inCombat } from './combat.ts';
+import { instanceDefinition } from './instance-definition.ts';
 import { conditionMatches } from './conditions.ts';
 import { cardPrintedTitle } from './identity.ts';
 import { cardAspects } from './identity.ts';
@@ -25,13 +27,14 @@ export function matchesUnit(
   evaluation?: Evaluation,
 ): boolean {
   if (!isUnit(state, card)) return false;
-  const definition = cardDefinition(state, card.cardId);
+  const definition = instanceDefinition(state, card);
   const traits =
     filter.trait ||
     filter.withoutTrait ||
     filter.anyTrait ||
     filter.sharesFriendlyLeaderTrait ||
     filter.sharesTraitWith ||
+    filter.sharesTraitsWithAll ||
     filter.sharesTraitWithGroup
       ? cardTraits(state, card, evaluation)
       : [];
@@ -48,7 +51,7 @@ export function matchesUnit(
   const same = filter.sameAs && boundReference(context, filter.sameAs, state);
   const other = filter.otherThan && boundReference(context, filter.otherThan, state);
   const arena = filter.sameArenaAs && context && boundArena(state, context, filter.sameArenaAs);
-  const powerRef = filter.powerLessThan && boundReference(context, filter.powerLessThan);
+  const powerRef = filter.powerLessThan && boundReference(context, filter.powerLessThan, state);
   const ceiling =
     filter.powerLessThan === 'any-friendly'
       ? Math.max(
@@ -96,10 +99,34 @@ export function matchesUnit(
       (!!context &&
         unitStats(state, card, evaluation).hp - card.damage ===
           numericValue(state, context, filter.remainingHpEquals, evaluation))) &&
+    (filter.healedThisPhase === undefined ||
+      (state.phaseHistory.healedUnits ?? []).some(
+        ref => ref.instanceId === card.instanceId && ref.incarnation === card.incarnation,
+      ) === filter.healedThisPhase) &&
+    (filter.enteredThisRound === undefined ||
+      (card.enteredRound === state.round && !unitIsLeader(state, card)) ===
+        filter.enteredThisRound) &&
+    (filter.ambushing === undefined ||
+      state.attacks.some(
+        a =>
+          a.ambush &&
+          a.attacker.instanceId === card.instanceId &&
+          a.attacker.incarnation === card.incarnation &&
+          !a.removedFromCombat.some(
+            r => r.instanceId === card.instanceId && r.incarnation === card.incarnation,
+          ),
+      ) === filter.ambushing) &&
     (filter.damagedThisPhase === undefined ||
       state.phaseHistory.damagedUnits.some(
         ref => ref.instanceId === card.instanceId && ref.incarnation === card.incarnation,
       ) === filter.damagedThisPhase) &&
+    (!filter.sharesTraitsWithAll ||
+      traits.some(trait =>
+        filter.sharesTraitsWithAll!.every(name => {
+          const other = boundUnit(state, context!, name);
+          return !!other && cardTraits(state, other, evaluation).includes(trait);
+        }),
+      )) &&
     (!filter.condition ||
       conditionMatches(
         state,
@@ -129,7 +156,7 @@ export function matchesUnit(
             r => r.instanceId === card.instanceId && r.incarnation === card.incarnation,
           ) &&
           (filter.attacking === 'any' ||
-            (cardDefinition(state, a.defender.cardId).kind === 'base') ===
+            (instanceDefinition(state, a.defender).kind === 'base') ===
               (filter.attacking === 'base')),
       )) &&
     (!filter.attackingAgainst ||
@@ -137,23 +164,24 @@ export function matchesUnit(
         if (
           a.attacker.instanceId !== card.instanceId ||
           a.attacker.incarnation !== card.incarnation ||
-          a.removedFromCombat.some(
-            r => r.instanceId === a.attacker.instanceId || r.instanceId === a.defender.instanceId,
-          )
+          a.removedFromCombat.some(r => r.instanceId === a.attacker.instanceId)
         )
           return false;
-        const defender = state.cards[a.defender.instanceId];
-        return (
-          !!defender &&
-          defender.incarnation === a.defender.incarnation &&
-          matchesUnit(state, defender, playerId, filter.attackingAgainst!, context, evaluation)
-        );
+        return attackDefenders(a).some(ref => {
+          const defender = state.cards[ref.instanceId];
+          return (
+            !!defender &&
+            inCombat(state, a, defender, ref) &&
+            matchesUnit(state, defender, playerId, filter.attackingAgainst!, context, evaluation)
+          );
+        });
       })) &&
     (!filter.defendingAgainst ||
       state.attacks.some(a => {
         if (
-          a.defender.instanceId !== card.instanceId ||
-          a.defender.incarnation !== card.incarnation ||
+          !attackDefenders(a).some(
+            ref => ref.instanceId === card.instanceId && ref.incarnation === card.incarnation,
+          ) ||
           a.removedFromCombat.some(
             r => r.instanceId === card.instanceId || r.instanceId === a.attacker.instanceId,
           )
@@ -220,8 +248,10 @@ export function matchesUnit(
         a =>
           a.attacker.instanceId === card.instanceId &&
           a.attacker.incarnation === card.incarnation &&
-          a.defender.instanceId === defended?.instanceId &&
-          a.defender.incarnation === defended?.incarnation &&
+          attackDefenders(a).some(
+            ref =>
+              ref.instanceId === defended?.instanceId && ref.incarnation === defended?.incarnation,
+          ) &&
           !a.removedFromCombat.some(
             r => r.instanceId === card.instanceId || r.instanceId === defended?.instanceId,
           ),
@@ -234,7 +264,7 @@ export function matchesUnit(
       attachedUpgrades(state, card).some(u => u.cardId === filter.withUpgrade)) &&
     (filter.withTokenUpgrade === undefined ||
       attachedUpgrades(state, card).some(upgrade => {
-        const definition = cardDefinition(state, upgrade.cardId);
+        const definition = instanceDefinition(state, upgrade);
         return definition.kind === 'upgrade' && definition.token;
       }) === filter.withTokenUpgrade) &&
     (!filter.sharesFriendlyLeaderTrait ||
@@ -242,7 +272,7 @@ export function matchesUnit(
         leader =>
           leader.controller === playerId &&
           ['base', 'ground', 'space'].includes(leader.zone) &&
-          (cardDefinition(state, leader.cardId).kind === 'leader' ||
+          (instanceDefinition(state, leader).kind === 'leader' ||
             (isUnit(state, leader) && unitIsLeader(state, leader, evaluation))) &&
           cardTraits(state, leader, evaluation).some(t => traits.includes(t)),
       )) &&
@@ -261,8 +291,9 @@ export function matchesUnit(
     (filter.defending === undefined ||
       state.attacks.some(
         attack =>
-          attack.defender.instanceId === card.instanceId &&
-          attack.defender.incarnation === card.incarnation &&
+          attackDefenders(attack).some(
+            ref => ref.instanceId === card.instanceId && ref.incarnation === card.incarnation,
+          ) &&
           !attack.removedFromCombat.some(
             ref => ref.instanceId === card.instanceId && ref.incarnation === card.incarnation,
           ),
@@ -291,10 +322,16 @@ export function matchesUnit(
     (!filter.costGreaterThan || (!!cheaper && cost > printedCost(state, cheaper))) &&
     (!filter.anyAspect || filter.anyAspect.some(a => definition.aspects.includes(a))) &&
     (filter.leader === undefined || unitIsLeader(state, card, evaluation) === filter.leader) &&
-    (!filter.excludeName || cardTitle(state, card.cardId) !== filter.excludeName) &&
-    (!filter.name || cardTitle(state, card.cardId) === filter.name) &&
+    (!filter.excludeName || cardPrintedTitle(state, card) !== filter.excludeName) &&
+    (!filter.name || cardPrintedTitle(state, card) === filter.name) &&
     (filter.powerAtMost === undefined ||
-      unitStats(state, card, evaluation).power <= filter.powerAtMost) &&
+      unitStats(state, card, evaluation).power <=
+        numericValue(
+          state,
+          context ?? { source: card, playerId },
+          filter.powerAtMost,
+          evaluation,
+        )) &&
     (!filter.powerAtMostUnit ||
       (!!context &&
         !!boundReference(context, filter.powerAtMostUnit, state) &&

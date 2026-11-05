@@ -1,4 +1,11 @@
-import { abilitySources, collectTriggers } from './triggers.ts';
+import { queueCopyEntry } from './unit-entry.ts';
+import { canAffectWithAbility } from './protection.ts';
+import type { CardEffect } from '../cards/definition.ts';
+import type { EffectContext } from './bindings.ts';
+import { boundReference } from './bindings.ts';
+import { matchesUnit } from './targets.ts';
+import { opponent } from './state.ts';
+import { abilitySources, collectTriggers, effectFrames } from './triggers.ts';
 import { effectiveAbilities } from './effective-abilities.ts';
 import { recordUnitEntry, friendlyUnitsEnterReady } from './phase-history.ts';
 import { cardDefinition } from '../cards/catalog.ts';
@@ -27,9 +34,11 @@ export function captureUnit(
         cardDefinition(state, unit.cardId).kind !== 'unit'
       : !isUnit(state, unit)) ||
     unitIsLeader(state, unit) ||
-    guard.instanceId === unit.instanceId
+    guard.instanceId === unit.instanceId ||
+    !canAffectWithAbility(state, unit, source, 'capture')
   )
     return false;
+  if (isUnit(state, unit) && replaceCapture(state, unit)) return false;
   if (isUnit(state, unit) && !simultaneous) collectTriggers(state, 'bounty', [unit]);
   const captor = reference(guard);
   fact(state, 'captured', actor, [source, guard, unit]);
@@ -46,6 +55,12 @@ export function rescueCaptured(state: GameState, unit: CardInstance): boolean {
   const definition = cardDefinition(state, unit.cardId);
   if (definition.kind !== 'unit' || definition.token) throw new Error('Invalid rescued unit');
   const guard = unit.capturedBy && state.cards[unit.capturedBy.instanceId];
+  if (
+    queueCopyEntry(state, unit, unit.owner, false, {
+      ...(guard ? { guard: reference(guard) } : {}),
+    })
+  )
+    return true;
   const ready =
     friendlyUnitsEnterReady(state, unit.owner) ||
     (!namedAbilityLoss(state, unit) &&
@@ -66,6 +81,13 @@ export function rescueCaptured(state: GameState, unit: CardInstance): boolean {
   return true;
 }
 
+function replaceCapture(state: GameState, unit: CardInstance): boolean {
+  const effects = effectiveAbilities(state, unit).captureReplacement;
+  if (!effects?.length) return false;
+  state.execution.frames.unshift(...effectFrames(unit.controller, structuredClone(unit), effects));
+  return true;
+}
+
 // Fix every departure and collect Bounties before any simultaneous prisoner leaves.
 export function capturePairs(
   state: GameState,
@@ -73,6 +95,11 @@ export function capturePairs(
   actor: string,
   source: CardInstance,
 ) {
+  pairs = pairs.filter(
+    pair =>
+      canAffectWithAbility(state, pair.prisoner, source, 'capture') &&
+      !replaceCapture(state, pair.prisoner),
+  );
   const departures = pairs.map(p => captureDeparture(state, p.prisoner));
   for (const pair of pairs) collectTriggers(state, 'bounty', [pair.prisoner]);
   const rescues: CardInstance[] = [];
@@ -83,4 +110,36 @@ export function capturePairs(
     }),
   );
   for (const prisoner of rescues) rescueCaptured(state, prisoner);
+}
+
+export function capturedChoices(
+  state: GameState,
+  playerId: string,
+  effect: Extract<CardEffect, { kind: 'select-captured' }>,
+  context: EffectContext,
+): CardInstance[] {
+  const requiredGuard = effect.guard && boundReference(context, effect.guard, state);
+  return state.captured
+    .map(id => state.cards[id]!)
+    .filter(card => {
+      if (
+        effect.owner &&
+        card.owner !== (effect.owner === 'self' ? playerId : opponent(state, playerId))
+      )
+        return false;
+      const link = card.capturedBy;
+      const guard = link && state.cards[link.instanceId];
+      if (!link || !guard || guard.incarnation !== link.incarnation) return false;
+      if (
+        effect.guard &&
+        (!requiredGuard ||
+          link.instanceId !== requiredGuard.instanceId ||
+          link.incarnation !== requiredGuard.incarnation)
+      )
+        return false;
+      return (
+        !effect.guardFilter ||
+        (isUnit(state, guard) && matchesUnit(state, guard, playerId, effect.guardFilter, context))
+      );
+    });
 }

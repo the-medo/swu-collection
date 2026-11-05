@@ -127,4 +127,7 @@ and vanilla cards.
 
 Run `bun run play:check`, `bun run play:demo`, `bun run play:coverage` and
 `bun run play:cards:export`. Preserve the fixed historical replay fixtures;
-new base-value and unit-healing behavior is gated on engine 1.3.0.
+IC27 base-value, unit-healing, regroup-ready history and completed-attacker bindings
+are gated on engine 1.4.0. Main's engine 1.3.0 introduced hand reveal and retains
+its original rules behavior. The fixed 1.3.0 replay fixture was captured from
+`eb6e406ba2aa2d1d4de4e11f923d045fa8b74bf3` against the retained 1.0 card catalog.

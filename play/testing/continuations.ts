@@ -1,3 +1,4 @@
+import { earlySetContinuations } from './early-set-continuations.ts';
 import { ic27ReprintContinuations } from './ic27-reprint-continuations.ts';
 import { ibhContinuations } from './ibh-continuations.ts';
 import { jtlContinuations } from './jtl-continuations.ts';
@@ -3565,5 +3566,6 @@ export function continuationCases(): ContinuationCase[] {
     ...jtlContinuations(),
     ...ibhContinuations(),
     ...ic27ReprintContinuations(),
+    ...earlySetContinuations(),
   ];
 }

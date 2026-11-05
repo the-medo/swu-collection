@@ -13,6 +13,7 @@ import { isToken } from './roles.ts';
 export type SmuggleOption = {
   id: string;
   cost: number;
+  damageFriendlyUnit?: number;
   aspects: readonly Aspect[];
   source?: CardInstance;
 };

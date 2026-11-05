@@ -1,3 +1,5 @@
+import { attackDefenders } from './combat.ts';
+import { instanceDefinition } from './instance-definition.ts';
 import type { ConversionFilter } from '../cards/definition.ts';
 import { collectTriggers } from './triggers.ts';
 import { pendingUpgradeDefeats } from './upgrade-defeat.ts';
@@ -18,7 +20,7 @@ export function attachablePilots(state: GameState, playerId: string, host?: Card
         card.controller === playerId &&
         card.instanceId !== host.instanceId &&
         cardTraits(state, card).includes('Pilot') &&
-        !!upgradeProfile(cardDefinition(state, card.cardId)) &&
+        !!upgradeProfile(instanceDefinition(state, card)) &&
         (isUnit(state, card) ||
           (isUpgrade(state, card) &&
             card.attachedTo?.instanceId !== host.instanceId &&
@@ -29,7 +31,7 @@ export function detachablePilots(state: GameState) {
   return [...state.ground, ...state.space]
     .map(id => state.cards[id]!)
     .filter(card => {
-      const definition = cardDefinition(state, card.cardId);
+      const definition = instanceDefinition(state, card);
       return (
         isUpgrade(state, card) &&
         cardTraits(state, card).includes('Pilot') &&
@@ -81,7 +83,7 @@ export function finishPilotAttachment(
     }
     for (const attack of state.attacks)
       if (
-        [attack.attacker, attack.defender].some(
+        [attack.attacker, ...attackDefenders(attack)].some(
           ref => ref.instanceId === pilot.instanceId && ref.incarnation === pilot.incarnation,
         ) &&
         !attack.removedFromCombat.some(
@@ -91,7 +93,7 @@ export function finishPilotAttachment(
         attack.removedFromCombat.push(reference(pilot));
     pilot.damage = 0;
     move(state, pilot, host.zone);
-    if (cardDefinition(state, pilot.cardId).kind === 'leader') pilot.deployedAs = 'upgrade';
+    if (instanceDefinition(state, pilot).kind === 'leader') pilot.deployedAs = 'upgrade';
     pilot.attachedTo = { instanceId: host.instanceId, incarnation: host.incarnation };
     pilot.attachmentRestriction = restriction
       ? { kind: 'filter', filter: conversionFilterSchema.parse(restriction) }
@@ -109,7 +111,7 @@ export function detachPilot(state: GameState, pilot: CardInstance, source: CardI
     collectTriggers(state, 'detached', [pilot], parent);
   pilot.attachedTo = null;
   delete pilot.attachmentRestriction;
-  if (cardDefinition(state, pilot.cardId).kind === 'leader') pilot.deployedAs = 'unit';
+  if (instanceDefinition(state, pilot).kind === 'leader') pilot.deployedAs = 'unit';
   move(state, pilot, 'ground');
   pilot.damage = 0;
   pilot.exhausted = true;

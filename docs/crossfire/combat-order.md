@@ -112,3 +112,21 @@ Official details are pinned in `top8-attacks.json`:
 [Babu Frik](https://admin.starwarsunlimited.com/api/card/details/28054?locale=en),
 [One Way Out](https://admin.starwarsunlimited.com/api/card/details/40160?locale=en),
 [Flash the Vents](https://admin.starwarsunlimited.com/api/card/details/47077?locale=en).
+
+## Multiple defenders
+
+Runtime 1.5 adds Darth Maul's optional second defender within the same attack.
+The declaration pauses before exhaustion and trigger collection. Every defender
+must independently satisfy the attack's target restrictions. On Attack abilities
+resolve once; each defender retains its own On Defense context. The attack's
+`defenders` group lets attacker effects that refer to the defender apply to both.
+
+Combat damage is simultaneous unless a first/last instruction changes its order.
+The additional combat continuation retains early, simultaneous and late defenders
+by incarnation, and rechecks survival before each step. A defender leaving combat
+does not remove the other defender. Eligible Overwhelm damage is combined before
+base replacement and damage limits. The shared recovery workload includes the
+second-defender declaration and Shield replacement during counterattacks.
+
+The [early-set guide](early-set-cards.md) links the official clarification and
+describes Clone's entry replacement, which also copies Maul's printed ability.

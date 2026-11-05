@@ -6,7 +6,7 @@ import { continuationCases } from './continuations.ts';
 
 test('the recovery workload preserves exact transitions and all three views at every covered suspension', () => {
   const fixtures = continuationCases();
-  expect(new Set(fixtures.map(f => f.name)).size).toBe(361);
+  expect(new Set(fixtures.map(f => f.name)).size).toBe(371);
   for (const fixture of fixtures) {
     const before = encodeState(fixture.state);
     const restored = decodeState(before);

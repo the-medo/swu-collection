@@ -1,3 +1,5 @@
+import { supportsEngine } from './release.ts';
+import { reference } from './state.ts';
 import { activeLasting } from './lasting.ts';
 import { isUnit } from './attachments.ts';
 import type { CardInstance, GameState } from './model.ts';
@@ -16,6 +18,15 @@ export function recordHealing(
   amount: number,
 ) {
   fact(state, 'healed', actor, [source, target], amount);
+  if (amount > 0 && isUnit(state, target) && supportsEngine('1.5.0', state.versions.engine)) {
+    const healed = (state.phaseHistory.healedUnits ??= []);
+    if (
+      !healed.some(
+        ref => ref.instanceId === target.instanceId && ref.incarnation === target.incarnation,
+      )
+    )
+      healed.push(reference(target));
+  }
   if (
     amount > 0 &&
     actor === target.controller &&

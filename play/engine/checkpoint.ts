@@ -1,3 +1,5 @@
+import { attackDefenders } from './combat.ts';
+import { cardDefinition as entryDefinition } from '../cards/catalog.ts';
 import { assertRegroupReady } from './regroup-ready.ts';
 import { combatReplacementIntents } from './combat-replacement.ts';
 import { assertDamageSequence } from './damage-sequence.ts';
@@ -161,7 +163,75 @@ export function decodeState(json: string): GameState {
         ? [f, f.tokens]
         : [f],
   )) {
+    if (item.kind === 'attack-declaration') {
+      const attacker = state.cards[item.attacker.instanceId],
+        defender = state.cards[item.defender.instanceId];
+      if (
+        !attacker ||
+        !defender ||
+        !isUnit(state, attacker) ||
+        !isUnit(state, defender) ||
+        attacker.incarnation !== item.attacker.incarnation ||
+        defender.incarnation !== item.defender.incarnation ||
+        attacker.controller !== item.playerId ||
+        defender.controller === item.playerId
+      )
+        throw new Error('Invalid pending attack declaration');
+      assertAbilityOrigins(state, item.grantedAbilities);
+    }
+    if (item.kind === 'multi-combat') {
+      const attack = state.attacks.find(a => a.id === item.attackId);
+      if (
+        !attack?.additionalDefender ||
+        [...item.simultaneous, ...item.late].some(
+          ref =>
+            ![attack.defender, attack.additionalDefender!].some(
+              d => d.instanceId === ref.instanceId && d.incarnation === ref.incarnation,
+            ),
+        )
+      )
+        throw new Error('Invalid multi-unit combat continuation');
+    }
+    if (item.kind === 'unit-entry') {
+      const card = state.cards[item.card.instanceId];
+      const physical = card && entryDefinition(state, card.cardId);
+      const copied = item.choice ? entryDefinition(state, item.choice) : undefined;
+      if (
+        !card ||
+        card.zone !== 'set-aside' ||
+        card.incarnation !== item.card.incarnation ||
+        card.cardId !== item.card.cardId ||
+        card.controller !== item.playerId ||
+        card.copiedCardId ||
+        physical?.kind !== 'unit' ||
+        !physical.copyOnEntry ||
+        (copied && copied.kind !== 'unit') ||
+        (item.play &&
+          (item.play.playerId !== item.playerId ||
+            state.roundHistory.plays[item.play.roundPlayIndex]?.card.instanceId !==
+              card.instanceId))
+      )
+        throw new Error('Invalid pending copied entry');
+    }
     if (item.kind === 'unit-defeat') assertUnitDefeat(state, item);
+    if (item.kind === 'group-damage') {
+      if (
+        item.index !== item.chosen.length ||
+        item.index >= item.dealers.length ||
+        item.dealers.some(
+          entry =>
+            !state.cards[entry.card.instanceId] ||
+            state.cards[entry.card.instanceId]!.cardId !== entry.card.cardId,
+        ) ||
+        item.chosen.some(
+          ref =>
+            ref &&
+            (!state.cards[ref.instanceId] ||
+              state.cards[ref.instanceId]!.incarnation !== ref.incarnation),
+        )
+      )
+        throw new Error('Invalid group damage selection');
+    }
     if (item.kind === 'different-unit-damage') assertDamageSequence(state, item);
     if (item.kind === 'base-upgrade-protection') {
       const card = state.cards[item.card.instanceId];
@@ -465,6 +535,32 @@ export function decodeState(json: string): GameState {
     if (item.kind === 'combat-response' && !state.attacks.find(a => a.id === item.attackId)?.ending)
       throw new Error('Unstarted combat response');
     if (item.kind === 'damage') {
+      if (item.simultaneous) {
+        const simultaneous = item.simultaneous;
+        if (
+          item.combatAttackId ||
+          item.tokens ||
+          item.after ||
+          item.actor !== simultaneous.playerId ||
+          !state.seats.includes(simultaneous.playerId) ||
+          [...simultaneous.upgrades, ...simultaneous.hand].some(ref => {
+            const card = state.cards[ref.instanceId];
+            return (
+              !card ||
+              card.cardId !== ref.cardId ||
+              card.incarnation !== ref.incarnation ||
+              card.visibility !== ref.visibility
+            );
+          }) ||
+          simultaneous.hand.some(ref => state.cards[ref.instanceId]!.zone !== 'hand')
+        )
+          throw new Error('Invalid simultaneous card choices');
+      }
+      if (
+        item.multiExcessResolved &&
+        !state.attacks.find(a => a.id === item.combatAttackId)?.additionalDefender
+      )
+        throw new Error('Invalid multi-defender excess state');
       assertCompoundDamage(state, item);
       assertDamageReplacements(state, item);
       if (item.actor !== null && !state.seats.includes(item.actor))
@@ -489,9 +585,15 @@ export function decodeState(json: string): GameState {
           if (
             !attack?.excessToUnit ||
             assignment.excessRoute ||
-            assignment.target.instanceId !== attack.defender.instanceId ||
+            !attackDefenders(attack).some(
+              ref =>
+                ref.instanceId === assignment.target.instanceId &&
+                ref.incarnation === assignment.target.incarnation,
+            ) ||
             assignment.source?.instanceId !== attack.attacker.instanceId ||
-            (!attack.routedExcess && assignment.excess?.amount !== assignment.redirectedAmount)
+            (!attack.routedExcess &&
+              !item.multiExcessResolved &&
+              assignment.excess?.amount !== assignment.redirectedAmount)
           )
             throw Error('Invalid split combat damage');
         }
@@ -509,7 +611,11 @@ export function decodeState(json: string): GameState {
               ? assignment.excess !== undefined ||
                 target.instanceId !== state.players[attack.defendingPlayer]!.base
               : assignment.excess !== undefined ||
-                assignment.target.instanceId !== attack.defender.instanceId)
+                !attackDefenders(attack).some(
+                  ref =>
+                    ref.instanceId === assignment.target.instanceId &&
+                    ref.incarnation === assignment.target.incarnation,
+                ))
           )
             throw Error('Invalid excess damage continuation');
         }

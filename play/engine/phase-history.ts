@@ -1,3 +1,4 @@
+import { supportsEngine } from './release.ts';
 import { cardTraits, unitIsLeader } from './attributes.ts';
 import { cardDefinition } from '../cards/catalog.ts';
 import { effectiveAbilities } from './effective-abilities.ts';
@@ -12,10 +13,12 @@ export function recordPhasePlayer(history: string[], playerId: string) {
 export function recordTokenCreation(state: GameState, playerId: string) {
   recordPhasePlayer(state.phaseHistory.tokensCreated, playerId);
 }
-export function friendlyUnitsEnterReady(state: GameState, playerId: string) {
+export function friendlyUnitsEnterReady(state: GameState, playerId: string, token = false) {
   return abilitySources(state).some(
     source =>
-      source.controller === playerId && effectiveAbilities(state, source).friendlyUnitsEnterReady,
+      source.controller === playerId &&
+      (effectiveAbilities(state, source).friendlyUnitsEnterReady ||
+        (token && effectiveAbilities(state, source).friendlyTokenUnitsEnterReady)),
   );
 }
 export function discardCards(
@@ -23,11 +26,14 @@ export function discardCards(
   cards: CardInstance[],
   actor: string,
   source: CardInstance,
+  byOwner = false,
 ) {
   if (!cards.length) return;
-  if (cards.some(c => c.owner === actor && ['hand', 'deck'].includes(c.zone)))
-    recordPhasePlayer(state.phaseHistory.ownCardsDiscarded, actor);
-  for (const owner of new Set(cards.filter(c => c.zone === 'hand').map(c => c.owner)))
+  for (const player of byOwner ? new Set(cards.map(c => c.owner)) : [actor])
+    if (cards.some(c => c.owner === player && ['hand', 'deck'].includes(c.zone)))
+      recordPhasePlayer(state.phaseHistory.ownCardsDiscarded, player);
+  const handOwners = new Set(cards.filter(c => c.zone === 'hand').map(c => c.owner));
+  for (const owner of byOwner ? [] : handOwners)
     collectTriggers(
       state,
       'own-hand-revealed-or-discarded',
@@ -39,6 +45,13 @@ export function discardCards(
   const fromDeck = cards.filter(c => c.owner === actor && c.zone === 'deck');
   const observers = abilitySources(state).filter(c => c.controller === actor);
   for (const card of cards) move(state, card, 'discard');
+  if (byOwner)
+    for (const owner of handOwners)
+      collectTriggers(
+        state,
+        'own-hand-revealed-or-discarded',
+        abilitySources(state).filter(c => c.controller === owner),
+      );
   for (const entry of discarded) {
     state.phaseHistory.discarded.push({
       card: reference(entry.card),
@@ -46,13 +59,20 @@ export function discardCards(
       owner: entry.owner,
     });
     collectTriggers(state, 'discarded', [entry.card]);
+    if (entry.from === 'hand')
+      collectTriggers(state, 'hand-card-discarded', abilitySources(state), entry.card);
   }
-  fact(state, 'discarded', actor, [source, ...cards], cards.length);
+  for (const player of byOwner ? new Set(cards.map(c => c.owner)) : [actor]) {
+    const selected = byOwner ? cards.filter(c => c.owner === player) : cards;
+    fact(state, 'discarded', player, [source, ...selected], selected.length);
+  }
   for (const card of fromDeck) collectTriggers(state, 'own-deck-card-discarded', observers, card);
 }
 export function recordUnitEntry(state: GameState, card: CardInstance) {
   // Events never enter play. Upgrades still have entry history, but not unit-entry triggers.
   if (cardDefinition(state, card.cardId).kind === 'event') return;
+  if (supportsEngine('1.5.0', state.versions.engine) && !unitIsLeader(state, card))
+    card.enteredRound = state.round;
   state.phaseHistory.entered.push(reference(card));
   if (isUnit(state, card)) {
     state.phaseHistory.unitEntries.push({

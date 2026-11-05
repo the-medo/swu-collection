@@ -101,7 +101,7 @@ export function commitTokenCreation(
     for (let n = 0; n < plan.count; n++) {
       const token = addCard(state, frame.creator, plan.cardId, 'set-aside');
       move(state, token, definition.arena);
-      token.exhausted = !friendlyUnitsEnterReady(state, token.controller);
+      token.exhausted = !friendlyUnitsEnterReady(state, token.controller, true);
       created.push(token);
     }
     if (plan.phaseAbilities)
@@ -131,7 +131,9 @@ export function commitTokenCreation(
     for (const entry of plan.targets) {
       const unit = liveTarget(state, entry.target);
       if (!unit) continue;
-      giveTokens(state, unit, plan.token, entry.count, frame.creator, !deferUpgradeTriggers);
+      created.push(
+        ...giveTokens(state, unit, plan.token, entry.count, frame.creator, !deferUpgradeTriggers),
+      );
       if (entry.count) upgraded.push(unit);
       amount += entry.count;
     }

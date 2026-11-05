@@ -1,3 +1,4 @@
+import mainBaseline from './fixtures/replay-compatibility/1.3.0.json';
 import releaseBaseline from './fixtures/replay-compatibility/1.0.0.json';
 import { expect, test } from 'bun:test';
 import baseline from './fixtures/replay-compatibility/development-baseline.json';
@@ -27,6 +28,16 @@ test('minor compatibility is directional and never crosses majors', () => {
 });
 for (const fixture of [...baseline.cases, ...releaseBaseline.cases])
   test(`pre-refactor replay: ${fixture.name}`, () => {
+    const state = decodeState(fixture.checkpoint);
+    const next = advance(state, fixture.input);
+    expect(stateDigest(encodeState(next.state))).toBe(fixture.stateHash);
+    expect<unknown>(next.facts).toEqual(fixture.facts);
+    expect(next.state.versions).toEqual(state.versions);
+  });
+// Captured with origin/main's 1.3.0 runtime before the IC27 integration.
+// Preserve its exact results even though the feature branch initially reused that minor.
+for (const fixture of mainBaseline.cases)
+  test(`main 1.3.0 replay: ${fixture.name}`, () => {
     const state = decodeState(fixture.checkpoint);
     const next = advance(state, fixture.input);
     expect(stateDigest(encodeState(next.state))).toBe(fixture.stateHash);

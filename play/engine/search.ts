@@ -33,7 +33,7 @@ export function searchSelection(state: GameState, frame: SearchFrame) {
   // V8 §8.26 permits resolving a hidden search as if nothing matched.
   return {
     cards,
-    min: 0,
+    min: Math.min(frame.effect.min ?? 0, cards.length),
     max: Math.min(frame.effect.max, cards.length),
     ...(frame.effect.maxTotalCost === undefined
       ? {}
@@ -48,6 +48,7 @@ export function searchSelection(state: GameState, frame: SearchFrame) {
   };
 }
 export function assertSearch(state: GameState, frame: SearchFrame) {
+  if ((frame.effect.min ?? 0) > frame.effect.max) throw new Error('Invalid mandatory draw minimum');
   if (frame.effect.destination === 'deck-top' && (frame.effect.after || frame.effect.afterEach))
     throw new Error('Ordered searches cannot queue draw continuations');
   if (frame.effect.destination && frame.effect.play)
@@ -66,6 +67,7 @@ export function assertSearch(state: GameState, frame: SearchFrame) {
   if (frame.kind === 'search-shuffle') {
     const selection = searchSelection(state, frame);
     if (
+      frame.selected.length < selection.min ||
       frame.selected.length > selection.max ||
       new Set(frame.selected).size !== frame.selected.length ||
       frame.selected.some(id => !selection.cards.includes(id)) ||

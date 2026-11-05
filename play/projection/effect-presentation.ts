@@ -6,6 +6,16 @@ import type { Frame } from '../engine/model.ts';
 export function effectPresentation(
   frame: Frame | undefined,
 ): { title: string; text: string } | undefined {
+  if (frame?.kind === 'replacement-play-discard')
+    return {
+      title: 'Pay the replacement cost',
+      text: 'Discard a matching card from your hand instead of paying the card’s other costs.',
+    };
+  if (frame?.kind === 'additional-play-payment')
+    return {
+      title: 'Pay the additional cost',
+      text: 'Choose a friendly unit to take the damage required by the play cost.',
+    };
   if (frame?.kind === 'combat-replacement')
     return {
       title: 'Replace the attacker',
@@ -15,6 +25,21 @@ export function effectPresentation(
     return {
       title: `Choose ${frame.arena} units to ready`,
       text: `You can ready ${frame.limit} ${frame.arena} unit${frame.limit === 1 ? '' : 's'} during this regroup phase.`,
+    };
+  if (frame?.kind === 'attack-declaration')
+    return {
+      title: 'Choose a second defender',
+      text: 'Attack another eligible unit in the same attack, or attack only the first unit.',
+    };
+  if (frame?.kind === 'unit-entry')
+    return {
+      title: 'Choose a unit to copy',
+      text: 'Enter play with its printed attributes, the Clone trait, and no uniqueness.',
+    };
+  if (frame?.kind === 'group-damage')
+    return {
+      title: 'Choose a damage target',
+      text: `Deal ${frame.dealers[frame.index]?.amount ?? 0} damage to a unit${frame.optional ? ', or decline' : ''}. All chosen damage resolves together.`,
     };
   if (frame?.kind !== 'effect') return;
   const effect = frame.effect;
@@ -84,6 +109,11 @@ export function effectPresentation(
       return {
         title: 'Choose units to damage',
         text: `Deal ${damage(effect.amount)} to each chosen unit.`,
+      };
+    case 'select-captured':
+      return {
+        title: 'Choose a captured card',
+        text: 'Choose a card guarded by an eligible unit.',
       };
     case 'select-unit':
     case 'select-target':

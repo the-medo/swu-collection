@@ -1,3 +1,5 @@
+import { attackDefenders, inCombat } from './combat.ts';
+import { instanceDefinition } from './instance-definition.ts';
 import { losesOwnAbilities } from './lasting.ts';
 import { cardDefinition } from '../cards/catalog.ts';
 import { attachedUpgrades } from './attachments.ts';
@@ -18,7 +20,7 @@ export function attackOverrides(state: GameState, unit: CardInstance) {
   return attachedUpgrades(state, unit).filter(
     c =>
       !losesOwnAbilities(state, c) &&
-      upgradeProfile(cardDefinition(state, c.cardId))?.attackOverride?.length,
+      upgradeProfile(instanceDefinition(state, c))?.attackOverride?.length,
   );
 }
 
@@ -33,18 +35,25 @@ export function losesAttackingOverwhelm(state: GameState, unit: CardInstance) {
       )
     )
       return false;
-    const defender = state.cards[attack.defender.instanceId];
-    return (
-      defender &&
-      defender.incarnation === attack.defender.incarnation &&
-      !attack.removedFromCombat.some(
-        r => r.instanceId === defender.instanceId && r.incarnation === defender.incarnation,
-      ) &&
-      attachedUpgrades(state, defender).some(
-        upgrade =>
-          !losesOwnAbilities(state, upgrade) &&
-          upgradeProfile(cardDefinition(state, upgrade.cardId))?.defendingAttackerLosesOverwhelm,
-      )
-    );
+    return attackDefenders(attack).some(ref => {
+      const defender = state.cards[ref.instanceId];
+      return (
+        !!defender &&
+        inCombat(state, attack, defender, ref) &&
+        attachedUpgrades(state, defender).some(
+          upgrade =>
+            !losesOwnAbilities(state, upgrade) &&
+            upgradeProfile(instanceDefinition(state, upgrade))?.defendingAttackerLosesOverwhelm,
+        )
+      );
+    });
   });
+}
+
+export function hostCannotAttackBases(state: GameState, unit: CardInstance) {
+  return attachedUpgrades(state, unit).some(
+    upgrade =>
+      !losesOwnAbilities(state, upgrade) &&
+      upgradeProfile(instanceDefinition(state, upgrade))?.hostCannotAttackBases,
+  );
 }

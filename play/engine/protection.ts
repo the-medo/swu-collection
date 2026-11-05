@@ -9,7 +9,7 @@ export function canAffectWithAbility(
   state: GameState,
   card: CardInstance,
   source: CardInstance | undefined,
-  operation: 'defeat' | 'return-to-hand' | 'exhaust',
+  operation: 'defeat' | 'return-to-hand' | 'exhaust' | 'capture',
 ): boolean {
   if (
     operation !== 'exhaust' &&

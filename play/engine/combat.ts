@@ -3,6 +3,10 @@ import { effectiveAbilities } from './effective-abilities.ts';
 import { isUnit, unitStats } from './attachments.ts';
 import { instance } from './state.ts';
 import type { CardInstance, Frame, GameState, Intent } from './model.ts';
+export const attackDefenders = (attack: GameState['attacks'][number]) => [
+  attack.defender,
+  ...(attack.additionalDefender ? [attack.additionalDefender] : []),
+];
 export type Attack = GameState['attacks'][number];
 export function inCombat(
   state: GameState,
@@ -37,11 +41,20 @@ export function combatOrderIntents(
     defender = instance(state, attack.defender.instanceId);
   if (
     !inCombat(state, attack, attacker, attack.attacker) ||
-    !inCombat(state, attack, defender, attack.defender)
+    !attackDefenders(attack).some(ref =>
+      inCombat(state, attack, instance(state, ref.instanceId), ref),
+    )
   )
     return [];
   const a = effectiveAbilities(state, attacker),
-    d = effectiveAbilities(state, defender);
+    d = {
+      combatDamageLast: attackDefenders(attack).some(ref => {
+        const unit = instance(state, ref.instanceId);
+        return (
+          inCombat(state, attack, unit, ref) && effectiveAbilities(state, unit).combatDamageLast
+        );
+      }),
+    };
   const first = attack.attackerFirst || a.firstCombatDamage;
   if (a.combatDamageLast && (d.combatDamageLast || first))
     return ['attacker-first', 'defender-first'].map(mode => ({ kind: 'choose-mode', mode }));

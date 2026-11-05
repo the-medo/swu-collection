@@ -23,7 +23,7 @@ export function readyInPlay(
     card.exhausted = false;
     if (
       state.phase === 'regroup' &&
-      supportsEngine('1.3.0', state.versions.engine) &&
+      supportsEngine('1.4.0', state.versions.engine) &&
       isUnit(state, card) &&
       (card.zone === 'ground' || card.zone === 'space')
     )

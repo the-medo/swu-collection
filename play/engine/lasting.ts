@@ -1,5 +1,10 @@
+import { instanceDefinition } from './instance-definition.ts';
 import { remainingRegroupReadies } from './regroup-ready.ts';
-import { effectiveAbilities, mayHaveAbility } from './effective-abilities.ts';
+import {
+  effectiveAbilities,
+  mayHaveAbility,
+  leaderAbilitiesRestricted,
+} from './effective-abilities.ts';
 import { isUnit, unitStats, attachedUpgrades } from './attachments.ts';
 import { upgradeProfile } from './roles.ts';
 import { cardDefinition } from '../cards/catalog.ts';
@@ -53,6 +58,7 @@ export function modifyUnit(
     ...(operation.cannotHeal ? { cannotHeal: true } : {}),
     ...(operation.surviveZeroHp ? { surviveZeroHp: true } : {}),
     ...(operation.preventAllDamage ? { preventAllDamage: true } : {}),
+    ...(operation.preventDamage ? { preventDamage: operation.preventDamage } : {}),
     ...(operation.preventNextDamage ? { preventNextDamage: operation.preventNextDamage } : {}),
     ...(operation.skipRegroupReady ? { skipRegroupReady: true } : {}),
     ...(operation.abilities ? { abilities: simpleAbilitiesSchema.parse(operation.abilities) } : {}),
@@ -70,12 +76,28 @@ export function modifyUnit(
   fact(state, 'modified', source.controller, [source, unit]);
 }
 
-export function losesOwnAbilities(state: GameState, card: CardInstance) {
-  return namedAbilityLoss(state, card) || activeLasting(state, card).some(e => e.loseAbilities);
+export function attachmentAbilityLoss(state: GameState, card: CardInstance): boolean {
+  return (
+    isUnit(state, card) &&
+    attachedUpgrades(state, card).some(
+      upgrade =>
+        upgradeProfile(instanceDefinition(state, upgrade))?.hostLosesAbilities &&
+        !losesOwnAbilities(state, upgrade),
+    )
+  );
+}
+export function losesOwnAbilities(state: GameState, card: CardInstance): boolean {
+  return (
+    namedAbilityLoss(state, card) ||
+    activeLasting(state, card).some(e => e.loseAbilities) ||
+    attachmentAbilityLoss(state, card)
+  );
 }
 export function cannotGainAbilities(state: GameState, unit: CardInstance) {
   return (
+    leaderAbilitiesRestricted(state, unit) ||
     namedAbilityLoss(state, unit) ||
+    attachmentAbilityLoss(state, unit) ||
     !!attackOverrides(state, unit).length ||
     activeLasting(state, unit).some(effect => effect.loseAbilities)
   );
@@ -118,7 +140,7 @@ export function cannotReady(
     attachedUpgrades(state, unit).some(
       upgrade =>
         !losesOwnAbilities(state, upgrade) &&
-        upgradeProfile(cardDefinition(state, upgrade.cardId))?.hostCannotReady,
+        upgradeProfile(instanceDefinition(state, upgrade))?.hostCannotReady,
     )
   );
 }
