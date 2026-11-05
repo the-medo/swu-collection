@@ -27,7 +27,9 @@ export default function HistoryMatchDetails({ match }: { match: MatchResult }) {
                 ? 'Karabast'
                 : match.gameSource === 'manual'
                   ? 'Manual entry'
-                  : match.gameSource}
+                  : match.gameSource === 'integration'
+                    ? `App: ${match.games[0]?.otherData?.integrationApp?.name ?? 'Third-party app'}`
+                    : match.gameSource}
           </span>
         </div>
       </div>

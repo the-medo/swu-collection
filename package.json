@@ -3,6 +3,8 @@
   "module": "server/index.ts",
   "type": "module",
   "scripts": {
+    "test:integration-apps": "INTEGRATION_APPS_DB_TEST=1 bun --env-file=.env.worktree test server/lib/integration-apps",
+    "test:browser:integration-apps": "INTEGRATION_APPS_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/integration-apps.browser.ts",
     "test:browser:headers": "HOMEPAGE_HEADER_BROWSER_TEST=1 bun frontend/tests/homepage-header.browser.ts",
     "export:header-artwork": "bun scripts/export-homepage-header-artwork.ts",
     "check:header-artwork": "bun scripts/export-homepage-header-artwork.ts --check",

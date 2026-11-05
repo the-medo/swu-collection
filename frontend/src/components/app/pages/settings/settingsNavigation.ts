@@ -20,6 +20,7 @@ export const settingsItems = [
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'collections-and-wantlists', label: 'Collections and wantlists', icon: BookOpen },
   { id: 'integrations', label: 'Integrations', icon: Plug },
+  { id: 'apps', label: 'Developer apps', icon: Code },
   { id: 'watched-players', label: 'Watched players', icon: Users },
   { id: 'calendar', label: 'Calendar', icon: CalendarDays },
   { id: 'sidebar', label: 'Sidebar', icon: PanelLeft },

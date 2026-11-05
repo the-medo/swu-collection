@@ -65,6 +65,7 @@ import fs from 'fs';
 import path from 'path';
 import * as Sentry from '@sentry/bun';
 import { isSensitiveAuthUrl } from '../shared/auth.ts';
+import { integrationAppsRoute } from './routes/integration-apps.ts';
 
 Sentry.init({
   environment: process.env.ENVIRONMENT,
@@ -161,6 +162,20 @@ app.use('/auth/*', async (c, next) => {
   c.header('Referrer-Policy', 'no-referrer');
   c.header('Cache-Control', 'no-store');
 });
+app.use('/settings/link/app', async (c, next) => {
+  c.header('X-Frame-Options', 'DENY');
+  c.header('Content-Security-Policy', "frame-ancestors 'none'");
+  c.header('Referrer-Policy', 'no-referrer');
+  c.header('Cache-Control', 'no-store');
+  await next();
+});
+app.use('/settings/link/app/*', async (c, next) => {
+  c.header('X-Frame-Options', 'DENY');
+  c.header('Content-Security-Policy', "frame-ancestors 'none'");
+  c.header('Referrer-Policy', 'no-referrer');
+  c.header('Cache-Control', 'no-store');
+  await next();
+});
 app.use('/api/auth/*', async (c, next) => {
   await next();
   c.header('Referrer-Policy', 'no-referrer');
@@ -170,6 +185,8 @@ const logRequest = requestLogger();
 app.use('*', async (c, next) => {
   if (
     /\/(?:api\/auth|api\/mcp|mcp)(?:\/|$)/.test(c.req.path) ||
+    c.req.path.startsWith('/api/integration-apps') ||
+    c.req.path.startsWith('/settings/link/app') ||
     c.req.path.startsWith('/api/creator-hub') ||
     c.req.path.startsWith('/api/admin/creator-imports')
   )
@@ -251,6 +268,7 @@ const apiRoutes = app
   .basePath('/api')
   .route('/auth', authRoute)
   .route('/mcp', mcpRoute)
+  .route('/integration-apps', integrationAppsRoute)
   .route('/world', worldRoute)
   .route('/collection', collectionRoute)
   .route('/deck', deckRoute)

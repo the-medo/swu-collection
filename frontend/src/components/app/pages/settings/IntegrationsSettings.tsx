@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import ConnectedApps from '@/components/app/integration-apps/ConnectedApps.tsx';
 import { useForm } from '@tanstack/react-form';
 import { Check, Copy, ExternalLink } from 'lucide-react';
 import { useMeleeConnection } from '@/api/integration/melee/useMeleeConnection.ts';
@@ -44,6 +45,7 @@ export default function IntegrationsSettings() {
       ) : (
         <MeleeIntegration key={user.id} status={query.data} />
       )}
+      <ConnectedApps />
     </section>
   );
 }

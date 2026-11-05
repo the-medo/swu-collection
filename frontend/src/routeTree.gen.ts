@@ -115,6 +115,7 @@ import { Route as AuthenticatedCrossfireReportsReportIdRouteImport } from './rou
 import { Route as AuthenticatedCrossfireReplayLobbyIdRouteImport } from './routes/_authenticated/crossfire/replay/$lobbyId'
 import { Route as LimitedPoolPoolIdDetailIndexRouteImport } from './routes/limited/pool/$poolId/detail/index'
 import { Route as AuthenticatedSettingsLinkKarabastIndexRouteImport } from './routes/_authenticated/settings/link/karabast/index'
+import { Route as AuthenticatedSettingsLinkAppIndexRouteImport } from './routes/_authenticated/settings/link/app/index'
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutMetaIndexRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout/meta/index'
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout/members/index'
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutMatchupsIndexRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout/matchups/index'
@@ -685,6 +686,12 @@ const AuthenticatedSettingsLinkKarabastIndexRoute =
     path: '/settings/link/karabast/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedSettingsLinkAppIndexRoute =
+  AuthenticatedSettingsLinkAppIndexRouteImport.update({
+    id: '/settings/link/app/',
+    path: '/settings/link/app/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const TeamsTeamIdStatisticsStatisticsLayoutMetaIndexRoute =
   TeamsTeamIdStatisticsStatisticsLayoutMetaIndexRouteImport.update({
     id: '/meta/',
@@ -829,6 +836,7 @@ export interface FileRoutesByFullPath {
   '/statistics/matchups': typeof StatisticsStatisticsLayoutMatchupsIndexRoute
   '/statistics/meta': typeof StatisticsStatisticsLayoutMetaIndexRoute
   '/teams/$teamId/statistics/': typeof TeamsTeamIdStatisticsIndexRoute
+  '/settings/link/app': typeof AuthenticatedSettingsLinkAppIndexRoute
   '/settings/link/karabast': typeof AuthenticatedSettingsLinkKarabastIndexRoute
   '/limited/pool/$poolId/detail': typeof LimitedPoolPoolIdDetailIndexRoute
   '/teams/$teamId/statistics/dashboard': typeof TeamsTeamIdStatisticsStatisticsLayoutDashboardIndexRoute
@@ -935,6 +943,7 @@ export interface FileRoutesByTo {
   '/statistics/leader-and-base': typeof StatisticsStatisticsLayoutLeaderAndBaseIndexRoute
   '/statistics/matchups': typeof StatisticsStatisticsLayoutMatchupsIndexRoute
   '/statistics/meta': typeof StatisticsStatisticsLayoutMetaIndexRoute
+  '/settings/link/app': typeof AuthenticatedSettingsLinkAppIndexRoute
   '/settings/link/karabast': typeof AuthenticatedSettingsLinkKarabastIndexRoute
   '/limited/pool/$poolId/detail': typeof LimitedPoolPoolIdDetailIndexRoute
   '/teams/$teamId/statistics/dashboard': typeof TeamsTeamIdStatisticsStatisticsLayoutDashboardIndexRoute
@@ -1050,6 +1059,7 @@ export interface FileRoutesById {
   '/statistics/_statisticsLayout/matchups/': typeof StatisticsStatisticsLayoutMatchupsIndexRoute
   '/statistics/_statisticsLayout/meta/': typeof StatisticsStatisticsLayoutMetaIndexRoute
   '/teams/$teamId/statistics/': typeof TeamsTeamIdStatisticsIndexRoute
+  '/_authenticated/settings/link/app/': typeof AuthenticatedSettingsLinkAppIndexRoute
   '/_authenticated/settings/link/karabast/': typeof AuthenticatedSettingsLinkKarabastIndexRoute
   '/limited/pool/$poolId/detail/': typeof LimitedPoolPoolIdDetailIndexRoute
   '/teams/$teamId/statistics/_statisticsLayout/dashboard/': typeof TeamsTeamIdStatisticsStatisticsLayoutDashboardIndexRoute
@@ -1163,6 +1173,7 @@ export interface FileRouteTypes {
     | '/statistics/matchups'
     | '/statistics/meta'
     | '/teams/$teamId/statistics/'
+    | '/settings/link/app'
     | '/settings/link/karabast'
     | '/limited/pool/$poolId/detail'
     | '/teams/$teamId/statistics/dashboard'
@@ -1269,6 +1280,7 @@ export interface FileRouteTypes {
     | '/statistics/leader-and-base'
     | '/statistics/matchups'
     | '/statistics/meta'
+    | '/settings/link/app'
     | '/settings/link/karabast'
     | '/limited/pool/$poolId/detail'
     | '/teams/$teamId/statistics/dashboard'
@@ -1383,6 +1395,7 @@ export interface FileRouteTypes {
     | '/statistics/_statisticsLayout/matchups/'
     | '/statistics/_statisticsLayout/meta/'
     | '/teams/$teamId/statistics/'
+    | '/_authenticated/settings/link/app/'
     | '/_authenticated/settings/link/karabast/'
     | '/limited/pool/$poolId/detail/'
     | '/teams/$teamId/statistics/_statisticsLayout/dashboard/'
@@ -2205,6 +2218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsLinkKarabastIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/settings/link/app/': {
+      id: '/_authenticated/settings/link/app/'
+      path: '/settings/link/app'
+      fullPath: '/settings/link/app'
+      preLoaderRoute: typeof AuthenticatedSettingsLinkAppIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/teams/$teamId/statistics/_statisticsLayout/meta/': {
       id: '/teams/$teamId/statistics/_statisticsLayout/meta/'
       path: '/meta'
@@ -2292,6 +2312,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCrossfireReplayLobbyIdRoute: typeof AuthenticatedCrossfireReplayLobbyIdRoute
   AuthenticatedCrossfireReportsReportIdRoute: typeof AuthenticatedCrossfireReportsReportIdRoute
   AuthenticatedTournamentsCalendarIndexRoute: typeof AuthenticatedTournamentsCalendarIndexRoute
+  AuthenticatedSettingsLinkAppIndexRoute: typeof AuthenticatedSettingsLinkAppIndexRoute
   AuthenticatedSettingsLinkKarabastIndexRoute: typeof AuthenticatedSettingsLinkKarabastIndexRoute
 }
 
@@ -2313,6 +2334,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedCrossfireReportsReportIdRoute,
   AuthenticatedTournamentsCalendarIndexRoute:
     AuthenticatedTournamentsCalendarIndexRoute,
+  AuthenticatedSettingsLinkAppIndexRoute:
+    AuthenticatedSettingsLinkAppIndexRoute,
   AuthenticatedSettingsLinkKarabastIndexRoute:
     AuthenticatedSettingsLinkKarabastIndexRoute,
 }

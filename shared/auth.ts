@@ -25,5 +25,8 @@ export const authPasswordMinLength = 12;
 export const authPasswordMaxLength = 128;
 
 export function isSensitiveAuthUrl(value?: string) {
-  return !!value && /\/(?:api\/)?auth(?:[/?#]|$)/.test(value);
+  return (
+    !!value &&
+    /\/(?:(?:api\/)?auth|api\/integration-apps|settings\/link\/app)(?:[/?#]|$)/.test(value)
+  );
 }
