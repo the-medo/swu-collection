@@ -38,6 +38,7 @@ export interface LeaderBaseArtworkProps {
   baseKey?: string | null;
   side?: 'left' | 'right';
   size?: 'default' | 'compact';
+  variant?: 'leader-base' | 'leader' | 'base';
   className?: string;
   portraitClassName?: string;
 }
@@ -48,6 +49,7 @@ export function LeaderBaseArtwork({
   baseKey,
   side = 'left',
   size = 'default',
+  variant = 'leader-base',
   className,
   portraitClassName,
 }: LeaderBaseArtworkProps) {
@@ -55,8 +57,15 @@ export function LeaderBaseArtwork({
   const leader = data?.cards[leaderId ?? ''];
   const base = baseKey ? processBase(baseKey, data?.cards) : undefined;
   const baseCard = data?.cards[baseKey ?? ''] ?? base?.baseCard;
-  const label = `${leader?.name ?? 'Unknown leader'} / ${baseCard?.name ?? baseKey ?? 'Unknown base'}`;
-  const aspect = base?.aspects[0];
+  const leaderLabel = leader?.name ?? 'Unknown leader';
+  const baseLabel = baseCard?.name ?? baseKey ?? 'Unknown base';
+  const label =
+    variant === 'leader'
+      ? leaderLabel
+      : variant === 'base'
+        ? baseLabel
+        : `${leaderLabel} / ${baseLabel}`;
+  const aspect = variant === 'leader' ? leader?.aspects[0] : base?.aspects[0];
   const accent = aspect ? aspectLib[aspect] : 'hsl(var(--muted-foreground))';
   const baseIcon = base?.isBasicForceBase
     ? 'force'
@@ -68,7 +77,12 @@ export function LeaderBaseArtwork({
 
   return (
     <div
-      className={cn(artworkVariants({ size }), className)}
+      className={cn(
+        artworkVariants({ size }),
+        variant === 'leader' && (size === 'compact' ? 'w-15' : 'w-23.5'),
+        variant === 'base' && (size === 'compact' ? 'size-8' : 'size-10'),
+        className,
+      )}
       data-artwork-ready={!!data || isError}
       role="img"
       aria-label={label}
@@ -76,50 +90,55 @@ export function LeaderBaseArtwork({
       style={{ '--leader-base-color': accent } as CSSProperties}
     >
       <div aria-hidden="true">
-        <div className={cn(portraitVariants({ size, side }), portraitClassName)}>
-          {leader ? (
-            <CardArtCrop
-              card={leader}
-              alt=""
-              fit="cover"
-              loading="lazy"
-              className="h-full w-full transition-transform duration-200 group-hover/leader-base-artwork:scale-105 motion-reduce:transition-none"
-            />
-          ) : (
-            <div className="grid h-full place-items-center text-muted-foreground">
-              <UserRound size={22} />
-            </div>
-          )}
-        </div>
-        <span
-          className={cn(
-            'leader-base-badge absolute bottom-0 grid place-items-center rounded-lg border-[3px] border-[var(--leader-base-color)] bg-card text-foreground shadow-sm ring-2 ring-card',
-            size === 'compact' ? 'size-6' : 'size-8',
-            side === 'left' ? 'right-0' : 'left-0',
-          )}
-        >
-          {baseIcon ? (
-            <span
-              className={cn(
-                'grid place-items-center rounded-md bg-white',
-                size === 'compact' ? 'size-4.5' : 'size-5.5',
-              )}
-            >
-              <AspectIcon aspect={baseIcon} size={size === 'compact' ? 'xSmall' : 'small'} />
-            </span>
-          ) : base?.shortcut ? (
-            <span
-              className={cn(
-                'leading-none font-bold tracking-tight',
-                size === 'compact' ? 'text-[8px]' : 'text-[10px]',
-              )}
-            >
-              {base.shortcut}
-            </span>
-          ) : (
-            <CircleHelp size={16} className="text-muted-foreground" />
-          )}
-        </span>
+        {variant !== 'base' && (
+          <div className={cn(portraitVariants({ size, side }), portraitClassName)}>
+            {leader ? (
+              <CardArtCrop
+                card={leader}
+                alt=""
+                fit="cover"
+                loading="lazy"
+                className="h-full w-full transition-transform duration-200 group-hover/leader-base-artwork:scale-105 motion-reduce:transition-none"
+              />
+            ) : (
+              <div className="grid h-full place-items-center text-muted-foreground">
+                <UserRound size={22} />
+              </div>
+            )}
+          </div>
+        )}
+        {variant !== 'leader' && (
+          <span
+            className={cn(
+              'leader-base-badge absolute bottom-0 grid place-items-center rounded-lg border-[3px] border-[var(--leader-base-color)] bg-card text-foreground shadow-sm ring-2 ring-card',
+              size === 'compact' ? 'size-6' : 'size-8',
+              side === 'left' ? 'right-0' : 'left-0',
+              variant === 'base' && 'size-full',
+            )}
+          >
+            {baseIcon ? (
+              <span
+                className={cn(
+                  'grid place-items-center rounded-md bg-white',
+                  size === 'compact' ? 'size-4.5' : 'size-5.5',
+                )}
+              >
+                <AspectIcon aspect={baseIcon} size={size === 'compact' ? 'xSmall' : 'small'} />
+              </span>
+            ) : base?.shortcut ? (
+              <span
+                className={cn(
+                  'leading-none font-bold tracking-tight',
+                  size === 'compact' ? 'text-[8px]' : 'text-[10px]',
+                )}
+              >
+                {base.shortcut}
+              </span>
+            ) : (
+              <CircleHelp size={16} className="text-muted-foreground" />
+            )}
+          </span>
+        )}
       </div>
     </div>
   );

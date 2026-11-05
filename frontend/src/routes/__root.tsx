@@ -69,7 +69,15 @@ const globalSearchParams = z.object({
   // Meta analysis params
   maMetaPart: z.enum(['all', 'top8', 'day2', 'top64', 'champions']).optional(),
   maMetaInfo: z.enum([...metaInfoArray]).optional(),
-  maViewMode: z.enum(['chart', 'table']).optional(),
+  maViewMode: z.enum(['chart', 'table', 'apr']).optional(),
+  maAprStage: z
+    .enum(['field-top8', 'top8-champions', 'field-day2', 'day2-top8'])
+    .optional()
+    .catch(undefined),
+  maAprSort: z
+    .enum(['field-day2', 'field-top8', 'day2-top8', 'top8-champions', 'combined'])
+    .optional()
+    .catch(undefined),
   maTournamentId: z.string().optional(),
   maTournamentGroupId: z.string().optional(),
 
