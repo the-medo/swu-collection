@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { SwuArena, SwuAspect, SwuRarity, SwuSet } from '../../../../../../types/enums.ts';
-import { premierSetMap } from '../../../../../../types/Format.ts';
+import { premierSetMap, previewSetMap } from '../../../../../../types/Format.ts';
 import { setInfo } from '../../../../../../lib/swu-resources/set-info.ts';
 
 export const cardUniquenessFilterValues = ['both', 'unique', 'not-unique'] as const;
@@ -19,7 +19,8 @@ export const getCardSearchShortcutSetCodes = (
 ) => ({
   premierSetCodes: [...premierSets],
   futureSetCodes: (Object.keys(setInfo) as SwuSet[]).filter(
-    set => !premierSets.includes(set) && setInfo[set].releaseDate > currentDate,
+    set =>
+      !premierSets.includes(set) && (previewSetMap[set] || setInfo[set].releaseDate > currentDate),
   ),
 });
 

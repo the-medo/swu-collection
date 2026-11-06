@@ -14,6 +14,13 @@ New official cards are generated into tracked static JSON, not inserted into a
 PostgreSQL card table. Database work in this workflow is only for dependent
 projections/references.
 
+An official-card or set import includes publishing its reviewed card images to
+R2 and verifying that the public image URLs work. The import request authorizes
+that upload; do not ask for separate confirmation. Skip publication only when
+the user explicitly requests a dry run, staging-only work, or no uploads. If
+credentials or upload failures block publication, report the import as
+incomplete rather than silently handing off a catalog with missing images.
+
 ## Before fetching
 
 For a new playable set, add and review its `SwuSet` value in `types/enums.ts`
@@ -66,12 +73,20 @@ exact known set of staged card JSON and images before continuing.
    relevant when several requested expansions contain that card. Treat any
    remaining report as an incomplete staging run; rerun with
    `--skipExisting=false` after addressing it.
-5. When image publication is authorized, review the staged WebP set and run
-   `bun lib/swu-resources/upload-images.ts` before merging. Confirm that its
-   reported success count matches the reviewed staged WebP count; any failed
-   object makes the process exit non-zero.
-6. Only after reviewing every staged card file and completing any authorized
-   image upload, run
+5. Review the staged WebP set and run
+   `bun lib/swu-resources/upload-images.ts` before merging, unless the user
+   explicitly excluded publication. The uploader writes every file in
+   `output/images/webp` to bucket `swu-images` under `cards/`, overwrites
+   existing same-key objects, and has no dry run. Confirm that the directory
+   contains only the reviewed images for this import. Use the configured
+   `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, and `R2_SECRET_ACCESS_KEY` in the upload
+   process without printing them or copying them into tracked files or a
+   worktree's persistent environment. Confirm that the success count matches
+   the reviewed file count and that no uploads failed. Verify representative
+   new front/back images at `https://images.swubase.com/cards/<filename>` and
+   in the app without local image interception.
+6. Only after reviewing every staged card file and completing image publication
+   (unless explicitly excluded), run
    `bun lib/swu-resources/card-merger.ts`. It rewrites the tracked
    `server/db/json/card-list.json`, merges all staged cards, unions old/new
    `cardUid` values, and deliberately restores old variants missing upstream.
@@ -82,30 +97,23 @@ exact known set of staged card JSON and images before continuing.
    the example set and remember the script currently checks only the hard-coded
    `Hyperspace Foil` variant. It is a diagnostic, not complete validation.
 
-Stop after local merge, semantic review, and validation unless the user
-explicitly requests rollout actions.
+Finish the import with image publication, local merge, semantic review, and
+validation. Production deployment and database changes remain separate actions.
 
-## Optional rollout — explicit authorization required
+## Optional application/database rollout — explicit authorization required
 
-1. Run `bun lib/swu-resources/upload-images.ts` only when public R2 publication
-   was requested and the intended credentials/file set were reviewed. It
-   uploads every staged WebP to hard-coded bucket `swu-images` under `cards/`,
-   has no dry run, trims accidental surrounding whitespace from its three R2
-   variables, and overwrites an existing same-key public object. It exits
-   non-zero when configuration is missing or any upload fails; still inspect
-   the failure output and verify objects independently afterward.
-2. Deploy/restart only when requested so the static import and startup-time
-   official version change.
-3. After adding cards or changing default variants, run
+1. Deploy/restart production only when requested so the static import and
+   startup-time official version change.
+2. After adding cards or changing default variants, run
    `bun server/crons/update-card-standard-variants.ts` only when an intended
    database update was requested. It upserts projections but does not remove
    obsolete rows.
-4. The Admin Variant Checker reports current `collection_card` and
+3. The Admin Variant Checker reports current `collection_card` and
    `card_variant_price` references only; it is not proof that history, standard
    variants, user/browser overrides, or future reference tables are clean. An
    ID deletion/replacement requires a broader reference audit and explicit
    cleanup.
-5. If an official card overlaps a preview, run
+4. If an official card overlaps a preview, run
    `bun server/lib/cards/previewCardMigration.ts` report-only first. Use
    `--apply` only with separate authorization for the intended database.
 
@@ -116,9 +124,9 @@ explicitly requests rollout actions.
   hard-coded default expansion import. Never use that command for discovery.
 - The parser default is currently expansion 108. Always pass the intended
   expansion explicitly.
-- The merger and variant checker still catch and log important failures without
-  reliably returning a failing exit code. Inspect their output rather than
-  trusting process status alone.
+- The merger and uploader exit non-zero on failure, but still inspect their
+  output and counts. The variant checker can log important failures without
+  reliably returning a failing exit code.
 - The merger does not remove absent upstream cards and restores absent old
   variants. Deletion or replacement therefore needs explicit migration work.
 - The official JSON is cast rather than runtime-validated. In particular,

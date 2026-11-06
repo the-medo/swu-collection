@@ -1,5 +1,5 @@
-import { rotationBlocks } from '../lib/swu-resources/set-info.ts';
-import type { SwuSet } from './enums.ts';
+import { rotationBlocks, setInfo } from '../lib/swu-resources/set-info.ts';
+import { SwuSet } from './enums.ts';
 import type { CardDataWithVariants, CardListVariants } from '../lib/swu-resources/types.ts';
 
 export type Format = {
@@ -109,25 +109,66 @@ export const getDailySnapshotFormatSortOrder = (formatId: number): number => {
   return 3;
 };
 
-export const premierSetMap = {
+// Remove a set here when promoting it from preview to the released formats.
+export const previewSetMap: Partial<Record<SwuSet, true>> = {
+  [SwuSet.IC27]: true,
+};
+
+const premierRotationSetMap = {
   ...rotationBlocks[2].setMap,
   ...rotationBlocks[3].setMap,
 };
 
+const withoutPreviewSets = (sets: Partial<Record<SwuSet, true>>) =>
+  Object.fromEntries(
+    Object.entries(sets).filter(([set]) => !previewSetMap[set as SwuSet]),
+  ) as Partial<Record<SwuSet, true>>;
+
+export const premierSetMap = withoutPreviewSets(premierRotationSetMap);
+const previewPremierSetMap = { ...premierSetMap, ...previewSetMap };
+const allSetMap = Object.fromEntries(Object.keys(setInfo).map(set => [set, true])) as Partial<
+  Record<SwuSet, true>
+>;
+const eternalSetMap = withoutPreviewSets(allSetMap);
+
 export const setRestrictionByFormat: Record<number, Partial<Record<SwuSet, true | undefined>>> = {
   1: premierSetMap,
-  7: premierSetMap,
+  6: eternalSetMap,
+  7: previewPremierSetMap,
+  8: allSetMap,
 };
+
+const hasPrintingInSets = (
+  card: CardDataWithVariants<CardListVariants>,
+  sets: Partial<Record<SwuSet, true>>,
+) => !!sets[card.set] || Object.values(card.variants).some(variant => variant && sets[variant.set]);
 
 export const cardFiltersByFormat: Record<string, FilterByFormat> = {
   premier: {
     title: 'Premier only',
-    filterCallback: (card: CardDataWithVariants<CardListVariants>) => !!premierSetMap[card?.set],
+    filterCallback: card => hasPrintingInSets(card, premierSetMap),
     setMap: premierSetMap,
+  },
+  eternal: {
+    title: 'Eternal only',
+    filterCallback: card => hasPrintingInSets(card, eternalSetMap),
+    setMap: eternalSetMap,
+  },
+  previewPremier: {
+    title: 'Premier + preview',
+    filterCallback: card => hasPrintingInSets(card, previewPremierSetMap),
+    setMap: previewPremierSetMap,
+  },
+  previewEternal: {
+    title: 'Eternal + preview',
+    filterCallback: card => hasPrintingInSets(card, allSetMap),
+    setMap: allSetMap,
   },
 };
 
 export const cardFilterByFormatId: Partial<Record<number, FilterByFormat>> = {
   1: cardFiltersByFormat.premier,
-  7: cardFiltersByFormat.premier,
+  6: cardFiltersByFormat.eternal,
+  7: cardFiltersByFormat.previewPremier,
+  8: cardFiltersByFormat.previewEternal,
 };

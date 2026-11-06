@@ -34,13 +34,16 @@ describe('Premier-only card search shortcut', () => {
 
     expect(premierSetMap[SwuSet.HMW]).toBe(true);
     expect(shortcuts.premierSetCodes).toContain(SwuSet.HMW);
-    expect(shortcuts.futureSetCodes).toEqual([]);
+    expect(shortcuts.futureSetCodes).toEqual([SwuSet.IC27]);
     expect(areAllFutureSetsSelected(shortcuts.premierSetCodes)).toBe(false);
-    expect(toggleFutureSetSelection(shortcuts.premierSetCodes)).toEqual(shortcuts.premierSetCodes);
+    expect(toggleFutureSetSelection(shortcuts.premierSetCodes)).toEqual([
+      ...shortcuts.premierSetCodes,
+      SwuSet.IC27,
+    ]);
   });
 
   test('offers an unreleased set as a preview until it joins Premier', () => {
-    const priorPremierSets = premierSetCodes.filter(set => set !== SwuSet.HMW);
+    const priorPremierSets = [...premierSetCodes, SwuSet.IC27].filter(set => set !== SwuSet.HMW);
     const { futureSetCodes } = getCardSearchShortcutSetCodes('2026-09-26', priorPremierSets);
 
     expect(futureSetCodes).toEqual([SwuSet.HMW]);
@@ -54,5 +57,27 @@ describe('Premier-only card search shortcut', () => {
     expect(getCardSearchShortcutSetCodes('2026-10-02', priorPremierSets).futureSetCodes).toEqual(
       [],
     );
+  });
+
+  test('offers IC27 through Preview while keeping it out of the Premier shortcut', () => {
+    const shortcuts = getCardSearchShortcutSetCodes('2026-11-06');
+
+    expect(shortcuts.premierSetCodes).not.toContain(SwuSet.IC27);
+    expect(shortcuts.premierSetCodes).toContain(SwuSet.HMW);
+    expect(shortcuts.futureSetCodes).toEqual([SwuSet.IC27]);
+    expect(toggleFutureSetSelection([SwuSet.HMW], shortcuts.futureSetCodes)).toEqual([
+      SwuSet.HMW,
+      SwuSet.IC27,
+    ]);
+    expect(toggleFutureSetSelection([SwuSet.HMW, SwuSet.IC27], shortcuts.futureSetCodes)).toEqual([
+      SwuSet.HMW,
+    ]);
+  });
+
+  test('keeps the preview shortcut aligned with the configured format until promotion', () => {
+    expect(getCardSearchShortcutSetCodes('2026-11-20').futureSetCodes).toEqual([SwuSet.IC27]);
+    expect(
+      getCardSearchShortcutSetCodes('2026-11-20', [...premierSetCodes, SwuSet.IC27]).futureSetCodes,
+    ).toEqual([]);
   });
 });

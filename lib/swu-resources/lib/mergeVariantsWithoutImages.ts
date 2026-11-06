@@ -28,6 +28,7 @@ export function mergeVariantsWithoutImages(variant: CardVariant[]): CardVariant[
     finalVariants.push({
       ...variantPair,
       swuId: nonfoil.swuId,
+      variantName: nonfoil.variantName,
       hasFoil: true,
       hasNonfoil: true,
     });
