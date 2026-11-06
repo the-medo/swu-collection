@@ -1,6 +1,6 @@
 import { setInfo } from '../set-info.ts';
 import type { CardVariant } from '../types.ts';
-import type { SwuSet } from '../../../types/enums.ts';
+import { SwuSet } from '../../../types/enums.ts';
 
 export function processVariantWithoutImages(variant: any): CardVariant {
   const id = variant.id;
@@ -18,7 +18,11 @@ export function processVariantWithoutImages(variant: any): CardVariant {
 
   if (swubaseExpansion) {
     if (cardCount === swubaseExpansion.cardCount) {
-      variantName = variantName.replace(' Foil', '');
+      // Only the first three sets share card numbers between foil and nonfoil.
+      // Newer sets can report the base card count even for separate foil printings.
+      if (swubaseExpansion.sortValue < setInfo[SwuSet.JTL].sortValue) {
+        variantName = variantName.replace(' Foil', '');
+      }
       if (variantType.foil) {
         hasFoil = true;
       } else {
