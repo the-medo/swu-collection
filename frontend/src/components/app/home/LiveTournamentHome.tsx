@@ -24,6 +24,9 @@ import {
 const liveHomeClassName = cn(
   'live-home [--deck-row-accent:var(--live-accent)] [--live-accent:#326149] [--live-tint:#edf2e9]',
   '[--live-line:#d5e0cd] [--live-gold:#8c681f] w-full max-w-380 my-0 mx-auto px-4 pt-2 pb-10',
+  // Keep the homepage sidebar width when watch mode collapses the app navigation.
+  // Account for the expanded navigation, page gutters, grid gap, and homepage width cap.
+  '[--live-sidebar-width:max(290px,calc((min(100vw_-_var(--sidebar-width)_-_1rem,_95rem)_-_3.625rem)/2.9))]',
   'dark:[--live-accent:#b9d4a8] dark:[--live-tint:#1d2720] dark:[--live-line:#364437]',
   'dark:[--live-gold:#e4c67b]',
   '[&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-[var(--live-accent)]',
@@ -48,6 +51,7 @@ export default function LiveTournamentHome() {
   const user = useUser();
   const hasRole = useRole();
   const { streamId } = useSearch({ strict: false });
+  const containerClassName = cn(liveHomeClassName, streamId && 'max-w-none');
   const isAdmin = hasRole('admin');
   const { data, isLoading, isError, error, isFetching, refetch } = useLiveTournamentWeekend({
     refetchInterval: user ? false : 60 * 1000,
@@ -88,10 +92,10 @@ export default function LiveTournamentHome() {
 
   if (isLoading) {
     return (
-      <div className={liveHomeClassName} role="status" aria-label="Loading live weekend">
+      <div className={containerClassName} role="status" aria-label="Loading live weekend">
         <div
           className={cn(
-            'live-weekend-layout grid grid-cols-[minmax(0,_1.9fr)_minmax(290px,_1fr)] items-start gap-6.5',
+            'live-weekend-layout grid grid-cols-[minmax(0,_1fr)_var(--live-sidebar-width)] items-start gap-6.5',
             'max-desktop:grid-cols-1',
           )}
         >
@@ -107,7 +111,7 @@ export default function LiveTournamentHome() {
 
   if (isError) {
     return (
-      <div className={liveHomeClassName}>
+      <div className={containerClassName}>
         <div
           className={cn(
             'live-empty flex items-center flex-col gap-5 py-15 px-6 border border-[color:var(--live-line)]',
@@ -133,7 +137,7 @@ export default function LiveTournamentHome() {
 
   if (!detail) {
     return (
-      <div className={liveHomeClassName}>
+      <div className={containerClassName}>
         <Helmet title="Live Weekend | SWUBase" />
         <section
           className={cn(
@@ -186,7 +190,7 @@ export default function LiveTournamentHome() {
   }
 
   return (
-    <div className={liveHomeClassName} id="live-section-container">
+    <div className={containerClassName} id="live-section-container">
       <Helmet title={`${detail.weekend.name} | SWUBase Live Tournaments`} />
       {streamId ? (
         <LiveTournamentWatchMode
@@ -197,7 +201,7 @@ export default function LiveTournamentHome() {
       ) : (
         <div
           className={cn(
-            'live-weekend-layout grid grid-cols-[minmax(0,_1.9fr)_minmax(290px,_1fr)] items-start gap-6.5',
+            'live-weekend-layout grid grid-cols-[minmax(0,_1fr)_var(--live-sidebar-width)] items-start gap-6.5',
             'max-desktop:grid-cols-1',
           )}
         >

@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { Pencil } from 'lucide-react';
-import Flag from '@/components/app/global/Flag.tsx';
 import { WatchedPlayersManager } from '@/components/app/player-watch/WatchedPlayersManager.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import {
@@ -13,20 +12,8 @@ import {
 import { useUser } from '@/hooks/useUser.ts';
 import { cn } from '@/lib/utils.ts';
 import { LiveSectionHeader } from '../components';
-import type { CountryCode } from '../../../../../../../server/db/lists.ts';
 import type { LiveTournamentWeekendDetail } from '../liveTournamentTypes.ts';
-import { getRoundLabel } from '../liveTournamentUtils.ts';
-import type { LiveTournamentHomeWatchedMatch } from '../../../../../../../types/TournamentWeekend.ts';
-
-function getLatestMatchSummary(latestMatch: LiveTournamentHomeWatchedMatch) {
-  return {
-    resultLabel:
-      latestMatch.playerGameWins !== null && latestMatch.opponentGameWins !== null
-        ? `${latestMatch.playerGameWins}:${latestMatch.opponentGameWins} ${latestMatch.opponentDisplayName ?? 'TBD'}`
-        : `vs ${latestMatch.opponentDisplayName ?? 'TBD'}`,
-    outcome: latestMatch.outcome,
-  };
-}
+import { WatchedTournamentTable } from './WatchedTournamentTable.tsx';
 
 export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeekendDetail }) {
   const user = useUser();
@@ -41,19 +28,34 @@ export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeeken
             const standing = watchedTournament?.standing ?? null;
             const latestMatch = watchedTournament?.latestMatch ?? null;
 
-            if (standing === null && latestMatch === null) return [];
+            if (
+              !watchedTournament ||
+              (standing === null && latestMatch === null && !watchedTournament.finalStanding)
+            )
+              return [];
 
             return [
               {
+                ...watchedTournament,
                 displayName: entry.displayName,
-                standing,
-                latestMatch,
               },
             ];
           })
           .sort((left, right) => {
+            const leftPlacement =
+              (left.finalStanding?.placement ?? 0) > 0
+                ? (left.finalStanding?.placement ?? Infinity)
+                : Infinity;
+            const rightPlacement =
+              (right.finalStanding?.placement ?? 0) > 0
+                ? (right.finalStanding?.placement ?? Infinity)
+                : Infinity;
+            if (leftPlacement !== rightPlacement) return leftPlacement - rightPlacement;
             if (left.standing && right.standing) {
-              return left.standing.rank - right.standing.rank;
+              return (
+                right.standing.roundNumber - left.standing.roundNumber ||
+                left.standing.rank - right.standing.rank
+              );
             }
 
             if (left.standing) return -1;
@@ -86,7 +88,7 @@ export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeeken
       <section className="flex w-full flex-col gap-3">
         <LiveSectionHeader
           title="Your watchlist"
-          detail="Keep your players in sight."
+          detail="Standings, pairings, and results for your players."
           action={
             <DialogTrigger asChild>
               <Button
@@ -130,89 +132,13 @@ export function WatchedPlayersSection({ detail }: { detail: LiveTournamentWeeken
           </div>
         ) : (
           <div className="grid gap-3">
-            {watchedTournamentGroups.map(group => {
-              const roundLabel =
-                group.tournament.weekendTournament.status === 'finished'
-                  ? null
-                  : getRoundLabel(group.tournament);
-
-              return (
-                <div
-                  key={group.tournament.tournament.id}
-                  className={cn(
-                    'live-watched-group overflow-hidden border border-border rounded-[10px]',
-                    '[&_.text-sm]:text-[11px]',
-                    '[&_.text-xs]:text-[10px]',
-                  )}
-                >
-                  <div className="live-watched-group-heading py-2.5 px-3 border-b border-b-border bg-muted/35">
-                    <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-                      <div className="flex min-w-0 items-center gap-2">
-                        <Flag
-                          countryCode={group.tournament.tournament.location as CountryCode}
-                          className="h-4 w-5 shrink-0 rounded-sm"
-                        />
-                        <h6 className="mb-0! truncate text-xs">
-                          {group.tournament.tournament.name}
-                        </h6>
-                      </div>
-
-                      {roundLabel && (
-                        <div className="shrink-0 text-xs text-muted-foreground">{roundLabel}</div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="divide-y">
-                    {group.players.map(player => {
-                      const latestMatchSummary = player.latestMatch
-                        ? getLatestMatchSummary(player.latestMatch)
-                        : null;
-
-                      return (
-                        <div
-                          key={`${group.tournament.tournament.id}-${player.displayName}`}
-                          className={cn(
-                            'px-3 py-2 text-sm transition-colors',
-                            latestMatchSummary?.outcome === 'win' &&
-                              'bg-green-50/70 dark:bg-green-950/20',
-                            latestMatchSummary?.outcome === 'loss' &&
-                              'bg-red-50/70 dark:bg-red-950/20',
-                          )}
-                        >
-                          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-                            <div className="flex min-w-0 items-center gap-2">
-                              <div className="truncate font-medium">{player.displayName}</div>
-
-                              {player.standing && (
-                                <div className="shrink-0 text-xs text-muted-foreground tabular-nums">
-                                  #{player.standing.rank} - {player.standing.matchRecord}
-                                </div>
-                              )}
-                            </div>
-
-                            {latestMatchSummary && (
-                              <div
-                                className={cn(
-                                  'shrink-0 text-xs tabular-nums',
-                                  latestMatchSummary.outcome === 'win' &&
-                                    'font-medium text-green-700 dark:text-green-300',
-                                  latestMatchSummary.outcome === 'loss' &&
-                                    'font-medium text-red-700 dark:text-red-300',
-                                  latestMatchSummary.outcome === null && 'text-muted-foreground',
-                                )}
-                              >
-                                {latestMatchSummary.resultLabel}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
+            {watchedTournamentGroups.map(group => (
+              <WatchedTournamentTable
+                key={group.tournament.tournament.id}
+                tournament={group.tournament}
+                players={group.players}
+              />
+            ))}
           </div>
         )}
       </section>

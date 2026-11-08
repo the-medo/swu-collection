@@ -21,6 +21,7 @@ type CacheEntry = {
   generatedAt: string;
   expiresAt: number;
   version: number;
+  watchedPlayersStale?: boolean;
 };
 
 const entries = new Map<string, CacheEntry>();
@@ -120,6 +121,7 @@ const patchCachedEntries = (
   patch: LiveTournamentHomePatch,
   version: number,
   userId?: string,
+  watchedVersion?: number,
 ) => {
   if (patch.kind === 'weekend_replace' && userId === undefined) {
     [...entries.keys()]
@@ -140,7 +142,15 @@ const patchCachedEntries = (
     const entry = entries.get(key);
     if (!entry) return;
 
-    entries.set(key, createEntry(applyPatch(entry.data, patch), version, now));
+    const next = createEntry(applyPatch(entry.data, patch), version, now);
+    // Public tournament patches cannot carry account-specific standings/history.
+    // Reuse the public data and refresh only the personal part on the next request.
+    next.watchedPlayersStale =
+      patch.kind === 'watched_players'
+        ? watchedVersion !== undefined && watchedVersion !== version
+        : entry.watchedPlayersStale ||
+          (patch.kind === 'tournament_summary' && !!entry.data?.watchlist.length);
+    entries.set(key, next);
   });
 };
 
@@ -149,11 +159,12 @@ const createPatchEvent = async (
   weekendId: string,
   patch: LiveTournamentHomePatch,
   userId?: string,
+  watchedVersion?: number,
 ): Promise<LiveTournamentHomePatchEvent> => {
   const version = userId
     ? getLiveTournamentHomeVersion(weekendId)
     : bumpLiveTournamentHomeVersion(weekendId);
-  patchCachedEntries(weekendId, patch, version, userId);
+  patchCachedEntries(weekendId, patch, version, userId, watchedVersion);
 
   const event = {
     type,
@@ -185,7 +196,8 @@ export async function getCachedLiveTournamentHomeResponse(
   const now = Date.now();
   const cached = entries.get(key);
 
-  if (cached && cached.version === version && cached.expiresAt > now) {
+  const cacheValid = cached && cached.version === version && cached.expiresAt > now;
+  if (cacheValid && !cached.watchedPlayersStale) {
     return toResponse(cached);
   }
 
@@ -194,13 +206,37 @@ export async function getCachedLiveTournamentHomeResponse(
     return toResponse(await existingBuild);
   }
 
-  const build = buildCacheEntry(weekendId, userId).finally(() => {
+  const build = (async () => {
+    // Never overwrite a public or private patch that arrived during a database read.
+    for (;;) {
+      const current = entries.get(key);
+      const currentVersion = getLiveTournamentHomeVersion(weekendId);
+      const valid = current && current.version === currentVersion && current.expiresAt > Date.now();
+      if (valid && !current.watchedPlayersStale) return current;
+      const entry =
+        valid && current.data && current.watchedPlayersStale && userId
+          ? createEntry(
+              {
+                ...current.data,
+                ...(await getLiveTournamentHomeWatchedPlayers(weekendId, userId)),
+              },
+              currentVersion,
+            )
+          : await buildCacheEntry(weekendId, userId);
+      if (
+        entries.get(key) !== current ||
+        getLiveTournamentHomeVersion(weekendId) !== currentVersion
+      )
+        continue;
+      entries.set(key, entry);
+      return entry;
+    }
+  })().finally(() => {
     inFlight.delete(key);
   });
   inFlight.set(key, build);
 
   const entry = await build;
-  entries.set(key, entry);
 
   return toResponse(entry);
 }
@@ -273,6 +309,7 @@ export async function createLiveWatchedPlayersPatchEvent(
   weekendId: string,
   userId: string,
 ): Promise<LiveTournamentHomePatchEvent> {
+  const watchedVersion = getLiveTournamentHomeVersion(weekendId);
   const watchedData = await getLiveTournamentHomeWatchedPlayers(weekendId, userId);
 
   return createPatchEvent(
@@ -283,5 +320,6 @@ export async function createLiveWatchedPlayersPatchEvent(
       ...watchedData,
     },
     userId,
+    watchedVersion,
   );
 }
