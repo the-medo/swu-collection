@@ -173,7 +173,7 @@ export function LiveTournamentWatchMode({
   return (
     <div
       className={cn(
-        'live-watch-layout grid grid-cols-[minmax(0,_1fr)_340px] gap-6',
+        'live-watch-layout grid grid-cols-[minmax(0,_1fr)_var(--live-sidebar-width)] gap-6.5',
         'max-desktop:grid-cols-1',
       )}
     >
@@ -202,7 +202,7 @@ export function LiveTournamentWatchMode({
       <aside
         className={cn(
           'live-watch-sidebar sticky top-4 max-h-[calc(100dvh_-_48px)] overflow-y-auto overscroll-contain grid',
-          'content-start min-w-0 gap-6 p-5 border border-border rounded-[16px] bg-card',
+          'content-start min-w-0 gap-6 p-5.5 border border-border rounded-[16px] bg-card max-mobile:p-4.5',
           'max-desktop:static max-desktop:max-h-none max-desktop:overflow-visible max-desktop:overscroll-auto',
         )}
       >

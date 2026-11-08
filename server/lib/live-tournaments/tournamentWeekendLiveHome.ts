@@ -1,4 +1,4 @@
-import { and, asc, count, eq, inArray, lte, or, sql, type SQL } from 'drizzle-orm';
+import { and, asc, count, desc, eq, inArray, lte, or, sql, type SQL } from 'drizzle-orm';
 import { db } from '../../db';
 import { deck as deckTable } from '../../db/schema/deck.ts';
 import { format as formatTable } from '../../db/schema/format.ts';
@@ -29,6 +29,8 @@ import type {
   LiveTournamentHomeWatchedTournament,
   LiveTournamentWinningDeck,
 } from '../../../types/TournamentWeekend.ts';
+
+import { compareWatchedMatches, summarizeWatchedMatch } from './watchedPlayerResults.ts';
 
 const topEightBracketRoundOrder = ['Quarterfinals', 'Semifinals', 'Finals'] as const;
 const topCutRoundNames = new Set<string>(topEightBracketRoundOrder);
@@ -137,63 +139,6 @@ const standingKey = (playerDisplayName: string, tournamentId: string) =>
 const normalizeDisplayName = (value: string | null | undefined) =>
   value?.trim().toLowerCase() ?? '';
 
-const isNewerWatchedMatch = (
-  candidate: LiveTournamentHomeWatchedMatch,
-  existing: LiveTournamentHomeWatchedMatch | undefined,
-) => {
-  if (!existing) return true;
-  if (candidate.roundNumber !== existing.roundNumber) {
-    return candidate.roundNumber > existing.roundNumber;
-  }
-
-  const candidateTimestamp = Date.parse(candidate.updatedAt ?? candidate.createdAt);
-  const existingTimestamp = Date.parse(existing.updatedAt ?? existing.createdAt);
-
-  if (candidateTimestamp !== existingTimestamp) {
-    return candidateTimestamp > existingTimestamp;
-  }
-
-  return candidate.matchKey.localeCompare(existing.matchKey) > 0;
-};
-
-const getWatchedMatchSummary = (
-  playerDisplayName: string,
-  match: {
-    tournamentId: string;
-    roundNumber: number;
-    matchKey: string;
-    playerDisplayName1: string;
-    playerDisplayName2: string | null;
-    player1GameWin: number | null;
-    player2GameWin: number | null;
-    updatedAt: string | null;
-    createdAt: string;
-  },
-): LiveTournamentHomeWatchedMatch => {
-  const isPlayer1 = match.playerDisplayName1 === playerDisplayName;
-  const playerGameWins = isPlayer1 ? match.player1GameWin : match.player2GameWin;
-  const opponentGameWins = isPlayer1 ? match.player2GameWin : match.player1GameWin;
-  const opponentDisplayName = isPlayer1 ? match.playerDisplayName2 : match.playerDisplayName1;
-
-  let outcome: 'win' | 'loss' | null = null;
-  if (playerGameWins !== null && opponentGameWins !== null && playerGameWins !== opponentGameWins) {
-    outcome = playerGameWins > opponentGameWins ? 'win' : 'loss';
-  }
-
-  return {
-    tournamentId: match.tournamentId,
-    roundNumber: match.roundNumber,
-    matchKey: match.matchKey,
-    playerDisplayName,
-    opponentDisplayName,
-    playerGameWins,
-    opponentGameWins,
-    outcome,
-    updatedAt: match.updatedAt,
-    createdAt: match.createdAt,
-  };
-};
-
 const selectCurrentStandings = async (
   displayRoundByTournament: Map<string, number | null>,
 ): Promise<LiveTournamentHomeStandingSummary[]> => {
@@ -268,11 +213,7 @@ const selectBracketMatchCounts = async (
   return new Map(rows.map(row => [row.tournamentId, row.matchCount]));
 };
 
-const selectWatchedPlayers = async (
-  userId: string | undefined,
-  tournamentIds: string[],
-  currentStandings: LiveTournamentHomeStandingSummary[],
-) => {
+const selectWatchedPlayers = async (userId: string | undefined, tournamentIds: string[]) => {
   if (!userId || tournamentIds.length === 0) {
     return {
       watchlist: [],
@@ -299,52 +240,100 @@ const selectWatchedPlayers = async (
     };
   }
 
-  const currentStandingByKey = new Map(
-    currentStandings
-      .filter(row => watchedPlayerDisplayNames.includes(row.playerDisplayName))
-      .map(row => [standingKey(row.playerDisplayName, row.tournamentId), row]),
-  );
-
-  const watchedMatchRows = await db
-    .select({
-      tournamentId: tournamentWeekendMatch.tournamentId,
-      roundNumber: tournamentWeekendMatch.roundNumber,
-      matchKey: tournamentWeekendMatch.matchKey,
-      playerDisplayName1: tournamentWeekendMatch.playerDisplayName1,
-      playerDisplayName2: tournamentWeekendMatch.playerDisplayName2,
-      player1GameWin: tournamentWeekendMatch.player1GameWin,
-      player2GameWin: tournamentWeekendMatch.player2GameWin,
-      updatedAt: tournamentWeekendMatch.updatedAt,
-      createdAt: tournamentWeekendMatch.createdAt,
-    })
-    .from(tournamentWeekendMatch)
+  // A dropped/eliminated player's last standings may precede the active round.
+  const watchedStandings = await db
+    .selectDistinctOn(
+      [tournamentStandingTable.tournamentId, tournamentStandingTable.playerDisplayName],
+      {
+        tournamentId: tournamentStandingTable.tournamentId,
+        playerDisplayName: tournamentStandingTable.playerDisplayName,
+        roundNumber: tournamentStandingTable.roundNumber,
+        rank: tournamentStandingTable.rank,
+        points: tournamentStandingTable.points,
+        gameRecord: tournamentStandingTable.gameRecord,
+        matchRecord: tournamentStandingTable.matchRecord,
+        updatedAt: tournamentStandingTable.updatedAt,
+      },
+    )
+    .from(tournamentStandingTable)
     .where(
       and(
-        inArray(tournamentWeekendMatch.tournamentId, tournamentIds),
-        or(
-          inArray(tournamentWeekendMatch.playerDisplayName1, watchedPlayerDisplayNames),
-          inArray(tournamentWeekendMatch.playerDisplayName2, watchedPlayerDisplayNames),
+        inArray(tournamentStandingTable.tournamentId, tournamentIds),
+        inArray(tournamentStandingTable.playerDisplayName, watchedPlayerDisplayNames),
+      ),
+    )
+    .orderBy(
+      asc(tournamentStandingTable.tournamentId),
+      asc(tournamentStandingTable.playerDisplayName),
+      desc(tournamentStandingTable.roundNumber),
+    );
+  const currentStandingByKey = new Map(
+    watchedStandings.map(row => [standingKey(row.playerDisplayName, row.tournamentId), row]),
+  );
+  const finalStandings = await db
+    .select({
+      tournamentId: tournamentDeckTable.tournamentId,
+      displayName: tournamentDeckTable.meleePlayerUsername,
+      placement: tournamentDeckTable.placement,
+      wins: tournamentDeckTable.recordWin,
+      losses: tournamentDeckTable.recordLose,
+      draws: tournamentDeckTable.recordDraw,
+      points: tournamentDeckTable.points,
+    })
+    .from(tournamentDeckTable)
+    .innerJoin(tournamentTable, eq(tournamentTable.id, tournamentDeckTable.tournamentId))
+    .where(
+      and(
+        eq(tournamentTable.imported, true),
+        inArray(tournamentDeckTable.tournamentId, tournamentIds),
+        inArray(
+          sql`lower(trim(${tournamentDeckTable.meleePlayerUsername}))`,
+          watchedPlayerDisplayNames.map(normalizeDisplayName),
         ),
       ),
     );
+  const finalStandingByKey = new Map(
+    finalStandings.map(row => [
+      standingKey(normalizeDisplayName(row.displayName), row.tournamentId),
+      {
+        placement: row.placement,
+        matchRecord: `${row.wins}-${row.losses}-${row.draws}`,
+        points: row.points,
+      },
+    ]),
+  );
 
-  const latestMatchByKey = new Map<string, LiveTournamentHomeWatchedMatch>();
-  for (const match of watchedMatchRows) {
-    const players = [match.playerDisplayName1, match.playerDisplayName2].filter(
-      (displayName): displayName is string =>
-        displayName !== null && watchedPlayerDisplayNames.includes(displayName),
+  const watchedMatchRows = await db
+    .selectDistinctOn([tournamentWeekendMatch.tournamentId, playerWatchTable.playerDisplayName], {
+      displayName: playerWatchTable.playerDisplayName,
+      match: tournamentWeekendMatch,
+    })
+    .from(tournamentWeekendMatch)
+    .innerJoin(
+      playerWatchTable,
+      and(
+        eq(playerWatchTable.userId, userId),
+        or(
+          eq(tournamentWeekendMatch.playerDisplayName1, playerWatchTable.playerDisplayName),
+          eq(tournamentWeekendMatch.playerDisplayName2, playerWatchTable.playerDisplayName),
+        ),
+      ),
+    )
+    .where(inArray(tournamentWeekendMatch.tournamentId, tournamentIds))
+    .orderBy(
+      asc(tournamentWeekendMatch.tournamentId),
+      asc(playerWatchTable.playerDisplayName),
+      desc(tournamentWeekendMatch.roundNumber),
+      desc(sql`coalesce(${tournamentWeekendMatch.updatedAt}, ${tournamentWeekendMatch.createdAt})`),
+      desc(tournamentWeekendMatch.matchKey),
     );
 
-    for (const playerDisplayName of players) {
-      const summary = getWatchedMatchSummary(playerDisplayName, match);
-      const key = standingKey(playerDisplayName, match.tournamentId);
-      const existing = latestMatchByKey.get(key);
-
-      if (isNewerWatchedMatch(summary, existing)) {
-        latestMatchByKey.set(key, summary);
-      }
-    }
-  }
+  const latestMatchByKey = new Map(
+    watchedMatchRows.map(({ displayName, match }) => [
+      standingKey(displayName, match.tournamentId),
+      summarizeWatchedMatch(displayName, match),
+    ]),
+  );
 
   const watchedPlayers = watchlist.map(row => {
     const tournaments = tournamentIds
@@ -352,13 +341,18 @@ const selectWatchedPlayers = async (
         const key = standingKey(row.displayName, tournamentId);
         const standing = currentStandingByKey.get(key) ?? null;
         const latestMatch = latestMatchByKey.get(key) ?? null;
+        const finalStanding =
+          finalStandingByKey.get(
+            standingKey(normalizeDisplayName(row.displayName), tournamentId),
+          ) ?? null;
 
-        if (!standing && !latestMatch) return null;
+        if (!standing && !latestMatch && !finalStanding) return null;
 
         return {
           tournamentId,
           standing,
           latestMatch,
+          finalStanding,
         };
       })
       .filter((entry): entry is LiveTournamentHomeWatchedTournament => entry !== null);
@@ -376,6 +370,44 @@ const selectWatchedPlayers = async (
     watchedPlayers,
   };
 };
+
+export async function getLiveWatchedPlayerRounds(
+  weekendId: string,
+  tournamentId: string,
+  displayName: string,
+  userId: string,
+): Promise<LiveTournamentHomeWatchedMatch[] | null> {
+  // The watch and weekend joins scope every returned match to this account and event.
+  // A left join distinguishes an authorized player with no rounds from a missing watch.
+  const rows = await db
+    .select({ match: tournamentWeekendMatch })
+    .from(playerWatchTable)
+    .innerJoin(
+      tournamentWeekendTournament,
+      and(
+        eq(tournamentWeekendTournament.tournamentWeekendId, weekendId),
+        eq(tournamentWeekendTournament.tournamentId, tournamentId),
+      ),
+    )
+    .leftJoin(
+      tournamentWeekendMatch,
+      and(
+        eq(tournamentWeekendMatch.tournamentId, tournamentWeekendTournament.tournamentId),
+        or(
+          eq(tournamentWeekendMatch.playerDisplayName1, playerWatchTable.playerDisplayName),
+          eq(tournamentWeekendMatch.playerDisplayName2, playerWatchTable.playerDisplayName),
+        ),
+      ),
+    )
+    .where(
+      and(eq(playerWatchTable.userId, userId), eq(playerWatchTable.playerDisplayName, displayName)),
+    );
+
+  if (rows.length === 0) return null;
+  return rows
+    .flatMap(({ match }) => (match ? [summarizeWatchedMatch(displayName, match)] : []))
+    .sort(compareWatchedMatches);
+}
 
 export async function getLiveTournamentHome(
   weekendId: string,
@@ -489,7 +521,7 @@ export async function getLiveTournamentHome(
   const currentStandings = await selectCurrentStandings(displayRoundByTournament);
   const currentStandingsByTournamentId = groupBy(currentStandings, row => row.tournamentId);
   const bracketMatchCountByTournamentId = await selectBracketMatchCounts(tournaments);
-  const watchedData = await selectWatchedPlayers(userId, tournamentIds, currentStandings);
+  const watchedData = await selectWatchedPlayers(userId, tournamentIds);
 
   return {
     weekend,
@@ -555,13 +587,14 @@ export async function getLiveTournamentHomeMetaGroups(weekendId: string) {
 }
 
 export async function getLiveTournamentHomeWatchedPlayers(weekendId: string, userId: string) {
-  const detail = await getLiveTournamentHome(weekendId, userId);
-
-  return {
-    watchlist: detail?.watchlist ?? [],
-    watchedPlayerDisplayNames: detail?.watchedPlayerDisplayNames ?? [],
-    watchedPlayers: detail?.watchedPlayers ?? [],
-  };
+  const tournaments = await db
+    .select({ id: tournamentWeekendTournament.tournamentId })
+    .from(tournamentWeekendTournament)
+    .where(eq(tournamentWeekendTournament.tournamentWeekendId, weekendId));
+  return selectWatchedPlayers(
+    userId,
+    tournaments.map(row => row.id),
+  );
 }
 
 export async function getLiveTournamentBracket(

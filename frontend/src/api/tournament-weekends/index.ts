@@ -11,6 +11,7 @@ export * from './useGetTournamentWeekends';
 export * from './useLiveTournamentBracket';
 export * from './useLiveTournamentWeekend';
 export * from './useLiveTournamentSocket';
+export * from './useWatchedPlayerRounds';
 export * from './useRefreshTournamentWeekendTournaments';
 export * from './useUpdateTournamentWeekend';
 export * from './useUpdateTournamentWeekendResource';

@@ -264,7 +264,7 @@ export type LiveTournamentHomeWatchedMatch = {
   opponentDisplayName: string | null;
   playerGameWins: number | null;
   opponentGameWins: number | null;
-  outcome: 'win' | 'loss' | null;
+  outcome: 'win' | 'loss' | 'draw' | 'bye' | null;
   updatedAt: string | null;
   createdAt: string;
 };
@@ -273,6 +273,15 @@ export type LiveTournamentHomeWatchedTournament = {
   tournamentId: string;
   standing: LiveTournamentHomeWatchedStanding | null;
   latestMatch: LiveTournamentHomeWatchedMatch | null;
+  finalStanding: {
+    placement: number | null;
+    matchRecord: string;
+    points: number;
+  } | null;
+};
+
+export type LiveTournamentWatchedPlayerRoundsResponse = {
+  data: LiveTournamentHomeWatchedMatch[];
 };
 
 export type LiveTournamentHomeWatchedPlayer = {

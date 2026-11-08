@@ -5,6 +5,10 @@ import { mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { cardList, countryList } from '../../server/db/lists.ts';
 import { getCardPoolMap } from '../../server/lib/card-pools/card-pool-map-by-set.ts';
+import type {
+  LiveTournamentHomeWatchedPlayer,
+  LiveTournamentHomeWatchedMatch,
+} from '../../types/TournamentWeekend.ts';
 import { SwuSet } from '../../types/enums.ts';
 
 if (process.env.LIVE_HOME_BROWSER_TEST !== '1') throw new Error('Enable LIVE_HOME_BROWSER_TEST=1.');
@@ -96,6 +100,19 @@ const resources = Array.from({ length: 4 }, (_, index) => ({
   updatedAt: stamp,
 }));
 const watch = { userId: 'live-fixture-user', playerDisplayName: 'Ari Chen', createdAt: stamp };
+const history: LiveTournamentHomeWatchedMatch[] = Array.from({ length: 5 }, (_, index) => ({
+  tournamentId: tournaments[0]!.tournament.id,
+  roundNumber: index + 1,
+  matchKey: `match-${index + 1}`,
+  playerDisplayName: 'Ari Chen',
+  opponentDisplayName:
+    index === 0 ? null : ['', 'Mara Vega', 'Alexandria Longname', 'Quinn', 'Jules'][index]!,
+  playerGameWins: index === 4 ? 0 : index === 2 ? 1 : 2,
+  opponentGameWins: index === 0 ? null : index === 4 ? 0 : index === 2 ? 1 : 0,
+  outcome: index === 0 ? 'bye' : index === 4 ? null : index === 2 ? 'draw' : 'win',
+  updatedAt: index === 4 ? null : stamp,
+  createdAt: stamp,
+}));
 const detail = {
   weekend: {
     id: weekendId,
@@ -132,29 +149,67 @@ const detail = {
       tournaments: [
         {
           tournamentId: tournaments[0]!.tournament.id,
-          standing: tournaments[0]!.undefeatedPlayers[0],
-          latestMatch: {
-            tournamentId: tournaments[0]!.tournament.id,
-            roundNumber: 5,
-            matchKey: 'match-5',
-            playerDisplayName: 'Ari Chen',
-            opponentDisplayName: 'Alexandria Longname',
-            playerGameWins: 2,
-            opponentGameWins: 1,
-            outcome: 'win',
-            updatedAt: stamp,
-            createdAt: stamp,
-          },
+          standing: { ...tournaments[0]!.undefeatedPlayers[0]!, matchRecord: '3-0-1', points: 10 },
+          latestMatch: history[4]!,
+          finalStanding: null,
+        },
+        {
+          tournamentId: tournaments[2]!.tournament.id,
+          standing: null,
+          latestMatch: null,
+          finalStanding: { placement: 1, matchRecord: '8-0-0', points: 24 },
         },
       ],
     },
-  ],
+  ] as LiveTournamentHomeWatchedPlayer[],
 };
+const secondName = 'Alexandria Longname';
+const secondWatch = { ...watch, playerDisplayName: secondName };
+detail.watchlist.push({ watch: secondWatch, displayName: secondName });
+detail.watchedPlayerDisplayNames.push(secondName);
+detail.watchedPlayers.push({
+  displayName: secondName,
+  watch: secondWatch,
+  tournaments: [
+    {
+      tournamentId: tournaments[0]!.tournament.id,
+      standing: {
+        ...tournaments[0]!.undefeatedPlayers[0]!,
+        playerDisplayName: secondName,
+        roundNumber: 4,
+        rank: 1,
+        matchRecord: '2-2-0',
+      },
+      latestMatch: {
+        ...history[3]!,
+        playerDisplayName: secondName,
+        opponentDisplayName: 'Mara Vega',
+        outcome: 'loss',
+        playerGameWins: 0,
+        opponentGameWins: 2,
+      },
+      finalStanding: null,
+    },
+    {
+      tournamentId: tournaments[2]!.tournament.id,
+      standing: null,
+      latestMatch: { ...history[3]!, playerDisplayName: secondName },
+      finalStanding: { placement: 12, matchRecord: '10-2-1', points: 31 },
+    },
+  ],
+});
+let version = 1;
 let state: 'ready' | 'empty' | 'error' = 'ready';
 let signedIn = false;
 let admin = false;
 let delayLive = false;
 let releaseLive = () => {};
+const roundRequests = new Map<string, number>();
+const roundRequestCount = (tournamentId: string, displayName = 'Ari Chen') =>
+  roundRequests.get(`${tournamentId}:${displayName}`) ?? 0;
+let roundsError = false;
+let delayRounds = false;
+let releaseRounds = () => {};
 let bracketRequests = 0;
 let requests = 0;
 const server = Bun.serve({
@@ -179,8 +234,24 @@ const server = Bun.serve({
                 watchlist: signedIn ? detail.watchlist : [],
                 watchedPlayers: signedIn ? detail.watchedPlayers : [],
               },
-        meta: { generatedAt: stamp, version: 1 },
+        meta: { generatedAt: stamp, version },
       });
+    }
+    if (pathname.endsWith('/watched-player-rounds')) {
+      const tournamentId = pathname.split('/').at(-2)!;
+      const displayName = new URL(request.url).searchParams.get('displayName')!;
+      const key = `${tournamentId}:${displayName}`;
+      roundRequests.set(key, (roundRequests.get(key) ?? 0) + 1);
+      const data = structuredClone(
+        tournamentId === tournaments[0]!.tournament.id && displayName === 'Ari Chen' ? history : [],
+      );
+      if (delayRounds)
+        await new Promise<void>(resolve => {
+          releaseRounds = resolve;
+        });
+      if (roundsError)
+        return Response.json({ message: 'Round history unavailable' }, { status: 503 });
+      return Response.json({ data });
     }
     if (pathname.endsWith('/bracket')) {
       bracketRequests++;
@@ -307,7 +378,9 @@ try {
   ]);
   const coverage = await page.locator('.live-weekend-hero').boundingBox();
   const streams = await page.locator('.live-streams-panel').boundingBox();
-  expect(streams!.y).toBeCloseTo(coverage!.y, 0);
+  const watchPanel = await page.locator('.live-weekend-sidebar > div').first().boundingBox();
+  expect(watchPanel!.y).toBeCloseTo(coverage!.y, 0);
+  expect(streams!.y).toBeGreaterThan(watchPanel!.y + watchPanel!.height);
   expect(streams!.x).toBeGreaterThan(coverage!.x + coverage!.width);
   for (const card of await page.locator('.live-event-card').all()) {
     const box = (await card.boundingBox())!;
@@ -512,6 +585,23 @@ try {
   await expect.poll(() => watchSidebar.evaluate(el => el.scrollTop)).toBeGreaterThan(0);
   await expect(video).toBeInViewport();
   expect((await video.boundingBox())!.y).toBeCloseTo(videoBefore!.y, 0);
+  for (const width of [1280, 1500, 1920, 2560]) {
+    await page.setViewportSize({ width, height: 1080 });
+    await page.getByRole('button', { name: 'Close watch mode' }).click();
+    const homeSidebarBox = (await page.locator('.live-weekend-sidebar').boundingBox())!;
+    await page.getByRole('link', { name: 'Watch here', exact: true }).first().click();
+    await expect(page.getByRole('button', { name: 'Close watch mode' })).toBeVisible();
+    await noOverflow();
+    const mainBox = (await page.locator('main').boundingBox())!;
+    const layoutBox = (await page.locator('.live-watch-layout').boundingBox())!;
+    const sidebarBox = (await watchSidebar.boundingBox())!;
+    const videoBox = (await video.boundingBox())!;
+    // Only the normal page gutters should remain; the video fills the left column.
+    expect(layoutBox.width).toBeGreaterThan(mainBox.width - 60);
+    expect(sidebarBox.width).toBeCloseTo(homeSidebarBox.width, 0);
+    expect(videoBox.x + videoBox.width).toBeCloseTo(sidebarBox.x - 27, 0);
+    if (width === 1920) await screenshot('watch-mode-wide');
+  }
   detail.tournaments = originalWatchTournaments;
   // Authenticated watchlist, admin controls, and existing live patch transport.
   signedIn = true;
@@ -519,22 +609,314 @@ try {
   await page.setViewportSize({ width: 1500, height: 1500 });
   await openLive();
   await expect(
-    page.locator('.live-watched-group').getByText('Ari Chen', { exact: true }),
+    page.locator('.live-watched-group').first().getByText('Ari Chen', { exact: true }),
   ).toBeVisible();
   await expect(page.getByRole('button', { name: 'Pending (1)' })).toBeVisible();
   await expect.poll(() => subscribed).toBe(true);
+  const liveWatch = page.getByRole('region', {
+    name: `Watched players at ${tournaments[0]!.tournament.name}`,
+    exact: true,
+  });
+  const finishedWatch = page.getByRole('region', {
+    name: `Watched players at ${tournaments[2]!.tournament.name}`,
+    exact: true,
+  });
+  await expect(liveWatch.getByRole('table')).toHaveCount(1);
+  await expect(liveWatch.getByRole('button').first()).toHaveAttribute(
+    'aria-label',
+    'Show rounds for Ari Chen',
+  );
+  await expect(liveWatch.getByText('Round 5 · in progress')).toBeVisible();
+  await expect(liveWatch.getByText('Pending', { exact: true })).toBeVisible();
+  const standingsTable = liveWatch.getByRole('table');
+  expect((await standingsTable.locator(':scope > thead').boundingBox())!.height).toBe(0);
+  const playerCells = standingsTable.locator(':scope > tbody > tr').first().getByRole('cell');
+  await expect(playerCells).toHaveCount(4);
+  await expect(playerCells.nth(2)).toHaveText('3-0-1');
+  await expect(playerCells.nth(3)).toContainText('Round 5');
+  await expect(playerCells.nth(3)).toContainText('Pending');
+  await expect(liveWatch.getByText('Select a player to see their rounds')).toHaveCount(0);
+  expect(roundRequests.size).toBe(0);
+  delayRounds = true;
+  const expand = liveWatch.getByRole('button', { name: 'Show rounds for Ari Chen' });
+  await expand.focus();
+  await expand.press('Enter');
+  await expect(liveWatch.getByRole('button', { name: 'Hide rounds for Ari Chen' })).toHaveAttribute(
+    'aria-expanded',
+    'true',
+  );
+  await expect(liveWatch.getByRole('status')).toHaveText('Loading rounds…');
+  await expect.poll(() => roundRequestCount(tournaments[0]!.tournament.id)).toBe(1);
+  // A WebSocket update during the initial fetch must replace that older snapshot,
+  // even when the homepage already has the event's public version.
+  const releaseInitialRounds = releaseRounds;
+  delayRounds = false;
+  history[1]!.opponentDisplayName = 'Updated opponent';
+  socket!.send(
+    JSON.stringify({
+      type: 'live_tournament.progress_updated',
+      data: {
+        weekendId,
+        version,
+        patch: { kind: 'tournament_summary', tournament: tournaments[0] },
+      },
+      at: stamp,
+    }),
+  );
+  const historyTable = liveWatch.getByRole('table', { name: 'Round history for Ari Chen' });
+  await expect(historyTable.getByText('Updated opponent', { exact: true })).toBeVisible();
+  releaseInitialRounds();
+  await expect(historyTable).toBeVisible();
+  await expect(historyTable.getByText('Active round')).toBeVisible();
+  await expect(historyTable.getByText('Bye', { exact: true })).toBeVisible();
+  await expect(historyTable.getByText('Draw', { exact: true })).toBeVisible();
+  await expect(historyTable.getByText('Pending', { exact: true })).toBeVisible();
+  await expect(liveWatch.getByText(/Rank and record from|Scores are shown from/)).toHaveCount(0);
+  await expect(finishedWatch.getByRole('img', { name: 'Champion' })).toBeVisible();
+  await expect(finishedWatch.getByText('1st', { exact: true })).toBeVisible();
+  await expect(finishedWatch.getByText('Final standings', { exact: true })).toBeVisible();
+  const finishedSummaryRows = finishedWatch.locator('table > tbody > tr:not([hidden])');
+  for (const row of await finishedSummaryRows.all()) {
+    await expect(row.getByRole('cell')).toHaveCount(3);
+    await expect(row.getByText(/Round 4|Won|Lost/)).toHaveCount(0);
+  }
+  await finishedWatch.getByRole('button', { name: 'Show rounds for Ari Chen' }).click();
+  await expect(finishedWatch.getByText('Round details are not available yet.')).toBeVisible();
+  for (const width of [1500, 1366, 1280, 900, 390, 320]) {
+    await page.setViewportSize({ width, height: 1300 });
+    await noOverflow();
+    expect(await liveWatch.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+    expect(
+      await liveWatch.locator('.overflow-x-auto').evaluate(el => el.scrollWidth <= el.clientWidth),
+    ).toBe(true);
+    expect(
+      await finishedWatch
+        .locator('.overflow-x-auto')
+        .evaluate(el => el.scrollWidth <= el.clientWidth),
+    ).toBe(true);
+    for (const table of [liveWatch, finishedWatch]) {
+      expect(
+        await table
+          .locator('td')
+          .evaluateAll(cells => cells.every(cell => cell.scrollWidth <= cell.clientWidth)),
+      ).toBe(true);
+    }
+    const roundBox = (await playerCells.nth(3).getByText('Round 5').boundingBox())!;
+    const resultBox = (await playerCells.nth(3).getByText('Pending').boundingBox())!;
+    expect(roundBox.y + roundBox.height / 2).toBeCloseTo(resultBox.y + resultBox.height / 2, 0);
+    expect(resultBox.x).toBeGreaterThan(roundBox.x + roundBox.width);
+    const groupBox = (await liveWatch.boundingBox())!;
+    expect(resultBox.x + resultBox.width).toBeLessThan(groupBox.x + groupBox.width);
+    const watchBox = (await page.locator('.live-weekend-sidebar > div').first().boundingBox())!;
+    const streamBox = (await page.locator('.live-streams-panel').boundingBox())!;
+    expect(streamBox.y).toBeGreaterThan(watchBox.y + watchBox.height);
+    if (width === 390 || width === 1500) {
+      await page
+        .locator('.live-weekend-sidebar > div')
+        .first()
+        .screenshot({ path: `${output}/watchlist-${width}-light.png`, animations: 'disabled' });
+      await page.evaluate(() => document.documentElement.classList.add('dark'));
+      await page
+        .locator('.live-weekend-sidebar > div')
+        .first()
+        .screenshot({ path: `${output}/watchlist-${width}-dark.png`, animations: 'disabled' });
+      await page.evaluate(() => document.documentElement.classList.remove('dark'));
+    }
+  }
+  // A failed lazy request offers retry, without disturbing another player's open history.
+  roundsError = true;
+  await liveWatch.getByRole('button', { name: `Show rounds for ${secondName}` }).click();
+  await expect(liveWatch.getByRole('alert')).toHaveText(/Couldn’t load rounds/);
+  roundsError = false;
+  await liveWatch.getByRole('button', { name: 'Retry', exact: true }).click();
+  await expect(liveWatch.getByText('Round details are not available yet.')).toBeVisible();
+  await liveWatch.getByRole('button', { name: `Hide rounds for ${secondName}` }).click();
+  const beforeClosedPlayer = roundRequestCount(tournaments[0]!.tournament.id, secondName);
+  const beforeOtherTournament = roundRequestCount(tournaments[2]!.tournament.id);
+  const beforeOpenPlayer = roundRequestCount(tournaments[0]!.tournament.id);
+  // A public progress update refetches private history without collapsing an open row.
   const updated = structuredClone(tournaments[0]!);
   updated.weekendTournament.matchesRemaining = 3;
+  detail.tournaments[0] = updated;
+  Object.assign(history[4]!, {
+    outcome: 'win',
+    playerGameWins: 2,
+    opponentGameWins: 0,
+    updatedAt: stamp,
+  });
+  version = 2;
   const beforePatch = requests;
   socket!.send(
     JSON.stringify({
       type: 'live_tournament.progress_updated',
-      data: { weekendId, version: 2, patch: { kind: 'tournament_summary', tournament: updated } },
+      data: { weekendId, version, patch: { kind: 'tournament_summary', tournament: updated } },
       at: stamp,
     }),
   );
-  await expect(page.getByText('3/48 matches remaining')).toBeVisible();
-  expect(requests).toBe(beforePatch);
+  await expect.poll(() => requests).toBeGreaterThan(beforePatch);
+  await expect(liveWatch.getByText('3/48 matches remaining')).toBeVisible();
+  await expect(historyTable).toBeVisible();
+  await expect(historyTable.getByText('Pending', { exact: true })).toHaveCount(0);
+  await expect(historyTable.getByText('Won', { exact: true })).toHaveCount(3);
+  expect(roundRequestCount(tournaments[0]!.tournament.id)).toBeGreaterThan(beforeOpenPlayer);
+  expect(roundRequestCount(tournaments[0]!.tournament.id, secondName)).toBe(beforeClosedPlayer);
+  expect(roundRequestCount(tournaments[2]!.tournament.id)).toBe(beforeOtherTournament);
+  updated.weekendTournament.matchesRemaining = 0;
+  version = 3;
+  socket!.send(
+    JSON.stringify({
+      type: 'live_tournament.progress_updated',
+      data: { weekendId, version, patch: { kind: 'tournament_summary', tournament: updated } },
+      at: stamp,
+    }),
+  );
+  await expect(liveWatch.getByText('Round 5 · complete')).toBeVisible();
+  await page.setViewportSize({ width: 1500, height: 1300 });
+  const roundStatusBox = (await liveWatch.getByText('Round 5 · complete').boundingBox())!;
+  const progressBox = (await liveWatch.getByText('0/48 matches remaining').boundingBox())!;
+  expect(roundStatusBox.y).toBeCloseTo(progressBox.y, 0);
+  expect(progressBox.x).toBeGreaterThan(roundStatusBox.x + roundStatusBox.width);
+  await expect(historyTable.getByText('Active round')).toHaveCount(0);
+  // Import completion uses the same refresh path and exposes the true final placement.
+  updated.weekendTournament.status = 'finished';
+  updated.tournament.imported = true;
+  detail.watchedPlayers[0]!.tournaments[0]!.finalStanding = {
+    placement: 3,
+    matchRecord: '4-0-1',
+    points: 13,
+  };
+  version = 4;
+  socket!.send(
+    JSON.stringify({
+      type: 'tournament_import.finished',
+      data: { weekendId, version, patch: { kind: 'tournament_summary', tournament: updated } },
+      at: stamp,
+    }),
+  );
+  await expect(liveWatch.getByText('3rd', { exact: true })).toBeVisible();
+  await expect(liveWatch.getByText('Finished', { exact: true })).toBeVisible();
+  await expect(historyTable).toBeVisible();
+  await expect(playerCells).toHaveCount(3);
+  await liveWatch.getByRole('button', { name: 'Hide rounds for Ari Chen' }).press('Space');
+  await expect(historyTable).toHaveCount(0);
+  // Personal updates at the current public version must also be accepted.
+  const personal = structuredClone(detail.watchedPlayers);
+  personal[0]!.tournaments[0]!.finalStanding!.placement = 2;
+  personal[1]!.tournaments[1]!.finalStanding = {
+    ...personal[1]!.tournaments[1]!.finalStanding!,
+    placement: 0,
+  };
+  personal[1]!.tournaments[1]!.standing = {
+    ...personal[1]!.tournaments[0]!.standing!,
+    tournamentId: tournaments[2]!.tournament.id,
+  };
+  socket!.send(
+    JSON.stringify({
+      type: 'player_watch.updated',
+      data: {
+        weekendId,
+        version,
+        patch: {
+          kind: 'watched_players',
+          watchedPlayers: personal,
+          watchlist: detail.watchlist,
+          watchedPlayerDisplayNames: detail.watchedPlayerDisplayNames,
+        },
+      },
+      at: stamp,
+    }),
+  );
+  await expect(liveWatch.getByText('2nd', { exact: true })).toBeVisible();
+  await expect(finishedWatch.getByRole('button').first()).toHaveAttribute(
+    'aria-label',
+    'Hide rounds for Ari Chen',
+  );
+  await expect(finishedWatch.getByText('Final standings · some placements pending')).toBeVisible();
+  await page.setViewportSize({ width: 320, height: 1300 });
+  expect(
+    await finishedWatch
+      .locator('td')
+      .evaluateAll(cells => cells.every(cell => cell.scrollWidth <= cell.clientWidth)),
+  ).toBe(true);
+  expect(
+    await finishedWatch
+      .locator('.overflow-x-auto')
+      .evaluate(el => el.scrollWidth <= el.clientWidth),
+  ).toBe(true);
+  const beforeIrrelevant = requests;
+  socket!.send(
+    JSON.stringify({
+      type: 'player_watch.updated',
+      data: {
+        weekendId: 'another-weekend',
+        version,
+        patch: {
+          kind: 'watched_players',
+          watchedPlayers: [],
+          watchlist: [],
+          watchedPlayerDisplayNames: [],
+        },
+      },
+      at: stamp,
+    }),
+  );
+  await expect(liveWatch.getByText('2nd', { exact: true })).toBeVisible();
+  expect(requests).toBe(beforeIrrelevant);
+  const beforeClosed = roundRequestCount(tournaments[0]!.tournament.id);
+  const beforeGapRounds = roundRequestCount(tournaments[2]!.tournament.id);
+  version = 6;
+  const beforeGap = requests;
+  socket!.send(
+    JSON.stringify({
+      type: 'live_tournament.progress_updated',
+      data: { weekendId, version, patch: { kind: 'tournament_summary', tournament: updated } },
+      at: stamp,
+    }),
+  );
+  await expect.poll(() => requests).toBeGreaterThan(beforeGap);
+  await expect(liveWatch.getByText('3rd', { exact: true })).toBeVisible();
+  await expect
+    .poll(() => roundRequestCount(tournaments[2]!.tournament.id))
+    .toBeGreaterThan(beforeGapRounds);
+  expect(roundRequestCount(tournaments[0]!.tournament.id)).toBe(beforeClosed);
+  await liveWatch.getByRole('button', { name: 'Show rounds for Ari Chen' }).click();
+  await expect
+    .poll(() => roundRequestCount(tournaments[0]!.tournament.id))
+    .toBeGreaterThan(beforeClosed);
+  // Reconnect/resync refreshes open rows even without a new public version.
+  const beforeReconnect = roundRequestCount(tournaments[0]!.tournament.id);
+  socket!.send(JSON.stringify({ type: 'app.resync', v: 1 }));
+  await expect
+    .poll(() => roundRequestCount(tournaments[0]!.tournament.id))
+    .toBeGreaterThan(beforeReconnect);
+  expect(roundRequestCount(tournaments[0]!.tournament.id, secondName)).toBe(beforeClosedPlayer);
+  delayLive = true;
+  version = 7;
+  socket!.send(
+    JSON.stringify({
+      type: 'live_weekend.replaced',
+      data: {
+        weekendId,
+        version,
+        patch: {
+          kind: 'weekend_replace',
+          detail: { ...detail, watchedPlayers: [], watchlist: [], watchedPlayerDisplayNames: [] },
+        },
+      },
+      at: stamp,
+    }),
+  );
+  const beforeReplacement = requests;
+  await expect.poll(() => requests).toBeGreaterThan(beforeReplacement);
+  await expect(historyTable).toBeVisible();
+  await expect(
+    page.getByText(
+      'Add players to your watchlist to follow their standings and latest matches here.',
+    ),
+  ).toHaveCount(0);
+  delayLive = false;
+  releaseLive();
+  await expect(historyTable).toBeVisible();
   await screenshot('live-watchlist');
   // Unavailable or corrupt storage must not prevent either layout from working.
   await page.evaluate(() => localStorage.setItem('swubase.live-tournament-layout', 'invalid'));
@@ -619,6 +1001,7 @@ try {
   throw error;
 } finally {
   releaseLive();
+  releaseRounds();
   await browser.close();
   await server.stop(true);
 }

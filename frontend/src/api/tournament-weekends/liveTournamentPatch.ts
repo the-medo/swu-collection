@@ -9,8 +9,17 @@ export function applyLiveTournamentHomePatch(
   meta: LiveTournamentHomeResponse['meta'],
 ): LiveTournamentHomeResponse | undefined {
   if (patch.kind === 'weekend_replace') {
+    const sameWeekend = current?.data?.weekend.id === patch.detail?.weekend.id;
     return {
-      data: patch.detail,
+      data:
+        sameWeekend && current?.data && patch.detail
+          ? {
+              ...patch.detail,
+              watchlist: current.data.watchlist,
+              watchedPlayerDisplayNames: current.data.watchedPlayerDisplayNames,
+              watchedPlayers: current.data.watchedPlayers,
+            }
+          : patch.detail,
       meta,
     };
   }

@@ -15,11 +15,16 @@ import { tournamentWeekendIdTournamentTournamentIdPatchRoute } from './tournamen
 import { tournamentWeekendIdTournamentTournamentIdBracketGetRoute } from './tournament-weekends/_id/tournament/_tournamentId/bracket/get.ts';
 import { tournamentWeekendIdGetRoute } from './tournament-weekends/_id/get.ts';
 import { tournamentWeekendIdPatchRoute } from './tournament-weekends/_id/patch.ts';
+import { tournamentWeekendWatchedPlayerRoundsGetRoute } from './tournament-weekends/_id/tournament/_tournamentId/watched-player-rounds/get.ts';
 
 export const tournamentWeekendsRoute = new Hono<AuthExtension>()
   .route('/', tournamentWeekendsGetRoute)
   .route('/', tournamentWeekendsPostRoute)
   .route('/live', tournamentWeekendsLiveGetRoute)
+  .route(
+    '/:id/tournament/:tournamentId/watched-player-rounds',
+    tournamentWeekendWatchedPlayerRoundsGetRoute,
+  )
   .route('/:id/tournament-groups', tournamentWeekendIdTournamentGroupsPostRoute)
   .route('/:id/tournament-groups', tournamentWeekendIdTournamentGroupsDeleteRoute)
   .route(

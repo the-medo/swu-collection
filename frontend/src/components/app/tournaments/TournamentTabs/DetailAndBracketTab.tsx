@@ -29,6 +29,13 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({
 
   const loading = isFetching && !data;
   const tournament = data?.tournament;
+  const bracket = tournament && (
+    <TournamentTopBracket
+      tournamentId={tournamentId}
+      top={(tournament.bracketInfo ?? BracketInfo.NONE) as BracketInfo}
+      compact={compact}
+    />
+  );
 
   return (
     <PortalThemeProvider value={workspaceTheme}>
@@ -37,6 +44,8 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({
         {/* Tournament info */}
         {!loading && data && tournament && (
           <div className="grid grid-cols-1 gap-4">
+            {tournament.imported && bracket}
+
             {/* Tournament Info Table */}
             {displayDetail && (
               <div className="@container/tournament-details">
@@ -51,11 +60,7 @@ const DetailAndBracketTab: React.FC<DetailAndBracketTabProps> = ({
             )}
 
             {/* Tournament Bracket */}
-            <TournamentTopBracket
-              tournamentId={tournamentId}
-              top={(tournament.bracketInfo ?? BracketInfo.NONE) as BracketInfo}
-              compact={compact}
-            />
+            {!tournament.imported && bracket}
             {displayDetail && <TournamentAttachments tournamentId={tournamentId} />}
           </div>
         )}
