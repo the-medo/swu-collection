@@ -10,7 +10,7 @@ import LeaderSelector from '@/components/app/global/LeaderSelector/LeaderSelecto
 import { useTopPlayedCards } from '@/api/card-stats/useTopPlayedCards.ts';
 import CardStatistic from '@/components/app/card-stats/CardStatistic/CardStatistic.tsx';
 import CardImage from '@/components/app/global/CardImage.tsx';
-import { useTournamentMetaStore } from '@/components/app/tournaments/TournamentMeta/useTournamentMetaStore.ts';
+import { useCardStatsDeckCounts } from '../CardStatsDeckCountsContext.ts';
 import { selectDefaultVariant } from '../../../../../../server/lib/cards/selectDefaultVariant.ts';
 import { cardFilterByFormatId } from '../../../../../../types/Format.ts';
 
@@ -27,7 +27,7 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({
   tournamentGroupId,
   className,
 }) => {
-  const { decks } = useTournamentMetaStore();
+  const { counts, isLoading: isLoadingCounts, error: countsError } = useCardStatsDeckCounts();
   const { csLeaderId, formatId } = useSearch({ strict: false });
   const navigate = useNavigate();
 
@@ -41,31 +41,17 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({
     [metaId, tournamentId, tournamentGroupId, csLeaderId],
   );
 
-  // In case of meta card statistics, deck counts are displayed from filtered tournaments,
-  // but the statistics are from whole meta, for now we just hide deck counts under the leader images
-  const correctDeckCount = tournamentId !== undefined || tournamentGroupId !== undefined;
-
   // Fetch card statistics filtered by leader (when a leader is selected)
   const { data, isLoading, error } = useCardStats(cardStatParams);
 
-  const leaderIdsAndCounts = useMemo(() => {
-    const countMap = new Map<string, number>();
-
-    decks.forEach(deck => {
-      const key = deck.deck?.leaderCardId1;
-      if (key) countMap.set(key, (countMap.get(key) || 0) + 1);
-    });
-
-    return Array.from(countMap.entries())
-      .map(([key, count]) => {
-        return {
-          leaderId: key,
-          count,
-        };
-      })
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 10);
-  }, [decks]);
+  const leaderIdsAndCounts = useMemo(
+    () =>
+      Object.entries(counts?.byLeader ?? {})
+        .map(([leaderId, count]) => ({ leaderId, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 10),
+    [counts],
+  );
 
   const leaderIds = useMemo(
     () => leaderIdsAndCounts.map(item => item.leaderId),
@@ -77,13 +63,16 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({
     data: topPlayedData,
     isLoading: isLoadingTopPlayed,
     error: topPlayedError,
-  } = useTopPlayedCards({
-    metaId,
-    tournamentId,
-    tournamentGroupId,
-    limit: 5, // Top 5 cards per leader
-    leaderIds,
-  });
+  } = useTopPlayedCards(
+    {
+      metaId,
+      tournamentId,
+      tournamentGroupId,
+      limit: 5, // Top 5 cards per leader
+      leaderIds,
+    },
+    !csLeaderId && leaderIds.length > 0,
+  );
 
   // Fetch card list data for additional card details
   const { data: cardListData } = useCardList();
@@ -124,10 +113,10 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({
         deckCount: leaderIdsAndCounts.find(item => item.leaderId === leaderId)?.count || 0,
       };
     });
-  }, [topPlayedData, cardListData, decks, leaderIdsAndCounts]);
+  }, [topPlayedData, cardListData, leaderIdsAndCounts]);
 
   // Show loading state if either data source is loading
-  if ((csLeaderId && isLoading) || (!csLeaderId && isLoadingTopPlayed)) {
+  if ((csLeaderId && isLoading) || (!csLeaderId && (isLoadingCounts || isLoadingTopPlayed))) {
     return (
       <div className={cn('space-y-4', className)}>
         <Card>
@@ -146,7 +135,7 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({
   }
 
   // Show error state if the relevant data source has an error
-  if ((csLeaderId && error) || (!csLeaderId && topPlayedError)) {
+  if ((csLeaderId && error) || (!csLeaderId && (countsError || topPlayedError))) {
     return (
       <div className={cn('space-y-4', className)}>
         <Card>
@@ -224,9 +213,7 @@ const LeaderCardStats: React.FC<LeaderCardStatsProps> = ({
                             forceHorizontal={true}
                           />
                         </Link>
-                        {correctDeckCount && (
-                          <span className="text-sm">Deck count: {deckCount}</span>
-                        )}
+                        {counts && <span className="text-sm">Deck count: {deckCount}</span>}
                       </div>
                     )}
                     {topCards.length > 0 ? (

@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
+import { cardStatsKeys } from '@/api/card-stats/queryKeys.ts';
 import { toast } from '@/hooks/use-toast.ts';
 
 export const usePostTournamentGroupRecompute = () => {
@@ -13,12 +14,17 @@ export const usePostTournamentGroupRecompute = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: response.statusText }));
-        throw new Error('message' in errorData ? errorData.message : 'Failed to recompute tournament group statistics');
+        throw new Error(
+          'message' in errorData
+            ? errorData.message
+            : 'Failed to recompute tournament group statistics',
+        );
       }
 
       return response.json() as Promise<{ message: string }>;
     },
     onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: cardStatsKeys.all });
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ['tournament-groups'] });
       queryClient.invalidateQueries({ queryKey: ['tournament-group', id] });

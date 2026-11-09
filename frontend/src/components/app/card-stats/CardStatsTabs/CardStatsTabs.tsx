@@ -12,6 +12,7 @@ import {
   workspaceTheme,
 } from '@/components/app/global/WorkspacePage/workspaceStyles';
 import { PortalThemeProvider } from '@/components/ui/portal-theme';
+import CardStatsDeckCountsProvider from '../CardStatsDeckCountsProvider.tsx';
 
 export const cardStatsTabsArray: [string, ...string[]] = [
   'all',
@@ -26,6 +27,7 @@ interface CardStatsTabsProps {
   metaId?: number;
   tournamentId?: string;
   tournamentGroupId?: string;
+  tournamentIds?: string[];
 }
 
 const CardStatsTabs: React.FC<CardStatsTabsProps> = ({
@@ -33,6 +35,7 @@ const CardStatsTabs: React.FC<CardStatsTabsProps> = ({
   metaId,
   tournamentId,
   tournamentGroupId,
+  tournamentIds,
 }) => {
   const { csPage = 'all' } = useSearch({ strict: false });
 
@@ -92,33 +95,42 @@ const CardStatsTabs: React.FC<CardStatsTabsProps> = ({
         </nav>
 
         {/* Render the appropriate component based on the selected tab */}
-        {csPage === 'all' && (
-          <AllCardStats
+        {csPage !== 'matchup' && (
+          <CardStatsDeckCountsProvider
             metaId={metaId}
             tournamentId={tournamentId}
             tournamentGroupId={tournamentGroupId}
-          />
-        )}
-        {csPage === 'aspect' && (
-          <AspectCardStats
-            metaId={metaId}
-            tournamentId={tournamentId}
-            tournamentGroupId={tournamentGroupId}
-          />
-        )}
-        {csPage === 'leader' && (
-          <LeaderCardStats
-            metaId={metaId}
-            tournamentId={tournamentId}
-            tournamentGroupId={tournamentGroupId}
-          />
-        )}
-        {csPage === 'leader-base' && (
-          <LeaderBaseCardStats
-            metaId={metaId}
-            tournamentId={tournamentId}
-            tournamentGroupId={tournamentGroupId}
-          />
+            tournamentIds={tournamentIds}
+          >
+            {csPage === 'all' && (
+              <AllCardStats
+                metaId={metaId}
+                tournamentId={tournamentId}
+                tournamentGroupId={tournamentGroupId}
+              />
+            )}
+            {csPage === 'aspect' && (
+              <AspectCardStats
+                metaId={metaId}
+                tournamentId={tournamentId}
+                tournamentGroupId={tournamentGroupId}
+              />
+            )}
+            {csPage === 'leader' && (
+              <LeaderCardStats
+                metaId={metaId}
+                tournamentId={tournamentId}
+                tournamentGroupId={tournamentGroupId}
+              />
+            )}
+            {csPage === 'leader-base' && (
+              <LeaderBaseCardStats
+                metaId={metaId}
+                tournamentId={tournamentId}
+                tournamentGroupId={tournamentGroupId}
+              />
+            )}
+          </CardStatsDeckCountsProvider>
         )}
         {csPage === 'matchup' && (
           <MatchupCardStats

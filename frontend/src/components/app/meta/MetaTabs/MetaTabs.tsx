@@ -161,6 +161,7 @@ const MetaTabs: React.FC<MetaTabsProps> = ({
           tournamentId={metaId ? undefined : tournamentIds[0]}
           metaId={metaId}
           tournamentGroupId={tournamentGroupId}
+          tournamentIds={tournamentIds}
           route={route}
         />
       )}

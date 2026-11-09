@@ -104,6 +104,7 @@ const MostPlayedCards: React.FC<MostPlayedCardsProps> = ({
                 <CardStatistic
                   card={card}
                   cardStat={it}
+                  totalDeckCount={payload.data.tournamentGroupExt?.tournamentGroupStats?.totalDecks}
                   cardStatParams={cardStatParams}
                   variant="image"
                   preTitle={`#${idx + 1} `}

@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
+import { cardStatsKeys } from '@/api/card-stats/queryKeys.ts';
 import { toast } from '@/hooks/use-toast.ts';
 import { ZTournamentGroupTournamentCreateRequest } from '../../../../types/ZTournamentGroup.ts';
 
@@ -15,12 +16,15 @@ export const usePostTournamentGroupTournament = (groupId: string) => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: response.statusText }));
-        throw new Error('message' in errorData ? errorData.message : 'Failed to assign tournament to group');
+        throw new Error(
+          'message' in errorData ? errorData.message : 'Failed to assign tournament to group',
+        );
       }
 
       return response.json();
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: cardStatsKeys.all });
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ['tournament-group', groupId] });
       queryClient.invalidateQueries({ queryKey: ['tournament-group-tournaments', groupId] });

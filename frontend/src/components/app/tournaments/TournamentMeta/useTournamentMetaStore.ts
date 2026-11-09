@@ -12,12 +12,14 @@ import { TournamentMatch } from '../../../../../../server/db/schema/tournament_m
 interface TournamentMetaStore {
   tournamentIds: string[];
   tournamentData: TournamentDataMap;
+  tournamentLoadErrors: Record<string, Error | null | undefined>;
   selectedDeckKey: TournamentDeckKey;
 }
 
 const defaultState: TournamentMetaStore = {
   tournamentIds: [],
   tournamentData: {},
+  tournamentLoadErrors: {},
   selectedDeckKey: {},
 };
 
@@ -37,6 +39,17 @@ const setTournamentData = (tournamentId: string, data: TournamentAnalyzerData) =
   }));
 };
 
+const setTournamentLoadError = (tournamentIds: string[], error: Error | null) => {
+  store.setState(state => {
+    if (tournamentIds.every(id => (state.tournamentLoadErrors[id] ?? null) === error)) return state;
+    const tournamentLoadErrors = { ...state.tournamentLoadErrors };
+    tournamentIds.forEach(id => {
+      tournamentLoadErrors[id] = error;
+    });
+    return { ...state, tournamentLoadErrors };
+  });
+};
+
 const setTournamentDeckKey = (data: TournamentDeckKey) => {
   store.setState(state => ({
     ...state,
@@ -47,6 +60,8 @@ const setTournamentDeckKey = (data: TournamentDeckKey) => {
 export function useTournamentMetaStore() {
   const tournamentIds = useStore(store, state => state.tournamentIds);
   const tournamentData = useStore(store, state => state.tournamentData);
+  const tournamentLoadErrors = useStore(store, state => state.tournamentLoadErrors);
+  const error = tournamentIds.map(id => tournamentLoadErrors[id]).find(Boolean) ?? null;
 
   const { isLoaded, matches, decks, tournaments } = useMemo(() => {
     let isLoaded = true;
@@ -72,7 +87,7 @@ export function useTournamentMetaStore() {
     };
   }, [tournamentIds, tournamentData]);
 
-  return { tournamentIds, isLoaded, matches, decks, tournaments };
+  return { tournamentIds, isLoaded, matches, decks, tournaments, error };
 }
 
 export function useSelectedDeckKey() {
@@ -84,6 +99,7 @@ export function useTournamentMetaActions() {
   return {
     setTournamentIds,
     setTournamentData,
+    setTournamentLoadError,
     setTournamentDeckKey,
   };
 }
