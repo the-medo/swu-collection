@@ -7,16 +7,27 @@ interface CardStatsTabProps {
   tournamentId?: string;
   metaId?: number;
   tournamentGroupId?: string;
+  tournamentIds?: string[];
   route: TournamentDeckKeyFloaterRoutes;
 }
 
-const CardStatsTab: React.FC<CardStatsTabProps> = ({ tournamentId, metaId, tournamentGroupId }) => {
+const CardStatsTab: React.FC<CardStatsTabProps> = ({
+  tournamentId,
+  metaId,
+  tournamentGroupId,
+  tournamentIds,
+}) => {
   const tid = !metaId && !tournamentGroupId ? tournamentId : undefined;
 
   return (
     <>
       <Helmet title="Card Stats" />
-      <CardStatsTabs tournamentId={tid} metaId={metaId} tournamentGroupId={tournamentGroupId} />
+      <CardStatsTabs
+        tournamentId={tid}
+        metaId={metaId}
+        tournamentGroupId={tournamentGroupId}
+        tournamentIds={tournamentIds}
+      />
     </>
   );
 };

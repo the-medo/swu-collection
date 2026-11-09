@@ -1,6 +1,7 @@
 import { skipToken, useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
 import type { ErrorWithStatus } from '../../../../types/ErrorWithStatus.ts';
+import { cardStatsKeys } from './queryKeys.ts';
 
 /**
  * Card statistics data interface
@@ -44,10 +45,12 @@ export interface CardStatsResponse {
  * @returns Query result with card statistics data
  */
 export const useCardStats = (params: CardStatsParams) => {
-  const { metaId, tournamentId, tournamentGroupId, leaderCardId, baseCardId, leaderAndBase } = params;
+  const { metaId, tournamentId, tournamentGroupId, leaderCardId, baseCardId, leaderAndBase } =
+    params;
 
   // Either metaId, tournamentId, or tournamentGroupId must be provided
-  const isValidQuery = metaId !== undefined || tournamentId !== undefined || tournamentGroupId !== undefined;
+  const isValidQuery =
+    metaId !== undefined || tournamentId !== undefined || tournamentGroupId !== undefined;
 
   // If baseCardId is provided, leaderCardId must also be provided
   const isValidParams =
@@ -55,7 +58,7 @@ export const useCardStats = (params: CardStatsParams) => {
     (!leaderAndBase && (baseCardId === undefined || leaderCardId !== undefined));
 
   return useQuery<CardStatsResponse, ErrorWithStatus>({
-    queryKey: ['card-stats', metaId, tournamentId, tournamentGroupId, leaderCardId, baseCardId],
+    queryKey: cardStatsKeys.list(params),
     queryFn:
       isValidQuery && isValidParams
         ? async () => {

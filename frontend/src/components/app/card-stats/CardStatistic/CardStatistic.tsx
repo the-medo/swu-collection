@@ -10,6 +10,9 @@ import { cn } from '@/lib/utils.ts';
 import { CardDecksDialog } from '../CardDecks';
 import { CardStatsParams } from '@/api/card-stats';
 import type { SectionMostPlayedCardsItem } from '../../../../../../types/DailySnapshots';
+import { getCardDeckCount } from '../../../../../../shared/lib/cardDeckCounts.ts';
+import { useCardStatsDeckCounts } from '../CardStatsDeckCountsContext.ts';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 
 // Type guard to detect full CardStat
 function isFullCardStat(stat: CardStat | SectionMostPlayedCardsItem): stat is CardStat {
@@ -23,6 +26,7 @@ interface CardStatisticProps {
   cardStatParams: CardStatsParams;
   variant?: 'image' | 'card-horizontal';
   preTitle?: string;
+  totalDeckCount?: number;
 }
 
 const CardStatistic: React.FC<CardStatisticProps> = ({
@@ -31,7 +35,12 @@ const CardStatistic: React.FC<CardStatisticProps> = ({
   card,
   variant = 'image',
   preTitle,
+  totalDeckCount,
 }) => {
+  const { counts } = useCardStatsDeckCounts();
+  const denominator =
+    totalDeckCount ??
+    getCardDeckCount(counts, cardStatParams.leaderCardId, cardStatParams.baseCardId);
   if (!card) return null;
 
   const cardVariantId = selectDefaultVariant(card);
@@ -39,6 +48,14 @@ const CardStatistic: React.FC<CardStatisticProps> = ({
   const deckCount = cardStat.deckCount ?? 0;
   const countMd = cardStat.countMd ?? 0;
   const countSb = cardStat.countSb ?? 0;
+  const inclusionPercentage =
+    denominator !== undefined &&
+    Number.isFinite(denominator) &&
+    denominator > 0 &&
+    deckCount >= 0 &&
+    deckCount <= denominator
+      ? ((deckCount / denominator) * 100).toFixed(1)
+      : undefined;
 
   const winRate = isFullCardStat(cardStat)
     ? cardStat.matchWin + cardStat.matchLose > 0
@@ -101,6 +118,22 @@ const CardStatistic: React.FC<CardStatisticProps> = ({
           cardName={card.name}
           {...cardStatParams}
         />
+
+        {inclusionPercentage !== undefined && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex justify-between gap-2" tabIndex={0}>
+                <span>Included in:</span>
+                <span className="text-md font-bold">{inclusionPercentage}%</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-72">
+              {deckCount} of {denominator} known decks in this view include this card in the main
+              deck or sideboard. Each deck is counted once. The total includes known decks whose
+              full card list is unavailable.
+            </TooltipContent>
+          </Tooltip>
+        )}
 
         {winRate !== null ? (
           <div className="flex justify-between">

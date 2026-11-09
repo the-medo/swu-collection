@@ -11,11 +11,28 @@ interface TournamentDataLoaderProps {
 }
 
 const TournamentDataLoader: React.FC<TournamentDataLoaderProps> = ({ tournamentId }) => {
-  const { data: decksData, isLoading: isLoadingDecks } = useGetTournamentDecks(tournamentId);
-  const { data: matchesData, isLoading: isLoadingMatches } = useGetTournamentMatches(tournamentId);
-  const { data: tournamentData, isLoading: isLoadingTournament } = useGetTournament(tournamentId);
+  const {
+    data: decksData,
+    isLoading: isLoadingDecks,
+    error: decksError,
+  } = useGetTournamentDecks(tournamentId);
+  const {
+    data: matchesData,
+    isLoading: isLoadingMatches,
+    error: matchesError,
+  } = useGetTournamentMatches(tournamentId);
+  const {
+    data: tournamentData,
+    isLoading: isLoadingTournament,
+    error: tournamentError,
+  } = useGetTournament(tournamentId);
 
-  const { setTournamentData, setTournamentIds } = useTournamentMetaActions();
+  const { setTournamentData, setTournamentIds, setTournamentLoadError } =
+    useTournamentMetaActions();
+
+  useEffect(() => {
+    setTournamentLoadError([tournamentId], decksError ?? matchesError ?? tournamentError);
+  }, [tournamentId, decksError, matchesError, tournamentError, setTournamentLoadError]);
 
   useEffect(() => {
     if (
@@ -41,11 +58,13 @@ const TournamentDataLoader: React.FC<TournamentDataLoaderProps> = ({ tournamentI
     decksData,
     matchesData,
     tournamentData,
+    tournamentId,
+    setTournamentData,
   ]);
 
   useEffect(() => {
     setTournamentIds([tournamentId]);
-  }, [tournamentId]);
+  }, [tournamentId, setTournamentIds]);
 
   return null;
 };

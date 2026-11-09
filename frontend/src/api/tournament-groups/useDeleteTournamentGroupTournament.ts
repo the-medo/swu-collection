@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api.ts';
+import { cardStatsKeys } from '@/api/card-stats/queryKeys.ts';
 import { toast } from '@/hooks/use-toast.ts';
 
 export const useDeleteTournamentGroupTournament = (groupId: string) => {
@@ -14,12 +15,15 @@ export const useDeleteTournamentGroupTournament = (groupId: string) => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: response.statusText }));
-        throw new Error('message' in errorData ? errorData.message : 'Failed to remove tournament from group');
+        throw new Error(
+          'message' in errorData ? errorData.message : 'Failed to remove tournament from group',
+        );
       }
 
       return response.json() as Promise<{ message: string }>;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: cardStatsKeys.all });
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ['tournament-group', groupId] });
       queryClient.invalidateQueries({ queryKey: ['tournament-group-tournaments', groupId] });
