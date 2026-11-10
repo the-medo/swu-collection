@@ -687,6 +687,13 @@
       "when": 1793908468683,
       "tag": "0097_third_party_integrations",
       "breakpoints": true
+    },
+    {
+      "idx": 98,
+      "version": "7",
+      "when": 1794308354008,
+      "tag": "0098_collection_import_review",
+      "breakpoints": true
     }
   ]
 }

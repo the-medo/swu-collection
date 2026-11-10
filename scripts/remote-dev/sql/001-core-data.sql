@@ -453,6 +453,19 @@ FROM development_cleanup_user dcu
 WHERE ue.user_id = dcu.user_id
   AND dcu.retain_match_data;
 
+-- Import reports contain original CSV cells, filenames and arbitrary private text.
+-- Never include them in contributor dumps, even for opted-in collection owners.
+DO $collection_imports$
+BEGIN
+  IF to_regclass('public.collection_import') IS NOT NULL THEN
+    TRUNCATE TABLE collection_import_row, collection_import;
+    IF EXISTS (SELECT 1 FROM collection_import_row) OR EXISTS (SELECT 1 FROM collection_import) THEN
+      RAISE EXCEPTION 'Collection import reports were not cleared';
+    END IF;
+  END IF;
+END
+$collection_imports$;
+
 -- Retain collections only for users who opted into development-data sharing.
 -- Their free-text descriptions and card notes are removed in all cases.
 DELETE FROM collection_source_collection csc

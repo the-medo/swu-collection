@@ -30,6 +30,7 @@ import CollectionCardSelection from '@/components/app/collections/CollectionCard
 import CollectionSources from '@/components/app/collections/CollectionSources/CollectionSources.tsx';
 import CollectionPricing from '@/components/app/collections/CollectionPricing/CollectionPricing.tsx';
 import { useSidebar } from '@/components/ui/sidebar.tsx';
+import CollectionImportReviewNotice from '../CollectionImport/CollectionImportReviewNotice.tsx';
 
 const routeApi = getRouteApi('/collections/$collectionId/');
 
@@ -139,6 +140,7 @@ const CollectionDetail: React.FC = () => {
             </div>
           )}
         </BrowseHeader>
+        {owned && <CollectionImportReviewNotice collectionId={collectionId} />}
         {data?.collection.description && (
           <p className="m-0 max-w-3xl text-sm leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">
             {data.collection.description}

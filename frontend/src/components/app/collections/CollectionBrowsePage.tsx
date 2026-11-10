@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
-import { Earth, Plus } from 'lucide-react';
+import { Earth, Plus, FileUp } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
 import { CollectionType } from '../../../../../types/enums.ts';
 import { AuthorizedRouteComponent } from '@/routes/_authenticated.tsx';
 import { useUser } from '@/hooks/useUser.ts';
@@ -67,6 +68,14 @@ export default function CollectionBrowsePage({
         icon={info.icon}
         description={personal ? info.personal : info.public}
       >
+        {personal && collectionType === CollectionType.COLLECTION && (
+          <Button variant="outline" asChild>
+            <Link to="/collections/import">
+              <FileUp className="size-4" />
+              Import CSV
+            </Link>
+          </Button>
+        )}
         <NewCollectionDialog
           collectionType={collectionType}
           trigger={

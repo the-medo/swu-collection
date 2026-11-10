@@ -101,6 +101,7 @@ import { Route as AuthenticatedMcpConsentRouteImport } from './routes/_authentic
 import { Route as AuthenticatedCrossfireLobbyIdRouteImport } from './routes/_authenticated/crossfire/$lobbyId'
 import { Route as AuthenticatedCreatorStudioVideosRouteImport } from './routes/_authenticated/creator-studio/videos'
 import { Route as AuthenticatedCreatorStudioArticlesRouteImport } from './routes/_authenticated/creator-studio/articles'
+import { Route as AuthenticatedCollectionsImportRouteImport } from './routes/_authenticated/collections/import'
 import { Route as TeamsTeamIdStatisticsIndexRouteImport } from './routes/teams/$teamId/statistics/index'
 import { Route as StatisticsStatisticsLayoutMetaIndexRouteImport } from './routes/statistics/_statisticsLayout/meta/index'
 import { Route as StatisticsStatisticsLayoutMatchupsIndexRouteImport } from './routes/statistics/_statisticsLayout/matchups/index'
@@ -116,6 +117,7 @@ import { Route as AuthenticatedCrossfireReplayLobbyIdRouteImport } from './route
 import { Route as LimitedPoolPoolIdDetailIndexRouteImport } from './routes/limited/pool/$poolId/detail/index'
 import { Route as AuthenticatedSettingsLinkKarabastIndexRouteImport } from './routes/_authenticated/settings/link/karabast/index'
 import { Route as AuthenticatedSettingsLinkAppIndexRouteImport } from './routes/_authenticated/settings/link/app/index'
+import { Route as AuthenticatedCollectionsCollectionIdImportsImportIdRouteImport } from './routes/_authenticated/collections/$collectionId/imports/$importId'
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutMetaIndexRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout/meta/index'
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutMembersIndexRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout/members/index'
 import { Route as TeamsTeamIdStatisticsStatisticsLayoutMatchupsIndexRouteImport } from './routes/teams/$teamId/statistics/_statisticsLayout/matchups/index'
@@ -604,6 +606,12 @@ const AuthenticatedCreatorStudioArticlesRoute =
     path: '/articles',
     getParentRoute: () => AuthenticatedCreatorStudioRoute,
   } as any)
+const AuthenticatedCollectionsImportRoute =
+  AuthenticatedCollectionsImportRouteImport.update({
+    id: '/collections/import',
+    path: '/collections/import',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const TeamsTeamIdStatisticsIndexRoute =
   TeamsTeamIdStatisticsIndexRouteImport.update({
     id: '/',
@@ -690,6 +698,12 @@ const AuthenticatedSettingsLinkAppIndexRoute =
   AuthenticatedSettingsLinkAppIndexRouteImport.update({
     id: '/settings/link/app/',
     path: '/settings/link/app/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedCollectionsCollectionIdImportsImportIdRoute =
+  AuthenticatedCollectionsCollectionIdImportsImportIdRouteImport.update({
+    id: '/collections/$collectionId/imports/$importId',
+    path: '/collections/$collectionId/imports/$importId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const TeamsTeamIdStatisticsStatisticsLayoutMetaIndexRoute =
@@ -784,6 +798,7 @@ export interface FileRoutesByFullPath {
   '/teams': typeof TeamsIndexRoute
   '/tools': typeof ToolsIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
+  '/collections/import': typeof AuthenticatedCollectionsImportRoute
   '/creator-studio/articles': typeof AuthenticatedCreatorStudioArticlesRoute
   '/creator-studio/videos': typeof AuthenticatedCreatorStudioVideosRoute
   '/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
@@ -836,6 +851,7 @@ export interface FileRoutesByFullPath {
   '/statistics/matchups': typeof StatisticsStatisticsLayoutMatchupsIndexRoute
   '/statistics/meta': typeof StatisticsStatisticsLayoutMetaIndexRoute
   '/teams/$teamId/statistics/': typeof TeamsTeamIdStatisticsIndexRoute
+  '/collections/$collectionId/imports/$importId': typeof AuthenticatedCollectionsCollectionIdImportsImportIdRoute
   '/settings/link/app': typeof AuthenticatedSettingsLinkAppIndexRoute
   '/settings/link/karabast': typeof AuthenticatedSettingsLinkKarabastIndexRoute
   '/limited/pool/$poolId/detail': typeof LimitedPoolPoolIdDetailIndexRoute
@@ -892,6 +908,7 @@ export interface FileRoutesByTo {
   '/teams': typeof TeamsIndexRoute
   '/tools': typeof ToolsIndexRoute
   '/tournaments': typeof TournamentsIndexRoute
+  '/collections/import': typeof AuthenticatedCollectionsImportRoute
   '/creator-studio/articles': typeof AuthenticatedCreatorStudioArticlesRoute
   '/creator-studio/videos': typeof AuthenticatedCreatorStudioVideosRoute
   '/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
@@ -943,6 +960,7 @@ export interface FileRoutesByTo {
   '/statistics/leader-and-base': typeof StatisticsStatisticsLayoutLeaderAndBaseIndexRoute
   '/statistics/matchups': typeof StatisticsStatisticsLayoutMatchupsIndexRoute
   '/statistics/meta': typeof StatisticsStatisticsLayoutMetaIndexRoute
+  '/collections/$collectionId/imports/$importId': typeof AuthenticatedCollectionsCollectionIdImportsImportIdRoute
   '/settings/link/app': typeof AuthenticatedSettingsLinkAppIndexRoute
   '/settings/link/karabast': typeof AuthenticatedSettingsLinkKarabastIndexRoute
   '/limited/pool/$poolId/detail': typeof LimitedPoolPoolIdDetailIndexRoute
@@ -1006,6 +1024,7 @@ export interface FileRoutesById {
   '/teams/': typeof TeamsIndexRoute
   '/tools/': typeof ToolsIndexRoute
   '/tournaments/': typeof TournamentsIndexRoute
+  '/_authenticated/collections/import': typeof AuthenticatedCollectionsImportRoute
   '/_authenticated/creator-studio/articles': typeof AuthenticatedCreatorStudioArticlesRoute
   '/_authenticated/creator-studio/videos': typeof AuthenticatedCreatorStudioVideosRoute
   '/_authenticated/crossfire/$lobbyId': typeof AuthenticatedCrossfireLobbyIdRoute
@@ -1059,6 +1078,7 @@ export interface FileRoutesById {
   '/statistics/_statisticsLayout/matchups/': typeof StatisticsStatisticsLayoutMatchupsIndexRoute
   '/statistics/_statisticsLayout/meta/': typeof StatisticsStatisticsLayoutMetaIndexRoute
   '/teams/$teamId/statistics/': typeof TeamsTeamIdStatisticsIndexRoute
+  '/_authenticated/collections/$collectionId/imports/$importId': typeof AuthenticatedCollectionsCollectionIdImportsImportIdRoute
   '/_authenticated/settings/link/app/': typeof AuthenticatedSettingsLinkAppIndexRoute
   '/_authenticated/settings/link/karabast/': typeof AuthenticatedSettingsLinkKarabastIndexRoute
   '/limited/pool/$poolId/detail/': typeof LimitedPoolPoolIdDetailIndexRoute
@@ -1121,6 +1141,7 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tools'
     | '/tournaments'
+    | '/collections/import'
     | '/creator-studio/articles'
     | '/creator-studio/videos'
     | '/crossfire/$lobbyId'
@@ -1173,6 +1194,7 @@ export interface FileRouteTypes {
     | '/statistics/matchups'
     | '/statistics/meta'
     | '/teams/$teamId/statistics/'
+    | '/collections/$collectionId/imports/$importId'
     | '/settings/link/app'
     | '/settings/link/karabast'
     | '/limited/pool/$poolId/detail'
@@ -1229,6 +1251,7 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tools'
     | '/tournaments'
+    | '/collections/import'
     | '/creator-studio/articles'
     | '/creator-studio/videos'
     | '/crossfire/$lobbyId'
@@ -1280,6 +1303,7 @@ export interface FileRouteTypes {
     | '/statistics/leader-and-base'
     | '/statistics/matchups'
     | '/statistics/meta'
+    | '/collections/$collectionId/imports/$importId'
     | '/settings/link/app'
     | '/settings/link/karabast'
     | '/limited/pool/$poolId/detail'
@@ -1342,6 +1366,7 @@ export interface FileRouteTypes {
     | '/teams/'
     | '/tools/'
     | '/tournaments/'
+    | '/_authenticated/collections/import'
     | '/_authenticated/creator-studio/articles'
     | '/_authenticated/creator-studio/videos'
     | '/_authenticated/crossfire/$lobbyId'
@@ -1395,6 +1420,7 @@ export interface FileRouteTypes {
     | '/statistics/_statisticsLayout/matchups/'
     | '/statistics/_statisticsLayout/meta/'
     | '/teams/$teamId/statistics/'
+    | '/_authenticated/collections/$collectionId/imports/$importId'
     | '/_authenticated/settings/link/app/'
     | '/_authenticated/settings/link/karabast/'
     | '/limited/pool/$poolId/detail/'
@@ -2120,6 +2146,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCreatorStudioArticlesRouteImport
       parentRoute: typeof AuthenticatedCreatorStudioRoute
     }
+    '/_authenticated/collections/import': {
+      id: '/_authenticated/collections/import'
+      path: '/collections/import'
+      fullPath: '/collections/import'
+      preLoaderRoute: typeof AuthenticatedCollectionsImportRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/teams/$teamId/statistics/': {
       id: '/teams/$teamId/statistics/'
       path: '/'
@@ -2225,6 +2258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsLinkAppIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/collections/$collectionId/imports/$importId': {
+      id: '/_authenticated/collections/$collectionId/imports/$importId'
+      path: '/collections/$collectionId/imports/$importId'
+      fullPath: '/collections/$collectionId/imports/$importId'
+      preLoaderRoute: typeof AuthenticatedCollectionsCollectionIdImportsImportIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/teams/$teamId/statistics/_statisticsLayout/meta/': {
       id: '/teams/$teamId/statistics/_statisticsLayout/meta/'
       path: '/meta'
@@ -2305,6 +2345,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedShopRoute: typeof AuthenticatedShopRoute
+  AuthenticatedCollectionsImportRoute: typeof AuthenticatedCollectionsImportRoute
   AuthenticatedCrossfireLobbyIdRoute: typeof AuthenticatedCrossfireLobbyIdRoute
   AuthenticatedMcpConsentRoute: typeof AuthenticatedMcpConsentRoute
   AuthenticatedCrossfireIndexRoute: typeof AuthenticatedCrossfireIndexRoute
@@ -2312,6 +2353,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedCrossfireReplayLobbyIdRoute: typeof AuthenticatedCrossfireReplayLobbyIdRoute
   AuthenticatedCrossfireReportsReportIdRoute: typeof AuthenticatedCrossfireReportsReportIdRoute
   AuthenticatedTournamentsCalendarIndexRoute: typeof AuthenticatedTournamentsCalendarIndexRoute
+  AuthenticatedCollectionsCollectionIdImportsImportIdRoute: typeof AuthenticatedCollectionsCollectionIdImportsImportIdRoute
   AuthenticatedSettingsLinkAppIndexRoute: typeof AuthenticatedSettingsLinkAppIndexRoute
   AuthenticatedSettingsLinkKarabastIndexRoute: typeof AuthenticatedSettingsLinkKarabastIndexRoute
 }
@@ -2324,6 +2366,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedShopRoute: AuthenticatedShopRoute,
+  AuthenticatedCollectionsImportRoute: AuthenticatedCollectionsImportRoute,
   AuthenticatedCrossfireLobbyIdRoute: AuthenticatedCrossfireLobbyIdRoute,
   AuthenticatedMcpConsentRoute: AuthenticatedMcpConsentRoute,
   AuthenticatedCrossfireIndexRoute: AuthenticatedCrossfireIndexRoute,
@@ -2334,6 +2377,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedCrossfireReportsReportIdRoute,
   AuthenticatedTournamentsCalendarIndexRoute:
     AuthenticatedTournamentsCalendarIndexRoute,
+  AuthenticatedCollectionsCollectionIdImportsImportIdRoute:
+    AuthenticatedCollectionsCollectionIdImportsImportIdRoute,
   AuthenticatedSettingsLinkAppIndexRoute:
     AuthenticatedSettingsLinkAppIndexRoute,
   AuthenticatedSettingsLinkKarabastIndexRoute:

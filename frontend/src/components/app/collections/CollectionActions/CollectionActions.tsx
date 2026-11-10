@@ -1,7 +1,8 @@
 import { Card, CardContent } from '@/components/ui/card.tsx';
 import * as React from 'react';
 import { Button } from '@/components/ui/button.tsx';
-import { Copy, LinkIcon } from 'lucide-react';
+import { Copy, LinkIcon, FileUp } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
 import { useToast } from '@/hooks/use-toast.ts';
 import { useGetCollection } from '@/api/collections/useGetCollection.ts';
 import { cn } from '@/lib/utils.ts';
@@ -32,6 +33,14 @@ const CollectionActions: React.FC<CollectionActionsProps> = ({ collectionId }) =
   return (
     <Card className="rounded-2xl shadow-none">
       <CardContent className="flex gap-2 items-center p-3 flex-wrap">
+        {user?.id === data?.collection.userId && (
+          <Button size="sm" variant="outline" asChild>
+            <Link to="/collections/import" search={{ collectionId }}>
+              <FileUp className="size-4" />
+              Imports &amp; review
+            </Link>
+          </Button>
+        )}
         <Button
           size="sm"
           variant="outline"

@@ -23,6 +23,22 @@ export const collectionIdImportPostRoute = new Hono<AuthExtension>().post(
     const user = c.get('user');
     if (!user) return c.json({ message: 'Unauthorized' }, 401);
 
+    // Older open clients still send resolved cards without the original CSV.
+    // Send them to the report-capable importer instead of a database error.
+    const identities = new Set<string>();
+    for (const card of data.cards) {
+      const key = JSON.stringify([card.cardId, card.variantId, card.isFoil]);
+      if (identities.has(key))
+        return c.json(
+          {
+            message:
+              'Duplicate rows found. Reload the page and use the CSV importer to review them.',
+          },
+          409,
+        );
+      identities.add(key);
+    }
+
     const collectionId = eq(collectionTable.id, paramCollectionId);
 
     const col = (await db.select().from(collectionTable).where(collectionId))[0];
