@@ -1,5 +1,5 @@
 {
-  "id": "289f31b1-314e-40c2-8a0c-388756685632",
+  "id": "2fd6ebbd-b691-46b7-bc5d-b10827bd213a",
   "prevId": "0a4b0194-b69b-48ce-9428-bf53e21594c7",
   "version": "7",
   "dialect": "postgresql",
@@ -5014,6 +5014,12 @@
         "completed_at": {
           "name": "completed_at",
           "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "resolved_count": {
+          "name": "resolved_count",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         }

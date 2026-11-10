@@ -21,7 +21,8 @@ CREATE TABLE "collection_import_row" (
 	"message" text NOT NULL,
 	"related_rows" jsonb NOT NULL,
 	"match" jsonb,
-	"completed_at" timestamp with time zone
+	"completed_at" timestamp with time zone,
+	"resolved_count" integer
 );
 --> statement-breakpoint
 ALTER TABLE "collection_import" ADD CONSTRAINT "collection_import_collection_id_collection_id_fk" FOREIGN KEY ("collection_id") REFERENCES "public"."collection"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
