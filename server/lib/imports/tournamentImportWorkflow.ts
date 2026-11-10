@@ -108,7 +108,10 @@ export async function runTournamentImport(
     if (!meleeUserId) continue;
 
     const decklist = toNormalizedDecklistInfo(
-      await findDecklistForFormat(standing.Decklists, requiredDecklistFormat),
+      await findDecklistForFormat(standing.Decklists, requiredDecklistFormat, {
+        tournamentId: meleeTournamentId,
+        standingFormat: standing.FormatName,
+      }),
     );
     if (decklist?.DecklistId) {
       userDecklistMap[meleeUserId] = decklist;
@@ -133,7 +136,10 @@ export async function runTournamentImport(
 
     const playerData = await fetchPlayerDetails(meleeUserId);
     const decklist = toNormalizedDecklistInfo(
-      await findDecklistForFormat(playerData?.decklists, requiredDecklistFormat),
+      await findDecklistForFormat(playerData?.decklists, requiredDecklistFormat, {
+        tournamentId: meleeTournamentId,
+        standingFormat: standing.FormatName,
+      }),
     );
     if (decklist?.DecklistId) {
       userDecklistMap[meleeUserId] = decklist;
@@ -192,7 +198,7 @@ export async function runTournamentImport(
         console.warn('Deck ID is empty but it is supposed to exist');
         continue;
       }
-      if (deleteExistingDecks) {
+      if (deleteExistingDecks || d.filledPlaceholder) {
         await db.delete(deckCardTable).where(eq(deckCardTable.deckId, d.tournamentDeck.deckId));
         await db.delete(entityResource).where(eq(entityResource.entityId, d.tournamentDeck.deckId));
         console.log(
@@ -211,6 +217,12 @@ export async function runTournamentImport(
           .where(eq(tournamentDeck.deckId, d.tournamentDeck.deckId));
         console.log('Deck existed - updated placement, point and record info');
       }
+      if (d.filledPlaceholder) {
+        await db
+          .update(deckTable)
+          .set({ name: d.decklistName })
+          .where(eq(deckTable.id, d.tournamentDeck.deckId));
+      }
     } else {
       console.log('Creating deck - ', d.decklistName);
       const newDeck = await db
@@ -225,13 +237,16 @@ export async function runTournamentImport(
       const newDeckId = newDeck[0].id;
       console.log('Created new deck ' + newDeckId);
       d.tournamentDeck.deckId = newDeckId;
-      if (d.tournamentDeck.meleePlayerUsername) {
-        playerInfo[d.tournamentDeck.meleePlayerUsername] = {
-          deckId: newDeckId,
-          meleeDeckId: d.tournamentDeck.meleeDecklistGuid ?? '',
-          matches: [],
-        };
-      }
+    }
+
+    // Match links must use the resolved deck even when a GUID identifies a
+    // renamed player whose current name also has an old placeholder.
+    if (d.tournamentDeck.meleePlayerUsername) {
+      playerInfo[d.tournamentDeck.meleePlayerUsername] = {
+        deckId: d.tournamentDeck.deckId,
+        meleeDeckId: d.tournamentDeck.meleeDecklistGuid ?? '',
+        matches: [],
+      };
     }
 
     const resources: EntityResourceInsert[] = [
@@ -281,7 +296,7 @@ export async function runTournamentImport(
     } else if (!d.tournamentDeck.meleeDecklistGuid || d.tournamentDeck.meleeDecklistGuid === '') {
       console.warn('Melee decklist GUID is empty');
     } else {
-      if (!isPartialRoundImport || !d.exists) {
+      if (!isPartialRoundImport || !d.exists || d.filledPlaceholder) {
         const decklistText = await fetchDecklistView(d.tournamentDeck.meleeDecklistGuid);
         if (decklistText && decklistText !== '') {
           const cards = parseTextToSwubase(decklistText, cardList, d.tournamentDeck.deckId);

@@ -18,7 +18,6 @@ import {
   LiveTournamentStatusTilesSection,
   LiveTournamentWatchMode,
   PlayersAndStreamsSection,
-  WeekendMetaSection,
 } from './live-tournaments/sections';
 
 const liveHomeClassName = cn(
@@ -280,14 +279,6 @@ export default function LiveTournamentHome() {
               weekendId={detail.weekend.id}
               refreshing={isFetching}
             />
-            <div
-              className={cn(
-                'live-panel live-field-panel min-w-0 p-5.5 border border-border rounded-[18px] bg-card',
-                'max-mobile:p-4.5',
-              )}
-            >
-              <WeekendMetaSection detail={detail} />
-            </div>
           </div>
           <PlayersAndStreamsSection
             detail={detail}
