@@ -625,20 +625,29 @@ const decklistHasFormat = (document: Document, format: string) =>
     element => element.textContent?.trim() === format,
   );
 
+type TIDecklistFormatContext = {
+  tournamentId: string | number;
+  standingFormat?: string;
+};
+
 export async function findDecklistForFormat<T extends TIMeleeDecklistReference>(
   decklists: T[] | undefined,
   requiredFormat?: string,
+  context?: TIDecklistFormatContext,
 ): Promise<T | undefined> {
   if (!requiredFormat) {
     return decklists?.[0];
   }
+
+  const allowFreeform = requiredFormat === 'Premier' && context?.standingFormat === 'Premier';
+  let freeformFallback: T | undefined;
 
   for (const decklist of decklists ?? []) {
     if (decklist.Format === requiredFormat) {
       return decklist;
     }
 
-    if (decklist.Format !== undefined) {
+    if (decklist.Format !== undefined && !(allowFreeform && decklist.Format === 'Free-form')) {
       continue;
     }
 
@@ -649,9 +658,24 @@ export async function findDecklistForFormat<T extends TIMeleeDecklistReference>(
     if (document && decklistHasFormat(document, requiredFormat)) {
       return decklist;
     }
+
+    // Some Premier events expose submitted decks only on hover and label those
+    // pages Free-form. Require the current tournament and a readable SWU export,
+    // and keep looking for an exact format match before using this fallback.
+    if (
+      !freeformFallback &&
+      allowFreeform &&
+      document &&
+      decklistHasFormat(document, 'Free-form') &&
+      document.querySelector('input#tournament-id-field')?.getAttribute('value') ===
+        String(context?.tournamentId) &&
+      readMeleeDecklistText(document).trim()
+    ) {
+      freeformFallback = decklist;
+    }
   }
 
-  return undefined;
+  return freeformFallback;
 }
 
 export const findPremierDecklist = <T extends TIMeleeDecklistReference>(
@@ -681,6 +705,7 @@ export type ParsedStanding = {
   tournamentDeck: TournamentDeck;
   decklistName: string;
   exists: boolean;
+  filledPlaceholder: boolean;
   meleeUserId?: number;
 };
 export type ParseStandingsAdditionalInfo = {
@@ -689,6 +714,7 @@ export type ParseStandingsAdditionalInfo = {
    * - in that case, we need to skip them and change placements of all players after them
    */
   skippedStandings: ParsedStanding[];
+  claimedDeckIds?: Set<string>;
 };
 
 export const parseStandingsToTournamentDeck = (
@@ -709,9 +735,32 @@ export const parseStandingsToTournamentDeck = (
     console.log(`No selected decklist found for ${meleePlayerUsername}`);
   }
 
-  const meleeDecklistGuid = decklistInfo?.DecklistId ?? null;
+  const discoveredGuid = decklistInfo?.DecklistId ?? null;
 
-  const exists = availableDecks.find(d => d.meleeDecklistGuid === meleeDecklistGuid);
+  let exists = discoveredGuid
+    ? availableDecks.find(d => d.meleeDecklistGuid === discoveredGuid)
+    : undefined;
+  if (!exists && meleePlayerUsername) {
+    // Fill a player's placeholder when their decklist becomes available. Null
+    // GUIDs are not identities: matching them merges unrelated participants.
+    const discoveredGuids = new Set(
+      Object.values(userDecklistMap ?? {}).map(decklist => decklist?.DecklistId),
+    );
+    const playerDecks = availableDecks.filter(
+      d =>
+        d.meleePlayerUsername === meleePlayerUsername &&
+        (!d.meleeDecklistGuid || (!discoveredGuid && !discoveredGuids.has(d.meleeDecklistGuid))),
+    );
+    const placeholders = playerDecks.filter(d => !d.meleeDecklistGuid);
+    const candidates = placeholders.length ? placeholders : playerDecks;
+    if (candidates.length > 1) {
+      throw new Error(
+        `Ambiguous existing tournament decks for ${meleePlayerUsername}. Resolve duplicate participant names or stale tournament rows before re-importing.`,
+      );
+    }
+    exists = candidates[0];
+  }
+  const meleeDecklistGuid = discoveredGuid ?? exists?.meleeDecklistGuid ?? null;
   const decklistName = `#${placement} ${tournament.name} - ${meleePlayerUsername} [${decklistInfo?.DecklistName}]`;
 
   const result = {
@@ -729,6 +778,7 @@ export const parseStandingsToTournamentDeck = (
     },
     decklistName,
     exists: !!exists,
+    filledPlaceholder: !!exists && !exists.meleeDecklistGuid && !!discoveredGuid,
     meleeUserId,
   };
 
@@ -737,6 +787,15 @@ export const parseStandingsToTournamentDeck = (
   if (standing.MatchRecord === '0-0-0') {
     additionalInfo.skippedStandings.push(result);
     return undefined;
+  }
+  if (exists) {
+    const claimedDeckIds = (additionalInfo.claimedDeckIds ??= new Set<string>());
+    if (claimedDeckIds.has(exists.deckId)) {
+      throw new Error(
+        `Multiple participants resolve to existing deck ${exists.deckId}. Resolve duplicate participant names or stale tournament rows before re-importing.`,
+      );
+    }
+    claimedDeckIds.add(exists.deckId);
   }
   return result;
 };

@@ -53,7 +53,11 @@ Main Deck
 Sideboard
 2 | Resupply`;
 
-function mockConstructedMelee(format: number, useRoundFallback = false) {
+function mockConstructedMelee(
+  format: number,
+  useRoundFallback = false,
+  hoverDeck?: 'missing' | 'available',
+) {
   const requests: string[] = [];
   globalThis.fetch = (async (input: string | URL | Request) => {
     const url = String(input);
@@ -76,15 +80,19 @@ function mockConstructedMelee(format: number, useRoundFallback = false) {
         data: ['Alice', 'Bob'].map((name, index) => ({
           Rank: index + 1,
           Team: { Players: [{ ID: index + 1, DisplayName: name }] },
-          Decklists: [
-            // Premier discovery must still ignore a limited deck listed first.
-            ...(format === 1 ? [{ DecklistId: 'draft', Format: 'Draft' }] : []),
-            {
-              DecklistId: name,
-              DecklistName: 'Sabine',
-              Format: format === 1 ? 'Premier' : 'Eternal',
-            },
-          ],
+          FormatName: format === 1 ? 'Premier' : 'Eternal',
+          Decklists:
+            hoverDeck && name === 'Bob'
+              ? []
+              : [
+                  // Premier discovery must still ignore a limited deck listed first.
+                  ...(format === 1 ? [{ DecklistId: 'draft', Format: 'Draft' }] : []),
+                  {
+                    DecklistId: name,
+                    DecklistName: 'Sabine',
+                    Format: format === 1 ? 'Premier' : 'Eternal',
+                  },
+                ],
           MatchWins: 1,
           MatchLosses: 1,
           MatchDraws: 0,
@@ -93,8 +101,17 @@ function mockConstructedMelee(format: number, useRoundFallback = false) {
         })),
       });
     }
+    if (url.endsWith('/Player/GetPlayerDetails?id=2') && hoverDeck) {
+      return Response.json({
+        decklists: hoverDeck === 'available' ? [{ id: 'Bob', name: 'Sabine' }] : [],
+      });
+    }
     if (/\/Decklist\/View\/(Alice|Bob)$/.test(url)) {
-      return new Response(`<pre id="decklist-swu-text">${deckText}</pre>`);
+      return new Response(
+        `<input id="tournament-id-field" value="12345">
+         <div class="decklist-details-row"><span class="text-nowrap">${hoverDeck && url.endsWith('/Bob') ? 'Free-form' : 'Premier'}</span></div>
+         <pre id="decklist-swu-text">${deckText}</pre>`,
+      );
     }
     if (/\/Decklist\/GetTournamentViewData\/(Alice|Bob)$/.test(url)) {
       const opponent = url.endsWith('/Alice') ? 'Bob' : 'Alice';
@@ -129,6 +146,117 @@ function mockConstructedMelee(format: number, useRoundFallback = false) {
     throw new Error(`Unexpected external request: ${url}`);
   }) as typeof fetch;
   return requests;
+}
+
+for (const rounds of [undefined, [2]]) {
+  databaseTest(
+    `${rounds ? 'partial' : 'full'} import fills a Free-form hover placeholder without duplicating participants`,
+    async () => {
+      const id = randomUUID();
+      await db.insert(tournament).values({
+        id,
+        userId: 'swubase',
+        name: 'Mixed decklist import fixture',
+        type: 'pq',
+        location: 'Test',
+        continent: 'Europe',
+        attendance: 2,
+        format: 1,
+        days: 1,
+        date: new Date('2026-01-01'),
+        meleeId: '12345',
+      });
+      tournamentIds.push(id);
+      const readLinks = () =>
+        db
+          .select()
+          .from(tournamentDeck)
+          .where(eq(tournamentDeck.tournamentId, id))
+          .orderBy(tournamentDeck.placement);
+
+      mockConstructedMelee(1, false, 'missing');
+      await runTournamentImport(id);
+      const initial = await readLinks();
+      expect(initial).toHaveLength(2);
+      expect(initial.map(row => row.meleeDecklistGuid)).toEqual(['Alice', null]);
+      const aliceCards = await db
+        .select()
+        .from(deckCard)
+        .where(eq(deckCard.deckId, initial[0].deckId));
+      const aliceResources = await db
+        .select()
+        .from(entityResource)
+        .where(eq(entityResource.entityId, initial[0].deckId))
+        .orderBy(entityResource.id);
+
+      const requests = mockConstructedMelee(1, false, 'available');
+      await runTournamentImport(id, '', rounds);
+      const filled = await readLinks();
+      expect(filled.map(row => row.deckId)).toEqual(initial.map(row => row.deckId));
+      expect(filled.map(row => row.meleeDecklistGuid)).toEqual(['Alice', 'Bob']);
+      expect(requests).toContain('https://melee.gg/Player/GetPlayerDetails?id=2');
+      expect(
+        await db.select().from(deckCard).where(eq(deckCard.deckId, filled[1].deckId)),
+      ).toHaveLength(2);
+      const [bob] = await db.select().from(deck).where(eq(deck.id, filled[1].deckId));
+      expect(bob).toMatchObject({
+        leaderCardId1: 'sabine-wren--galvanized-revolutionary',
+        baseCardId: 'energy-conversion-lab',
+        name: '#2 Mixed decklist import fixture - Bob [Sabine]',
+      });
+      if (rounds) {
+        expect(
+          await db.select().from(deckCard).where(eq(deckCard.deckId, initial[0].deckId)),
+        ).toEqual(aliceCards);
+        expect(
+          await db
+            .select()
+            .from(entityResource)
+            .where(eq(entityResource.entityId, initial[0].deckId))
+            .orderBy(entityResource.id),
+        ).toEqual(aliceResources);
+      }
+
+      await runTournamentImport(id, '', rounds);
+      expect(await readLinks()).toEqual(filled);
+      expect(
+        await db.select().from(deckCard).where(eq(deckCard.deckId, filled[1].deckId)),
+      ).toHaveLength(2);
+      if (!rounds) {
+        // A renamed player's GUID must win over an old placeholder with the
+        // current display name, including when assigning match deck IDs.
+        await db
+          .update(tournamentDeck)
+          .set({ meleePlayerUsername: 'OldName' })
+          .where(eq(tournamentDeck.deckId, filled[1].deckId));
+        const [placeholder] = await db
+          .insert(deck)
+          .values({
+            userId: 'swubase',
+            format: 1,
+            name: 'Stale placeholder',
+          })
+          .returning();
+        await db.insert(tournamentDeck).values({
+          ...filled[1],
+          deckId: placeholder.id,
+          meleeDecklistGuid: null,
+        });
+        await runTournamentImport(id);
+        const matches = await db
+          .select()
+          .from(tournamentMatch)
+          .where(eq(tournamentMatch.tournamentId, id));
+        expect(matches).toHaveLength(2);
+        expect(
+          matches.every(
+            match => match.p1DeckId === filled[0].deckId && match.p2DeckId === filled[1].deckId,
+          ),
+        ).toBe(true);
+      }
+    },
+    30000,
+  );
 }
 
 for (const format of [1, 6]) {

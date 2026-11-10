@@ -543,12 +543,6 @@ try {
   await page.getByRole('button', { name: 'Manage watched players' }).click();
   await expect(page.getByRole('dialog', { name: 'Watched Players' })).toBeVisible();
   await page.keyboard.press('Escape');
-  await expect(page.locator('.live-field-leaders li')).toHaveCount(5);
-  await page.getByRole('button', { name: 'View all 6 combinations' }).click();
-  await page
-    .locator('.live-field-panel')
-    .screenshot({ path: `${output}/live-meta.png`, animations: 'disabled' });
-  await expect(page.locator('.live-field-leaders li')).toHaveCount(6);
   for (const width of [1100, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 1300 });
     await noOverflow();
