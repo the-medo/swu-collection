@@ -3,6 +3,8 @@
   "module": "server/index.ts",
   "type": "module",
   "scripts": {
+    "test:collection-import": "COLLECTION_IMPORT_DB_TEST=1 bun --env-file=.env.worktree test server/lib/collections server/routes/collection/import/import.db.test.ts",
+    "test:browser:collection-import": "COLLECTION_IMPORT_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/collection-import.browser.ts",
     "test:integration-apps": "INTEGRATION_APPS_DB_TEST=1 bun --env-file=.env.worktree test server/lib/integration-apps",
     "test:browser:integration-apps": "INTEGRATION_APPS_BROWSER_TEST=1 bun --env-file=.env --env-file=.env.worktree frontend/tests/integration-apps.browser.ts",
     "test:browser:headers": "HOMEPAGE_HEADER_BROWSER_TEST=1 bun frontend/tests/homepage-header.browser.ts",

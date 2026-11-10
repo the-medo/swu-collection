@@ -1,0 +1,1 @@
+ALTER TABLE "collection_import_row" ADD COLUMN "resolved_count" integer;
