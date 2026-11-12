@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils.ts';
 import { setInfo } from '../../../../../../lib/swu-resources/set-info.ts';
-import type { SwuSet } from '../../../../../../types/enums.ts';
+import { SwuSet } from '../../../../../../types/enums.ts';
+// The catalog CDN lacks TS26. This transparent logo is from the official Twin Suns product page.
+import twinSunsLogo from '@/assets/twin-suns-2026.png';
 
 export default function SetLogo({ set, className }: { set: SwuSet; className?: string }) {
   const [failed, setFailed] = useState(false);
@@ -13,7 +15,7 @@ export default function SetLogo({ set, className }: { set: SwuSet; className?: s
         </span>
       ) : (
         <img
-          src={`https://images.swubase.com/logos/${set}.png`}
+          src={set === SwuSet.TS26 ? twinSunsLogo : `https://images.swubase.com/logos/${set}.png`}
           alt={`${setInfo[set].name} logo`}
           loading="lazy"
           onError={() => setFailed(true)}

@@ -1,6 +1,7 @@
 import { clearCardSearchParams } from '../AdvancedCardSearch/advancedSearchLib.ts';
 import ArtistShowcaseTile from './ArtistShowcaseTile.tsx';
 import PromoCardsTile from './PromoCardsTile.tsx';
+import SetChecklistDialog from './SetChecklistDialog.tsx';
 import SetLogo from './SetLogo.tsx';
 import { useAdvancedCardSearchStore } from '../AdvancedCardSearch/useAdvancedCardSearchStore.ts';
 import { Fragment, useMemo } from 'react';
@@ -170,21 +171,28 @@ export default function CardHome({
                           <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                             {set.code.toUpperCase()}
                           </p>
-                          <h3 className="mt-1 text-lg font-semibold">
-                            <Link
-                              to="/cards/sets/$setCode"
-                              params={{ setCode: set.code }}
-                              search={previous => ({
-                                ...clearCardSearchParams(previous),
-                                csCategory: 'all',
-                                csVariant: 'standard',
-                              })}
-                              title={`${set.info.name} — All cards`}
-                              className="after:absolute after:inset-0 after:z-40 after:rounded-2xl focus-visible:outline-none focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-ring"
-                            >
-                              {set.info.name}
-                            </Link>
-                          </h3>
+                          <div className="mt-1 flex items-center justify-between gap-2">
+                            <h3 className="m-0! text-lg font-semibold">
+                              <Link
+                                to="/cards/sets/$setCode"
+                                params={{ setCode: set.code }}
+                                search={previous => ({
+                                  ...clearCardSearchParams(previous),
+                                  csCategory: 'all',
+                                  csVariant: 'standard',
+                                })}
+                                title={`${set.info.name} — All cards`}
+                                className="after:absolute after:inset-0 after:z-40 after:rounded-2xl focus-visible:outline-none focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-ring"
+                              >
+                                {set.info.name}
+                              </Link>
+                            </h3>
+                            <SetChecklistDialog
+                              set={set.code}
+                              artwork={set.leaders[0] ?? set.featured[0]}
+                              className="relative z-50"
+                            />
+                          </div>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           {(
