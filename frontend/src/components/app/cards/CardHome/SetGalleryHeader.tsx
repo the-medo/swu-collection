@@ -73,19 +73,19 @@ export default function SetGalleryHeader({
             set={code}
             className="h-20 w-36 shrink-0 rounded-xl border border-white/15 bg-slate-950/75 p-3 sm:h-28 sm:w-48"
           />
-          <div className="max-w-xl space-y-3">
+          <div className="w-full min-w-0 space-y-3 sm:flex-1">
             <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
               <Layers className="size-3.5" /> Card library <span aria-hidden="true">/</span>{' '}
               {code.toUpperCase()}
             </p>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <h1 className="m-0! text-3xl font-bold tracking-tight drop-shadow-md sm:text-4xl lg:text-5xl">
                 {info.name}
               </h1>
               <SetChecklistDialog
                 set={code}
                 artwork={artwork[0]}
-                className="text-white/85 hover:bg-white/15 hover:text-white"
+                className="bg-slate-950/60 text-white hover:bg-slate-950/80 hover:text-white dark:text-white dark:hover:text-white"
               />
             </div>
             <p className="text-sm text-white/75">

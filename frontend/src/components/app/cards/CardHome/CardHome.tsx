@@ -171,7 +171,7 @@ export default function CardHome({
                           <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                             {set.code.toUpperCase()}
                           </p>
-                          <div className="mt-1 flex items-center gap-1">
+                          <div className="mt-1 flex items-center justify-between gap-2">
                             <h3 className="m-0! text-lg font-semibold">
                               <Link
                                 to="/cards/sets/$setCode"
