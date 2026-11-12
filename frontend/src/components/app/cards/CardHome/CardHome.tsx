@@ -1,6 +1,7 @@
 import { clearCardSearchParams } from '../AdvancedCardSearch/advancedSearchLib.ts';
 import ArtistShowcaseTile from './ArtistShowcaseTile.tsx';
 import PromoCardsTile from './PromoCardsTile.tsx';
+import SetChecklistDialog from './SetChecklistDialog.tsx';
 import SetLogo from './SetLogo.tsx';
 import { useAdvancedCardSearchStore } from '../AdvancedCardSearch/useAdvancedCardSearchStore.ts';
 import { Fragment, useMemo } from 'react';
@@ -228,6 +229,7 @@ export default function CardHome({
                             ),
                           )}
                         </div>
+                        <SetChecklistDialog set={set.code} />
                       </div>
                     </article>
                     {position === 0 && <PromoCardsTile printings={promoArt} />}
