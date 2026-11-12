@@ -26,8 +26,21 @@ import type { SwuSet } from '../../../../../../types/enums.ts';
 import SetLogo from './SetLogo.tsx';
 
 const layouts = [
-  { name: 'Card grid', description: 'One row per card, with a box for each printing.' },
-  { name: 'Printing list', description: 'One row per printing, in two columns.' },
+  {
+    name: 'Card grid',
+    description: 'One row per card, with a box for each printing.',
+    preview: 'M6 14h22M6 19h22M6 24h22M6 29h22M6 34h22M16 14v20M22 14v20',
+  },
+  {
+    name: 'Printing list',
+    description: 'One row per printing, in two columns.',
+    preview: 'M6 14h9m4 0h9M6 19h9m4 0h9M6 24h9m4 0h9M6 29h9m4 0h9M6 34h9m4 0h9',
+  },
+  {
+    name: 'Printings by card',
+    description: 'Each card appears once, with its printings listed underneath.',
+    preview: 'M6 14h9m4 0h9M8 18h6m7 0h6M8 22h6m7 0h6M6 28h9m4 0h9M8 32h6m7 0h6M8 36h6m7 0h6',
+  },
 ] as const;
 
 const papers = [
@@ -35,8 +48,7 @@ const papers = [
   { name: 'Letter', label: 'US Letter', dimensions: '8.5 × 11 in' },
 ] as const;
 
-// Thumbnail versions of the two page layouts.
-function LayoutPreview({ grid }: { grid: boolean }) {
+function LayoutPreview({ path }: { path: string }) {
   return (
     <svg
       aria-hidden="true"
@@ -46,15 +58,7 @@ function LayoutPreview({ grid }: { grid: boolean }) {
     >
       <rect x="1" y="1" width="32" height="42" rx="3" className="fill-background stroke-border" />
       <path d="M6 8h12" stroke="currentColor" strokeWidth="2.5" />
-      <path
-        d={
-          grid
-            ? 'M6 14h22M6 19h22M6 24h22M6 29h22M6 34h22M16 14v20M22 14v20'
-            : 'M6 14h9m4 0h9M6 19h9m4 0h9M6 24h9m4 0h9M6 29h9m4 0h9M6 34h9m4 0h9'
-        }
-        stroke="currentColor"
-        opacity=".5"
-      />
+      <path d={path} stroke="currentColor" opacity=".5" />
     </svg>
   );
 }
@@ -116,7 +120,7 @@ function Downloads({ set }: { set: SwuSet }) {
             <TableRow key={layout.name} className="hover:bg-transparent">
               <TableHead scope="row" className="py-3.5 pl-3 sm:py-4 sm:pl-4">
                 <div className="flex items-center gap-3">
-                  <LayoutPreview grid={layout.name === 'Card grid'} />
+                  <LayoutPreview path={layout.preview} />
                   <div>
                     <span className="block font-semibold text-foreground">{layout.name}</span>
                     <span className="mt-1 block max-w-52 text-xs font-normal leading-snug">

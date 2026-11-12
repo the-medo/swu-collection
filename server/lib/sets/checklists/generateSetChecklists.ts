@@ -87,7 +87,7 @@ async function publish(set: SwuSet): Promise<Download[]> {
   }
 }
 
-/** Resolve a complete edition, regenerating all four PDFs together when needed. */
+/** Resolve a complete edition, regenerating all layouts and paper sizes together when needed. */
 export function generateSetChecklists(set: SwuSet): Promise<Download[]> {
   const cached = requests.get(set);
   if (cached && cached.expires > Date.now()) return cached.result;

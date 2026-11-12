@@ -12,7 +12,11 @@ const { registry } = require('playwright-core/lib/server/registry/index');
 const escape = Bun.escapeHTML;
 const mainTreatments = ['Standard', 'Standard Foil', 'Hyperspace', 'Hyperspace Foil'];
 const paperSizes = ['A4', 'Letter'] as const;
-const layouts = ['Card grid', 'Printing list'] as const;
+const layouts = [
+  { name: 'Card grid', slug: 'cards', render: cardGrid },
+  { name: 'Printing list', slug: 'printings', render: printingList },
+  { name: 'Printings by card', slug: 'printings-by-card', render: printingsByCard },
+] as const;
 
 function numberLabel(printing: ChecklistPrinting, set: SwuSet) {
   const number = String(printing.number).padStart(3, '0');
@@ -55,6 +59,17 @@ function printingList(set: SwuSet, cards: ChecklistCard[]) {
   return `<ul>${entries.map(({ name, printing }) => `<li><i></i><span class="number">${escape(numberLabel(printing, set))}</span><span>${escape(name)}<small>${escape(printing.treatment)}</small></span></li>`).join('')}</ul>`;
 }
 
+function printingsByCard(set: SwuSet, cards: ChecklistCard[]) {
+  const groups = cards.map(card => {
+    const marks = card.printings.map(
+      printing =>
+        `<div class="variant"><i></i><span><span class="number">${escape(numberLabel(printing, set))}</span> ${escape(printing.treatment)}</span></div>`,
+    );
+    return `<article><h2>${escape(card.name)}</h2><div class="variants">${marks.join('')}</div></article>`;
+  });
+  return `<main class="by-card">${groups.join('')}</main>`;
+}
+
 export async function getChecklistLogo(set: SwuSet): Promise<Buffer | null> {
   // Print-sized catalog logos include a dark backing for white artwork.
   // Twin Suns uses https://cdn.starwarsunlimited.com//SWHA_024_Product_Page_Logo_379cc080e8.png
@@ -66,13 +81,13 @@ export function getChecklistDocuments(set: SwuSet, cards: ChecklistCard[], logo:
   const centerHeader = logo
     ? `content: ""; background: url("data:image/png;base64,${logo.toString('base64')}") center / contain no-repeat;`
     : `content: "${set.toUpperCase()}";`;
-  return layouts.flatMap(layout => {
-    const body = layout === 'Card grid' ? cardGrid(set, cards) : printingList(set, cards);
+  return layouts.flatMap(({ name: layout, slug, render }) => {
+    const body = render(set, cards);
     const name = escape(setInfo[set].name);
     return paperSizes.map(paper => ({
       layout,
       paper,
-      filename: `${set}-${layout === 'Card grid' ? 'cards' : 'printings'}-${paper.toLowerCase()}.pdf`,
+      filename: `${set}-${slug}-${paper.toLowerCase()}.pdf`,
       html: `<!doctype html><html lang="en"><head><meta charset="utf-8">
       <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:">
       <title>${name} – ${layout}</title><style>
@@ -94,6 +109,12 @@ export function getChecklistDocuments(set: SwuSet, cards: ChecklistCard[], logo:
       ul {margin:0;padding:0;list-style:none;columns:2;column-gap:7mm;column-fill:auto}
       li {display:grid;grid-template-columns:3.5mm 10mm 1fr;align-items:center;gap:1.5mm;padding:1mm 0;border-bottom:.4pt solid #aaa}
       small {display:block;margin-top:.4mm}
+      .by-card {columns:2;column-gap:7mm;column-fill:auto}
+      .by-card article {break-inside:avoid;padding:1.6mm 0 2mm;border-bottom:.4pt solid #aaa}
+      .by-card h2 {margin:0 0 1.2mm;font-size:10pt}
+      .variants {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.2mm 2mm}
+      .variant {display:flex;align-items:baseline;gap:1mm;font-size:8pt}
+      .variant i {align-self:flex-start}
       </style></head><body>${body}</body></html>`,
     }));
   });

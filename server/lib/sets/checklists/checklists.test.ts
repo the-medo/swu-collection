@@ -5,7 +5,7 @@ import { SwuSet } from '../../../../types/enums.ts';
 import { getChecklistCards } from './rows.ts';
 import { getChecklistDocuments, getChecklistLogo } from './pdf.ts';
 
-test('the grid has one row per card and the list has one row per physical finish', () => {
+test('all three layouts include each physical finish in both paper sizes', () => {
   // Hunting Nexu has legacy duplicate IDs for both Standard and Hyperspace.
   const cards = getChecklistCards({ nexu: cardList['hunting-nexu'] }, SwuSet.SHD);
   expect(cards).toHaveLength(1);
@@ -16,8 +16,8 @@ test('the grid has one row per card and the list has one row per physical finish
     [437, 'Hyperspace Foil'],
   ]);
   const docs = getChecklistDocuments(SwuSet.SHD, cards, null);
-  expect(new Set(docs.map(doc => doc.filename)).size).toBe(4);
-  for (const layout of ['Card grid', 'Printing list']) {
+  expect(new Set(docs.map(doc => doc.filename)).size).toBe(6);
+  for (const layout of ['Card grid', 'Printing list', 'Printings by card']) {
     expect(docs.filter(doc => doc.layout === layout).map(doc => doc.paper)).toEqual([
       'A4',
       'Letter',
@@ -29,7 +29,19 @@ test('the grid has one row per card and the list has one row per physical finish
     if (doc.layout === 'Card grid') {
       expect(document.querySelectorAll('tbody tr')).toHaveLength(1);
       expect(document.querySelector('tbody tr')?.textContent).toContain('Hunting Nexu');
-    } else expect(document.querySelectorAll('li')).toHaveLength(4);
+    } else if (doc.layout === 'Printing list') {
+      expect(document.querySelectorAll('li')).toHaveLength(4);
+    } else {
+      const groups = document.querySelectorAll('article');
+      expect(groups).toHaveLength(1);
+      expect(groups[0].querySelector('h2')?.textContent).toBe('Hunting Nexu');
+      expect([...groups[0].querySelectorAll('.variant')].map(mark => mark.textContent)).toEqual([
+        '168 Standard',
+        '168 Standard Foil',
+        '437 Hyperspace',
+        '437 Hyperspace Foil',
+      ]);
+    }
   }
 });
 
@@ -57,7 +69,7 @@ test('set membership follows reprints, includes weekly promos, and distinguishes
   expect(matching.map(p => p.treatment)).not.toContain('Hyperspace');
 });
 
-test('token numbers form a separate sequence after the numbered cards in both PDFs', () => {
+test('token numbers form a separate sequence after the numbered cards in every layout', () => {
   const cards = getChecklistCards(
     {
       regular: cardList['director-krennic--aspiring-to-authority'],
@@ -71,14 +83,14 @@ test('token numbers form a separate sequence after the numbered cards in both PD
   ]);
   for (const doc of getChecklistDocuments(SwuSet.SOR, cards, null)) {
     const { document } = parseHTML(doc.html);
-    const rows = [...document.querySelectorAll(doc.layout === 'Card grid' ? 'tbody tr' : 'li')];
+    const rows = [...document.querySelectorAll('tbody tr, li, article')];
     const tokenIndex = rows.findIndex(row => row.textContent?.includes('Token 001'));
     expect(tokenIndex).toBeGreaterThan(0);
     expect(rows.slice(tokenIndex).every(row => row.textContent?.includes('Experience'))).toBe(true);
   }
 });
 
-test('all four editions embed the artwork for each catalog set', async () => {
+test('all editions embed the artwork for each catalog set', async () => {
   for (const set of Object.values(SwuSet)) {
     const logo = await getChecklistLogo(set);
     expect(logo?.toString('ascii', 1, 4)).toBe('PNG');
