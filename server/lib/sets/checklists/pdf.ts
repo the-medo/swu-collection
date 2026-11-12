@@ -55,7 +55,17 @@ function printingList(set: SwuSet, cards: ChecklistCard[]) {
   return `<ul>${entries.map(({ name, printing }) => `<li><i></i><span class="number">${escape(numberLabel(printing, set))}</span><span>${escape(name)}<small>${escape(printing.treatment)}</small></span></li>`).join('')}</ul>`;
 }
 
-export function getChecklistDocuments(set: SwuSet, cards: ChecklistCard[]) {
+export async function getChecklistLogo(set: SwuSet): Promise<Buffer | null> {
+  // Print-sized catalog logos include a dark backing for white artwork.
+  // Twin Suns uses https://cdn.starwarsunlimited.com//SWHA_024_Product_Page_Logo_379cc080e8.png
+  const file = Bun.file(new URL(`./logos/${set}.png`, import.meta.url));
+  return (await file.exists()) ? Buffer.from(await file.arrayBuffer()) : null;
+}
+
+export function getChecklistDocuments(set: SwuSet, cards: ChecklistCard[], logo: Buffer | null) {
+  const centerHeader = logo
+    ? `content: ""; background: url("data:image/png;base64,${logo.toString('base64')}") center / contain no-repeat;`
+    : `content: "${set.toUpperCase()}";`;
   return layouts.flatMap(layout => {
     const body = layout === 'Card grid' ? cardGrid(set, cards) : printingList(set, cards);
     const name = escape(setInfo[set].name);
@@ -64,11 +74,12 @@ export function getChecklistDocuments(set: SwuSet, cards: ChecklistCard[]) {
       paper,
       filename: `${set}-${layout === 'Card grid' ? 'cards' : 'printings'}-${paper.toLowerCase()}.pdf`,
       html: `<!doctype html><html lang="en"><head><meta charset="utf-8">
-      <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+      <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:">
       <title>${name} – ${layout}</title><style>
       @page {
         size: ${paper}; margin: 20mm 10mm 14mm; font: 8pt Arial,sans-serif;
         @top-left { content: ${JSON.stringify(setInfo[set].name).replaceAll('<', '\\3c ')}; font-size: 14pt; font-weight: bold; }
+        @top-center { ${centerHeader} width:45mm; margin:4.5mm 0; print-color-adjust:exact; }
         @top-right { content: "${layout}"; font-size: 10pt; }
         @bottom-left { content: "SWUBase · ${set.toUpperCase()}"; }
         @bottom-right { content: "Page " counter(page) " of " counter(pages); }

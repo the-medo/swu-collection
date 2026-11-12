@@ -2,7 +2,7 @@ import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { createHash } from 'node:crypto';
 import { cardList } from '../../../db/lists.ts';
 import type { SwuSet } from '../../../../types/enums.ts';
-import { getChecklistDocuments, renderChecklistPdfs } from './pdf.ts';
+import { getChecklistDocuments, getChecklistLogo, renderChecklistPdfs } from './pdf.ts';
 import { getChecklistCards } from './rows.ts';
 
 const bucket = 'swu-images';
@@ -28,7 +28,7 @@ async function publish(set: SwuSet): Promise<Download[]> {
   const cards = getChecklistCards(cardList, set);
   if (!cards.length) return [];
 
-  const documents = getChecklistDocuments(set, cards);
+  const documents = getChecklistDocuments(set, cards, await getChecklistLogo(set));
   const revision = createHash('sha256')
     .update(JSON.stringify(documents))
     .digest('hex')

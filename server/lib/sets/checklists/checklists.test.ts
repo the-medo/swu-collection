@@ -3,7 +3,7 @@ import { parseHTML } from 'linkedom';
 import { cardList } from '../../../db/lists.ts';
 import { SwuSet } from '../../../../types/enums.ts';
 import { getChecklistCards } from './rows.ts';
-import { getChecklistDocuments } from './pdf.ts';
+import { getChecklistDocuments, getChecklistLogo } from './pdf.ts';
 
 test('the grid has one row per card and the list has one row per physical finish', () => {
   // Hunting Nexu has legacy duplicate IDs for both Standard and Hyperspace.
@@ -15,7 +15,7 @@ test('the grid has one row per card and the list has one row per physical finish
     [437, 'Hyperspace'],
     [437, 'Hyperspace Foil'],
   ]);
-  const docs = getChecklistDocuments(SwuSet.SHD, cards);
+  const docs = getChecklistDocuments(SwuSet.SHD, cards, null);
   expect(new Set(docs.map(doc => doc.filename)).size).toBe(4);
   for (const layout of ['Card grid', 'Printing list']) {
     expect(docs.filter(doc => doc.layout === layout).map(doc => doc.paper)).toEqual([
@@ -69,11 +69,21 @@ test('token numbers form a separate sequence after the numbered cards in both PD
     [1, false],
     [1, true],
   ]);
-  for (const doc of getChecklistDocuments(SwuSet.SOR, cards)) {
+  for (const doc of getChecklistDocuments(SwuSet.SOR, cards, null)) {
     const { document } = parseHTML(doc.html);
     const rows = [...document.querySelectorAll(doc.layout === 'Card grid' ? 'tbody tr' : 'li')];
     const tokenIndex = rows.findIndex(row => row.textContent?.includes('Token 001'));
     expect(tokenIndex).toBeGreaterThan(0);
     expect(rows.slice(tokenIndex).every(row => row.textContent?.includes('Experience'))).toBe(true);
+  }
+});
+
+test('all four editions embed the artwork for each catalog set', async () => {
+  for (const set of Object.values(SwuSet)) {
+    const logo = await getChecklistLogo(set);
+    expect(logo?.toString('ascii', 1, 4)).toBe('PNG');
+    for (const doc of getChecklistDocuments(set, [], logo)) {
+      expect(doc.html).toContain(`url("data:image/png;base64,${logo!.toString('base64')}")`);
+    }
   }
 });
