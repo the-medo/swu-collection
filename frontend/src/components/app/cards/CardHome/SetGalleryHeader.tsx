@@ -14,6 +14,7 @@ import type { SwuSet } from '../../../../../../types/enums.ts';
 import type { CardPrinting } from '../../../../../../shared/lib/cardGroupPrintings.ts';
 import type { SetGalleryCategory, SetGalleryVariant } from './cardHomeLib.ts';
 import SetLogo from './SetLogo.tsx';
+import SetChecklistDialog from './SetChecklistDialog.tsx';
 
 export default function SetGalleryHeader({
   code,
@@ -77,9 +78,16 @@ export default function SetGalleryHeader({
               <Layers className="size-3.5" /> Card library <span aria-hidden="true">/</span>{' '}
               {code.toUpperCase()}
             </p>
-            <h1 className="text-3xl font-bold tracking-tight drop-shadow-md sm:text-4xl lg:text-5xl">
-              {info.name}
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="m-0! text-3xl font-bold tracking-tight drop-shadow-md sm:text-4xl lg:text-5xl">
+                {info.name}
+              </h1>
+              <SetChecklistDialog
+                set={code}
+                artwork={artwork[0]}
+                className="text-white/85 hover:bg-white/15 hover:text-white"
+              />
+            </div>
             <p className="text-sm text-white/75">
               Every card. Every treatment. Find your favorites.
             </p>
