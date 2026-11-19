@@ -25,6 +25,16 @@ function CardLibraryIcon({ size = 24, children, ...props }: CardLibraryIconProps
   );
 }
 
+/** Folded sheet with a PDF label that stays legible at set-title size. */
+export function PdfFileIcon(props: CardLibraryIconProps) {
+  return (
+    <CardLibraryIcon {...props}>
+      <path d="M5 9V3.5A1.5 1.5 0 0 1 6.5 2h7.8L20 7.7v12.8a1.5 1.5 0 0 1-1.5 1.5h-12A1.5 1.5 0 0 1 5 20.5" />
+      <path d="M14 2.5V8h5.5M3 17.5v-6h2a1.7 1.7 0 0 1 0 3.4H3m6-3.4v6h1.3c3.3 0 3.3-6 0-6Zm6.1 6v-6h3.1m-3.1 2.8h2.4" />
+    </CardLibraryIcon>
+  );
+}
+
 /** A fan of sleeved cards, with a simple card-back emblem. */
 export function DeckIcon(props: CardLibraryIconProps) {
   return (

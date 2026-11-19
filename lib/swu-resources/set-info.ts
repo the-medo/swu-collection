@@ -182,6 +182,18 @@ export const setInfo: Record<SwuSet, SetInfo> = {
 } as const;
 
 export const setArray: SetInfo[] = Object.values(setInfo);
+export const weeklyPromoSets: Partial<Record<SwuSet, readonly string[]>> = {
+  [SwuSet.SOR]: ['sor'],
+  [SwuSet.SHD]: ['shd'],
+  [SwuSet.TWI]: ['twi'],
+  [SwuSet.JTL]: ['jtlw', 'jtlp'],
+  [SwuSet.LOF]: ['lofw', 'lofp'],
+  [SwuSet.SEC]: ['secw', 'secp'],
+  [SwuSet.LAW]: ['lawp'],
+  [SwuSet.ASH]: ['ashp'],
+  [SwuSet.HMW]: ['hmwp'],
+};
+
 export const setArraySorted: SwuSet[] = Object.values(setInfo)
   .sort((a, b) => b.sortValue - a.sortValue)
   .map(s => s.code as SwuSet);

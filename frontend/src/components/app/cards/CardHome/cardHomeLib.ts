@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import type { CardList, CardVariant } from '../../../../../../lib/swu-resources/types.ts';
-import { setArraySorted, setInfo } from '../../../../../../lib/swu-resources/set-info.ts';
+import {
+  setArraySorted,
+  setInfo,
+  weeklyPromoSets,
+} from '../../../../../../lib/swu-resources/set-info.ts';
 import { SwuRarity, SwuSet } from '../../../../../../types/enums.ts';
 import {
   indexCardPrintings,
@@ -70,18 +74,6 @@ export function resolveSetGallerySelection(
           : setGalleryVariants[category][0],
   };
 }
-
-const weeklyPromoSets: Partial<Record<SwuSet, readonly string[]>> = {
-  [SwuSet.SOR]: ['sor'],
-  [SwuSet.SHD]: ['shd'],
-  [SwuSet.TWI]: ['twi'],
-  [SwuSet.JTL]: ['jtlw', 'jtlp'],
-  [SwuSet.LOF]: ['lofw', 'lofp'],
-  [SwuSet.SEC]: ['secw', 'secp'],
-  [SwuSet.LAW]: ['lawp'],
-  [SwuSet.ASH]: ['ashp'],
-  [SwuSet.HMW]: ['hmwp'],
-};
 
 function matchesTreatment(variant: CardVariant, treatment: SetGalleryVariant) {
   const name = variant.variantName;
