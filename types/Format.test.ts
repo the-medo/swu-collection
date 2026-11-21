@@ -8,13 +8,13 @@ import { SwuSet } from './enums.ts';
 const cards = cardsJson as unknown as CardList;
 const newLeader = 'darth-vader--no-one-to-stop-us';
 const legalBaseReprint = 'city-in-the-clouds';
-const rotatedReprint = 'academy-training';
-const candidates = [newLeader, legalBaseReprint, rotatedReprint];
+const returningReprint = 'academy-training';
+const candidates = [newLeader, legalBaseReprint, returningReprint];
 
-describe('IC27 preview formats', () => {
+describe('IC27 released formats', () => {
   test.each([
-    { format: 1, expected: [legalBaseReprint] },
-    { format: 6, expected: [legalBaseReprint, rotatedReprint] },
+    { format: 1, expected: candidates },
+    { format: 6, expected: candidates },
     { format: 7, expected: candidates },
     { format: 8, expected: candidates },
   ])(
@@ -29,12 +29,10 @@ describe('IC27 preview formats', () => {
     },
   );
 
-  test('an IC27 reprint keeps its existing Premier legality despite its newest core set', () => {
-    for (const id of [legalBaseReprint, 'mos-eisley', 'death-trooper']) {
+  test('IC27 reprints retain or regain Premier legality through their newest core set', () => {
+    for (const id of [legalBaseReprint, 'mos-eisley', 'death-trooper', returningReprint]) {
       expect(cards[id]!.set).toBe(SwuSet.IC27);
       expect(cardFilterByFormatId[1]!.filterCallback(cards[id]!)).toBe(true);
     }
-    expect(cardFilterByFormatId[1]!.filterCallback(cards[rotatedReprint]!)).toBe(false);
-    expect(cardFilterByFormatId[7]!.filterCallback(cards[rotatedReprint]!)).toBe(true);
   });
 });
