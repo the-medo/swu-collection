@@ -110,9 +110,7 @@ export const getDailySnapshotFormatSortOrder = (formatId: number): number => {
 };
 
 // Remove a set here when promoting it from preview to the released formats.
-export const previewSetMap: Partial<Record<SwuSet, true>> = {
-  [SwuSet.IC27]: true,
-};
+export const previewSetMap: Partial<Record<SwuSet, true>> = {};
 
 const premierRotationSetMap = {
   ...rotationBlocks[2].setMap,
