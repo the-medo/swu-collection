@@ -149,6 +149,139 @@ function mockConstructedMelee(
   return requests;
 }
 
+async function createReadinessFixture() {
+  const id = randomUUID();
+  await db.insert(tournament).values({
+    id,
+    userId: 'swubase',
+    name: 'Import readiness fixture',
+    type: 'pq',
+    location: 'Test',
+    continent: 'Europe',
+    attendance: 2,
+    format: 1,
+    days: 1,
+    date: new Date('2026-11-22'),
+    meleeId: '12345',
+  });
+  tournamentIds.push(id);
+  return id;
+}
+
+function mockUnavailableDecklists(mode: 'references' | 'hidden' | 'empty', onlyBob = false) {
+  mockConstructedMelee(1);
+  const validFetch = globalThis.fetch;
+  globalThis.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
+    const url = String(input);
+    if (mode === 'references' && url.includes('/Player/GetPlayerDetails')) {
+      return Response.json({ decklists: null });
+    }
+    if (mode === 'references' && url.includes('/Standing/GetRoundStandings')) {
+      const body = await (await validFetch(input, init)).json();
+      return Response.json({
+        ...body,
+        data: body.data.map((row: any) => ({ ...row, Decklists: [] })),
+      });
+    }
+    if (
+      url.includes('/Decklist/View/') &&
+      mode !== 'references' &&
+      (!onlyBob || url.endsWith('/Bob'))
+    ) {
+      return new Response(
+        mode === 'hidden'
+          ? 'Decklist is not public'
+          : '<pre id="decklist-swu-text">Leader\nBase\nMain Deck\nSideboard</pre>',
+      );
+    }
+    return validFetch(input, init);
+  }) as typeof fetch;
+}
+
+databaseTest(
+  'unavailable constructed lists fail before creating empty tournament decks',
+  async () => {
+    for (const mode of ['references', 'hidden', 'empty'] as const) {
+      const id = await createReadinessFixture();
+      mockUnavailableDecklists(mode);
+      await expect(runTournamentImport(id)).rejects.toThrow(/decklist/i);
+      expect(
+        await db.select().from(tournamentDeck).where(eq(tournamentDeck.tournamentId, id)),
+      ).toEqual([]);
+      expect(
+        await db.select().from(tournamentMatch).where(eq(tournamentMatch.tournamentId, id)),
+      ).toEqual([]);
+      expect((await db.select().from(tournament).where(eq(tournament.id, id)))[0]!.imported).toBe(
+        false,
+      );
+    }
+  },
+  15000,
+);
+
+databaseTest(
+  'a hidden decklist on a full rerun preserves every existing deck and match',
+  async () => {
+    const id = await createReadinessFixture();
+    mockConstructedMelee(1);
+    await runTournamentImport(id);
+    const links = await db.select().from(tournamentDeck).where(eq(tournamentDeck.tournamentId, id));
+    const deckIds = links.map(row => row.deckId);
+    const snapshot = async () => ({
+      links: await db
+        .select()
+        .from(tournamentDeck)
+        .where(eq(tournamentDeck.tournamentId, id))
+        .orderBy(tournamentDeck.deckId),
+      decks: await db.select().from(deck).where(inArray(deck.id, deckIds)).orderBy(deck.id),
+      cards: await db
+        .select()
+        .from(deckCard)
+        .where(inArray(deckCard.deckId, deckIds))
+        .orderBy(deckCard.deckId, deckCard.board, deckCard.cardId),
+      resources: await db
+        .select()
+        .from(entityResource)
+        .where(inArray(entityResource.entityId, deckIds))
+        .orderBy(entityResource.id),
+      matches: await db
+        .select()
+        .from(tournamentMatch)
+        .where(eq(tournamentMatch.tournamentId, id))
+        .orderBy(tournamentMatch.id),
+    });
+    const before = await snapshot();
+    mockUnavailableDecklists('hidden', true);
+    await expect(runTournamentImport(id)).rejects.toThrow(/decklist/i);
+    expect(await snapshot()).toEqual(before);
+  },
+  15000,
+);
+
+databaseTest(
+  'automatic imports refuse missing or unfinished rounds before fetching standings',
+  async () => {
+    const id = await createReadinessFixture();
+    for (const html of [
+      '<div id="standings-round-selector-container"></div>',
+      '<div id="standings-round-selector-container"><button class="round-selector" data-id="201" data-name="Semifinals" data-is-completed="true"></button><button class="round-selector" data-id="202" data-name="Finals" data-is-completed="false"></button></div>',
+    ]) {
+      const requests: string[] = [];
+      globalThis.fetch = (async input => {
+        requests.push(String(input));
+        return new Response(html);
+      }) as typeof fetch;
+      await expect(
+        runTournamentImport(id, undefined, undefined, { requireCompletedRounds: true }),
+      ).rejects.toThrow('rounds are not complete');
+      expect(requests).toEqual(['https://melee.gg/Tournament/View/12345']);
+      expect(
+        await db.select().from(tournamentDeck).where(eq(tournamentDeck.tournamentId, id)),
+      ).toEqual([]);
+    }
+  },
+);
+
 for (const rounds of [undefined, [2]]) {
   databaseTest(
     `${rounds ? 'partial' : 'full'} import fills a Free-form hover placeholder without duplicating participants`,
