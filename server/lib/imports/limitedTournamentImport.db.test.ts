@@ -111,6 +111,31 @@ const readMatches = (id: string) =>
     .orderBy(tournamentMatch.round);
 
 databaseTest(
+  'limited imports correct the cut from all rounds and preserve it when rounds are inconclusive',
+  async () => {
+    const id = await createTournament();
+    await db.update(tournament).set({ bracketInfo: 'top8' }).where(eq(tournament.id, id));
+    const topFourView = view.replace('Round 2', 'Semifinals').replace('Round 3', 'Finals');
+    mockMelee(fixtures(), undefined, topFourView);
+    await runTournamentImport(id, '', [3]);
+    expect((await db.select().from(tournament).where(eq(tournament.id, id)))[0]!.bracketInfo).toBe(
+      'top4',
+    );
+    mockMelee(fixtures());
+    await runTournamentImport(id);
+    expect((await db.select().from(tournament).where(eq(tournament.id, id)))[0]!.bracketInfo).toBe(
+      'top4',
+    );
+    mockMelee(fixtures(), 102, topFourView.replace('Semifinals', 'Quarterfinals'));
+    await expect(runTournamentImport(id)).rejects.toThrow('Failed to fetch round');
+    expect((await db.select().from(tournament).where(eq(tournament.id, id)))[0]!.bracketInfo).toBe(
+      'top4',
+    );
+  },
+  15000,
+);
+
+databaseTest(
   'limited reruns preserve existing deck links and cards',
   async () => {
     const id = await createTournament();

@@ -314,6 +314,13 @@ export async function liveTournamentProgressCheck(
     progress.additionalData,
   );
 
+  if (progress.bracketInfo !== undefined && progress.bracketInfo !== row.tournament.bracketInfo) {
+    await db
+      .update(tournamentTable)
+      .set({ bracketInfo: progress.bracketInfo, updatedAt: sql`NOW()` })
+      .where(eq(tournamentTable.id, input.tournamentId));
+  }
+
   await db
     .update(tournamentWeekendTournament)
     .set({

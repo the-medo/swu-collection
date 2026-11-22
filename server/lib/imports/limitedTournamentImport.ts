@@ -6,6 +6,7 @@ import { tournamentDeck } from '../../db/schema/tournament_deck.ts';
 import { fetchRoundMatches, type TournamentViewRound } from './tournamentImportLib.ts';
 import { buildLimitedTournamentMatches } from './limitedTournamentMatches.ts';
 import { batchArray } from '../utils/batch.ts';
+import { detectMeleeBracketInfo } from './tournamentBracket.ts';
 
 export async function importLimitedTournamentMatches(
   event: Tournament,
@@ -70,7 +71,10 @@ export async function importLimitedTournamentMatches(
     }
     await tx
       .update(tournament)
-      .set({ updatedAt: sql`NOW()` })
+      .set({
+        bracketInfo: detectMeleeBracketInfo(availableRounds),
+        updatedAt: sql`NOW()`,
+      })
       .where(eq(tournament.id, event.id));
   });
 }

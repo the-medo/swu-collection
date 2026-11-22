@@ -74,11 +74,12 @@ export async function liveTournamentCheck(
     detail.additionalData,
   );
 
-  if (detail.playerCount !== null) {
+  if (detail.playerCount !== null || detail.bracketInfo !== undefined) {
     await db
       .update(tournamentTable)
       .set({
-        attendance: detail.playerCount,
+        attendance: detail.playerCount ?? undefined,
+        bracketInfo: detail.bracketInfo,
         updatedAt: sql`NOW()`,
       })
       .where(eq(tournamentTable.id, input.tournamentId));

@@ -18,6 +18,7 @@ import type {
 } from './types.ts';
 import { parseMeleeDecklistLeaderBase } from './meleeDecklists.ts';
 import { tournamentExpectsMeleeDecklists } from './tournamentFormat.ts';
+import { detectMeleeBracketInfo } from '../imports/tournamentBracket.ts';
 
 type ImportedRoundMatchState = {
   matchCount: number;
@@ -289,6 +290,7 @@ export async function fetchLiveTournamentDetailFromMelee(params: {
     status,
     exactStart: stringOrNull(detail.StartDate),
     playerCount,
+    bracketInfo: detectMeleeBracketInfo(view?.rounds ?? []),
     hasDecklists: expectsDecklists ? await detectDecklistsFromTournamentView(view) : false,
     additionalData: sanitizeTournamentDetail(detail),
   };
@@ -345,6 +347,7 @@ export async function fetchLiveTournamentProgressFromMelee(params: {
   return {
     meleeId: params.meleeId,
     roundNumber: currentRound.number,
+    bracketInfo: detectMeleeBracketInfo(rounds),
     roundName: currentRound.name,
     matchesTotal: currentRoundMatchesTotal,
     matchesRemaining: currentRoundMatchesRemaining,
