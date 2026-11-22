@@ -1,4 +1,4 @@
-import { and, asc, eq, sql } from 'drizzle-orm';
+import { and, asc, eq, lte, or, sql } from 'drizzle-orm';
 import { db } from '../../db';
 import { tournament as tournamentTable } from '../../db/schema/tournament.ts';
 import { tournamentImport } from '../../db/schema/tournament_weekend.ts';
@@ -14,6 +14,9 @@ import {
   type TournamentImportedSideEffectsResult,
 } from '../imports/tournamentImportedSideEffects.ts';
 import { publishTournamentImportFinished } from './liveTournamentEvents.ts';
+import { fetchLiveTournamentDetailFromMelee } from './melee.ts';
+import { tournamentCanImportResults } from './tournamentFormat.ts';
+import { TournamentImportNotReadyError } from '../imports/tournamentImportNotReady.ts';
 
 const maxStoredErrorLength = 8000;
 
@@ -26,12 +29,19 @@ const serializeImportError = (error: unknown) => {
 };
 
 async function claimNextPendingImport() {
+  const readyToClaim = and(
+    eq(tournamentImport.status, 'pending'),
+    or(
+      eq(tournamentImport.attempts, 0),
+      lte(tournamentImport.updatedAt, sql`NOW() - INTERVAL '5 minutes'`),
+    ),
+  );
   const pendingImport = (
     await db
       .select({ tournamentId: tournamentImport.tournamentId })
       .from(tournamentImport)
-      .where(eq(tournamentImport.status, 'pending'))
-      .orderBy(asc(tournamentImport.createdAt))
+      .where(readyToClaim)
+      .orderBy(asc(tournamentImport.updatedAt), asc(tournamentImport.createdAt))
       .limit(1)
   )[0];
 
@@ -47,12 +57,7 @@ async function claimNextPendingImport() {
         startedAt: sql`NOW()`,
         updatedAt: sql`NOW()`,
       })
-      .where(
-        and(
-          eq(tournamentImport.tournamentId, pendingImport.tournamentId),
-          eq(tournamentImport.status, 'pending'),
-        ),
-      )
+      .where(and(eq(tournamentImport.tournamentId, pendingImport.tournamentId), readyToClaim))
       .returning({
         tournamentId: tournamentImport.tournamentId,
         attempts: tournamentImport.attempts,
@@ -120,7 +125,23 @@ export async function processNextTournamentImport(): Promise<TournamentImportQue
       };
     }
 
-    await runTournamentImport(claimedImport.tournamentId);
+    if (!tournament.meleeId) throw new Error('Melee tournament ID is empty');
+    const detail = await fetchLiveTournamentDetailFromMelee({
+      meleeId: tournament.meleeId,
+      tournament,
+    });
+    if (
+      detail.status !== 'finished' ||
+      !tournamentCanImportResults(tournament, detail.hasDecklists)
+    ) {
+      throw new TournamentImportNotReadyError(
+        'Melee tournament is not finished or its decklists are not available yet.',
+      );
+    }
+
+    await runTournamentImport(claimedImport.tournamentId, undefined, undefined, {
+      requireCompletedRounds: true,
+    });
 
     await db
       .update(tournamentTable)
@@ -173,6 +194,21 @@ export async function processNextTournamentImport(): Promise<TournamentImportQue
       importedSideEffects,
     };
   } catch (error) {
+    if (error instanceof TournamentImportNotReadyError) {
+      // Keep the durable job for a later check, without starving newly queued events.
+      await db
+        .update(tournamentImport)
+        .set({
+          status: 'pending',
+          lastError: error.message,
+          startedAt: null,
+          finishedAt: null,
+          updatedAt: sql`NOW()`,
+        })
+        .where(eq(tournamentImport.tournamentId, claimedImport.tournamentId));
+      return { type: 'skipped', tournamentId: claimedImport.tournamentId, reason: error.message };
+    }
+
     await db
       .update(tournamentImport)
       .set({

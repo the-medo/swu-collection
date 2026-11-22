@@ -26,11 +26,13 @@ import { batchArray } from '../utils/batch.ts';
 import { isLimitedFormat } from '../../../types/Format.ts';
 import { importLimitedTournamentMatches } from './limitedTournamentImport.ts';
 import { detectMeleeBracketInfo } from './tournamentBracket.ts';
+import { TournamentImportNotReadyError } from './tournamentImportNotReady.ts';
 
 export async function runTournamentImport(
   tournamentId: string,
   forcedRoundId: string | undefined = '',
   rounds: number[] | undefined = undefined,
+  options: { requireCompletedRounds?: boolean } = {},
 ) {
   // let hoverForDecklists = decklistsOnHoverOnly;
   const t = (await db.select().from(tournament).where(eq(tournament.id, tournamentId)))[0];
@@ -47,6 +49,12 @@ export async function runTournamentImport(
   let roundId: number | undefined;
 
   const tournamentView = await fetchTournamentView(meleeTournamentId);
+  if (
+    options.requireCompletedRounds &&
+    (!tournamentView?.rounds.length || tournamentView.rounds.some(round => !round.completed))
+  ) {
+    throw new TournamentImportNotReadyError('Melee tournament rounds are not complete yet.');
+  }
   if (isLimitedFormat(t.format)) {
     await importLimitedTournamentMatches(t, tournamentView?.rounds ?? [], {
       forcedRoundId,
@@ -97,7 +105,9 @@ export async function runTournamentImport(
   }
 
   if (roundStandings.length === 0) {
-    throw new Error(`No standings found for tournament ${meleeTournamentId}`);
+    throw new TournamentImportNotReadyError(
+      `No standings found for tournament ${meleeTournamentId}`,
+    );
   }
 
   console.log('Standing count: ', roundStandings.length);
@@ -149,6 +159,10 @@ export async function runTournamentImport(
     }
   }
 
+  if (!decklistFound) {
+    throw new TournamentImportNotReadyError('No usable decklists are available from Melee yet.');
+  }
+
   let tournamentDecks = await db
     .select()
     .from(tournamentDeck)
@@ -163,6 +177,31 @@ export async function runTournamentImport(
       parseStandingsToTournamentDeck(s, t, tournamentDecks, additionalInfo, userDecklistMap),
     )
     .filter(x => !!x);
+
+  // Fetch and parse every deck we will replace before creating/deleting any rows.
+  // The event can reopen or hide its lists between the live check and this import.
+  const preparedDecklists = new Map<string, ReturnType<typeof parseTextToSwubase>>();
+  for (const d of parsedStandings) {
+    const guid = d.tournamentDeck.meleeDecklistGuid;
+    if (!guid || (isPartialRoundImport && d.exists && !d.filledPlaceholder)) continue;
+    if (preparedDecklists.has(guid)) continue;
+
+    const text = await fetchDecklistView(guid);
+    const cards = parseTextToSwubase(text, cardList, '');
+    if (
+      !cards.leader1 ||
+      !cards.base ||
+      !cards.deckCards.some(card => card.board === 1 && card.quantity > 0)
+    ) {
+      throw new TournamentImportNotReadyError(
+        `Melee decklist ${guid} is not available or is empty.`,
+      );
+    }
+    preparedDecklists.set(guid, cards);
+  }
+  if (!isPartialRoundImport && preparedDecklists.size === 0) {
+    throw new TournamentImportNotReadyError('No usable decklists are available for the standings.');
+  }
 
   const playerInfo: Record<
     string,
@@ -298,30 +337,23 @@ export async function runTournamentImport(
       console.warn('Melee decklist GUID is empty');
     } else {
       if (!isPartialRoundImport || !d.exists || d.filledPlaceholder) {
-        const decklistText = await fetchDecklistView(d.tournamentDeck.meleeDecklistGuid);
-        if (decklistText && decklistText !== '') {
-          const cards = parseTextToSwubase(decklistText, cardList, d.tournamentDeck.deckId);
+        const cards = preparedDecklists.get(d.tournamentDeck.meleeDecklistGuid)!;
 
-          console.log(
-            `Updating leader and base to: ${cards.leader1} ${cards.leader2} ${cards.base}`,
-          );
-          await db
-            .update(deckTable)
-            .set({
-              leaderCardId1: cards.leader1,
-              leaderCardId2: cards.leader2,
-              baseCardId: cards.base,
-            })
-            .where(eq(deckTable.id, d.tournamentDeck.deckId));
-          await updateDeckInformation(d.tournamentDeck.deckId);
+        console.log(`Updating leader and base to: ${cards.leader1} ${cards.leader2} ${cards.base}`);
+        await db
+          .update(deckTable)
+          .set({
+            leaderCardId1: cards.leader1,
+            leaderCardId2: cards.leader2,
+            baseCardId: cards.base,
+          })
+          .where(eq(deckTable.id, d.tournamentDeck.deckId));
+        await updateDeckInformation(d.tournamentDeck.deckId);
 
-          try {
-            console.log(`Inserting deck cards: ${cards.deckCards.length} rows`);
-            await db.insert(deckCardTable).values(cards.deckCards);
-          } catch (error) {
-            console.warn('Error inserting deck cards:', error);
-          }
-        }
+        console.log(`Inserting deck cards: ${cards.deckCards.length} rows`);
+        await db
+          .insert(deckCardTable)
+          .values(cards.deckCards.map(card => ({ ...card, deckId: d.tournamentDeck.deckId })));
       }
 
       if (!isPartialRoundImport && d.tournamentDeck.meleePlayerUsername) {
