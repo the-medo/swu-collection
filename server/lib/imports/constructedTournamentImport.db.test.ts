@@ -57,6 +57,7 @@ function mockConstructedMelee(
   format: number,
   useRoundFallback = false,
   hoverDeck?: 'missing' | 'available',
+  topFour = false,
 ) {
   const requests: string[] = [];
   globalThis.fetch = (async (input: string | URL | Request) => {
@@ -68,7 +69,7 @@ function mockConstructedMelee(
           [201, 202]
             .map(
               (id, index) =>
-                `<button class="round-selector" data-id="${id}" data-name="Round ${index + 1}" data-is-completed="true"></button>`,
+                `<button class="round-selector" data-id="${id}" data-name="${topFour ? ['Semifinals', 'Finals'][index] : `Round ${index + 1}`}" data-is-completed="true"></button>`,
             )
             .join('') +
           '</div>',
@@ -343,8 +344,20 @@ for (const format of [1, 6]) {
       const beforePartial = await readMatches();
       const resources = await readResources();
       expect(resources).toHaveLength(6);
-      const partialRequests = mockConstructedMelee(format);
+      const beforePartialTournament = (
+        await db.select().from(tournament).where(eq(tournament.id, id))
+      )[0]!;
+      expect(beforePartialTournament.bracketInfo).toBe('top8');
+      const partialRequests = mockConstructedMelee(format, false, undefined, true);
       await runTournamentImport(id, '', [2]);
+      const afterPartialTournament = (
+        await db.select().from(tournament).where(eq(tournament.id, id))
+      )[0]!;
+      // Even a finals-only import detects the cut from the complete schedule.
+      expect(afterPartialTournament.bracketInfo).toBe('top4');
+      expect(afterPartialTournament.updatedAt.getTime()).toBeGreaterThan(
+        beforePartialTournament.updatedAt.getTime(),
+      );
       expect((await readMatches())[0]).toEqual(beforePartial[0]);
       expect(await readLinks()).toEqual(links);
       expect(await readCards()).toEqual(cards);

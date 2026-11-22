@@ -25,6 +25,7 @@ import { updateDeckInformation } from '../decks/updateDeckInformation.ts';
 import { batchArray } from '../utils/batch.ts';
 import { isLimitedFormat } from '../../../types/Format.ts';
 import { importLimitedTournamentMatches } from './limitedTournamentImport.ts';
+import { detectMeleeBracketInfo } from './tournamentBracket.ts';
 
 export async function runTournamentImport(
   tournamentId: string,
@@ -453,4 +454,12 @@ export async function runTournamentImport(
     })
     .from(tournamentDeck)
     .where(and(eq(deckTable.id, tournamentDeck.deckId), eq(tournamentDeck.tournamentId, t.id)));
+
+  const bracketInfo = detectMeleeBracketInfo(tournamentView?.rounds ?? []);
+  if (bracketInfo !== undefined && bracketInfo !== t.bracketInfo) {
+    await db
+      .update(tournament)
+      .set({ bracketInfo, updatedAt: sql`NOW()` })
+      .where(eq(tournament.id, t.id));
+  }
 }

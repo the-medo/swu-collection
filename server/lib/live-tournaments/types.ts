@@ -1,4 +1,5 @@
 import type { tournamentWeekendTournamentStatusEnum } from '../../db/schema/tournament_weekend.ts';
+import type { BracketInfo } from '../../../types/enums.ts';
 
 export type LiveTournamentStatus =
   (typeof tournamentWeekendTournamentStatusEnum.enumValues)[number];
@@ -13,6 +14,7 @@ export type LiveMeleeTournamentDetail = {
   status: LiveTournamentStatus;
   exactStart: string | null;
   playerCount: number | null;
+  bracketInfo: BracketInfo | undefined;
   hasDecklists: boolean;
   additionalData?: Record<string, unknown>;
 };
@@ -46,6 +48,7 @@ export type LiveMeleeMatch = {
 
 export type LiveMeleeTournamentProgress = {
   meleeId: string;
+  bracketInfo: BracketInfo | undefined;
   roundNumber: number;
   roundName: string;
   matchesTotal: number;
