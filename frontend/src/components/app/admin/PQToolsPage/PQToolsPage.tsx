@@ -6,10 +6,12 @@ import { PQJsonDataView } from './PQJsonDataView.tsx';
 import { PQEditableDataView } from './PQEditableDataView.tsx';
 import { PQWeekTools } from './PQWeekTools.tsx';
 import { PQCoordinates } from './PQCoordinates.tsx';
+import { PQMetaReassignment } from './PQMetaReassignment.tsx';
 
 export function PQToolsPage() {
   const [savedData, setSavedData] = useState<PQTournament[] | null>(null);
   const [openSection, setOpenSection] = useState('');
+  const [weekToolsVersion, setWeekToolsVersion] = useState(0);
 
   // Load data from local storage on component mount
   useEffect(() => {
@@ -97,7 +99,8 @@ export function PQToolsPage() {
         <PQCoordinates open={openSection === 'coordinates'} />
       </Accordion>
       <h2 className="text-2xl font-bold">PQ Week Tools</h2>
-      <PQWeekTools />
+      <PQWeekTools key={weekToolsVersion} />
+      <PQMetaReassignment onApplied={() => setWeekToolsVersion(version => version + 1)} />
     </div>
   );
 }

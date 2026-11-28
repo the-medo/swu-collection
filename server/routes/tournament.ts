@@ -23,12 +23,14 @@ import { tournamentIdClearDataPostRoute } from './tournaments/_id/clear-data/pos
 import type { AuthExtension } from '../auth/auth.ts';
 import { tournamentLocationRoute } from './tournaments/location/router.ts';
 import { tournamentMapGetRoute } from './tournaments/map/get.ts';
+import { pqMetaReassignmentRoute } from './tournaments/bulk/pq-reassign-metas/route.ts';
 
 export const selectTournament = getTableColumns(tournamentTable);
 export const selectTournamentType = getTableColumns(tournamentTypeTable);
 export const selectMeta = getTableColumns(metaTable);
 
 export const tournamentRoute = new Hono<AuthExtension>()
+  .route('/bulk/pq-reassign-metas', pqMetaReassignmentRoute)
   .route('/map', tournamentMapGetRoute)
   .route('/', tournamentLocationRoute)
   .route('/', tournamentGetRoute)
