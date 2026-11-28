@@ -34,7 +34,9 @@ export function PQWeeklyTournamentGroups({
   // Fetch tournament groups for the given meta
   const tournamentGroupsQuery = useGetTournamentGroups({
     meta: meta || undefined,
-    visible: false,
+    nameTemplate: 'PQ Week %',
+    pageSize: 500,
+    enabled: meta !== null,
   });
 
   // Hook for creating tournament groups

@@ -11,6 +11,7 @@ import FormatSelect from '@/components/app/decks/components/FormatSelect.tsx';
 import MetaSelector from '@/components/app/global/MetaSelector/MetaSelector.tsx';
 import { TournamentData } from '../../../../../../types/Tournament.ts';
 import { metaFormatFilter } from '../../../../../../types/Format.ts';
+import { useGetTournamentGroups } from '@/api/tournament-groups/useGetTournamentGroups.ts';
 
 export function PQWeekTools() {
   const [format, setFormat] = useState<number | null>(1);
@@ -18,8 +19,16 @@ export function PQWeekTools() {
   const [pqTournaments, setPqTournaments] = useState<TournamentData[]>([]);
   const [isFetching, setIsFetching] = useState(false);
 
-  // Use the hook to transform tournaments into weekly divisions
-  const weeklyTournaments = useWeeklyTournaments(pqTournaments);
+  const groups = useGetTournamentGroups({
+    meta: meta ?? undefined,
+    nameTemplate: 'PQ Week %',
+    pageSize: 500,
+    enabled: meta !== null,
+  });
+  const weeklyTournaments = useWeeklyTournaments(
+    pqTournaments,
+    groups.data?.pages.flatMap(page => page.data) ?? [],
+  );
 
   const getTournamentsQuery = useGetTournaments(
     {
@@ -62,7 +71,11 @@ export function PQWeekTools() {
         <div className="w-[200px]">
           <FormatSelect
             value={format}
-            onChange={setFormat}
+            onChange={value => {
+              setFormat(value);
+              setMeta(null);
+              setPqTournaments([]);
+            }}
             allowEmpty={true}
             className="w-[180px]"
             formatFilter={metaFormatFilter}
@@ -71,7 +84,10 @@ export function PQWeekTools() {
         <div className="w-[500px]">
           <MetaSelector
             value={meta}
-            onChange={setMeta}
+            onChange={value => {
+              setMeta(value);
+              setPqTournaments([]);
+            }}
             emptyOption={true}
             formatId={format || undefined}
           />
@@ -90,11 +106,18 @@ export function PQWeekTools() {
               weeklyTournaments={weeklyTournaments}
               totalTournaments={pqTournaments.length}
             />
-            <PQWeeklyTournamentGroups
-              weeklyTournaments={weeklyTournaments}
-              meta={meta}
-              format={format}
-            />
+            {(!meta || groups.isSuccess) && (
+              <PQWeeklyTournamentGroups
+                weeklyTournaments={weeklyTournaments}
+                meta={meta}
+                format={format}
+              />
+            )}
+            {meta && groups.isError && (
+              <p className="text-sm text-destructive">
+                Could not load existing PQ Week groups. Refresh before managing groups.
+              </p>
+            )}
           </>
         )}
       </Accordion>
